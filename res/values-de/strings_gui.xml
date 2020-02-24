@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gui_choose_device">Gerät auswählen</string>
+    <string name="gui_nfc">NFC</string>
+    <string name="gui_bluetooth">Bluetooth</string>
+    <string name="gui_tracing">Tracing</string>
+</resources>

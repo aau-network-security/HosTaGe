@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="google_maps_api_key_debug" translatable="false">AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4</string>
+	<string name="google_maps_api_key_release" translatable="false">AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4</string>
+	<string name="virustotal_api_key" translatable="false">111c226204f5de7228563bbca91c5860e4965fbe936307dffa8f2f2d575ff292</string>
+</resources>

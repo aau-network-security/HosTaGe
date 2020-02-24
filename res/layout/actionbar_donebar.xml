@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="horizontal"
+              android:divider="?android:attr/dividerVertical"
+              android:dividerPadding="12dp"
+              android:showDividers="middle">
+
+
+	<LinearLayout
+			android:id="@+id/action_cancel"
+			style="@style/DoneBarActionButton">
+
+		<ImageView
+				android:src="@drawable/ic_action_cancel"
+				style="@style/DoneBarActionButtonImage"/>
+		<TextView
+				android:text="@string/discard"
+				style="@style/DoneBarActionButtonText"/>
+
+	</LinearLayout>
+
+	<!-- id must match corresponding menu item id -->
+	<LinearLayout
+			android:id="@+id/action_done"
+			style="@style/DoneBarActionButton">
+
+		<ImageView
+				android:src="@drawable/ic_action_done"
+				style="@style/DoneBarActionButtonImage"/>
+		<TextView
+				android:text="@string/save"
+				style="@style/DoneBarActionButtonText"/>
+
+	</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="format">
+        <item>Standard</item>
+        <item>JSON</item>
+    </string-array>
+
+    <string-array name="delete_criteria">
+        <item>BSSID</item>
+        <item>Datum</item>
+        <item>Alle</item>
+    </string-array>
+
+
+</resources>

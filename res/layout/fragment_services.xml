@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="false"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:text="@string/current_connection"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+        <ImageView
+                android:id="@+id/services_button_connection_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="12dp"
+                android:src="@android:drawable/ic_menu_info_details" />
+    </RelativeLayout>
+
+    <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@android:color/darker_gray" />
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+        <TextView
+                android:id="@+id/services_text_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="21dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="26sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:weightSum="1" >
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="false"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="35dp"
+                android:layout_weight="1"
+                android:text="@string/monitor_services"
+                android:textStyle="bold"
+                android:textSize="20dp"/>
+
+        <Switch
+                android:id="@+id/service_switch_connection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="false"
+                android:layout_gravity="right"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="0dp"
+                android:layout_weight="1"
+                android:checked="false"
+                android:textSize="10dp" />
+
+    </RelativeLayout>
+
+    <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@android:color/darker_gray" />
+
+    <ListView android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:id="@+id/services_list_view"
+              android:layout_marginLeft="15dp"
+              android:layout_marginRight="15dp"
+            >
+
+
+    </ListView>
+
+</LinearLayout>

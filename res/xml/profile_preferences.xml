@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<Preference android:summary="@string/profile_warning"
+				android:layout="@layout/preference_warning"
+				android:key="pref_profile_warning"
+				android:enabled="false" />
+
+	<PreferenceCategory android:title="@string/general"
+	                    android:key="pref_profile_general_settings">
+		<EditTextPreference android:key="pref_profile_general_name"
+		                    android:title="Name"
+		                    android:summary="@string/change_name_of_profile"
+		                    android:defaultValue=""/>
+
+		<EditTextPreference android:key="pref_profile_general_description"
+		                    android:title="@string/profile_description"
+		                    android:summary="@string/change_desc_of_profile"
+		                    android:defaultValue="" />
+
+		<Preference android:key="pref_profile_general_image"
+		            android:title="Icon"
+		            android:summary="@string/change_icon_of_profile" />
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/profile_monitor_ghost"
+	                    android:key="pref_profile_protocols_ghost">
+
+		<CheckBoxPreference android:key="pref_profile_protocols_ghost_active"
+		                    android:title="@string/profile_activate_ghost"
+							android:summary="@string/profile_activate_ghost_summary"
+							android:defaultValue="false" />
+
+		<EditTextPreference android:key="pref_profile_protocols_ghost_text"
+		                    android:title="@string/profile_mirror_ghost"
+		                    android:summary="@string/profile_mirror_ghost_summary"
+		                    android:defaultValue=""
+		                    android:dependency="pref_profile_protocols_ghost_active" />
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/profile_monitor_protocols"
+	                    android:key="pref_profile_protocols_settings">
+		<Preference android:summary="@string/profile_activate_protocols_summary" />
+	</PreferenceCategory>
+</PreferenceScreen>

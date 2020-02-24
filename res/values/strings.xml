@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">HosTaGe</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_about">About</string>
+    <string name="capital_on">OFF</string>
+    <string name="capital_off">ON</string>
+	<string name="title_connection_info">Connection Info</string>
+    <string name="status">Status</string>
+    <string name="paranoid">Paranoid Mode</string>
+    <string name="details">Connection info</string>
+    <string name="not_connected">Not connected</string>
+    <string name="attack">&#160;attack</string>
+    <string name="attacks">&#160;attacks</string>
+    <string name="secure">Secure</string>
+    <string name="insecure">Insecure</string>
+    <string name="logged">&#160;logged</string>
+    <string name="recorded">&#160;recorded</string>
+    <string name="zero_attacks">0 attacks recorded</string>
+
+    <string name="information">Information</string>
+	<string name="wifi_not_connected_msg">You are not connected to a WiFi network. \n\nPlease connect to one, before trying to activate HosTaGe.</string>
+	<string name="network_not_connected_msg">You are not connected to any network. \n\nPlease connect to one, before trying to activate HosTaGe.</string>
+	<string name="no_network_connection_threatmap_msg">Currently you are not connected to the Internet.\n\nPlease establish a connection to use the Threatmap.</string>
+    <string name="profile_no_services_msg">The current active profile does not seem to monitor any services.\n\nPlease activate some services to monitor in the profile.</string>
+    <string name="no_portbinder_msg">Your device does not have \'Portbinder\' installed. Due to the limitations of Android OS, you could only use services that are utilizing ports > 1024.\n\nTo enable full functionality of HosTaGe, please make sure your device is rooted and \'Portbinder\' is installed.</string>
+    <string name="no_portbinder_msg2">Your device cannot use the full feature of HosTaGe yet. Click \'Help\' to find out how to enable this.</string>
+    <string name="no_thanks">No, Thanks</string>
+    <string name="not_rooted">Your device does not have root access. To unlock full functionality of HosTaGe, a rooted device is required.</string>
+    <string name="help">Help</string>
+    <string name="confirm">Confirm</string>
+	<string name="ok" translatable="false">OK</string>
+    <string name="how">How?</string>
+    <string name="portbinder" translatable="false">Portbinder</string>
+    <string name="portbinder_tutorial">Video Tutorial</string>
+    <string name="portbinder_website">Visit Website</string>
+    <string name="helpPortbinder">Please follow the instructions in our website to install \'Portbinder\'.\n\nAlternatively, you can use the automated installer by pressing the \'Just Help Me!\' button.</string>
+    <string name="confirm_msg">This automated installer fetches the appropriate Portbinder binary and installs in a location within the device.\n\nThis automated process will CHANGE some folder permissions to work. Proceed on your own risk.\n\nConfirm to proceed with automated installation of Portbinder?</string>
+    <string name="help_me">Just Help Me!</string>
+
+	<string name="honeypot_not_monitoring">Zzz...</string>
+	<string name="honeypot_no_threat">Looks safe!</string>
+	<string name="honeypot_past_threat">This doesn\'t look safe...</string>
+	<string name="honeypot_live_threat">Under attack!!!</string>
+
+    <string name="hostage_not_monitoring">HosTaGe is not active.</string>
+    <string name="hostage_no_threat">Everything looks fine!</string>
+    <string name="hostage_past_threat">Network has been infected in previous session!</string>
+    <string name="hostage_live_threat">Network is infected!</string>
+
+	<string name="profile_needs_name">An profile needs a name. Please type in a name and press save again.</string>
+    <string name="monitor_current_connection">Monitor current connection</string>
+    <string name="active_profile">Active profile: </string>
+
+    <string name="ssid">SSID:</string>
+    <string name="bssid">BSSID:</string>
+	<string name="protocol">Protocol:</string>
+	<string name="timestamp">Timestamp:</string>
+	<string name="location">Location:</string>
+    <string name="internal_ip">Internal IP:</string>
+	<string name="subnet_mask">Subnet Mask:</string>
+    <string name="external_ip">External IP:</string>
+	<string name="remote_ip">Remote IP:</string>
+	<string name="packet_type">Packet type:</string>
+	<string name="packet_content">Packet content:</string>
+
+    <string name="services">Services</string>
+    <string name="connections">Recorded connections:</string>
+    <string name="statistics">Statistics</string>
+    <string name="database">Database</string>    
+	<string name="log_actions">Actions</string>
+	<string name="firstAttack">First Attack:</string>
+	<string name="lastAttack">Last Attack:</string>
+	<string name="clear">Clear</string>
+	<string name="delete">Delete</string>
+	<string name="cancel">Cancel</string>
+	<string name="close">Close</string>
+	<string name="show_records">Show records</string>
+	<string name="dialog_clear_database">Clear all data?</string>	
+	<string name="export_dialog_title">Choose Export Format</string>		
+	<string name="delete_dialog_title">Delete data sets by:</string>	
+	<string name="dialog_clear_database_date">Delete all data before:</string>
+
+    <string name="deleteFILTEREDAttacksTitle">Delete the filtered attack data?</string>
+    <string name="deleteALLAttacksTitle">Delete all attack data?\n\nYou can delete specific attack data by filtering!</string>
+
+	<string name="threatmap_show_records"><u>Show records</u></string>
+
+	<string name="RecordAttackType">Type</string>
+	<string name="RecordInternalAttack">Internal attack</string>
+	<string name="RecordExternalAttack">External attack</string>
+    <string name="RecordBSSID">BSSID</string>
+    <string name="RecordSSID">SSID</string>
+    <string name="RecordTimestamp">Timestamp</string>
+    <string name="RecordProtocol">Protocol</string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <string name="drawer_overview">Overview</string>
+    <string name="drawer_threat_map">Threat Map</string>
+    <string name="drawer_records">Records</string>
+    <string name="drawer_services">Services</string>
+    <string name="drawer_settings">Settings</string>
+    <string name="drawer_profile_manager">Profiles</string>
+    <string name="drawer_app_info">About</string>
+	<string name="drawer_statistics">Statistics</string>
+	<string name="drawer_help">Help videos</string>
+
+    <string name="button_title_apply">Apply</string>
+    <string name="button_title_cancel">Cancel</string>
+    <string name="shared_preference_path">de.tudarmstadt.informatik.hostage.preferences</string>
+    <string name="UUID">9fc4f490-659e-11e3-949a-0800200c9a66</string>
+
+    <string name="recorded_attacks">recorded attacks: </string>
+    <string name="current_connection">Current connection</string>
+    <string name="monitor_services">Monitor services</string>
+
+    <string name="device_rooted">Device rooted</string>
+    <string name="porthack_installed">Portbinder installed</string>
+	<string name="iptables_available">Iptables available</string>
+	<string name="install_porthack">Install Portbinder</string>
+	<string name="uninstall_porthack">Uninstall Portbinder</string>
+	<string name="porthack_explanation"><![CDATA[<h1>Portbinder</h1><p>To use protocols with ports below 1024 your device requires root privileges. HosTaGe does not run with root privileges by default. That is why a small program called Portbinder is needed that opens a socket and passes it to the main HosTaGe App.</p><p>Another technique is to redirect those ports to higher port numbers. This is achieved using Android\'s iptables. If iptables is available on your device the Portbinder is not required.</p>]]></string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="no_data_notification">No Attacks have been recorded. Please check your filter option.</string>
+    <string name="no_data_notification_no_filter">No Attacks have been recorded.</string>
+
+    <string name="TODAY">Today</string>
+    <string name="YESTERDAY">Yesterday</string>
+
+    <string name="hostage_with_url"><a href="https://cyber.aau.dk/">HosTaGe ICS</a></string>
+    <string name="hostage_email"><a href="mailto:hostage@es.aau.dk?Subject=Inquiry">Tell us what do you think about HosTaGe</a></string>
+    <string name="hostage_email_only" translatable="false">hostage@es.aau.dk</string>
+    <string name="ui_dev_by">Developers team:</string>
+    <string name="core_dev_by">Core developed by</string>
+    <string name="advanced_settings">Advanced Settings</string>
+    <string name="change_name_of_profile">Change the name of this profile</string>
+    <string name="change_desc_of_profile">Change the description of this profile here</string>
+    <string name="change_icon_of_profile">Choose an icon for this profile</string>
+    <string name="general">General</string>
+    <string name="profile_description">Description</string>
+    <string name="select_icon">Select Icon</string>
+    <string name="delete_profile">Delete profile</string>
+    <string name="discard">Discard</string>
+    <string name="save">Save</string>
+	<string name="really_want_delete_profiel">Do you really want to delete this profile?</string>
+    <string name="rec_protocol">Protocol</string>
+    <string name="date">Date</string>
+    <string name="ESSID">ESSID</string>
+    <string name="BSSID">BSSID</string>
+    <string name="rec_sortby">Sort by</string>
+    <string name="rec_latest">Latest</string>
+    <string name="rec_earliest">Earliest</string>
+    <string name="rec_reset_filter">Reset Filter</string>
+    <string name="rec_group_by">Group by</string>
+    <string name="rec_filter_by">Filter by</string>
+    <string name="rec_time">Time</string>
+    <string name="rec_set_date">Set Date</string>
+    <string name="rec_set">Set</string>
+    <string name="rec_cancel">Cancel</string>
+    <string name="stats_protocols">Protocols</string>
+    <string name="stats_networks">Networks</string>
+    <string name="stats_attacks">Attacks</string>
+    <string name="stats_visualize">Visualize</string>
+    <string name="stats_bar_plot">Bar Plot</string>
+    <string name="stats_pie_plot">Pie Plot</string>
+    <string name="stats_line_plot">Line Plot</string>
+    <string name="stats_other">Other</string>
+    <string name="stats_attacks_count">Attack count</string>
+    <string name="stats_select_protocol">Select Protocol</string>
+    <string name="stats_attacks_essid">Attacks per ESSID</string>
+    <string name="stats_attacks_bssid">Attacks per BSSID</string>
+    <string name="stats_attacks_time">Attacks over time (24h)</string>
+    <string name="stats_attacks_date">Attacks over date</string>
+    <string name="stats_uses_protocol">Uses per protocol</string>
+    <string name="stats_attacks_protocol">Attacks per protocol</string>
+    <string name="stats_select_attack_data">Select attack data to compare</string>
+    <string name="stats_select_network_data">Select network data to compare</string>
+    <string name="stats_select_protocol_data">Select protocol data to compare</string>
+    <string name="stats_per_cent_all">% of all</string>
+    <string name="pie_all">All</string>
+
+
+    <string name="CONNECTION_LOST_MESSAGE">Connection lost permanently, please enable wifi direct.</string>
+    <string name="COULD_NOT_CONNECT_MESSAGE">Could not connect to device. Retry.</string>
+
+    <string name="SYNCHRONIZATION_COMPLETE_MESSAGE">Synchronization complete.</string>
+    <string name="SYNCHRONIZATION_FAILED_MESSAGE">Could not synchronize devices. Retry</string>
+
+    <string name="ERROR_CONNECTION_FAILED">Could not create a stable connection.</string>
+    <string name="ERROR_CONNECTION_TIMEOUT">The connection took too long, please try again.</string>
+    <string name="ERROR_MESSAGE_UNKNOWN">A unknown error did happen.\nPlease check your app versions or try again.</string>
+    <string name="ERROR_COMMUNICATION_FAILED">Illegal data transmitted.\nPlease check your app version.</string>
+
+
+    <string name="PERFORMING_TASK_AS_HOST">Acting as Host.</string>
+    <string name="PERFORMING_TASK_AS_CLIENT">Acting as Client.</string>
+
+    <string name="ACTIONBAR_TITLE">WifiDirect Synchronization</string>
+    <string name="PROGRESS_TITLE_LOADING">Loading...</string>
+    <string name="PROGRESS_TITLE_CONNECTING">Connecting...</string>
+    <string name="PROGRESS_TITLE_SYNC">Synchronize</string>
+
+
+
+    <string name="DEVICE_STATUS_AVAILABLE">Available</string>
+    <string name="DEVICE_STATUS_INVITED">Invited</string>
+    <string name="DEVICE_STATUS_CONNECTED">Connected</string>
+    <string name="DEVICE_STATUS_FAILED">Failed</string>
+    <string name="DEVICE_STATUS_UNAVAILABLE">Unavailable</string>
+    <string name="DEVICE_STATUS_UNKNOWN">Unknown</string>
+
+    <string name="WIFI_STATUS_DISABLED_MESSAGE">WiFi Direct down, please enable WiFi Direct</string>
+    <string name="WIFI_STATUS_ENABLE_BUTTON">Enable WiFi Direct</string>
+    <string name="CANCEL_BUTTON_TITLE">Cancel</string>
+
+    <string name="Your_Device">Own Device Information</string>
+    <string name="Change_Device_Name">Change your device name</string>
+    <string name="Device_Name">Device Name</string>
+    <string name="Device_Status">Device Status</string>
+    <string name="Wifi_Direct_Not_suppported">Your device does not support Wifi Direct.</string>
+    <string name="Available_Devices">Available Devices</string>
+    <string name="Looking_For_Devices_Progress_Title">Scanning for other devices.</string>
+
+	<string name="record_details_received">RECEIVED</string>
+	<string name="record_details_sent">SENT</string>
+	<string name="record_details_info" formatted="false">from %s to %s\n%s at %s</string>
+	<string name="record_details_dateformat" formatted="false">MMMM d, yyyy \'at\' H:m:s a</string>
+	<string name="record_details_nocontent">No content</string>
+	<string name="record_details_remote_ip">REMOTE IP</string>
+	<string name="record_details_conversation">Conversation</string>
+	<string name="record_details_confirm_delete">Do you really want to delete this record?</string>
+    <string name="profile_vista_desc">This profile will imitate a Windows Vista machine</string>
+	<string name="profile_seven_desc">This profile will imitate a Windows 7 machine</string>
+    <string name="profile_xp_desc">This profile will activate Windows XP typical services</string>
+    <string name="profile_webserv_http_desc">This profile will imitate a simple webserver, which just supports the HTTP protocol</string>
+	<string name="profile_webserv_apache_desc">This profile will imitate an apache web server</string>
+	<string name="profile_webserv_iis_desc">This profile will imitate an IIS web server</string>
+    <string name="profile_webserv_desc">This profile will imitate a simple webserver, which supports both the HTTP and HTTPS protocol</string>
+    <string name="profile_unix_desc">This profile monitors unix typical services</string>
+    <string name="profile_linux_desc">This profile will imitate a linux machine by monitoring linux typical services</string>
+	<string name="profile_linux_hard_desc">This profile will imitate a linux machine which has just SSH activated</string>
+    <string name="profile_voip_desc">This profile imitates a VOIP Server by monitoring the SIP service</string>
+    <string name="profile_random_desc">This profile monitors services randomly</string>
+    <string name="profile_nuclearPower_desc" translatable="false">This profile simulates the Siemens SIMATIC S7 200 PLC working in a Nuclear Power Plant Environment</string>
+    <string name="profile_waterPlant_desc" translatable="false">This profile simulates the PLC infrastructure of a Water Distribution and Treatment Plant </string>
+    <string name="profile_modbusMater_desc" translatable="false">This profile simulates a MODBUS Master system that controls PLCs in a ICS SCADA environment</string>
+    <string name="profile_paranoid_desc">This profile monitors all available services</string>
+    <string name="profile_help_swipe">Swipe from the left or right on an item to expose all available actions for an item</string>
+    <string name="profile_monitor_ghost">Monitor GHOST</string>
+    <string name="profile_activate_ghost">Activate GHOST monitoring</string>
+    <string name="profile_activate_ghost_summary">This protocol mirrors an incoming connection back to the attacker on the same port, that it is running on</string>
+    <string name="profile_mirror_ghost">Mirror GHOST ports</string>
+    <string name="profile_mirror_ghost_summary">Mirrors the traffic on the given ports. Separate them by \',\'</string>
+    <string name="profile_monitor_protocols">Monitor protocols</string>
+    <string name="profile_activate_protocols_summary">Activate the protocols that should be monitored by HosTaGe</string>
+    <string name="profile_warning">Please note, that this profile can\'t be edited. If you make any changes to this profile, a new profile will be created.</string>
+    <string name="rec_choose_export_format">Choose export format</string>
+    <string name="rec_sync_rec">Synchronize records</string>
+    <string name="bro_signature" translatable="false">Bro Signature </string>
+    <string name="bro_message" translatable="false">This generates a Bro signature policy for this attack</string>
+    <string name="generate" translatable="false">Generate</string>
+    <string name="rec_via_bt">Via Bluetooth</string>
+    <string name="rec_via_nfc">Via NFC</string>
+    <string name="rec_via_online">Via Online Database</string>
+    <string name="title_activity_p2_psync">WifiDirect Synchronization</string>
+    <string name="pref_sync_countries_dialog">Country selection</string>
+    <string name="pref_sync_countries_desc">Only download attack data of these countries</string>
+    <string name="pref_sync_countries">Countries</string>
+    <string name="pref_download_server">Download server</string>
+	<string name="google_play_services_unavailable">Error: Google Play Services are unavailable.</string>
+    <string name="pref_sync_frequency_summary">The interval in minutes synchronization with TraCINg should be performed</string>
+    <string name="pref_sync_frequency_title">Synchronization interval</string>
+    <string name="service">Services</string>
+    <string name="multistage_summary">Enable Multistage Attack Detection Service</string>
+    <string name="multistage_service">Multistage Service</string>
+
+
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="pref_max_connections_default">5</string>
+    <string name="pref_sleeptime">Stream sleep time</string>
+    <string name="pref_sleeptime_default">500</string>
+    <string name="pref_sleeptime_summary">Time in ms for stream sleeptime</string>
+    <string name="pref_timeout_default">30</string>
+    <string name="portscan">&#160;Portscan</string>
+    <string name="portscans">&#160;Portscans</string>
+</resources>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+	<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:padding="16dp">
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:text="@string/device_rooted"
+				android:id="@+id/record_details_text_ssid" android:textStyle="bold"/>
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:text="@string/iptables_available"
+				android:id="@+id/iptables_available"
+				android:layout_below="@+id/record_details_text_ssid" android:layout_alignParentLeft="true"
+				android:layout_alignParentStart="true" android:textStyle="bold"/>
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:text="@string/porthack_installed"
+				android:id="@+id/txtP2PSubheader"
+				android:layout_below="@+id/iptables_available" android:layout_alignParentLeft="true"
+				android:layout_alignParentStart="true" android:textStyle="bold"/>
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:text="@string/yes"
+				android:id="@+id/settings_device_rooted" android:layout_above="@+id/iptables_available"
+				android:layout_alignParentRight="true" android:layout_alignParentEnd="true"/>
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:text="@string/yes"
+				android:id="@+id/settings_iptables_available" android:layout_below="@+id/settings_device_rooted"
+				android:layout_alignParentRight="true" android:layout_alignParentEnd="true"/>
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:text="@string/yes"
+				android:id="@+id/settings_porthack_installed" android:layout_below="@+id/iptables_available"
+				android:layout_alignParentRight="true" android:layout_alignParentEnd="true"/>
+		<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/install_porthack"
+				android:id="@+id/settings_deploy_porthack"
+				android:layout_below="@+id/txtP2PSubheader" android:layout_centerHorizontal="true"/>
+		<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/uninstall_porthack"
+				android:id="@+id/settings_uninstall_porthack"
+				android:layout_below="@+id/txtP2PSubheader" android:layout_centerHorizontal="true"/>
+		<ImageView android:id="@+id/porthack_info_button" android:layout_width="wrap_content"
+				   android:layout_height="wrap_content"
+				   android:src="@android:drawable/ic_menu_info_details"
+				   android:layout_below="@+id/settings_porthack_installed"
+				   android:layout_alignRight="@+id/settings_porthack_installed"
+				   android:layout_alignEnd="@+id/settings_porthack_installed"/>
+	</RelativeLayout>
+	<FrameLayout
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:id="@+id/settings_fragment_container">
+	</FrameLayout>
+</LinearLayout>

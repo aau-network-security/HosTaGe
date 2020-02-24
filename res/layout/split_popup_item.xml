@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent" android:layout_height="match_parent"
+              android:orientation="vertical">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="horizontal"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="top|center"
+			>
+
+	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	        android:orientation="vertical"
+	        android:layout_width="wrap_content"
+	        android:layout_height="85dp"
+	        android:layout_weight="1"
+	        android:padding="2dp" android:id="@+id/popup_left_container"
+	        android:layout_gravity="left">
+		    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		        android:orientation="vertical"
+		        android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:paddingLeft="7dp" android:paddingRight="7dp">
+
+		        <TextView
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:textAppearance="?android:attr/textAppearanceMedium"
+		            android:id="@+id/left_title_text_view"
+		            android:textColor="#ffffff"
+		            android:layout_alignParentStart="true"
+		            android:textAlignment="textStart"
+		            android:textStyle="bold"/>
+		        <TextView
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:textAppearance="?android:attr/textAppearanceSmall"
+		            android:id="@+id/left_subtitle_text_view"
+		            android:textColor="@color/light_grey"
+		            android:layout_alignParentStart="true"
+		            android:textAlignment="center"
+		            android:textIsSelectable="false"/>
+		    </LinearLayout>
+	    </LinearLayout>
+
+		<View
+				android:layout_height="fill_parent"
+				android:layout_width="1dp"
+				android:background="@android:color/darker_gray"
+				android:layout_marginTop="5dp" android:layout_marginBottom="5dp"
+				android:layout_weight="0"/>
+
+	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	        android:orientation="vertical"
+	        android:layout_width="wrap_content"
+	        android:layout_height="85dp"
+	        android:layout_weight="1"
+	        android:id="@+id/popup_right_container"
+	        android:padding="2dp" android:layout_gravity="right">
+	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	        android:orientation="vertical"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:paddingLeft="7dp" android:paddingRight="7dp">
+
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:textAppearance="?android:attr/textAppearanceMedium"
+	            android:id="@+id/right_title_text_view"
+	            android:textColor="#ffffff"
+	            android:layout_alignParentStart="true"
+	            android:textAlignment="textStart"
+	            android:textStyle="bold"/>
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:textAppearance="?android:attr/textAppearanceSmall"
+	            android:id="@+id/right_subtitle_text_view"
+	            android:textColor="@color/light_grey"
+	            android:layout_alignParentStart="true"
+	            android:textAlignment="center"
+	            android:paddingLeft="3dp" android:paddingRight="3dp"/>
+	    </LinearLayout>
+	    </LinearLayout>
+	</LinearLayout>
+	<View
+			android:layout_width="fill_parent"
+			android:layout_height="1dp"
+			android:background="@android:color/darker_gray"
+			android:id="@+id/bottom_seperator"/>
+</LinearLayout>

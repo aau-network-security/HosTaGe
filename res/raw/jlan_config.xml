@@ -1,0 +1,63 @@
+<?xml version="1.0" standalone="no"?>
+<!-- <!DOCTYPE jlanserver SYSTEM "jlanserver.dtd"> -->
+
+<jlanserver>
+    <servers>
+        <SMB/>
+        <noFTP/>
+        <noNFS/>
+    </servers>
+
+    <SMB>
+        <host name="HOME-PC" domain="WORKGROUP">
+            <broadcast>255.255.255.255</broadcast>
+            <smbdialects>LanMan,NT</smbdialects>
+            <comment>Alfresco JLAN Server</comment>
+            <!-- To run the server using a non-root account on linux, Mac OS X, Solaris -->
+            <netBIOSSMB sessionPort="28276" namingPort="28274" datagramPort="28275"/>
+            <tcpipSMB port="28582" ipv6="disabled"/>
+            <HostAnouncerPort>28275</HostAnouncerPort>
+            <hostAnounce interval='1'/>
+        </host>
+        <authenticator type="local">
+            <mode>SHARE</mode>
+            <allowGuest/>
+            <Debug/>
+        </authenticator>
+    </SMB>
+
+    <debug>
+        <output>
+            <class>org.alfresco.jlan.debug.ConsoleDebug</class>
+            <append/>
+        </output>
+    </debug>
+
+    <shares>
+        <diskshare name="JLAN" comment="Test share">
+            <driver>
+                <class>org.alfresco.jlan.smb.server.disk.JavaFileDiskDriver</class>
+                <LocalPath>/Bla</LocalPath>
+            </driver>
+        </diskshare>
+    </shares>
+
+    <security>
+        <JCEProvider>cryptix.jce.provider.CryptixCrypto</JCEProvider>
+        <authenticator>
+            <class>org.alfresco.jlan.server.auth.LocalAuthenticator</class>
+            <mode>USER</mode>
+            <allowGuest/>
+        </authenticator>
+        <users>
+            <user name="jlansrv">
+                <password>jlan</password>
+                <comment>System administrator</comment>
+                <administrator/>
+            </user>
+            <user name="normal">
+                <password>normal</password>
+            </user>
+        </users>
+    </security>
+</jlanserver>

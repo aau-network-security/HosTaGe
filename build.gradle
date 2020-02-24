@@ -1,0 +1,114 @@
+buildscript {
+    repositories {
+        mavenCentral()
+       // google()
+        jcenter()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.3.0'
+    }
+}
+apply plugin: 'com.android.application'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://oss.sonatype.org/content/groups/public'
+    }
+    maven {
+        url 'https://maven.google.com/'
+        name 'Google'
+    }
+}
+
+dependencies {
+    compile 'com.google.android.gms:play-services:4.+'
+    compile 'org.roboguice:roboguice:2.0'
+    compile files('libs/nineoldandroids-2.4.0.jar')
+    //noinspection GradleCompatible
+    compile 'com.android.support:support-v4:18.0.0'
+    //compile fileTree(dir: 'libs', include: '*.jar')
+    compile files('libs/swipelistview-1.0.jar')
+    compile files('libs/sshlib-v1.1.jar')
+   // compile files('libs/chart-library2.2.jar')
+    //compile files('libs/jlan-5.jar')
+    compile files('libs/alfresco-jlan.jar')
+    compile files('libs/cryptix-jce-provider.jar')
+    compile 'org.snmp4j:snmp4j:1.10.1'
+    compile files('libs/snmp4j-agent-2.3.3.jar')
+    compile files('libs/VirusTotalAPI.jar')
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '25.0.0'
+    defaultConfig {
+        versionCode 7
+        versionName "1.3"
+        minSdkVersion 14
+        targetSdkVersion 19
+      //   signingConfig signingConfigs.config
+    }
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+
+        // Move the tests to tests/java, tests/res, etc...
+        androidTest.setRoot('tests')
+
+        // Move the build types to build-types/<type>
+        // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
+        // This moves them out of them default location under src/<type>/... which would
+        // conflict with src/ being used by the main source set.
+        // Adding new build types or product flavors should be accompanied
+        // by a similar customization.
+        debug.setRoot('build-types/debug')
+        release.setRoot('build-types/release')
+    }
+    // signing for release only works in the console
+    boolean doSigningForRelease = System.console() != null
+    if (doSigningForRelease) {
+        signingConfigs {
+            release {
+                storeFile file(System.console().readLine("\n\$ Enter keystore path:  "))
+                storePassword System.console().readLine("\n\$ Enter keystore password:  ")
+                keyAlias System.console().readLine("\n\$ Enter key alias:  ")
+                keyPassword System.console().readLine("\n\$ Enter key password:")
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            debuggable true
+            jniDebuggable true
+            resValue "string", "google_maps_api_key", "AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4"
+        }
+        if (doSigningForRelease) {
+            release {
+                debuggable false
+                jniDebuggable false
+                signingConfig signingConfigs.release
+                resValue "string", "google_maps_api_key", "AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4"
+            }
+        }
+        release {
+//            signingConfig signingConfigs.config
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    productFlavors {
+    }
+}

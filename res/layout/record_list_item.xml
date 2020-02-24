@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp"
+    android:baselineAligned="false"
+    android:background="@drawable/panel_bg">
+
+    <TextView
+        android:id="@+id/RecordTextFieldBSSID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/RecordTextFieldSSID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/RecordTextFieldBSSID"
+        android:layout_below="@+id/RecordTextFieldBSSID"
+        android:layout_marginTop="24dp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/RecordTextFieldTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/RecordTextFieldSSID"
+        android:layout_alignBottom="@+id/RecordTextFieldSSID"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/RecordTextFieldProtocol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/RecordTextFieldBSSID"
+        android:layout_alignBottom="@+id/RecordTextFieldBSSID"
+        android:layout_alignRight="@+id/RecordTextFieldTimestamp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#000000" />
+
+</RelativeLayout>

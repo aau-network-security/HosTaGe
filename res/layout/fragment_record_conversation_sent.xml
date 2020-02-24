@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="7.93"
+                android:padding="10dp"
+                android:layout_marginTop="2dp"
+                android:background="@color/bright_grey">
+
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:text="@string/record_details_sent"
+			android:id="@+id/record_conversation_type"
+			android:background="@drawable/records_detail_send_indicator"
+			android:textColor="#FFFFFFFF"
+			android:paddingTop="2dp"
+			android:paddingRight="5dp"
+			android:paddingBottom="2dp"
+			android:paddingLeft="5dp"
+			android:layout_alignParentTop="true"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentEnd="true"
+			android:layout_marginLeft="10dp"/>
+
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:text=""
+			android:id="@+id/record_conversation_info"
+			android:textColor="@color/dark_grey"
+			android:layout_alignTop="@+id/record_conversation_type"
+			android:layout_toLeftOf="@+id/record_conversation_type"
+			android:gravity="right"/>
+
+	<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:text="@string/record_details_nocontent"
+			android:id="@+id/record_conversation_content"
+			android:typeface="monospace"
+			android:singleLine="false"
+			android:textIsSelectable="true"
+			android:maxLines="8"
+			android:scrollbars="vertical"
+			android:layout_below="@+id/record_conversation_info"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentEnd="true"
+			android:gravity="right"/>
+</RelativeLayout>

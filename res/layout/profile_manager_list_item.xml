@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+	<FrameLayout
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentLeft="true"
+              android:layout_marginLeft="0dp"
+              android:layout_alignParentTop="true"
+              android:layout_marginTop="0dp"
+			>
+
+	<RelativeLayout
+        android:id="@+id/swipelist_backview"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/panel_white_bg">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+                >
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/profile_manager_item_button_edit"
+                android:layout_weight="1"
+                style="@android:style/DeviceDefault.Light.ButtonBar"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_edit"/>
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/light_grey"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+		        android:id="@+id/profile_manager_item_seperator"/>
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/profile_manager_item_button_delete"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_weight="1"
+                style="@android:style/DeviceDefault.Light.ButtonBar"
+                android:focusable="false"
+                android:layout_marginTop="0dp"
+                android:src="@drawable/ic_discard"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	                android:id="@+id/swipelist_frontview"
+	                android:layout_width="match_parent"
+	                android:layout_height="match_parent"
+	                android:padding="5dp"
+	                android:baselineAligned="false"
+	                android:background="@drawable/panel_bg_selector">
+
+	    <TextView
+	        android:id="@+id/profile_manager_item_label"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+	        android:gravity="center_vertical"
+	        android:paddingLeft="16dp"
+	        android:paddingRight="16dp"
+	        android:textColor="?android:attr/colorForeground"
+	        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+	        android:layout_alignParentTop="true"
+	        android:layout_toRightOf="@+id/profile_manager_item_image" />
+
+	    <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:id="@+id/profile_manager_item_text"
+	        android:paddingLeft="16dp"
+	        android:paddingRight="16dp"
+	        android:paddingBottom="16dp"
+	        android:textColor="#808080"
+	        android:visibility="visible"
+	        android:singleLine="false"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentStart="true"
+	        android:layout_below="@+id/profile_manager_item_label"
+	        android:paddingTop="10dp"
+	        android:layout_toLeftOf="@+id/profile_manager_item_activated"/>
+
+	    <ImageView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:id="@+id/profile_manager_item_activated"
+	        android:src="@drawable/ic_action_accept"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignParentEnd="false"
+	        android:layout_marginRight="20dp"
+	        android:visibility="visible"
+	        android:layout_marginLeft="20dp"
+	        android:baselineAlignBottom="false" android:layout_above="@+id/badges_container" android:layout_alignTop="@+id/profile_manager_item_label"/>
+
+		<ImageView
+	        android:layout_width="48dp"
+	        android:layout_height="48dp"
+	        android:id="@+id/profile_manager_item_image"
+	        android:src="@drawable/ic_launcher"
+	        android:layout_above="@+id/profile_manager_item_text"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentStart="true" android:scaleType="centerInside"/>
+
+		<de.tudarmstadt.informatik.hostage.ui.layouts.FlowLayout
+				xmlns:f="http://schemas.android.com/apk/res/de.tudarmstadt.informatik.hostage"
+				android:orientation="horizontal"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:layout_below="@+id/profile_manager_item_text"
+				android:padding="10dp"
+				f:horizontalSpacing="10dip"
+				f:verticalSpacing="10dip"
+				android:layout_alignParentRight="true"
+				android:layout_alignParentEnd="false"
+				android:id="@+id/badges_container">
+			<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textAppearance="?android:attr/textAppearanceSmall"
+					style="@style/ProfileManagerListBadge"
+					android:id="@+id/record_details_text_ssid" android:layout_gravity="center_vertical" android:layout_marginLeft="10dp"/>
+		</de.tudarmstadt.informatik.hostage.ui.layouts.FlowLayout>
+
+	</RelativeLayout>
+
+
+	</FrameLayout>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/background_light"
+    android:orientation="vertical"
+    android:weightSum="1" >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
+
+        <de.tudarmstadt.informatik.hostage.ui.fragment.opengl.HomeGLSurfaceView
+            android:id="@+id/surfaceview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:weightSum="1" >
+
+        <TextView
+            android:id="@+id/record_details_text_ssid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="false"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="@string/monitor_current_connection"
+            android:textStyle="bold" />
+
+        <Switch
+            android:id="@+id/home_switch_connection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="false"
+            android:layout_gravity="right"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="0dp"
+            android:layout_weight="1"
+            android:checked="false"
+            android:textSize="10sp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="@android:color/darker_gray" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="171dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:orientation="vertical"
+        android:weightSum="1" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/home_text_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="21dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:id="@+id/home_button_connection_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_info_details"
+                android:layout_alignTop="@+id/home_text_name"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/home_text_security"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:text="@string/insecure"
+            android:textAppearance="@android:style/TextAppearance.Holo.Small"
+            android:textColor="@color/holo_red"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/home_text_attacks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/holo_red"
+            android:textSize="11sp" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent" android:id="@+id/home_profile_details"
+		        >
+
+            <TextView
+                android:id="@+id/home_text_profile_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:text="@string/active_profile"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginTop="15dp"/>
+
+            <TextView
+                android:id="@+id/home_text_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/home_text_profile_header"
+                android:layout_centerHorizontal="true"
+                android:textSize="11sp" />
+	        <ImageView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:id="@+id/home_image_profile"
+			        android:src="@drawable/ic_launcher"
+			        android:scaleType="fitCenter"
+			        android:layout_alignBottom="@+id/home_text_profile"
+			        android:layout_toLeftOf="@+id/home_text_profile"
+			        android:layout_alignTop="@+id/home_text_profile_header"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

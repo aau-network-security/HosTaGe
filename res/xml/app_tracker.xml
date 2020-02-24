@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<integer name="ga_sessionTimeout">300</integer>
+	<bool name="ga_autoActivityTracking">true</bool>
+	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.HomeFragment">
+		HosTaGe Homeview
+	</screenName>
+	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.ProfileManagerFragment">
+		HosTaGe Profiles
+	</screenName>
+	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.RecordOverviewFragment">
+		HosTaGe Records
+	</screenName>
+	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.ServicesFragment">
+		HosTaGe Services
+	</screenName>
+	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.StatisticsFragment">
+		HosTaGe Statistics
+	</screenName>
+	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.SettingsFragment">
+		HosTaGe Settings
+	</screenName>
+	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.ThreatMapFragment">
+		HosTaGe ThreatMap
+	</screenName>
+	<!--  The following value should be replaced with correct property id. -->
+	<string name="ga_trackingId">UA-45491466-2</string>
+</resources>

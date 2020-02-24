@@ -1,0 +1,19 @@
+﻿title Synchronisation Protocol
+
+DeviceA->+DeviceB: Send Sync Info
+note right of DeviceB: The Sync Info is a tuple (otherDevices, ssids) where\notherDevices ∈ ℘(DeviceIds x ℕ)\nand ssids ∈ ℘(NetworkSSIDs)
+
+
+DeviceB->-DeviceA: Send Sync Info
+note right of DeviceB: Compare own Sync Info with the other\nSync Info to create a Sync Data object.
+
+
+note over DeviceA,DeviceB: If we received unknown Device Ids create new Sync Devices.\nSet the max sync id for each new device to 0.
+
+
+DeviceA->+DeviceB: Send Sync Data
+note right of DeviceB: Sync Data is a tuple (n , a) where\nn ∈ ℘(NetworkRecords) and a ∈ ℘(AttackRecords)
+DeviceB->-DeviceA: Send Sync Data
+
+
+note over DeviceA,DeviceB: Save received network and attack records.\nActualise the max sync id if of all Sync Devices.

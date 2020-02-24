@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="settings">Settings</string>
+    <string name="export_to_location">Export to external location</string>
+	<string name="pref_alarm">Set Sound</string>
+	<string name="pref_alarm_default">VIBRATION</string>
+	<string name="pref_alarm_summ">Select Notification Sound</string>
+	<string name="pref_storage">External Storage</string>
+	<string name="pref_external_storage_title">External Storage</string>
+	<string name="pref_external_storage_summ">Export Log File to SD-Card</string>
+	<string name="pref_external_location_title">External Location</string>
+	<string name="pref_notification">Notification</string>
+	<string name="pref_vibration">Vibration</string>
+	<string name="pref_vibration_summ">Enable Vibration</string>
+	<string name="pref_upload">Online Database</string>
+	<string name="pref_upload_server">Server Address</string>
+	<string name="pref_connection_settings">Connection Settings</string>
+	<string name="pref_max_connections">Max Connections</string>	
+	<integer name="pref_max_connections_default">5</integer>
+	<string name="pref_max_connections_summary">Maximum simultaneous connections per protocol</string>
+	<string name="pref_timeout">Socket Timeout</string>
+	<string name="pref_timeout_summary">After this many seconds close socket when no communication occurred</string>
+	<integer name="pref_timeout_default">30</integer>
+	<string name="pref_portscan_timeout" translatable="false">Portscan Timeout</string>
+	<string name="pref_portscan_timeout_summary">Should match the maximum duration of a portscan in seconds</string>
+	<integer name="pref_portscan_timeout_default">60</integer>
+	<string name="pref_location_settings">Location Settings</string>
+	<string name="pref_location_time">Location Data Timeout</string>
+	<string name="pref_location_time_summary">Timeout when requesting location data in ms</string>
+	<string name="pref_location_time_default">60000</string>
+	<string name="pref_location_retries">Retries</string>
+	<string name="pref_location_retries_default">3</string>
+	<string name="pref_location_retries_summary">Maximum number of retries</string>
+	<string name="pref_auto_synchronize_title">Auto Synchronization</string>
+	<string name="pref_auto_synchronize_summ">Enable auto synchronization of log data</string>
+
+</resources>
+
