@@ -1,7 +1,34 @@
 HosTaGe - Honeypot-To-Go
 ========================
 
-Copyright (C) 2013  Mihai Plasoianu, Wulf Pfeiffer, Lars Pandikow , Shreyas Srinivasa
+Copyright (C) 2013-2020, Aalborg University (Denmark) and Technische Universität Darmstadt (Germany)
+
+
+
+Original Authors
+
+Dr. Emmanouil Vasilomanolakis -  idea, guidance and suggestions during development
+
+Contributors
+
+Shreyas Srinivasa, lead developer, Aalborg University and Technische Universität Darmstadt
+
+Mihai Plasoianu, student developer, Technische Universität Darmstadt
+
+Wulf Pfeiffer, student developer, Technische Universität Darmstadt
+
+Lars Pandikow, student developer, Technische Universität Darmstadt
+
+Researchers
+
+Shankar Karuppayah, mentoring, developer, Technische Universität Darmstadt
+
+Mathias Fischer, mentoring, Universität Hamburg
+
+Max Mühlhäuser, mentoring, Technische Universität Darmstadt
+
+Carlos Garcia Cordero, mentoring, Technische Universität Darmstadt
+
 
 Features of HoneyRJ were inspiration for this project.
 http://www.cse.wustl.edu/~jain/cse571-09/ftp/honey/manual.html
