@@ -7,7 +7,7 @@ Copyright (C) 2013-2020, Aalborg University (Denmark) and Technische Universitä
 
 Original Authors
 
-Dr. Emmanouil Vasilomanolakis -  idea, guidance and suggestions during development
+Emmanouil Vasilomanolakis -  idea, guidance and suggestions during development
 
 Contributors
 
