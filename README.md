@@ -1,7 +1,7 @@
 HosTaGe - Honeypot-To-Go
 ========================
 
-Copyright (C) 2013  Mihai Plasoianu, Wulf Pfeiffer, Lars Pandikow
+Copyright (C) 2013  Mihai Plasoianu, Wulf Pfeiffer, Lars Pandikow , Shreyas Srinivasa
 
 Features of HoneyRJ were inspiration for this project.
 http://www.cse.wustl.edu/~jain/cse571-09/ftp/honey/manual.html
