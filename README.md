@@ -1,7 +1,7 @@
 HosTaGe - Honeypot-To-Go
 ========================
 
-![HosTaGe](https://github.com/aau-network-security/HosTaGe/blob/master/res/drawable/hostage_logo_tilted.png)
+![HosTaGe](https://github.com/aau-network-security/HosTaGe/blob/master/res/drawable-mdpi/ic_launcher.png)
 
 
 Copyright (C) 2013-2020, Aalborg University (Denmark) and Technische Universität Darmstadt (Germany)
