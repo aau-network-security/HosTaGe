@@ -31,10 +31,13 @@ public class SIP implements Protocol {
 	private String header;
 	private String sdpPayload;
 
+	private int port = 5060;
+
 	@Override
-	public int getPort() {
-		return 5060;
-	}
+	public int getPort() { return port; }
+
+	@Override
+	public void setPort(int port){ this.port = port;}
 
 	@Override
 	public boolean isClosed() {

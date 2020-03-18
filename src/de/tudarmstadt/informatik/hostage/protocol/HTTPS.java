@@ -16,10 +16,13 @@ import de.tudarmstadt.informatik.hostage.Hostage;
  */
 public class HTTPS extends HTTP implements SSLProtocol {
 
+	private int port = 443;
+
 	@Override
-	public int getPort() {
-		return 443;
-	}
+	public int getPort() { return port; }
+
+	@Override
+	public void setPort(int port){ this.port = port;}
 
 	@Override
 	public SSLContext getSSLContext() {

@@ -116,10 +116,13 @@ public class SSH implements Protocol {
 			+ "v62Zs4hlDvhwvx8MQ+A=\n" + "-----END DSA PRIVATE KEY-----")
 			.toCharArray();
 
+	private int port = 22;
+
 	@Override
-	public int getPort() {
-		return 22;
-	}
+	public int getPort() { return port; }
+
+	@Override
+	public void setPort(int port){ this.port = port;}
 
 	@Override
 	public TALK_FIRST whoTalksFirst() {

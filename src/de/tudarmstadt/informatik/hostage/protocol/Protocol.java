@@ -24,6 +24,12 @@ public interface Protocol {
 	int getPort();
 
 	/**
+	 * Sets the port on  the protocol.
+	 *@param port The new port
+	 */
+	void setPort(int port);
+
+	/**
 	 * Returns whether the communication is ended and the connection should be
 	 * closed or not.
 	 * 

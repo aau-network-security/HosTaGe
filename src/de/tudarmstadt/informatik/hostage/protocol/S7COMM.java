@@ -9,10 +9,13 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
  * Created by root on 06.07.15.
  */
 public class S7COMM implements Protocol {
+    private int port = 102;
+
     @Override
-    public int getPort() {
-        return 102;
-    }
+    public int getPort() { return port; }
+
+    @Override
+    public void setPort(int port){ this.port = port;}
 
     @Override
     public boolean isClosed() {

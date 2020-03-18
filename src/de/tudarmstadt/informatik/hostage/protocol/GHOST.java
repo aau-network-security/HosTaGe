@@ -41,10 +41,13 @@ public class GHOST implements Protocol {
 		this.attackerIP = attackerIP;
 	}
 
+	private int port = 1433;
+
 	@Override
-	public int getPort() {
-		return 1433;
-	}
+	public int getPort() { return port; }
+
+	@Override
+	public void setPort(int port){ this.port = port;}
 
 	@Override
 	public boolean isClosed() {

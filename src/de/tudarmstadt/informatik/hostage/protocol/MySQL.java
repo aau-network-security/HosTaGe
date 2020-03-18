@@ -48,10 +48,13 @@ public class MySQL implements Protocol {
 						.nextInt(possibleMysqlVersions[majorVersion][1].length)];
 	}
 
+	private int port = 3306;
+
 	@Override
-	public int getPort() {
-		return 3306;
-	}
+	public int getPort() { return port; }
+
+	@Override
+	public void setPort(int port){ this.port = port;}
 
 	@Override
 	public boolean isClosed() {

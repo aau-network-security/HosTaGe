@@ -12,10 +12,13 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
  */
 public class ECHO implements Protocol {
 
+	private int port = 7;
+
 	@Override
-	public int getPort() {
-		return 7;
-	}
+	public int getPort() { return port; }
+
+	@Override
+	public void setPort(int port){ this.port = port;}
 
 	@Override
 	public boolean isClosed() {

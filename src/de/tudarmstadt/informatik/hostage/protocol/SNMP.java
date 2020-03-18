@@ -48,10 +48,13 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
     public class SNMP implements Protocol {
 
 
+    private int port = 161;
+
     @Override
-    public int getPort() {
-        return 161;
-    }
+    public int getPort() { return port; }
+
+    @Override
+    public void setPort(int port){ this.port = port;}
 
     @Override
     public boolean isClosed() {

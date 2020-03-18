@@ -21,7 +21,7 @@ public class MyServerSocketFactory extends ServerSocketFactory {
 	@Override
 	public ServerSocket createServerSocket(int port) throws IOException {
 		ServerSocket socket = null;
-		if (port > 1023) {
+		if (port > 1023 || port == 0) {
 			socket = new ServerSocket();
 			socket.setReuseAddress(true);
 			socket.bind(new InetSocketAddress(port));

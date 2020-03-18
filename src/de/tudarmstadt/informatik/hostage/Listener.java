@@ -53,15 +53,10 @@ public class Listener implements Runnable {
 
     private Protocol protocol;
 
-
-
     private ServerSocket server;
     private Thread thread;
     private int port;
     private Hostage service;
-
-
-
     private ConnectionRegister conReg;
     private boolean running = false;
 
@@ -192,7 +187,9 @@ public class Listener implements Runnable {
         try {
             server = new MyServerSocketFactory().createServerSocket(port);
             if (server == null)
-                return false;
+                server = new MyServerSocketFactory().createServerSocket(0);
+                if (server == null)
+                    return false;
             (this.thread = new Thread(this)).start();
             running = true;
             service.notifyUI(this.getClass().getName(),

@@ -177,10 +177,13 @@ public class SMB implements Protocol {
             Logger.log(Hostage.getContext(), createMessageRecord(type, packet));
         }
     }
+    private int port = 1025;
+
     @Override
-    public int getPort() {
-        return 1025;
-    }
+    public int getPort() { return port; }
+
+    @Override
+    public void setPort(int port){ this.port = port;}
 
     @Override
     public boolean isClosed() {

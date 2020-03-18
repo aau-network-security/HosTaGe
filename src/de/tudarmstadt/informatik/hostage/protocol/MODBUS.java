@@ -21,9 +21,13 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 public class MODBUS implements Protocol {
 
 
-    public int getPort() {
-        return 502;
-    }
+    private int port = 502;
+
+    @Override
+    public int getPort() { return port; }
+
+    @Override
+    public void setPort(int port){ this.port = port;}
 
     public boolean isClosed() {
         return false;

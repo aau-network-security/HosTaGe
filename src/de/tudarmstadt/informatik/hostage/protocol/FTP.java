@@ -35,10 +35,13 @@ public class FTP implements Protocol {
 	private static final String REPLY_CODE_500 = "500 Syntax error, command unrecognized.";
 	private static final String REPLY_CODE_501 = "501 Syntax error in parameters or arguments";
 
+	private int port = 21;
+
 	@Override
-	public int getPort() {
-		return 21;
-	}
+	public int getPort() { return port; }
+
+	@Override
+	public void setPort(int port){ this.port = port;}
 
 	@Override
 	public boolean isClosed() {
