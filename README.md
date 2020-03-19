@@ -1,10 +1,11 @@
 HosTaGe - Honeypot-To-Go
 ========================
-
-
-
-
 Copyright (C) 2013-2020, Aalborg University (Denmark) and Technische Universität Darmstadt (Germany)
+
+
+
+HosTaGe is a lightweight, low-interaction, portable, and generic honeypot for mobile devices that aims on the detection of malicious, wireless network environments. 
+As most malware propagate over the network via specific protocols, a low-interaction honeypot located at a mobile device can check wireless networks for actively propagating malware. We envision such honeypots running on all kinds of mobile devices, e.g., smartphones and tablets, to provide a quick assessment on the potential security state of a network.
 
 
 
