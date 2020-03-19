@@ -22,7 +22,7 @@ Wulf Pfeiffer, student developer, Technische Universität Darmstadt
 
 Lars Pandikow, student developer, Technische Universität Darmstadt
 
-Researchers
+__Researchers__
 
 Shankar Karuppayah, mentoring, developer, Technische Universität Darmstadt
 
