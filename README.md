@@ -8,11 +8,11 @@ Copyright (C) 2013-2020, Aalborg University (Denmark) and Technische Universitä
 
 
 
-Original Authors
+__Original Authors__
 
 Emmanouil Vasilomanolakis -  idea, guidance and suggestions during development
 
-Contributors
+__Contributors__
 
 Shreyas Srinivasa, lead developer, Aalborg University and Technische Universität Darmstadt
 
