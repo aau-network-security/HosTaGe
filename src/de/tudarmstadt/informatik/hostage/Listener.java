@@ -143,7 +143,7 @@ public class Listener implements Runnable {
     public void run() {
 
 
-        if (protocol.toString().equals("SMB")) return;
+        if (protocol.toString().equals("")) return;
 
         //||(protocol.toString().equals("SNMP"))) return;
 
@@ -163,7 +163,7 @@ public class Listener implements Runnable {
      */
     public boolean start() {
 
-        if (protocol.toString().equals("SMB")) {
+        if (protocol.toString().equals("")) {
             if (!Device.isPortRedirectionAvailable()) {
 				/*
 				We can only use SMB with iptables since we can't transfer UDP sockets using domain sockets (port binder).
@@ -206,10 +206,10 @@ public class Listener implements Runnable {
      */
     public void stop() {
         try {
-            if (protocol.toString().equals("SMB")) {
-                ((SMB) protocol).stop();
-
-            }
+//            if (protocol.toString().equals("")) {
+//                ((SMB) protocol).stop();
+//
+//            }
 
             server.close();
             thread.interrupt();

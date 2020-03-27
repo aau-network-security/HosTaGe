@@ -1,7 +1,5 @@
 package de.tudarmstadt.informatik.hostage.commons;
 
-import junit.framework.Assert;
-
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -57,10 +55,6 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
  *
  */
 public final class HelperUtils {
-
-
-
-
 
 	//Getter and setters for detection of file injection
 

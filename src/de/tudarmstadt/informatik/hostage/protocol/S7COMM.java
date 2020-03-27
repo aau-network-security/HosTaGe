@@ -42,18 +42,12 @@ public class S7COMM implements Protocol {
     public static String UPLOAD="0x1e";
     public static String END_UPLOAD="0x1f";
 
-
-
-
-
     public static final int READ_COILS = 1;
     public static final int READ_INPUT_DISCRETES = 2;
     public static final int READ_HOLDING_REGISTERS=3;
     public static final int READ_INPUT_REGISTERS = 4;
     public static final int WRITE_COIL = 5;
     public static final int WRITE_SINGLE_REGISTER = 6;
-
-
 
 
     @Override
@@ -65,16 +59,11 @@ public class S7COMM implements Protocol {
         if (requestPacket != null) {
             request = requestPacket.getBytes();
 
-
             //getRequestType(request);
 
            // responsePackets.add(requestPacket); // Response packets have to be studied yet
 
-
-
-
             responsePackets=processRequest(request,getRequestType(request));
-
 
         }
 

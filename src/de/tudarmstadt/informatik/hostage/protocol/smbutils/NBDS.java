@@ -74,7 +74,7 @@ public class NBDS {
 
 	/**
 	 * Set the NBDSType.
-	 * @param nbdstype.
+	 * @param nbdstype
 	 */
 	public void setNbdstype(int nbdstype) {
 		this.nbdstype = nbdstype;

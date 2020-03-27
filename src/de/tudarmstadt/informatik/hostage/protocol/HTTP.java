@@ -211,8 +211,6 @@ public class HTTP implements Protocol {
 	}
 
 
-
-
 	private void checkProfile() {
 
 		String sharedPreferencePath = Hostage.getContext().getString(

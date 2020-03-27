@@ -42,9 +42,6 @@ import virustotalapi.VirusTotal;
  */
 public class PseudoJavaFileDiskDriver extends JavaFileDiskDriver {
 
-
-
-
     private static class PseudoJavaNetworkFile extends JavaNetworkFile {
         protected final SMB SMB;
         private final SrvSession sess;

@@ -44,6 +44,15 @@ public class Packet {
 		return payload;
 	}
 
+
+	/**
+	 * Returns protocol name.
+	 *
+	 * @return protocol.
+	 */
+	public String getProtocol(){
+		return protocol;
+	}
 	/**
 	 * Returns a String representation of the payload.
 	 * Depending on the protocol, the String will be represented 

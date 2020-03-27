@@ -52,8 +52,8 @@ public class Profile implements JSONSerializable<Profile> {
 
 	public Profile(int id, String label, String text, Bitmap icon, boolean editable){
 		this.mId = id;
-		this.mLabel = text;
-		this.mText = label;
+		this.mLabel = label;
+		this.mText = text;
 		this.mActivated = false;
 		this.mIcon = icon;
 		this.mEditable = editable;
@@ -84,6 +84,8 @@ public class Profile implements JSONSerializable<Profile> {
 		mIconPath = in.readString();
 		mEditable = in.readInt() == 1;
 		mActiveProtocols = (HashMap<String,Boolean>) in.readSerializable();
+
+
 	}
 
 	public void setIcon(Bitmap bitmap){

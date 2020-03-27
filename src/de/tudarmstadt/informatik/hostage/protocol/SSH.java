@@ -244,7 +244,6 @@ public class SSH implements Protocol {
 	/**
 	 * Encrypts a request with triple DES.
 	 * 
-	 * @param request
 	 *            that is encrypted.
 	 * @return encrypted request.
 	 */

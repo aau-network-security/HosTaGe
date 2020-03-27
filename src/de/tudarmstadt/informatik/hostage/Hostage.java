@@ -67,10 +67,6 @@ public class Hostage extends Service {
 	private HashMap<String, Boolean> mProtocolActiveAttacks;
 	private Boolean multistage_service;
 
-
-
-
-
 	MultiStageAlarm alarm = new MultiStageAlarm();
 
 	public class LocalBinder extends Binder {
@@ -139,7 +135,7 @@ public class Hostage extends Service {
 	/**
 	 * Receiver for connectivity change broadcast.
 	 * 
-	 * @see MainActivity#BROADCAST
+	 * @see MainActivity #BROADCAST
 	 */
 	private BroadcastReceiver netReceiver = new BroadcastReceiver() {
 		@Override
@@ -251,7 +247,7 @@ public class Hostage extends Service {
 	 * 
 	 * @param sender
 	 *            Source where the event took place.
-	 * @param key
+	 * @param values
 	 *            Detailed information about the event.
 	 */
 	public void notifyUI(String sender, String[] values) {
@@ -653,9 +649,7 @@ public class Hostage extends Service {
 	 * Updates the connection info and saves them in the the SharedPreferences
 	 * for session data.
 	 * 
-	 * @param context
-	 *            Needs a context to get system resources.
-	 * @see MainActivity#CONNECTION_INFO
+	 * @see MainActivity #CONNECTION_INFO
 	 */
 	private void updateConnectionInfo() {
 		ConnectivityManager connManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
