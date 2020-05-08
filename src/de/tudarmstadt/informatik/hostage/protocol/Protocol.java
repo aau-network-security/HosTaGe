@@ -12,11 +12,11 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
  */
 public interface Protocol {
 
-	public static enum TALK_FIRST {
+	enum TALK_FIRST {
 		SERVER, CLIENT
-	};
+	}
 
-	/**
+    /**
 	 * Returns the port on which the protocol is running.
 	 * 
 	 * @return The port used by the protocol (1-65535)

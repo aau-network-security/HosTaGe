@@ -97,14 +97,14 @@ public class HomeFragment extends Fragment {
 	private ThreatIndicatorGLRenderer.ThreatLevel mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING;
 
 	private void assignViews() {
-		mHomeSwitchConnection = (Switch) mRootView.findViewById(R.id.home_switch_connection);
-		mHomeTextName = (TextView) mRootView.findViewById(R.id.home_text_name);
-		mHomeTextSecurity = (TextView) mRootView.findViewById(R.id.home_text_security);
-		mHomeTextAttacks = (TextView) mRootView.findViewById(R.id.home_text_attacks);
-		mHomeTextProfile = (TextView) mRootView.findViewById(R.id.home_text_profile);
-		mHomeTextProfileHeader = (TextView) mRootView.findViewById(R.id.home_text_profile_header);
-		mHomeProfileImage = (ImageView) mRootView.findViewById(R.id.home_image_profile);
-		mHomeConnectionInfoButton = (ImageView) mRootView.findViewById(R.id.home_button_connection_info);
+		mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
+		mHomeTextName = mRootView.findViewById(R.id.home_text_name);
+		mHomeTextSecurity = mRootView.findViewById(R.id.home_text_security);
+		mHomeTextAttacks = mRootView.findViewById(R.id.home_text_attacks);
+		mHomeTextProfile = mRootView.findViewById(R.id.home_text_profile);
+		mHomeTextProfileHeader = mRootView.findViewById(R.id.home_text_profile_header);
+		mHomeProfileImage = mRootView.findViewById(R.id.home_image_profile);
+		mHomeConnectionInfoButton = mRootView.findViewById(R.id.home_button_connection_info);
 	}
 
 	private void registerBroadcastReceiver() {
@@ -319,7 +319,7 @@ public class HomeFragment extends Fragment {
 
 		updateUI();
 
-		mHomeSwitchConnection = (Switch) mRootView.findViewById(R.id.home_switch_connection);
+		mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
 		mHomeSwitchConnection.setSaveEnabled(false);
 
 		if (mSwitchChangeListener == null) {

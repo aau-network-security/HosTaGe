@@ -44,16 +44,18 @@ dependencies {
 
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.12'
-    implementation 'junit:junit:4.12'
     // Optional -- Robolectric environment
     testImplementation 'androidx.test:core:1.0.0'
+
     // Optional -- Mockito framework
     testImplementation 'org.mockito:mockito-core:1.10.19'
-    androidTestImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support:support-annotations:23.1.0'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-
+    implementation 'com.android.support:support-annotations:23.1.0'
+    implementation 'com.android.support.test:rules:1.0.2'
+    implementation 'com.android.support.test:runner:1.0.2'
+    // Optional -- UI testing with Espresso
+   // androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    // Optional -- UI testing with UI Automator
+    implementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 
 
 }
@@ -64,9 +66,10 @@ android {
     defaultConfig {
         versionCode 7
         versionName "1.3"
-        minSdkVersion 14
+        minSdkVersion 18
         targetSdkVersion 28
-      //   signingConfig signingConfigs.config
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //   signingConfig signingConfigs.config
     }
     sourceSets {
         main {
@@ -80,7 +83,7 @@ android {
         }
 
         // Move the tests to tests/java, tests/res, etc...
-        androidTest.setRoot('test')
+        //androidTest.setRoot('src')
 
         // Move the build types to build-types/<type>
         // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...

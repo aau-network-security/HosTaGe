@@ -240,10 +240,10 @@ public class BarGraph extends View {
         for (Bar bar : mBars){
             Region r = new Region();
             r.setPath(bar.getPath(), bar.getRegion());
-            if (r.contains((int)point.x,(int) point.y) && event.getAction() == MotionEvent.ACTION_DOWN){
+            if (r.contains(point.x, point.y) && event.getAction() == MotionEvent.ACTION_DOWN){
                 mIndexSelected = count;
             } else if (event.getAction() == MotionEvent.ACTION_UP){
-                if (r.contains((int)point.x,(int) point.y) && mListener != null){
+                if (r.contains(point.x, point.y) && mListener != null){
                     if (mIndexSelected > -1) mListener.onClick(mIndexSelected);
                     mIndexSelected = -1;
                 }
@@ -286,6 +286,6 @@ public class BarGraph extends View {
      * Called if the user clicked a bar.
      */
     public interface OnBarClickedListener {
-        abstract void onClick(int index);
+        void onClick(int index);
     }
 }

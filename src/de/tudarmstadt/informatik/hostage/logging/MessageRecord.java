@@ -16,11 +16,11 @@ public class MessageRecord implements Parcelable, Serializable{
 	
 	private static final long serialVersionUID = -5936572995202342935L;
 	
-	public static enum TYPE {
+	public enum TYPE {
 		SEND, RECEIVE
-	};
-	
-	// attack
+	}
+
+    // attack
 	private int id;
 	private long attack_id;
 	private long timestamp;

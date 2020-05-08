@@ -144,13 +144,13 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	 * @param view the layout view
 	 */
 	private void assignViews(View view) {
-		mRecordOverviewConversation = (LinearLayout) view.findViewById(R.id.record_overview_conversation);
-		mRecordDetailsTextAttackType = (TextView) view.findViewById(R.id.record_details_text_attack_type);
-		mRecordDetailsTextSsid = (TextView) view.findViewById(R.id.record_details_text_ssid);
-		mRecordDetailsTextBssid = (TextView) view.findViewById(R.id.record_details_text_bssid);
-		mRecordDetailsTextRemoteip = (TextView) view.findViewById(R.id.record_details_text_remoteip);
-		mRecordDetailsTextProtocol = (TextView) view.findViewById(R.id.record_details_text_protocol);
-		mRecordDeleteButton = (ImageButton) view.findViewById(R.id.DeleteButton);
+		mRecordOverviewConversation = view.findViewById(R.id.record_overview_conversation);
+		mRecordDetailsTextAttackType = view.findViewById(R.id.record_details_text_attack_type);
+		mRecordDetailsTextSsid = view.findViewById(R.id.record_details_text_ssid);
+		mRecordDetailsTextBssid = view.findViewById(R.id.record_details_text_bssid);
+		mRecordDetailsTextRemoteip = view.findViewById(R.id.record_details_text_remoteip);
+		mRecordDetailsTextProtocol = view.findViewById(R.id.record_details_text_protocol);
+		mRecordDeleteButton = view.findViewById(R.id.DeleteButton);
 	}
 
 
@@ -188,8 +188,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 				to = tmp;
 			}
 
-			TextView conversationInfo = (TextView) row.findViewById(R.id.record_conversation_info);
-			TextView conversationContent = (TextView) row.findViewById(R.id.record_conversation_content);
+			TextView conversationInfo = row.findViewById(R.id.record_conversation_info);
+			TextView conversationContent = row.findViewById(R.id.record_conversation_content);
 			conversationContent.setOnTouchListener(new View.OnTouchListener() {
 				@Override
 				public boolean onTouch(final View v, final MotionEvent motionEvent) {
@@ -330,7 +330,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 			String mydata = r.getPacket();
 			ArrayList<String> myTokensList = new ArrayList<String>();
-			String tokens[]=mydata.split("\n");
+			String[] tokens =mydata.split("\n");
 			for (String tok : tokens) {
 				if (tok.contains("Protocol:")) {
 					myTokensList.add(tok.split(":")[1]);
@@ -542,11 +542,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 	private boolean isExternalStorageWritable() {
 		String state = Environment.getExternalStorageState();
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			return true;
-		}
-		return false;
-	}
+        return Environment.MEDIA_MOUNTED.equals(state);
+    }
 
 
 	/*****************************

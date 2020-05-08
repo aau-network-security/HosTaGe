@@ -52,13 +52,13 @@ public class LineGraph extends View {
          * @param x double, the x coord.
          * @return String, formatted value for the x position.
          */
-        public String convertDataForX_Position(double x);
+		String convertDataForX_Position(double x);
         /**
          * returns the y axis value for a given y coord.
          * @param y double, the y coord.
          * @return String, formatted value for the y position.
          */
-        public String convertDataForY_Position(double y);
+		String convertDataForY_Position(double y);
     }
 
     private final static int AXIS_LABEL_FONT_SIZE = 8;
@@ -498,12 +498,12 @@ public class LineGraph extends View {
 						int innerRadius = outerRadius / 2;
 
 						paint.setColor(p.getColor());
-						canvas.drawCircle(xPixels,(float) yPixels, outerRadius, paint);
+						canvas.drawCircle(xPixels, yPixels, outerRadius, paint);
 						paint.setColor(Color.WHITE);
-						canvas.drawCircle(xPixels,(float) yPixels, innerRadius, paint);
+						canvas.drawCircle(xPixels, yPixels, innerRadius, paint);
 						
 						Path path2 = new Path();
-						path2.addCircle(xPixels,(float) yPixels, 30, Direction.CW);
+						path2.addCircle(xPixels, yPixels, 30, Direction.CW);
 						p.setPath(path2);
 						p.setRegion(new Region((int)(xPixels-30), (int)(yPixels-30), (int)(xPixels+30), (int)(yPixels+30)));
 						
@@ -574,7 +574,7 @@ public class LineGraph extends View {
             double yPercent = (y-minY)/(maxY - minY);
 
             double newYPixels = topPadding + (yPercent*usableHeight);
-            canvas.drawLine((float)leftPadding,(float)newYPixels,(float)leftPadding-5.f,(float)newYPixels, paint);
+            canvas.drawLine(leftPadding,(float)newYPixels, leftPadding -5.f,(float)newYPixels, paint);
             String title = this.getY_AxisTitle(maxY - v);
             float textwidth = (this.paint.measureText(title));
             canvas.drawText(title, 5.f ,(float)newYPixels + (textwidth/2), this.paint);
@@ -591,13 +591,13 @@ public class LineGraph extends View {
             double xPercent = (x-minX)/(maxX - minX);
 
             double newXPixels = sidePadding + (xPercent*usableWidth);
-            canvas.drawLine((float)newXPixels,(float) yPixels + 5,(float) newXPixels,(float) yPixels, paint);
+            canvas.drawLine((float)newXPixels, yPixels + 5,(float) newXPixels, yPixels, paint);
             String title = this.getX_AxisTitle(x);
             float textwidth = (this.paint.measureText(title));
 
             float x_Coord = Math.max(0.f, (float) (newXPixels - (textwidth / 2)));
             x_Coord = Math.min(x_Coord, getWidth() - rightPadding);
-            float y_Coord =  (float) (yPixels + ((bottomPadding - 10) / 1));
+            float y_Coord = yPixels + ((bottomPadding - 10) / 1);
             canvas.drawText(title, x_Coord , y_Coord, this.paint);
         }
     }
@@ -726,10 +726,10 @@ public class LineGraph extends View {
 	    		
 	    		if (p.getPath() != null && p.getRegion() != null){
 	    			r.setPath(p.getPath(), p.getRegion());
-			    	if (r.contains((int)point.x,(int) point.y) && event.getAction() == MotionEvent.ACTION_DOWN){
+			    	if (r.contains(point.x, point.y) && event.getAction() == MotionEvent.ACTION_DOWN){
 			    		indexSelected = count;
 			    	} else if (event.getAction() == MotionEvent.ACTION_UP){
-			    		if (r.contains((int)point.x,(int) point.y) && listener != null){
+			    		if (r.contains(point.x, point.y) && listener != null){
 			    			listener.onClick(lineCount, pointCount);
 			    		}
 			    		indexSelected = -1;
@@ -790,6 +790,6 @@ public class LineGraph extends View {
      * OnPointClickedListener will be called, if the user clicks a point.
      */
 	public interface OnPointClickedListener {
-		abstract void onClick(int lineIndex, int pointIndex);
+		void onClick(int lineIndex, int pointIndex);
 	}
 }

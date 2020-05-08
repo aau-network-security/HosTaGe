@@ -14,8 +14,8 @@ public class BackgroundTask extends AsyncTask<Void, Void, String> {
      * This listener calls didSucceed if the method performInBackground will return true, otherwise it calls didFail.
      */
     public interface BackgroundTaskCompletionListener {
-        public void didSucceed();
-        public void didFail(String errorMessage);
+        void didSucceed();
+        void didFail(String errorMessage);
     }
 
     private boolean isInterrupted;
@@ -58,11 +58,7 @@ public class BackgroundTask extends AsyncTask<Void, Void, String> {
     @Override
     protected String doInBackground(Void... params) {
         String message = this.performInBackground();
-        if (message == null || message.equals(BACKGROUND_TASK_MESSAGE_SUCCESS)){
-            this.wasSuccessfully = true;
-        } else{
-            this.wasSuccessfully = false;
-        }
+        this.wasSuccessfully = message == null || message.equals(BACKGROUND_TASK_MESSAGE_SUCCESS);
         this.errorMessage = message;
         return message;
     }

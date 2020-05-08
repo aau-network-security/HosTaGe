@@ -210,24 +210,15 @@ public class HostageContentProvider extends ContentProvider {
 	}
 
 	private boolean isNetworkUriMatch(int uriMatch) {
-		if (uriMatch == NETWORK_ALL || uriMatch == NETWORK_ONE) {
-			return true;
-		}
-		return false;
-	}
+        return uriMatch == NETWORK_ALL || uriMatch == NETWORK_ONE;
+    }
 
 	private boolean isAttackUriMatch(int uriMatch) {
-		if (uriMatch == ATTACK_ALL || uriMatch == ATTACK_ONE) {
-			return true;
-		}
-		return false;
-	}
+        return uriMatch == ATTACK_ALL || uriMatch == ATTACK_ONE;
+    }
 
 	private boolean isPacketUriMatch(int uriMatch) {
-		if (uriMatch == PACKET_ALL || uriMatch == PACKET_ONE) {
-			return true;
-		}
-		return false;
-	}
+        return uriMatch == PACKET_ALL || uriMatch == PACKET_ONE;
+    }
 
 }

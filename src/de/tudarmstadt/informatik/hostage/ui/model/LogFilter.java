@@ -83,7 +83,7 @@ public class LogFilter implements Parcelable {
 		if (this.protocols != null && this.protocols.size() > 0) {
 			values.put(PROTOCOLS_KEY, this.getProtocols());
 		}
-		long timeArray[] = new long[] { this.aboveTimestamp, this.belowTimestamp };
+		long[] timeArray = new long[] { this.aboveTimestamp, this.belowTimestamp };
 		out.writeMap(values);
 		out.writeInt(this.sorttype.getValue());
 		out.writeDouble(timeArray.length);
@@ -125,7 +125,7 @@ public class LogFilter implements Parcelable {
 		this.sorttype = SortType.values()[Math.min(in.readInt(), SortType.values().length)];
 
 		int size = (int) in.readDouble();
-		long timeArray[] = new long[size];
+		long[] timeArray = new long[size];
 		in.readLongArray(timeArray);
 
 		this.belowTimestamp = timeArray[1];

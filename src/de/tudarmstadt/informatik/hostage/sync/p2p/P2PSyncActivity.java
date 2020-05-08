@@ -81,20 +81,20 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
     private Synchronizer synchronizer;
 
     private void extractFromView(){
-        mTxtP2PDeviceName = (TextView) findViewById(R.id.txt_p2p_device_name);
-        mTxtP2PDeviceStatus = (TextView) findViewById(R.id.txt_p2p_device_status);
-        mTxtP2PChangeDeviceName = (TextView) findViewById(R.id.txtP2PChangeDeviceName);
+        mTxtP2PDeviceName = findViewById(R.id.txt_p2p_device_name);
+        mTxtP2PDeviceStatus = findViewById(R.id.txt_p2p_device_status);
+        mTxtP2PChangeDeviceName = findViewById(R.id.txtP2PChangeDeviceName);
 
         //mTxtP2PHeader = (TextView) findViewById(R.id.txtP2PHeader);
         //mTxtP2PSubHeader = (TextView) findViewById(R.id.txtP2PSubheader);
         //mTxtP2PHelpBack = (TextView) findViewById(R.id.txtP2PHelpBack);
         //mViewAnimator = (ViewAnimator) findViewById(R.id.viewAnimator);
-        mDevicesContainer = (RelativeLayout) findViewById(R.id.devicesContainer);
+        mDevicesContainer = findViewById(R.id.devicesContainer);
         //mWelcomeContainer = (RelativeLayout) findViewById(R.id.welcomeContainer);
-        mTxtP2PSearchProgress = (TextView) findViewById(R.id.txtP2PSearchProgress);
-        mLstP2PDevices = (ListView) findViewById(R.id.lstP2PDevices);
+        mTxtP2PSearchProgress = findViewById(R.id.txtP2PSearchProgress);
+        mLstP2PDevices = findViewById(R.id.lstP2PDevices);
         //mBtnP2PSearch = (Button) findViewById(R.id.btnP2PSearch);
-        mTxtP2PNotAvailable = (TextView) findViewById(R.id.txtP2PNotAvailable);
+        mTxtP2PNotAvailable = findViewById(R.id.txtP2PNotAvailable);
     }
 
     public void discoverPeers(){
@@ -331,8 +331,8 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
             }
             WifiP2pDevice device = items.get(position);
             if (device != null) {
-                TextView top = (TextView) v.findViewById(R.id.device_name);
-                TextView bottom = (TextView) v.findViewById(R.id.device_details);
+                TextView top = v.findViewById(R.id.device_name);
+                TextView bottom = v.findViewById(R.id.device_details);
                 if (top != null) {
                     top.setText(device.deviceName);
                 }
@@ -584,7 +584,7 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
 
 
     public static boolean copyFile(InputStream inputStream, OutputStream out) {
-        byte buf[] = new byte[1024];
+        byte[] buf = new byte[1024];
         int len;
         try {
             while ((len = inputStream.read(buf)) != -1) {

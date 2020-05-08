@@ -26,13 +26,13 @@ public class WiFiP2pBroadcastReceiver extends BroadcastReceiver implements WifiP
      * This listener will inform about any wifi direct change.
      */
     public interface WiFiP2pBroadcastListener {
-        public void discoveredDevices(List<WifiP2pDevice> peers);
-        public void wifiP2pIsEnabled(boolean enabled);
-        public void didConnect(boolean isHost, WifiP2pInfo connectionInfo);
-        public void failedToConnect();
-        public void didDisconnect();
-        public void failedToDisconnect();
-        public void ownDeviceInformationIsUpdated(WifiP2pDevice device);
+        void discoveredDevices(List<WifiP2pDevice> peers);
+        void wifiP2pIsEnabled(boolean enabled);
+        void didConnect(boolean isHost, WifiP2pInfo connectionInfo);
+        void failedToConnect();
+        void didDisconnect();
+        void failedToDisconnect();
+        void ownDeviceInformationIsUpdated(WifiP2pDevice device);
     }
 
     private WifiP2pManager manager;
@@ -80,12 +80,8 @@ public class WiFiP2pBroadcastReceiver extends BroadcastReceiver implements WifiP
 
             // UI update to indicate wifi p2p status.
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
-            if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
-                // Wifi Direct mode is enabled
-                setIsWifiP2pEnabled = (true);
-            } else {
-                setIsWifiP2pEnabled =(false);
-            }
+            // Wifi Direct mode is enabled
+            setIsWifiP2pEnabled = state == WifiP2pManager.WIFI_P2P_STATE_ENABLED;
             this.eventListener.wifiP2pIsEnabled(setIsWifiP2pEnabled);
 
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
@@ -101,7 +97,7 @@ public class WiFiP2pBroadcastReceiver extends BroadcastReceiver implements WifiP
                 return;
             }
 
-            NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+            NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if (networkInfo.isConnected()) {
                 isConnected = true;

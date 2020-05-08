@@ -186,16 +186,16 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
 		View rootView = inflater.inflate(this.getLayoutId(), container, false);
         this.rootView = rootView;
-		ExpandableListView mylist = (ExpandableListView) rootView.findViewById(R.id.loglistview);
+		ExpandableListView mylist = rootView.findViewById(R.id.loglistview);
 
-        this.spinner =(ProgressBar) rootView.findViewById(R.id.progressBar1);
+        this.spinner = rootView.findViewById(R.id.progressBar1);
         this.spinner.setVisibility(View.GONE);
 
 		this.expListView = mylist;
 
         this.initialiseListView();
 
-        ImageButton deleteButton = (ImageButton) rootView.findViewById(R.id.DeleteButton);
+        ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 RecordOverviewFragment.this.openDeleteFilteredAttacksDialog();
@@ -203,7 +203,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         });
         deleteButton.setVisibility(this.showFilterButton? View.VISIBLE : View.INVISIBLE);
 
-        ImageButton filterButton = (ImageButton) rootView.findViewById(R.id.FilterButton);
+        ImageButton filterButton = rootView.findViewById(R.id.FilterButton);
         filterButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	RecordOverviewFragment.this.openFilterPopupMenuOnView(v);
@@ -212,7 +212,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         filterButton.setVisibility(this.showFilterButton? View.VISIBLE : View.INVISIBLE);
 
 
-        ImageButton sortButton = (ImageButton) rootView.findViewById(R.id.SortButton);
+        ImageButton sortButton = rootView.findViewById(R.id.SortButton);
         sortButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Open SortMenu
@@ -220,7 +220,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             }
         });
 
-        ImageButton groupButton = (ImageButton) rootView.findViewById(R.id.GroupButton);
+        ImageButton groupButton = rootView.findViewById(R.id.GroupButton);
         groupButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Open SortMenu
@@ -554,8 +554,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         ArrayList<Record> data = dbh.getRecordsForFilter(filter == null ? this.filter : filter);
 
         // Adding Items to ListView
-        String keys[] = new String[] { RecordOverviewFragment.this.getString(R.string.RecordBSSID), RecordOverviewFragment.this.getString(R.string.RecordSSID), RecordOverviewFragment.this.getString(R.string.RecordProtocol), RecordOverviewFragment.this.getString(R.string.RecordTimestamp)};
-        int ids[] = new int[] {R.id.RecordTextFieldBSSID, R.id.RecordTextFieldSSID, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp };
+        String[] keys = new String[] { RecordOverviewFragment.this.getString(R.string.RecordBSSID), RecordOverviewFragment.this.getString(R.string.RecordSSID), RecordOverviewFragment.this.getString(R.string.RecordProtocol), RecordOverviewFragment.this.getString(R.string.RecordTimestamp)};
+        int[] ids = new int[] {R.id.RecordTextFieldBSSID, R.id.RecordTextFieldSSID, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp };
 
         HashMap<String, Integer> mapping = new HashMap<String, Integer>();
         int i = 0;

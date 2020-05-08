@@ -10,9 +10,6 @@ public class Stackbean {
 
     private String remoteip;
 
-
-
-
     private String localip;
     private String protocol;
     private int remoteport;

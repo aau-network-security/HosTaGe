@@ -47,18 +47,18 @@ public class SplitPopupItem extends AbstractPopupItem {
         String leftSubtitle = (String) this.data.get(LEFT_SUBTITLE);
         String rightSubtitle = (String) this.data.get(RIGHT_SUBTITLE);
 
-        TextView leftTitleView = (TextView)view.findViewById(R.id.left_title_text_view);
+        TextView leftTitleView = view.findViewById(R.id.left_title_text_view);
         leftTitleView.setText(leftTitle);
-        TextView leftSubtitleView = (TextView)view.findViewById(R.id.left_subtitle_text_view);
+        TextView leftSubtitleView = view.findViewById(R.id.left_subtitle_text_view);
         if (leftSubtitle != null){
             leftSubtitleView.setText(leftSubtitle);
         } else {
             leftSubtitleView.setText("-");
         }
 
-        TextView rightTitleView = (TextView)view.findViewById(R.id.right_title_text_view);
+        TextView rightTitleView = view.findViewById(R.id.right_title_text_view);
         rightTitleView.setText(rightTitle);
-        TextView rightSubtilteView = (TextView)view.findViewById(R.id.right_subtitle_text_view);
+        TextView rightSubtilteView = view.findViewById(R.id.right_subtitle_text_view);
         if (rightSubtitle != null){
             rightSubtilteView.setText(rightSubtitle);
         } else {

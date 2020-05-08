@@ -67,7 +67,7 @@ public class LogExport extends IntentService{
 	 * 
 	 * @param format
 	 *            Integer coded export format
-	 * @see Record#toString(int)
+	 * @see Record #toString(int)
 	 */
 	private void exportDatabase(Formatter format) {
 		try {
@@ -106,11 +106,8 @@ public class LogExport extends IntentService{
 	 */
 	private boolean isExternalStorageWritable() {
 		String state = Environment.getExternalStorageState();
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			return true;
-		}
-		return false;
-	}
+        return Environment.MEDIA_MOUNTED.equals(state);
+    }
 
 	private void makeToast(final String text, final int length){
 		mMainThreadHandler.post(new Runnable() {

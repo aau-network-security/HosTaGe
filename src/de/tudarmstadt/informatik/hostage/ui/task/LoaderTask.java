@@ -12,8 +12,8 @@ public class LoaderTask extends AsyncTask<Void, Void, Void> {
 
     @SuppressLint("ValidFragment")
     public interface TaskListener {
-        public void doInBackgorund();
-        public void onFinish();
+        void doInBackgorund();
+        void onFinish();
     }
 
     public LoaderTask(TaskListener listener){

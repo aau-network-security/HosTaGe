@@ -17,7 +17,7 @@ import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 
 public class PrivilegedPort implements Runnable {
 
-	public static enum TYPE {
+	public enum TYPE {
 		TCP, UDP
 	}
 

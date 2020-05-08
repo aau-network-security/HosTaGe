@@ -461,10 +461,10 @@ public final class HelperUtils {
 	}
 
 	public static String inetAddressToString(int address) {
-		return String.valueOf(address & 0xFF) + "."
-				+ String.valueOf((address >>> 8) & 0xFF) + "."
-				+ String.valueOf((address >>> 16) & 0xFF) + "."
-				+ String.valueOf((address >>> 24) & 0xFF);
+		return (address & 0xFF) + "."
+				+ ((address >>> 8) & 0xFF) + "."
+				+ ((address >>> 16) & 0xFF) + "."
+				+ ((address >>> 24) & 0xFF);
 	}
 
 	public static boolean isWifiConnected(Context context){

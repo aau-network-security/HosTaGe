@@ -38,13 +38,13 @@ public class ChecklistDialog extends DialogFragment {
          * Called if the user tapped "ok"
          * @param dialog {@link ChecklistDialog ChecklistDialog}
          */
-        public void onDialogPositiveClick(ChecklistDialog dialog);
+        void onDialogPositiveClick(ChecklistDialog dialog);
 
         /**
          * Called if the user tapped "cancel".
          * @param dialog {@link ChecklistDialog ChecklistDialog}
          */
-        public void onDialogNegativeClick(ChecklistDialog dialog);
+        void onDialogNegativeClick(ChecklistDialog dialog);
     }
 
     /**

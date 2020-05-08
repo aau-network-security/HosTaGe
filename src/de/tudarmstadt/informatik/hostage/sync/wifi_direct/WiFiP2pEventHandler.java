@@ -16,7 +16,7 @@ public class WiFiP2pEventHandler implements WifiP2pManager.ChannelListener {
      * The WiFiP2pEventListener informs about all wifi direct changes.
      */
     public interface WiFiP2pEventListener extends WiFiP2pBroadcastReceiver.WiFiP2pBroadcastListener{
-         public void onConnectionLost();
+         void onConnectionLost();
     }
 
     private WifiP2pManager manager;

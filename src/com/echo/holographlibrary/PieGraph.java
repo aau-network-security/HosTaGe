@@ -232,13 +232,13 @@ public class PieGraph extends View {
 			for (PieSlice slice : slices){
 				Region r = new Region();
 				r.setPath(slice.getPath(), slice.getRegion());
-				if (r.contains((int)point.x,(int) point.y) && event.getAction() == MotionEvent.ACTION_DOWN){
+				if (r.contains(point.x, point.y) && event.getAction() == MotionEvent.ACTION_DOWN){
 					indexSelected = count;
                     this.title = slice.getTitle();
                     this.subtitle = "" + (long) slice.getValue();
                     drawedTitle = true;
 				} else if (event.getAction() == MotionEvent.ACTION_UP){
-					if (r.contains((int)point.x,(int) point.y) && listener != null){
+					if (r.contains(point.x, point.y) && listener != null){
 						if (indexSelected > -1){
 							listener.onClick(indexSelected);
 						}
@@ -332,8 +332,8 @@ public class PieGraph extends View {
     /**
      * OnSliceClickedListener will be called if the user clicks a pie slice.
      */
-	public static interface OnSliceClickedListener {
-		public abstract void onClick(int index);
+	public interface OnSliceClickedListener {
+		void onClick(int index);
 	}
 
 }

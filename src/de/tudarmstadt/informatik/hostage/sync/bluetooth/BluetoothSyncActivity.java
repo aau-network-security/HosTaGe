@@ -216,10 +216,10 @@ public class BluetoothSyncActivity extends Activity{
 	 * Starts a {@link ClientThread} to establish connection when a device is clicked.
 	 */
 	private void setLayoutElement(){
-		mInfoText = (TextView) findViewById(R.id.bluetoothInfoText);
-        progressBar = (ProgressBar) findViewById(R.id.bluetoothProgressBar);
+		mInfoText = findViewById(R.id.bluetoothInfoText);
+        progressBar = findViewById(R.id.bluetoothProgressBar);
 
-		listView = (ListView) findViewById(R.id.bluetoothListView);
+		listView = findViewById(R.id.bluetoothListView);
 		listView.setAdapter(arrayAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -266,7 +266,7 @@ public class BluetoothSyncActivity extends Activity{
         		case CONNECTING:       
         			listView.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
-        			mInfoText.setText("Connecting to " + (String)msg.obj + "...");
+        			mInfoText.setText("Connecting to " + msg.obj + "...");
         			break;
         		case CONNECTION_ESTABLISHED: 
         			BluetoothSocket socket = (BluetoothSocket) msg.obj;

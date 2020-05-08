@@ -114,14 +114,14 @@ public class ProfileManagerListAdapter extends ArrayAdapter<Profile> {
 			    rowView = inflater.inflate(R.layout.profile_manager_list_item, parent, false);
 
 			    holder = new ViewHolder();
-			    holder.mLabelView = (TextView) rowView.findViewById(R.id.profile_manager_item_label);
-			    holder.mTextView = (TextView) rowView.findViewById(R.id.profile_manager_item_text);
-			    holder.mImageSelected = (ImageView) rowView.findViewById(R.id.profile_manager_item_activated);
-			    holder.mItemIcon = (ImageView) rowView.findViewById(R.id.profile_manager_item_image);
-			    holder.mButtonEdit = (ImageButton) rowView.findViewById(R.id.profile_manager_item_button_edit);
-			    holder.mButtonDelete = (ImageButton) rowView.findViewById(R.id.profile_manager_item_button_delete);
+			    holder.mLabelView = rowView.findViewById(R.id.profile_manager_item_label);
+			    holder.mTextView = rowView.findViewById(R.id.profile_manager_item_text);
+			    holder.mImageSelected = rowView.findViewById(R.id.profile_manager_item_activated);
+			    holder.mItemIcon = rowView.findViewById(R.id.profile_manager_item_image);
+			    holder.mButtonEdit = rowView.findViewById(R.id.profile_manager_item_button_edit);
+			    holder.mButtonDelete = rowView.findViewById(R.id.profile_manager_item_button_delete);
 			    holder.mSeperator = rowView.findViewById(R.id.profile_manager_item_seperator);
-			    holder.mBadgesContainer = (FlowLayout) rowView.findViewById(R.id.badges_container);
+			    holder.mBadgesContainer = rowView.findViewById(R.id.badges_container);
 
 			    rowView.setTag(holder);
 		    } else {

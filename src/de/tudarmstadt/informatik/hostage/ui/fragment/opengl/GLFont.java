@@ -28,7 +28,7 @@ public class GLFont {
 
 	private int mTexture;
 	private int mVertexBuffer;
-	private GlyphMetric mMetrics[];
+	private GlyphMetric[] mMetrics;
 
 	public GLFont(String texFilePath, String metricsFilePath) {
 		AssetManager assets = MainActivity.getInstance().getAssets();
@@ -76,7 +76,7 @@ public class GLFont {
 			mMetrics[i].advance = data.getFloat();
 		}
 
-		int buffers[] = new int[1];
+		int[] buffers = new int[1];
 		GLES20.glGenBuffers(1, buffers, 0); // buffer names
 		mVertexBuffer = buffers[0];
 	}

@@ -37,11 +37,11 @@ public class SettingsFragment extends UpNavigatibleFragment {
 		getActivity().setTitle(getResources().getString(R.string.drawer_settings));
 		View v = inflater.inflate(R.layout.fragment_settings, container, false);
 
-		TextView rootedText = (TextView) v.findViewById(R.id.settings_device_rooted);
-		TextView iptablesText = (TextView) v.findViewById(R.id.settings_iptables_available);
-		mPorthackText = (TextView) v.findViewById(R.id.settings_porthack_installed);
-		mPorthackInstallButton = (Button) v.findViewById(R.id.settings_deploy_porthack);
-		mPorthackUninstallButton = (Button) v.findViewById(R.id.settings_uninstall_porthack);
+		TextView rootedText = v.findViewById(R.id.settings_device_rooted);
+		TextView iptablesText = v.findViewById(R.id.settings_iptables_available);
+		mPorthackText = v.findViewById(R.id.settings_porthack_installed);
+		mPorthackInstallButton = v.findViewById(R.id.settings_deploy_porthack);
+		mPorthackUninstallButton = v.findViewById(R.id.settings_uninstall_porthack);
 
 		if (Device.isRooted()) {
 			rootedText.setText(R.string.yes);

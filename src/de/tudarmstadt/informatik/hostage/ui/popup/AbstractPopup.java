@@ -30,7 +30,7 @@ public abstract class AbstractPopup {
          * Will be called if the user tapped on an item.
          * @param data Object
          */
-        public void onItemClick(Object data);
+        void onItemClick(Object data);
     }
 
     private PopupWindow popupWindow;

@@ -34,7 +34,7 @@ public class P2PBroadcastReceiver extends BroadcastReceiver {
         } else if(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)){
             mManager.requestPeers(mChannel, mActivity);
         } else if(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)){
-            NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+            NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if(networkInfo.isConnected()){
                 mManager.requestConnectionInfo(mChannel, mActivity);
@@ -42,7 +42,7 @@ public class P2PBroadcastReceiver extends BroadcastReceiver {
                 mActivity.closeConnection();
             }
         } else if(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)){
-            WifiP2pDevice device = (WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+            WifiP2pDevice device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
             mActivity.updateThisDevice(device);
         }
     }

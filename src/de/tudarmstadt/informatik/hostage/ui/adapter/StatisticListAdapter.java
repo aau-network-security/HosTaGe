@@ -33,7 +33,7 @@ public class StatisticListAdapter extends ArrayAdapter<PlotComparisonItem> {
      * in a readable format.
      */
     public interface ValueFormatter {
-        public String convertValueForItemToString(PlotComparisonItem item);
+        String convertValueForItemToString(PlotComparisonItem item);
     }
 
     private ValueFormatter formatter;
@@ -81,9 +81,9 @@ public class StatisticListAdapter extends ArrayAdapter<PlotComparisonItem> {
         if(rowView == null){
             rowView = inflater.inflate(getLayoutID() , parent, false);
             holder = new ViewHolder();
-            holder.titleView = (TextView) rowView.findViewById(R.id.title_text_view);
-            holder.valueView = (TextView) rowView.findViewById(R.id.value_text_view);
-            holder.colorView = (TextView) rowView.findViewById(R.id.color_view);
+            holder.titleView = rowView.findViewById(R.id.title_text_view);
+            holder.valueView = rowView.findViewById(R.id.value_text_view);
+            holder.colorView = rowView.findViewById(R.id.color_view);
             rowView.setTag(holder);
         } else {
             holder = (ViewHolder) rowView.getTag();

@@ -65,7 +65,7 @@ public class ProfileManagerFragment extends TrackerFragment {
 
 		// inflate the view
         View rootView = inflater.inflate(R.layout.fragment_profile_manager, container, false);
-	    list = (SwipeListView) rootView.findViewById(R.id.profile_manager_listview);
+	    list = rootView.findViewById(R.id.profile_manager_listview);
 
 		final ProfileManager pmanager = ProfileManager.getInstance();
 		pmanager.loadData();

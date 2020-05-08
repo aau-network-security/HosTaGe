@@ -147,7 +147,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
         private int value;
 
-        private ChartType(int value) {
+        ChartType(int value) {
             this.value = value;
         }
         static public ChartType create(int value){
@@ -250,24 +250,24 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     * @param  rootView View
     * */
     public void configureRootView(View rootView){
-        LinearLayout plotLayout = (LinearLayout) rootView.findViewById(R.id.plot_layout);
+        LinearLayout plotLayout = rootView.findViewById(R.id.plot_layout);
         plotLayout.removeAllViews();
         plotLayout.setWillNotDraw(false);
 
-        ProgressBar spinner = (ProgressBar) rootView.findViewById(R.id.progressBar1);
+        ProgressBar spinner = rootView.findViewById(R.id.progressBar1);
         if(spinner != null){
             this.spinner = spinner;
             this.spinner.setVisibility(View.GONE);
         } else {
             RelativeLayout parent = (RelativeLayout) this.spinner.getParent();
             parent.removeView(this.spinner);
-            RelativeLayout newParent = (RelativeLayout) rootView.findViewById(R.id.plot_parent_layout);
+            RelativeLayout newParent = rootView.findViewById(R.id.plot_parent_layout);
             if (newParent != null){
                 newParent.addView(this.spinner);
             }
         }
 
-        this.legendListView = (ListView) rootView.findViewById(R.id.legend_list_view);
+        this.legendListView = rootView.findViewById(R.id.legend_list_view);
         this.legendListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -276,7 +276,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         });
         rootView.setWillNotDraw(false);
 
-        ImageButton visualButton = (ImageButton) rootView.findViewById(R.id.plot_data_button);
+        ImageButton visualButton = rootView.findViewById(R.id.plot_data_button);
         visualButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 StatisticsFragment.this.openBarSelectionMenuOnView(v);
@@ -304,7 +304,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     * @param  title String
     * */
     public void setTitle(String title){
-        TextView titleView = (TextView) this.rootView.findViewById(R.id.title_text_view);
+        TextView titleView = this.rootView.findViewById(R.id.title_text_view);
         if (title != null && titleView != null){
             titleView.setText(title);
             titleView.invalidate();
@@ -315,7 +315,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     * @return String title
     * */
     public String getTitle(){
-        TextView titleView = (TextView) this.rootView.findViewById(R.id.title_text_view);
+        TextView titleView = this.rootView.findViewById(R.id.title_text_view);
         if (titleView != null){
             return "" + titleView.getText();
         }
@@ -407,7 +407,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             adapter.setValueFormatter(new StatisticListAdapter.ValueFormatter() {
                 @Override
                 public String convertValueForItemToString(PlotComparisonItem item)  {
-                    int v = (int) item.getValue2().intValue();
+                    int v = item.getValue2().intValue();
                     return "" + v;
                 }
             });
@@ -415,8 +415,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         }
         this.legendListView.setAdapter(adapter);
 
-        TextView tableHeaderTitleView = (TextView) this.rootView.findViewById(R.id.table_header_title_textview);
-        TextView tableHeaderValueView = (TextView) this.rootView.findViewById(R.id.table_header_value_textview);
+        TextView tableHeaderTitleView = this.rootView.findViewById(R.id.table_header_title_textview);
+        TextView tableHeaderValueView = this.rootView.findViewById(R.id.table_header_value_textview);
         if (this.currentPlotView instanceof LineGraph){
             tableHeaderTitleView.setText(FILTER_MENU_TITLE_ESSID);
             tableHeaderValueView.setText(TABLE_HEADER_VALUE_TITLE_ATTACKS_PERCENTAGE);
@@ -913,7 +913,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      public PieGraph getPieGraphView(){
         if (this.pieGraph == null) {
             this.pieGraph = new PieGraph(this.getApplicationContext());
-            LinearLayout plotLayout = (LinearLayout) this.rootView.findViewById(R.id.plot_layout);
+            LinearLayout plotLayout = this.rootView.findViewById(R.id.plot_layout);
             plotLayout.addView(this.pieGraph);
             this.pieGraph.setOnSliceClickedListener(new PieGraph.OnSliceClickedListener() {
                 @Override
@@ -932,7 +932,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     public LineGraph getLineGraphView(){
         if (this.lineGraph == null) {
             this.lineGraph = new LineGraph(this.getActivity());
-            LinearLayout plotLayout = (LinearLayout) this.rootView.findViewById(R.id.plot_layout);
+            LinearLayout plotLayout = this.rootView.findViewById(R.id.plot_layout);
             plotLayout.addView(this.lineGraph);
             this.lineGraph.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         }
@@ -946,7 +946,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     public BarGraph getBarGraphView(){
         if (this.barGraph == null) {
             this.barGraph = new BarGraph(this.getActivity());
-            LinearLayout plotLayout = (LinearLayout) this.rootView.findViewById(R.id.plot_layout);
+            LinearLayout plotLayout = this.rootView.findViewById(R.id.plot_layout);
             this.barGraph.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT ));
             plotLayout.addView(this.barGraph);
             this.barGraph.setShowBarText(false);
@@ -980,7 +980,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         for (PlotComparisonItem item : this.currentData){
             PieSlice slice = new PieSlice();
             slice.setColor(item.getColor());
-            Double value2 = (Double) item.getValue2();
+            Double value2 = item.getValue2();
             float v = value2.floatValue();
             slice.setValue(v);
             slice.setTitle(item.getTitle());
@@ -1134,7 +1134,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
          this.actualiseFilterButton();
 
-         LinearLayout plotLayout = (LinearLayout) this.rootView.findViewById(R.id.plot_layout);
+         LinearLayout plotLayout = this.rootView.findViewById(R.id.plot_layout);
 
          if (this.barGraph != null)
             this.barGraph.setVisibility(View.GONE);

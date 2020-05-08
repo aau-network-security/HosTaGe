@@ -578,7 +578,7 @@ public class Hostage extends Service {
 			}
 		}
 		return -1;
-	};
+	}
 
 	/**
 	 * Returns an LinkedList<String> with the names of all implemented
@@ -610,7 +610,7 @@ public class Hostage extends Service {
 	private void getLocationData() {
 		MyLocationManager locationManager = new MyLocationManager(this);
 		locationManager.getUpdates(60 * 1000, 3);
-	};
+	}
 
 	// Notifications
 
@@ -680,7 +680,7 @@ public class Hostage extends Service {
 		editor.putInt(getString(R.string.connection_info_subnet_mask), dhcpInfo.netmask);
 		editor.commit();
 		SetExternalIPTask async = new SetExternalIPTask();
-		async.execute(new String[] { "http://ip2country.sourceforge.net/ip2c.php?format=JSON" });
+		async.execute("http://ip2country.sourceforge.net/ip2c.php?format=JSON");
 
 		this.mProtocolActiveAttacks.clear();		
 	}

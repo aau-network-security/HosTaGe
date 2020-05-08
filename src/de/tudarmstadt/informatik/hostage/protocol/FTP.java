@@ -16,11 +16,11 @@ public class FTP implements Protocol {
 	/**
 	 * Represents the states of the protocol
 	 */
-	private static enum STATE {
+	private enum STATE {
 		NONE, OPEN, CLOSED, USER, LOGGED_IN
-	};
+	}
 
-	/**
+    /**
 	 * Denotes in which state the protocol is right now
 	 */
 	private STATE state = STATE.NONE;

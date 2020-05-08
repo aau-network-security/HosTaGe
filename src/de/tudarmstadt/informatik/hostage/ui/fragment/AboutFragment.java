@@ -40,8 +40,8 @@ public class AboutFragment extends Fragment {
         String versionApp;
         versionApp = info.versionName;
 
-        TextView hostage = (TextView) rootView.findViewById(R.id.hostage);
-        TextView version = (TextView) rootView.findViewById(R.id.hostageVersion);
+        TextView hostage = rootView.findViewById(R.id.hostage);
+        TextView version = rootView.findViewById(R.id.hostageVersion);
 
         version.setText("ver. "+versionApp);
 		hostage.setMovementMethod(LinkMovementMethod.getInstance());

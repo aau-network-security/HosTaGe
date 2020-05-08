@@ -130,7 +130,7 @@ public class ThreatIndicatorGLRenderer implements Renderer {
 		}
 		beeTexture = loadTexture("textures/bee-tex.png");
 		speechBubbleTexture = loadTexture("textures/speech-bubble.png");
-		int buffers[] = new int[1];
+		int[] buffers = new int[1];
 		GLES20.glGenBuffers(1, buffers, 0); // buffer names
 		mQuadVertexBuffer = buffers[0];
 

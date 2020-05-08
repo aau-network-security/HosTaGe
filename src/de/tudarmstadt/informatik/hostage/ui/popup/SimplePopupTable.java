@@ -52,7 +52,7 @@ public class SimplePopupTable extends AbstractPopup {
 
     @Override
     void configureView(View view){
-        TextView titleView = (TextView) view.findViewById(R.id.title_text_view);
+        TextView titleView = view.findViewById(R.id.title_text_view);
         titleView.setText(this.title);
     }
 }

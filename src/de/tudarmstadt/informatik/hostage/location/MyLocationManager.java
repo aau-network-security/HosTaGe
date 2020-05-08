@@ -168,10 +168,6 @@ public class MyLocationManager {
 
 		// Determine location quality using a combination of timeliness and
 		// accuracy
-		if (isMoreAccurate) {
-			return true;
-		}
-
-		return false;
-	}
+        return isMoreAccurate;
+    }
 }

@@ -1,8 +1,7 @@
-package hostage.profile;
 
+package hostage.profile;
 import android.graphics.Bitmap;
 import android.os.Parcel;
-import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;

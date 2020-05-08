@@ -36,7 +36,7 @@ public class RecordListAdapter extends ExpandableListAdapter {
         for (String key : object.getId_Mapping().keySet()){
             int viewID = object.getId_Mapping().get(key);
             String textualInfo = object.getData().get(key);
-            TextView tView = (TextView) cell.findViewById(viewID);
+            TextView tView = cell.findViewById(viewID);
             tView.setText(textualInfo);
         }
     }
@@ -45,8 +45,8 @@ public class RecordListAdapter extends ExpandableListAdapter {
     public void configureSectionHeaderView(View sectionHeader, int section) {
         int headerLabelID = R.id.sectionHeaderTitle;
         int valueLabelID = R.id.sectionHeaderValue;
-        TextView tView = (TextView) sectionHeader.findViewById(headerLabelID);
-        TextView vView = (TextView) sectionHeader.findViewById(valueLabelID);
+        TextView tView = sectionHeader.findViewById(headerLabelID);
+        TextView vView = sectionHeader.findViewById(valueLabelID);
         int value = this.getChildrenCount(section);
         tView.setText(this._sectionHeader.get(section));
         vView.setText("" + value);

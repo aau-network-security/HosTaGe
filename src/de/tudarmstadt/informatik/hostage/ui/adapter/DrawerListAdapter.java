@@ -52,8 +52,8 @@ public class DrawerListAdapter extends ArrayAdapter<DrawerListItem> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = inflater.inflate(R.layout.drawer_list_item, parent, false);
-        TextView textView = (TextView) rowView.findViewById(R.id.drawer_listitem_text);
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.drawer_listitem_icon);
+        TextView textView = rowView.findViewById(R.id.drawer_listitem_text);
+        ImageView imageView = rowView.findViewById(R.id.drawer_listitem_icon);
 
         DrawerListItem item = mValues.get(position);
         textView.setText(item.text);

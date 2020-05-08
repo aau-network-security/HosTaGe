@@ -87,9 +87,9 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
 
             holder = new ViewHolder();
             assert rowView != null;
-            holder.protocolName = (TextView) rowView.findViewById(R.id.services_item_name);
-            holder.recordedAttacks = (TextView) rowView.findViewById(R.id.services_item_rec_attacks);
-            holder.activated = (Switch) rowView.findViewById(R.id.services_item_switch);
+            holder.protocolName = rowView.findViewById(R.id.services_item_name);
+            holder.recordedAttacks = rowView.findViewById(R.id.services_item_rec_attacks);
+            holder.activated = rowView.findViewById(R.id.services_item_switch);
             holder.circle = rowView.findViewById(R.id.services_circle);
             rowView.setTag(holder);
         } else {

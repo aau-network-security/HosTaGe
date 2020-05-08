@@ -21,7 +21,7 @@ public class TracingSyncActivity extends Activity implements TracingSyncResultRe
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nfc);
-		mInfoText = (TextView) findViewById(R.id.nfc_text_view);
+		mInfoText = findViewById(R.id.nfc_text_view);
 		mInfoText.setText("Synchronizing...");
 		
 		TracingSyncResultReciever mReceiver = new TracingSyncResultReciever(new Handler());

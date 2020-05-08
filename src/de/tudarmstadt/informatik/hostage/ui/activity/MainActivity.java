@@ -249,8 +249,8 @@ public class MainActivity extends Activity {
 
 		// sets the drawer and action title to the application title
 		mTitle = mDrawerTitle = getTitle();
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		mDrawerLayout = findViewById(R.id.drawer_layout);
+		mDrawerList = findViewById(R.id.left_drawer);
 
 		// propagates the navigation drawer with items
 		mDrawerItems = new ArrayList<DrawerListItem>();
@@ -750,7 +750,7 @@ public class MainActivity extends Activity {
 		private int value;
 		private Class<?> klass;
 
-		private MainMenuItem(int value, Class<?> klass) {
+		MainMenuItem(int value, Class<?> klass) {
 			this.value = value;
 			this.klass = klass;
 		}

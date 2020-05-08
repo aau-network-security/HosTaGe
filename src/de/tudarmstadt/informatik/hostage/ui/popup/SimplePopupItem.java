@@ -34,8 +34,8 @@ public class SimplePopupItem extends AbstractPopupItem {
 
     @Override
     public void configureItemView(View view){
-        TextView titleView = (TextView) view.findViewById(R.id.title_text_view);
-        RadioButton cbox = (RadioButton) view.findViewById(R.id.isSelectedButton);
+        TextView titleView = view.findViewById(R.id.title_text_view);
+        RadioButton cbox = view.findViewById(R.id.isSelectedButton);
         titleView.setText(this.getTitle());
 
         if (this.isSelected()){

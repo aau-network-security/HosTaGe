@@ -97,7 +97,7 @@ public class AnimatedMesh {
 				if (!stop) name += c;
 			}
 			// Log.i("bone", name);
-			parentIndex = (int)data.get();
+			parentIndex = data.get();
 			invBindPose = new float[16];
 			data.asFloatBuffer().get(invBindPose);
 			data.position(data.position() + 64);

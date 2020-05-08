@@ -240,7 +240,7 @@ public class HTTP implements Protocol {
 
 			boolean useQotd = Hostage.getContext().getSharedPreferences(Hostage.getContext().getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE).getBoolean("useQotd", true);
 			if (useQotd) {
-				new QotdTask().execute(new String[]{});
+				new QotdTask().execute();
 
 			}
 		}

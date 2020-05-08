@@ -94,11 +94,11 @@ public class DateTimeDialogFragment extends DialogFragment implements OnDateChan
 
         mCalendar = Calendar.getInstance();
 
-        datePicker = (DatePicker) mView.findViewById(R.id.DatePicker);
+        datePicker = mView.findViewById(R.id.DatePicker);
         datePicker.init(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH), this);
 
 
-        timePicker = (TimePicker) mView.findViewById(R.id.TimePicker);
+        timePicker = mView.findViewById(R.id.TimePicker);
 
         setIs24HourView(true);
         setCalendarViewShown(false);
@@ -160,13 +160,13 @@ public class DateTimeDialogFragment extends DialogFragment implements OnDateChan
          * Called if the user tapped "ok"
          * @param dialog {@link DateTimeDialogFragment DateTimeDialogFragment}
          */
-        public void onDateTimePickerPositiveClick(DateTimeDialogFragment dialog);
+        void onDateTimePickerPositiveClick(DateTimeDialogFragment dialog);
 
         /**
          * Called if the user tapped "cancel"
          * @param dialog {@link DateTimeDialogFragment DateTimeDialogFragment}
          */
-        public void onDateTimePickerNegativeClick(DateTimeDialogFragment dialog);
+        void onDateTimePickerNegativeClick(DateTimeDialogFragment dialog);
     }
     private DateTimeDialogFragmentListener mListener;
 

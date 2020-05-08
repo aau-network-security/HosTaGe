@@ -305,14 +305,14 @@ public class MODBUS implements Protocol {
         address+=1;//has an offset 1
 
         if (coil.containsKey(address)) {
-            int val = (Integer) coil.get(address);
+            int val = coil.get(address);
             return val;
         } else {
             coil.put(address, rand());
             //System.out.println(coil);
 
-            int val = (Integer) coil.get(address);
-            System.out.println("Address:" + String.valueOf(address) + "Data:" + String.valueOf(val));
+            int val = coil.get(address);
+            System.out.println("Address:" + address + "Data:" + val);
             return val;
         }
     }
@@ -341,12 +341,12 @@ public class MODBUS implements Protocol {
        // registerAddress+=30001; //Offset of 30001 Check the packet in wireshark and decide to put offset
 
         if (register.containsKey(registerAddress)) {
-            int val = (Integer) register.get(registerAddress);
+            int val = register.get(registerAddress);
             return val;
         } else {
             register.put(registerAddress, randvalue());
-            int val = (Integer) register.get(registerAddress);
-            System.out.println("Address:" + String.valueOf(registerAddress) + "Data:" + String.valueOf(val));
+            int val = register.get(registerAddress);
+            System.out.println("Address:" + registerAddress + "Data:" + val);
             return val;
         }
 
@@ -367,7 +367,7 @@ public class MODBUS implements Protocol {
 
         //regData+=30001;
         register.put(regAddress, regData);
-        int val = (Integer)register.get(regAddress);
+        int val = register.get(regAddress);
         return val;
 
     }
@@ -379,7 +379,7 @@ public class MODBUS implements Protocol {
 
         coil.put(coilAddress,coilData);
 
-        int val=(Integer)coil.get(coilAddress);
+        int val= coil.get(coilAddress);
         return val;
 
     }
@@ -392,14 +392,14 @@ public class MODBUS implements Protocol {
         address+=1;//offset 1
 
         if (discreteInput.containsKey(address)) {
-            int val = (Integer) discreteInput.get(address);
+            int val = discreteInput.get(address);
             return val;
         } else {
             discreteInput.put(address, rand());
             //System.out.println(coil);
 
-            int val = (Integer) discreteInput.get(address);
-            System.out.println("Address:" + String.valueOf(address) + "Data:" + String.valueOf(val));
+            int val = discreteInput.get(address);
+            System.out.println("Address:" + address + "Data:" + val);
             return val;
         }
     }

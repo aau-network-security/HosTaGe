@@ -291,7 +291,7 @@ public class UglyDbHelper extends SQLiteOpenHelper {
 
 		ContentValues attackValues = new ContentValues();
 		attackValues.put(KEY_ATTACK_ID, record.getAttack_id()); // Log Attack ID
-		attackValues.put(KEY_PROTOCOL, record.getProtocol().toString());
+		attackValues.put(KEY_PROTOCOL, record.getProtocol());
 		attackValues.put(KEY_EXTERNAL_IP, record.getExternalIP());
 		attackValues.put(KEY_LOCAL_IP, record.getLocalIP()); // Log Local IP
 		attackValues.put(KEY_LOCAL_PORT, record.getLocalPort());
@@ -945,9 +945,9 @@ public class UglyDbHelper extends SQLiteOpenHelper {
 			ContentValues bssidValues = new ContentValues();
 			bssidValues.put(KEY_BSSID, bssid);
 			bssidValues.put(KEY_SSID, (String) networkInformation.get(KEY_SSID));
-			bssidValues.put(KEY_LATITUDE, (double) (Double) networkInformation.get(KEY_LATITUDE));
-			bssidValues.put(KEY_LONGITUDE, (double) (Double) networkInformation.get(KEY_LONGITUDE));
-			bssidValues.put(KEY_ACCURACY, (float) (Float) networkInformation.get(KEY_ACCURACY));
+			bssidValues.put(KEY_LATITUDE, (Double) networkInformation.get(KEY_LATITUDE));
+			bssidValues.put(KEY_LONGITUDE, (Double) networkInformation.get(KEY_LONGITUDE));
+			bssidValues.put(KEY_ACCURACY, (Float) networkInformation.get(KEY_ACCURACY));
 			bssidValues.put(KEY_GEO_TIMESTAMP, (Long) networkInformation.get(KEY_GEO_TIMESTAMP));
 			db.insertWithOnConflict(TABLE_BSSIDS, null, bssidValues, SQLiteDatabase.CONFLICT_REPLACE);
 		}

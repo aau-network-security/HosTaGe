@@ -388,7 +388,7 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
     synchronized private void insertAttackRecordWithOnConflict(AttackRecord record, SQLiteDatabase db){
         ContentValues attackValues = new ContentValues();
         attackValues.put(AttackEntry.COLUMN_NAME_ATTACK_ID, record.getAttack_id()); // Log Attack ID
-        attackValues.put(AttackEntry.COLUMN_NAME_PROTOCOL, record.getProtocol().toString());
+        attackValues.put(AttackEntry.COLUMN_NAME_PROTOCOL, record.getProtocol());
         attackValues.put(AttackEntry.COLUMN_NAME_EXTERNAL_IP, record.getExternalIP());
         attackValues.put(AttackEntry.COLUMN_NAME_LOCAL_IP, record.getLocalIP()); // Log Local IP
         attackValues.put(AttackEntry.COLUMN_NAME_LOCAL_PORT, record.getLocalPort());
@@ -1992,7 +1992,7 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         boolean actualiseOwnDevice = false;
-        if (oldDeviceMap.keySet().contains(currentDevice().getDeviceID()) || includeMissing){
+        if (oldDeviceMap.containsKey(currentDevice().getDeviceID()) || includeMissing){
             actualiseOwnDevice = true;
         }
 

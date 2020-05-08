@@ -27,7 +27,7 @@ public class HTTPS extends HTTP implements SSLProtocol {
 	@Override
 	public SSLContext getSSLContext() {
 		String keyStoreName = "https_cert.bks";
-		char keyStorePassword[] = "password".toCharArray();
+		char[] keyStorePassword = "password".toCharArray();
 		KeyStore keyStore;
 		KeyManagerFactory keyManagerFactory = null;
 		try {

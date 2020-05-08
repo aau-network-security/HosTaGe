@@ -511,16 +511,16 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
      * Extracts all subview initially from the view hierarchy.
      */
     private void extractFromView(){
-        this.mTxtP2PDeviceName = (TextView) findViewById(R.id.txt_p2p_device_name);
-        this.mTxtP2PDeviceStatus = (TextView) findViewById(R.id.txt_p2p_device_status);
-        this.mTxtP2PChangeDeviceName = (TextView) findViewById(R.id.txtP2PChangeDeviceName);
+        this.mTxtP2PDeviceName = findViewById(R.id.txt_p2p_device_name);
+        this.mTxtP2PDeviceStatus = findViewById(R.id.txt_p2p_device_status);
+        this.mTxtP2PChangeDeviceName = findViewById(R.id.txtP2PChangeDeviceName);
 
-        this.mViewAnimator = (ViewAnimator) findViewById(R.id.viewAnimator);
-        this.mDevicesContainer = (RelativeLayout) findViewById(R.id.devicesContainer);
-        this.mWelcomeContainer = (RelativeLayout) findViewById(R.id.welcomeContainer);
-        this.mTxtP2PSearchProgress = (TextView) findViewById(R.id.txtP2PSearchProgress);
-        this.mLstP2PDevices = (ListView) findViewById(R.id.lstP2PDevices);
-        this.mTxtP2PNotAvailable = (TextView) findViewById(R.id.txtP2PNotAvailable);
+        this.mViewAnimator = findViewById(R.id.viewAnimator);
+        this.mDevicesContainer = findViewById(R.id.devicesContainer);
+        this.mWelcomeContainer = findViewById(R.id.welcomeContainer);
+        this.mTxtP2PSearchProgress = findViewById(R.id.txtP2PSearchProgress);
+        this.mLstP2PDevices = findViewById(R.id.lstP2PDevices);
+        this.mTxtP2PNotAvailable = findViewById(R.id.txtP2PNotAvailable);
     }
 
     /**
@@ -583,8 +583,8 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
             }
             WifiP2pDevice device = items.get(position);
             if (device != null) {
-                TextView top = (TextView) v.findViewById(R.id.device_name);
-                TextView bottom = (TextView) v.findViewById(R.id.device_details);
+                TextView top = v.findViewById(R.id.device_name);
+                TextView bottom = v.findViewById(R.id.device_details);
                 if (top != null) {
                     top.setText(device.deviceName);
                 }

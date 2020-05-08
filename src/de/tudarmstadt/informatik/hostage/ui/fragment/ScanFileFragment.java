@@ -40,7 +40,7 @@ public class ScanFileFragment extends Fragment {
         }*/
 
 
-        TextView scanResult = (TextView) rootView.findViewById(R.id.scanResult);
+        TextView scanResult = rootView.findViewById(R.id.scanResult);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);

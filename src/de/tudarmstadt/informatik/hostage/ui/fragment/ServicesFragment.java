@@ -66,8 +66,8 @@ public class ServicesFragment extends TrackerFragment {
      * assign views which are not asynchronously loaded
      */
     private void assignViews() {
-        mServicesSwitchService = (Switch) rootView.findViewById(R.id.service_switch_connection);
-        mServicesTextName = (TextView) rootView.findViewById(R.id.services_text_name);
+        mServicesSwitchService = rootView.findViewById(R.id.service_switch_connection);
+        mServicesTextName = rootView.findViewById(R.id.services_text_name);
 
         rootView.findViewById(R.id.services_button_connection_info).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,7 +169,7 @@ public class ServicesFragment extends TrackerFragment {
 
         updateUI();
 
-        ListView list = (ListView) rootView.findViewById(R.id.services_list_view);
+        ListView list = rootView.findViewById(R.id.services_list_view);
 
         protocolList = new ArrayList<ServicesListItem>();
         int i = 0;
@@ -180,7 +180,7 @@ public class ServicesFragment extends TrackerFragment {
             i++;
         }
 
-        mServicesSwitchService = (Switch) rootView.findViewById(R.id.service_switch_connection);
+        mServicesSwitchService = rootView.findViewById(R.id.service_switch_connection);
 
         if (switchChangeListener == null) {
             switchChangeListener = new CompoundButton.OnCheckedChangeListener() {

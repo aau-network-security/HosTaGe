@@ -86,7 +86,7 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nfc);
 
-		mInfoText = (TextView) findViewById(R.id.nfc_text_view);
+		mInfoText = findViewById(R.id.nfc_text_view);
 		// Check for available NFC Adapter
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 		if (mNfcAdapter == null) {

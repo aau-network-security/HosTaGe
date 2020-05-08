@@ -7,6 +7,6 @@ import org.json.JSONObject;
  * @created 23.03.14 11:45
  */
 public interface JSONSerializable<T> {
-	public T fromJSON(JSONObject json);
-	public JSONObject toJSON();
+	T fromJSON(JSONObject json);
+	JSONObject toJSON();
 }

@@ -418,7 +418,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 				public View getInfoContents(Marker marker) {
 					View view = inflater.inflate(R.layout.fragment_threatmap_infowindow, null);
 					if (view != null) {
-						TextView titleTextView = (TextView) view
+						TextView titleTextView = view
 								.findViewById(R.id.threatmap_infowindow_title);
 						if (titleTextView != null) {
 							titleTextView.setText(marker.getTitle());
@@ -432,7 +432,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 			Criteria criteria = new Criteria();
 			criteria.setAccuracy(Criteria.ACCURACY_FINE);
 			mLocationProvider = mLocationManager.getBestProvider(criteria, false);
-			mLocationManager.requestLocationUpdates(mLocationProvider, (long)0, 1000.0f, (LocationListener)this);
+			mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
 
 			sMap.setMyLocationEnabled(true);
 
