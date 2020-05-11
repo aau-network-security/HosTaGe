@@ -3,6 +3,7 @@ package de.tudarmstadt.informatik.hostage.location;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -60,7 +61,8 @@ public class MyLocationManager {
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 		}
 	};
-
+    //TODO implement missing Permission
+	@SuppressLint("MissingPermission")
 	public MyLocationManager(Context context) {
 		// Acquire a reference to the system Location Manager
 		locationManager = (LocationManager) context
@@ -90,9 +92,11 @@ public class MyLocationManager {
 
 	/**
 	 * Start updating
-	 * {@link de.tudarmstadt.informatik.hostage.location.MyLocationManager#newestLocatio
+	 * {@link de.tudarmstadt.informatik.hostage.location.MyLocationManager#newestLocation
 	 * newestLocation} if a location provider is enabled and available.
 	 */
+    //TODO implement missing Permission
+	@SuppressLint("MissingPermission")
 	public void startUpdates() {
 		boolean gpsEnabled = false;
 		boolean networkEnabled = false;
