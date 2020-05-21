@@ -80,7 +80,7 @@ public class Logger extends IntentService {
 
 	}
 
-		/**
+	/**
 	 * Adds a Multi Stage Attack entry to the database
 	 * @param context
 	 * @param attackRecord
@@ -97,10 +97,6 @@ public class Logger extends IntentService {
 		context.startService(intent);
 
 	}
-
-
-
-
 
 	private HostageDBOpenHelper mDbHelper;
 

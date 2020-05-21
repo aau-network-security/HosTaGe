@@ -134,7 +134,7 @@ public class FileInject {
             Logger.log(Hostage.getContext(), createAttackRecord(localPort, remoteIP, remotePort));
             logged = true;
         }
-        if (packet != null && packet.length() > 0) { // prevent logging empty packets
+        if (packet != null && packet.length() > 0) { // prevent hostage.logging empty packets
             Logger.log(Hostage.getContext(), createMessageRecord(type, packet));
         }
 

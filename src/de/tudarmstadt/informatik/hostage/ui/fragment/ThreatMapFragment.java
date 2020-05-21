@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -187,7 +188,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 	/**
 	 * helper class
-	 * contains heuristic to split SSIDs by location
+	 * contains heuristic to split SSIDs by hostage.location
 	 * see MAX_DISTANCE
 	 */
 	private class SSIDArea {
@@ -315,7 +316,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 				for (Record record : records) {
 					LatLng location = new LatLng(record.getLatitude(), record.getLongitude());
-					//Log.i("location", "lat: " + location.latitude + " long: " + location.longitude);
+					//Log.i("hostage.location", "lat: " + hostage.location.latitude + " long: " + hostage.location.longitude);
 					ArrayList<SSIDArea> areas;
 					if (threatAreas.containsKey(record.getSsid())) {
 						areas = threatAreas.get(record.getSsid());
@@ -360,6 +361,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	 * @param savedInstanceState the savedInstanceState
 	 * @return the view
 	 */
+	@SuppressLint("MissingPermission")
 	@Override
 	public View onCreateView(final LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -436,7 +438,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 			sMap.setMyLocationEnabled(true);
 
-			LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default location
+			LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
 			sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tudarmstadt, 13));
 
 			populateMap();
@@ -462,6 +464,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		return sView;
 	}
 
+	@SuppressLint("MissingPermission")
 	@Override
 	public void onResume() {
 		super.onResume();

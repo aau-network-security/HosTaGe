@@ -62,7 +62,7 @@ public class Handler implements Runnable {
 
 	/**
 	 * Constructor of the class. Initializes class variables for communication
-	 * and logging. Then starts itself in a new Thread.
+	 * and hostage.logging. Then starts itself in a new Thread.
 	 * 
 	 * @param service
 	 *            The background service.
@@ -280,7 +280,7 @@ public class Handler implements Runnable {
 			Logger.log(Hostage.getContext(), createAttackRecord());
 			logged = true;
 		}
-		if (packet != null && packet.length() > 0) { // prevent logging empty packets
+		if (packet != null && packet.length() > 0) { // prevent hostage.logging empty packets
 			Logger.log(Hostage.getContext(), createMessageRecord(type, packet));
 		}
 	}

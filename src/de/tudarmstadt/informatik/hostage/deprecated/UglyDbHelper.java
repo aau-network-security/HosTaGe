@@ -23,7 +23,7 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
  * kinds of information from the database.<br>
  * The database contains two tables: {@link #TABLE_RECORDS} and
  * {@link #TABLE_BSSIDS}:<br>
- * {@link #TABLE_RECORDS} contains all logging information of a single message
+ * {@link #TABLE_RECORDS} contains all hostage.logging information of a single message
  * record except the SSID.<br>
  * {@link #TABLE_BSSIDS} contains the BSSID of all recorded Networks and the
  * corresponding SSID.<br>

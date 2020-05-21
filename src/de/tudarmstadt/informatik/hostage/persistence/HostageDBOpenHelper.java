@@ -1009,7 +1009,7 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
 	 * Updated the network table with a new {@link NetworkRecord}.
 	 * If information about this BSSID are already in the database, 
 	 * the table will only be updated if the new {@link NetworkRecord } 
-	 * has a newer location time stamp.
+	 * has a newer hostage.location time stamp.
 	 * @param record The new {@link NetworkRecord}.
 	 */
 	public synchronized void updateNetworkInformation(NetworkRecord record) {

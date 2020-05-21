@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 
 import de.tudarmstadt.informatik.hostage.ui.fragment.ProfileEditFragment;
 
@@ -37,4 +38,6 @@ public class ProfileEditActivity extends PreferenceActivity {
 				.replace(android.R.id.content, editFragment)
 				.commit();
 	}
+
+
 }

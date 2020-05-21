@@ -96,7 +96,7 @@ public class MySQL extends ProtocolFormatter {
 		case 0x1e:
 			return "COM_BINLOG_DUMP_GTID";
 		default:
-			return "unkown command";
+			return "unknown command";
 		}
 	}
 

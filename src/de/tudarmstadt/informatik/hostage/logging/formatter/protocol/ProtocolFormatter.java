@@ -12,7 +12,7 @@ public class ProtocolFormatter {
 
 	/**
 	 * Loads a protocol formatter for a protocol. Load a class matching
-	 * {protocol} located in logging.formatter.protocol, default formatter
+	 * {protocol} located in hostage.logging.formatter.protocol, default formatter
 	 * otherwise.
 	 * 
 	 * @param protocolName

@@ -23,8 +23,8 @@ import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
  */
 public class LogExport extends IntentService{
 	
-	public static final String ACTION_EXPORT_DATABASE = "de.tudarmstadt.informatik.hostage.logging.ACTION_EXPORT_DATABASE";
-	public static final String FORMAT_EXPORT_DATABASE = "de.tudarmstadt.informatik.hostage.logging.FORMAT_EXPORT_DATABASE";
+	public static final String ACTION_EXPORT_DATABASE = "de.tudarmstadt.informatik.hostage.hostage.logging.ACTION_EXPORT_DATABASE";
+	public static final String FORMAT_EXPORT_DATABASE = "de.tudarmstadt.informatik.hostage.hostage.logging.FORMAT_EXPORT_DATABASE";
 
 	Handler mMainThreadHandler = null;
 
@@ -63,7 +63,7 @@ public class LogExport extends IntentService{
 	
 	/**
 	 * Exports all records in a given format. Before exporting checks export
-	 * location from preferences.
+	 * hostage.location from preferences.
 	 * 
 	 * @param format
 	 *            Integer coded export format

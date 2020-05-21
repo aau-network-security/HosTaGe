@@ -54,7 +54,7 @@ public class Device {
 			e.printStackTrace();
 		}
 
-		// TODO: test with various devices
+		// TODO: test with various devices, cannot run programm su permission denied
 		if (Build.VERSION.SDK_INT >= 18) { // iptables isn't fully implemented on older versions
 			final String ipTablesList = "iptables -L -n -t nat"; // list all rules in NAT table
 			try {

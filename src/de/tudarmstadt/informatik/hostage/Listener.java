@@ -238,7 +238,7 @@ public class Listener implements Runnable {
                         try {
                             String ip = client.getInetAddress().getHostAddress();
 
-                            // the mutex should prevent multiple logging of a portscan
+                            // the mutex should prevent multiple hostage.logging of a portscan
                             mutex.acquire();
                             if (ConnectionGuard.portscanInProgress()) {
                                 mutex.release();
