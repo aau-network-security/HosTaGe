@@ -14,6 +14,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -32,6 +34,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.CheckBoxPreference;
 import android.preference.PreferenceManager;
@@ -137,11 +140,18 @@ public class Hostage extends Service {
 	 * 
 	 * @see MainActivity #BROADCAST
 	 */
+	//TODO change bssid to 4g....
 	private BroadcastReceiver netReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String bssid_old = connectionInfo.getString(getString(R.string.connection_info_bssid), "");
-			String bssid_new = getBSSID(context);
+			String bssid_new = "";
+			if (HelperUtils.isCellurarConnected(context)){
+				bssid_new = "not Available";
+			}
+			else {
+				 bssid_new = getBSSID(context);
+			}
 			if (bssid_new == null || !bssid_new.equals(bssid_old)) {
 				deleteConnectionData();
 				updateConnectionInfo();
@@ -302,9 +312,9 @@ public class Hostage extends Service {
 		/*SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		multistage_service=sp.getBoolean("pref_multistage",true);*/
 
-						startMultiStage();
+		startMultiStage();
 
-			return START_STICKY;
+		return START_STICKY;
 
 	}
 
@@ -460,8 +470,23 @@ public class Hostage extends Service {
 			builder.setVibrate(new long[] { 100, 200, 100, 200 });
 		}
 
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.notify(1, builder.build());
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			CharSequence name = "Under Attack";
+			int importance = NotificationManager.IMPORTANCE_DEFAULT;
+			NotificationChannel channel = new NotificationChannel("32",name,importance);
+			channel.setDescription("this");
+			NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+			mNotificationManager.createNotificationChannel(channel);
+			Notification.Builder notificationBuilder = new Notification.Builder(this,"32");
+
+			Notification notification = notificationBuilder.setOngoing(true)
+					.setPriority(Notification.PRIORITY_DEFAULT)
+					.build();
+			startForeground(2, notification);
+			//mNotificationManager.notify(32, builder.build());
+
+		}
 	}
 
 	/**
@@ -551,8 +576,23 @@ public class Hostage extends Service {
 		builder.setContentIntent(resultPendingIntent);
 		builder.setOngoing(true);
 
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.notify(1, builder.build());
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			CharSequence name = "Under Attack";
+			int importance = NotificationManager.IMPORTANCE_DEFAULT;
+			NotificationChannel channel = new NotificationChannel("42",name,importance);
+			channel.setDescription("this");
+
+			NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+			mNotificationManager.createNotificationChannel(channel);
+			Notification.Builder notificationBuilder = new Notification.Builder(this,"42");
+
+			Notification notification = notificationBuilder.setOngoing(true)
+					.setPriority(Notification.PRIORITY_DEFAULT)
+					.build();
+			startForeground(3, notification);
+
+		}
 	}
 
 	/**
@@ -604,12 +644,12 @@ public class Hostage extends Service {
 	}
 
 	/**
-	 * Starts an Instance of MyLocationManager to set the location within this
+	 * Starts an Instance of MyLocationManager to set the hostage.location within this
 	 * class.
 	 */
 	private void getLocationData() {
 		MyLocationManager locationManager = new MyLocationManager(this);
-		locationManager.getUpdates(60 * 1000, 3);
+		locationManager.getUpdates(60 * 1000, 3,context);
 	}
 
 	// Notifications
@@ -647,45 +687,79 @@ public class Hostage extends Service {
 
 	/**
 	 * Updates the connection info and saves them in the the SharedPreferences
-	 * for session data.
+	 * for session data. Works for both types of connection (4g and wifi).
 	 * 
 	 * @see MainActivity #CONNECTION_INFO
 	 */
 	private void updateConnectionInfo() {
-		ConnectivityManager connManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-		if (networkInfo == null || !networkInfo.isConnected()) {
+
+		if (!HelperUtils.isNetworkAvailable(context) ){
 			return; // no connection
 		}
-		final WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-		final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
-		if (connectionInfo == null) {
-			return; // no wifi connection
-		}
-		final DhcpInfo dhcpInfo = wifiManager.getDhcpInfo();
-		if (dhcpInfo == null) {
-			return;
+
+		if (HelperUtils.isCellurarConnected(context)) {
+
+			int ipAddress = HelperUtils.getCellularIP();
+			String ssid= "not Available";
+			String bssid= "not Available";
+			int netmask= 0;
+
+			updateEditor( ssid,bssid, ipAddress, netmask);
+
+
+		}else {
+			final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+			final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
+
+			if (connectionInfo == null) {
+				return; // no wifi connection
+			}
+			final DhcpInfo dhcpInfo = wifiManager.getDhcpInfo();
+			if (dhcpInfo == null) {
+				return;
+			}
+
+			String ssid = connectionInfo.getSSID();
+			int ipAddress = dhcpInfo.ipAddress;
+			String bssid= connectionInfo.getBSSID();
+			int netmask= dhcpInfo.netmask;
+
+			if (ssid.startsWith("\"") && ssid.endsWith("\"")) { // trim those quotes
+				ssid = ssid.substring(1, ssid.length() - 1);
+			}
+
+			updateEditor( ssid,bssid, ipAddress, netmask);
+
 		}
 
-		String ssid = connectionInfo.getSSID();
-		if (ssid.startsWith("\"") && ssid.endsWith("\"")) { // trim those quotes
-			ssid = ssid.substring(1, ssid.length() - 1);
-		}
 
-		SharedPreferences pref = context.getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
-		Editor editor = pref.edit();
-		editor.putString(getString(R.string.connection_info_ssid), ssid);
-		editor.putString(getString(R.string.connection_info_bssid), connectionInfo.getBSSID());
-		editor.putInt(getString(R.string.connection_info_internal_ip), dhcpInfo.ipAddress);
-		editor.putInt(getString(R.string.connection_info_subnet_mask), dhcpInfo.netmask);
-		editor.commit();
 		SetExternalIPTask async = new SetExternalIPTask();
 		async.execute("http://ip2country.sourceforge.net/ip2c.php?format=JSON");
 
-		this.mProtocolActiveAttacks.clear();		
+		this.mProtocolActiveAttacks.clear();
 	}
 
+	/**
+	 * Updates the editor for the connection
+	 *
+	 * @see MainActivity #CONNECTION_INFO
+	 */
 
+	public void updateEditor(String ssid, String bssid, int ipAddress, int netmask){
+		SharedPreferences pref = context.getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
+
+		Editor editor = pref.edit();
+
+		editor.putString(getString(R.string.connection_info_ssid), ssid);
+		editor.putString(getString(R.string.connection_info_bssid), bssid);
+		editor.putInt(getString(R.string.connection_info_internal_ip), ipAddress);
+		editor.putInt(getString(R.string.connection_info_subnet_mask), netmask);
+
+
+		editor.commit();
+
+
+	}
 
 
 }

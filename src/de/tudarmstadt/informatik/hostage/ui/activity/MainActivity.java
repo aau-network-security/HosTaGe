@@ -3,6 +3,7 @@ package de.tudarmstadt.informatik.hostage.ui.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -379,6 +380,7 @@ public class MainActivity extends Activity {
 	/**
 	 * Starts the hostage service and binds this activity to the service
 	 */
+	//TODO 			context.startForegroundService(getServiceIntent()); problem!
 	public void startAndBind() {
 		if (!isServiceRunning()) {
 			startService(getServiceIntent());
@@ -593,6 +595,7 @@ public class MainActivity extends Activity {
 	 *
 	 * @param fragment the fragment to configure
 	 */
+	@SuppressLint("WrongConstant")
 	private void configureFragment(Fragment fragment) {
 		if (fragment == null)
 			return;

@@ -8,6 +8,7 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -25,20 +26,31 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.text.format.Formatter;
 import android.util.Log;
 
 import de.tudarmstadt.informatik.hostage.logging.Record;
@@ -46,6 +58,8 @@ import de.tudarmstadt.informatik.hostage.logging.formatter.TraCINgFormatter;
 import de.tudarmstadt.informatik.hostage.net.MySSLSocketFactory;
 import de.tudarmstadt.informatik.hostage.system.Device;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Helper class with some static methods for general usage.
@@ -229,6 +243,11 @@ public final class HelperUtils {
 		}
 		return bssid;
 	}
+	/**
+	 * Creates and Http Client of the wireless network.
+
+	 * @return DefaultHttpClient returns the client.
+	 */
 
 	public static HttpClient createHttpClient() {
 		try {
@@ -475,6 +494,81 @@ public final class HelperUtils {
 		return mWifi.isConnected();
 	}
 
+	public static boolean isCellConnected(Context context){
+		if(context == null) return false;
+		ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		boolean isMobileConn = false;
+
+		for (Network network : connManager.getAllNetworks()) {
+			NetworkInfo networkInfo = connManager.getNetworkInfo(network);
+
+
+
+			if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+				return isMobileConn |= networkInfo.isConnected();
+			}
+		}
+		return isMobileConn;
+	}
+
+	public  static boolean isCellurarConnected(Context context){
+
+		if(context == null) return false;
+		ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		boolean connected = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
+				.isConnectedOrConnecting();
+
+		return  connected;
+
+	}
+
+	/**
+	 * Gets the ip-address for Cellular Networks
+	 *
+	 * @return ipaddress returns the ip address
+	 */
+
+
+	public static int getCellularIP() {
+		try {
+			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+				NetworkInterface intf = en.nextElement();
+				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+					InetAddress inetAddress = enumIpAddr.nextElement();
+					if (!inetAddress.isLoopbackAddress()) {
+						String ip = Formatter.formatIpAddress(inetAddress.hashCode());
+						Log.i(TAG, "***** IP="+ ip);
+						return IPtoInt(ip);
+					}
+				}
+			}
+		} catch (SocketException ex) {
+			Log.e(TAG, ex.toString());
+		}
+		return 0;
+	}
+
+	/**
+	 * Converts a String type IP to int.
+	 * @param address
+	 * @return the converted ip
+	 */
+	public static int IPtoInt(String address){
+		int result = 0;
+
+		// iterate over each octet
+		for(String part : address.split(Pattern.quote("."))) {
+			// shift the previously parsed bits over by 1 byte
+			result = result << 8;
+			// set the low order bits to the current octet
+			result |= Integer.parseInt(part);
+		}
+
+		return  result;
+	}
+
+
 	public static boolean isNetworkAvailable(Context context) {
 		if(context == null) return false;
 
@@ -485,5 +579,46 @@ public final class HelperUtils {
 
 	public static int getRedirectedPort(int port){
 		return port + 1024 + 27113;
+	}
+
+	public static String getNetworkClass(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = cm.getActiveNetworkInfo();
+		if (info == null || !info.isConnected())
+			return "-"; // not connected
+		if (info.getType() == ConnectivityManager.TYPE_WIFI)
+			return "WIFI";
+		if (info.getType() == ConnectivityManager.TYPE_MOBILE) {
+			int networkType = info.getSubtype();
+			switch (networkType) {
+				case TelephonyManager.NETWORK_TYPE_GPRS:
+				case TelephonyManager.NETWORK_TYPE_EDGE:
+				case TelephonyManager.NETWORK_TYPE_CDMA:
+				case TelephonyManager.NETWORK_TYPE_1xRTT:
+				case TelephonyManager.NETWORK_TYPE_IDEN:     // api< 8: replace by 11
+				case TelephonyManager.NETWORK_TYPE_GSM:      // api<25: replace by 16
+					return "2G";
+				case TelephonyManager.NETWORK_TYPE_UMTS:
+				case TelephonyManager.NETWORK_TYPE_EVDO_0:
+				case TelephonyManager.NETWORK_TYPE_EVDO_A:
+				case TelephonyManager.NETWORK_TYPE_HSDPA:
+				case TelephonyManager.NETWORK_TYPE_HSUPA:
+				case TelephonyManager.NETWORK_TYPE_HSPA:
+				case TelephonyManager.NETWORK_TYPE_EVDO_B:   // api< 9: replace by 12
+				case TelephonyManager.NETWORK_TYPE_EHRPD:    // api<11: replace by 14
+				case TelephonyManager.NETWORK_TYPE_HSPAP:    // api<13: replace by 15
+				case TelephonyManager.NETWORK_TYPE_TD_SCDMA: // api<25: replace by 17
+					return "3G";
+				case TelephonyManager.NETWORK_TYPE_LTE:      // api<11: replace by 13
+				case TelephonyManager.NETWORK_TYPE_IWLAN:    // api<25: replace by 18
+				case 19: // LTE_CA
+					return "4G";
+				//case TelephonyManager.NETWORK_TYPE_NR:       // api<29: replace by 20
+					//return "5G";
+				default:
+					return "?";
+			}
+		}
+		return "?";
 	}
 }

@@ -150,8 +150,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
              Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
-		setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
 		getActivity().setTitle(getResources().getString(R.string.drawer_records));
 
 		dbh = new HostageDBOpenHelper(this.getActivity().getBaseContext());
@@ -248,9 +249,10 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 if(loader.isInterrupted()){
                     return;
                 }
-                Activity activity = RecordOverviewFragment.this.getActivity();
+                //checks null before the initialization of the Activity.
+                if (getActivity() != null){
+                    Activity activity = RecordOverviewFragment.this.getActivity();
 
-                if (activity != null){
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

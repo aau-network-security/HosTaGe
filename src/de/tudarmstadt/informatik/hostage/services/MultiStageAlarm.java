@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.widget.Toast;
@@ -19,12 +20,19 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
  */
 public class MultiStageAlarm extends BroadcastReceiver {
 
+    /**
+     * Calls Mutlistage service when receives an attack.
+     * @param context
+     * @param intent
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         //Toast.makeText(MainActivity.getInstance().getApplicationContext(),"Scanning for MultiStage Attacks...",Toast.LENGTH_SHORT).show();
-        Intent i = new Intent(context, MultiStage.class);
-        context.startService(i);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(new Intent(context, MultiStage.class));
+        } else {
+            context.startService(new Intent(context, MultiStage.class));
+        }
     }
 
     public void SetAlarm(Context context)

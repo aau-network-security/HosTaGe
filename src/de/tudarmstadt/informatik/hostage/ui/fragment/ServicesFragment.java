@@ -86,7 +86,7 @@ public class ServicesFragment extends TrackerFragment {
     public void updateUI() {
         //SK: Temp bugfix
         //if (!HelperUtils.isNetworkAvailable(getActivity())) {
-        if (!HelperUtils.isWifiConnected(getActivity())) {
+        if (!HelperUtils.isNetworkAvailable(getActivity())) {
             if(!MainActivity.getInstance().getHostageService().hasRunningListeners()) {
                 mServicesSwitchService.setOnCheckedChangeListener(null);
                 setStateNotConnected();
@@ -191,8 +191,8 @@ public class ServicesFragment extends TrackerFragment {
 					//replaced with if (!HelperUtils.isWifiConnected(getActivity())) {
 
 					if (isChecked) { // switch activated
-						// we need a network connection
-						if (!HelperUtils.isWifiConnected(getActivity())) {
+						// we need a network connection, checks both types
+						if (!HelperUtils.isNetworkAvailable(getActivity())) {
 							new AlertDialog.Builder(getActivity())
 									.setTitle(R.string.information)
 									.setMessage(R.string.wifi_not_connected_msg)

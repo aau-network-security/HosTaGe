@@ -1,11 +1,16 @@
 package de.tudarmstadt.informatik.hostage.services;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Binder;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,32 +33,8 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
  * Multistage attack detection service
  */
 public class MultiStage extends Service {
-    @Override
-    public IBinder onBind(Intent intent) {
-
-        return null;
-    }
-
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startid) {
-
-        fetchData();
-
-        return 1;
-    }
-
-
-    private HostageDBOpenHelper mDBOpenHelper;
-
-    StringBuilder message;
-
-
     private String bssid = "";
-
     private String ssid = "";
-
-
     private String externalIP;
     String stackRemoteIP;
     String stackLocalIp;
@@ -62,6 +43,38 @@ public class MultiStage extends Service {
     int stackLport;
     String stackssid;
     String stackbssid;
+
+    @Override
+    public IBinder onBind(Intent intent) {
+
+        return null;
+    }
+
+    /**
+     * Creates a Background Service before onStartCommand.
+     */
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startCustomForeground();
+            fetchData();
+        }
+
+        else
+            startForeground(1, new Notification());
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            startCustomForeground();
+
+        return START_STICKY;
+    }
+
+
 
     //fetch data of records of last 10 mins
     public Boolean fetchData() {
@@ -76,7 +89,7 @@ public class MultiStage extends Service {
 
         filter.setAboveTimestamp(filterTime);
 
-        this.mDBOpenHelper = new HostageDBOpenHelper(MainActivity.getInstance().getBaseContext());
+        HostageDBOpenHelper mDBOpenHelper = new HostageDBOpenHelper(this);
         List<Record> recordArray = mDBOpenHelper.getRecordsForFilter(filter);
         Collections.sort(recordArray, new Comparator<Record>() {
             public int compare(Record one, Record other) {
@@ -120,7 +133,6 @@ public class MultiStage extends Service {
 
               //  message.append("\nProtocol:" + tmp.getProtocol());
 
-
                 stackRemoteIP=tmp.getRemoteIp();
                 stackLocalIp=tmp.getLocalip();
                 stackProtocol=tmp.getProtocol();
@@ -129,7 +141,7 @@ public class MultiStage extends Service {
                 stackbssid=tmp.getBSSID();
                 stackssid = tmp.getSSID();
 
-               Toast.makeText(MainActivity.getInstance().getApplicationContext(), message, Toast.LENGTH_LONG).show();
+               //Toast.makeText(MainActivity.getInstance().getApplicationContext(), message, Toast.LENGTH_LONG).show();
             }
             log(MessageRecord.TYPE.RECEIVE, message.toString(), stackRemoteIP, stackLocalIp, stackProtocol,stackRport, stackLport,stackbssid, stackssid);
             b.clear();
@@ -141,8 +153,18 @@ public class MultiStage extends Service {
 
     }
 
-
-    //Packing the attack record
+    /**
+     * Packing the attack record
+     * @param type
+     * @param message
+     * @param remoteip the remote IP
+     * @param localip the local IP
+     * @param protocol is always MULTISTAGE
+     * @param rport the remote port
+     * @param lport the local port
+     * @param bssid Basic service set identifier
+     * @param ssid Service set identifier-Name of the Wifi Network
+     */
     public void log(MessageRecord.TYPE type, String message, String remoteip, String localip, String protocol, int rport, int lport, String bssid, String ssid) {
 
         AttackRecord attackRecord = new AttackRecord(true);
@@ -180,5 +202,24 @@ public class MultiStage extends Service {
 
         Logger.logMultiStageAttack(Hostage.getContext(), attackRecord, networkRecord, messageRecord, System.currentTimeMillis());
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void startCustomForeground(){
+        String NOTIFICATION_CHANNEL_ID = "Try";
+        String channelName = "BackgroundService";
+        NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+        chan.setLightColor(Color.BLUE);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert manager != null;
+        manager.createNotificationChannel(chan);
+
+        Notification.Builder notificationBuilder = new Notification.Builder(this,NOTIFICATION_CHANNEL_ID);
+
+        Notification notification = notificationBuilder.setOngoing(true)
+                .setPriority(Notification.PRIORITY_DEFAULT)
+                .build();
+        startForeground(1, notification);
     }
 }

@@ -17,7 +17,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -324,11 +326,12 @@ public class HomeFragment extends Fragment {
 
 		if (mSwitchChangeListener == null) {
 			mSwitchChangeListener = new CompoundButton.OnCheckedChangeListener() {
+				@RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if (isChecked) { // switch activated
 						// we need a network connection
 						// 2.5.2015 Fabio: for now we only check for wifi connections
-						if (!HelperUtils.isWifiConnected(getActivity())) {
+						if (!HelperUtils.isNetworkAvailable(getActivity())) {
 							new AlertDialog.Builder(getActivity()).setTitle(R.string.information).setMessage(R.string.network_not_connected_msg)
 									.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 										public void onClick(DialogInterface dialog, int which) {
