@@ -465,9 +465,7 @@ public final class HelperUtils {
 	}
 
 	public static int packInetAddress(byte[] bytes) {
-		/*
-		FUCK YOU JAVA!!! WHY DON'T YOU HAVE UNSIGNED TYPES???
-		 */
+
 		long b0 = bytes[0]; if (b0 < 0) b0 = 256 + b0;
 		long b1 = bytes[1]; if (b1 < 0) b1 = 256 + b1;
 		long b2 = bytes[2]; if (b2 < 0) b2 = 256 + b2;

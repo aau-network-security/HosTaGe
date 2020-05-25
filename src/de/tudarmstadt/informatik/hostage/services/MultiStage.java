@@ -10,8 +10,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
+import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.Logger;
@@ -26,7 +26,6 @@ import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.Record;
 import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
-import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 
 /**
@@ -204,6 +203,10 @@ public class MultiStage extends Service {
 
     }
 
+    /**
+     * Custom foreground for background service
+     */
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void startCustomForeground(){
         String NOTIFICATION_CHANNEL_ID = "Try";
@@ -216,6 +219,8 @@ public class MultiStage extends Service {
         manager.createNotificationChannel(chan);
 
         Notification.Builder notificationBuilder = new Notification.Builder(this,NOTIFICATION_CHANNEL_ID);
+        notificationBuilder.setContentTitle("MutiStage").setContentText("MutiStage running...")
+                .setSmallIcon(R.drawable.ic_launcher);
 
         Notification notification = notificationBuilder.setOngoing(true)
                 .setPriority(Notification.PRIORITY_DEFAULT)

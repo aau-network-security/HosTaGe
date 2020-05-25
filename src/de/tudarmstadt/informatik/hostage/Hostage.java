@@ -145,7 +145,7 @@ public class Hostage extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String bssid_old = connectionInfo.getString(getString(R.string.connection_info_bssid), "");
-			String bssid_new = "";
+			String bssid_new;
 			if (HelperUtils.isCellurarConnected(context)){
 				bssid_new = "not Available";
 			}
@@ -287,6 +287,7 @@ public class Hostage extends Service {
 		implementedProtocols = getImplementedProtocols();
 		connectionInfo = getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 		connectionInfoEditor = connectionInfo.edit();
+		connectionInfoEditor.commit();
 		
 		mProtocolActiveAttacks = new HashMap<String, Boolean>();
 
@@ -454,21 +455,6 @@ public class Hostage extends Service {
 	private void attackNotification() {
 		SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
 		String strRingtonePreference = defaultPref.getString("pref_notification_sound", "content://settings/system/notification_sound");
-		builder = new NotificationCompat.Builder(this).setContentTitle(getString(R.string.app_name)).setTicker(getString(R.string.honeypot_live_threat))
-				.setContentText(getString(R.string.honeypot_live_threat)).setSmallIcon(R.drawable.ic_service_red).setAutoCancel(true).setWhen(System.currentTimeMillis())
-				.setSound(Uri.parse(strRingtonePreference));
-		Intent launchIntent = new Intent(getApplicationContext(), MainActivity.class);
-		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-		stackBuilder.addParentStack(MainActivity.class);
-		Intent intent = MainActivity.getInstance().getIntent();
-		intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		intent.setAction("SHOW_HOME");
-		stackBuilder.addNextIntent(intent);
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-		builder.setContentIntent(resultPendingIntent);
-		if (defaultPref.getBoolean("pref_vibration", false)) {
-			builder.setVibrate(new long[] { 100, 200, 100, 200 });
-		}
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			CharSequence name = "Under Attack";
@@ -479,12 +465,18 @@ public class Hostage extends Service {
 
 			mNotificationManager.createNotificationChannel(channel);
 			Notification.Builder notificationBuilder = new Notification.Builder(this,"32");
+			notificationBuilder.setContentTitle(getString(R.string.app_name)).setTicker(getString(R.string.honeypot_live_threat))
+					.setContentText(getString(R.string.honeypot_live_threat)).setSmallIcon(R.drawable.ic_service_red).setAutoCancel(true).setWhen(System.currentTimeMillis())
+					.setSound(Uri.parse(strRingtonePreference));
 
+			if (defaultPref.getBoolean("pref_vibration", false)) {
+				notificationBuilder.setVibrate(new long[] { 100, 200, 100, 200 });
+			}
 			Notification notification = notificationBuilder.setOngoing(true)
 					.setPriority(Notification.PRIORITY_DEFAULT)
+
 					.build();
 			startForeground(2, notification);
-			//mNotificationManager.notify(32, builder.build());
 
 		}
 	}
@@ -544,37 +536,7 @@ public class Hostage extends Service {
 			}
 		}
 
-		builder = new NotificationCompat.Builder(this).setContentTitle(getString(R.string.app_name)).setWhen(System.currentTimeMillis());
-
-		if (!listening) {
-			builder.setSmallIcon(R.drawable.ic_launcher);
-			builder.setContentText(getString(R.string.hostage_not_monitoring));
-		} else if (activeHandlers) {
-			builder.setSmallIcon(R.drawable.ic_service_red);
-			builder.setContentText(getString(R.string.hostage_live_threat));
-		} else if (bssidSeen) {
-			builder.setSmallIcon(R.drawable.ic_service_yellow);
-			builder.setContentText(getString(R.string.hostage_past_threat));
-		} else {
-			builder.setSmallIcon(R.drawable.ic_service_green);
-			builder.setContentText(getString(R.string.hostage_no_threat));
-		}
-
-		Intent launchIntent = new Intent(getApplicationContext(), MainActivity.class);
-		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-		stackBuilder.addParentStack(MainActivity.class);
-
-		Intent intent = MainActivity.getInstance().getIntent();
-        intent.addCategory(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		//intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.setAction("SHOW_HOME");
-		stackBuilder.addNextIntent(intent);
-
-		PendingIntent resultPendingIntent = PendingIntent.getActivity(MainActivity.context, 0, intent, 0); //stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-		builder.setContentIntent(resultPendingIntent);
-		builder.setOngoing(true);
+		PendingIntent resultPendingIntent = intentNotificationGenerator();
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			CharSequence name = "Under Attack";
@@ -587,12 +549,66 @@ public class Hostage extends Service {
 			mNotificationManager.createNotificationChannel(channel);
 			Notification.Builder notificationBuilder = new Notification.Builder(this,"42");
 
+			notificationBuilder.setContentTitle(getString(R.string.app_name)).setWhen(System.currentTimeMillis());
+
+			notficationIconBuilder( listening, activeHandlers, bssidSeen, notificationBuilder);
+
+			notificationBuilder.setContentIntent(resultPendingIntent);
+			notificationBuilder.setOngoing(true);
+
 			Notification notification = notificationBuilder.setOngoing(true)
 					.setPriority(Notification.PRIORITY_DEFAULT)
 					.build();
 			startForeground(3, notification);
 
 		}
+	}
+
+	/**
+	 * Selects the appropriate icon for the notification.
+	 * @param listening listener for protocols
+	 * @param activeHandlers active Handlers
+	 * @param bssidSeen checks if this bssid is already seen
+	 * @param notificationBuilder builds the notification
+	 */
+
+	private void notficationIconBuilder(boolean listening,boolean activeHandlers,boolean bssidSeen,Notification.Builder notificationBuilder){
+		if (!listening) {
+			notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+			notificationBuilder.setContentText(getString(R.string.hostage_not_monitoring));
+		} else if (activeHandlers) {
+			notificationBuilder.setSmallIcon(R.drawable.ic_service_red);
+			notificationBuilder.setContentText(getString(R.string.hostage_live_threat));
+		} else if (bssidSeen) {
+			notificationBuilder.setSmallIcon(R.drawable.ic_service_yellow);
+			notificationBuilder.setContentText(getString(R.string.hostage_past_threat));
+		} else {
+			notificationBuilder.setSmallIcon(R.drawable.ic_service_green);
+			notificationBuilder.setContentText(getString(R.string.hostage_no_threat));
+		}
+	}
+
+	/**
+	 * Generates the intent for the notification.
+	 * @return the pending Intent
+	 */
+
+	private PendingIntent intentNotificationGenerator(){
+
+		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+		stackBuilder.addParentStack(MainActivity.class);
+
+		Intent intent = MainActivity.getInstance().getIntent();
+		intent.addCategory(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_LAUNCHER);
+		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		intent.setAction("SHOW_HOME");
+		stackBuilder.addNextIntent(intent);
+
+		PendingIntent resultPendingIntent = PendingIntent.getActivity(MainActivity.context, 0, intent, 0); //stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		return resultPendingIntent;
+
 	}
 
 	/**
@@ -708,7 +724,7 @@ public class Hostage extends Service {
 
 
 		}else {
-			final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+			final WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 			final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
 
 			if (connectionInfo == null) {
