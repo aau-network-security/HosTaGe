@@ -5,13 +5,18 @@ import java.io.Serializable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Generated;
+
 /**
  * Holds all necessary information about a single network.
  */
+@Entity
 public class NetworkRecord implements Parcelable, Serializable {
 
 	private static final long serialVersionUID = -1586629159904177836L;
-
+	@Id
 	private String bssid;
 	private String ssid;
 	private long timestampLocation;
@@ -43,6 +48,16 @@ public class NetworkRecord implements Parcelable, Serializable {
 		this.latitude = source.readDouble();
 		this.longitude = source.readDouble();
 		this.accuracy = source.readFloat();
+	}
+
+	@Generated(hash = 1853639091)
+	public NetworkRecord(String bssid, String ssid, long timestampLocation, double latitude, double longitude, float accuracy) {
+		this.bssid = bssid;
+		this.ssid = ssid;
+		this.timestampLocation = timestampLocation;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.accuracy = accuracy;
 	}
 
 	@Override

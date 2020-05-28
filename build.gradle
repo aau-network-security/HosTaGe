@@ -10,9 +10,11 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.3'
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
 
 repositories {
     mavenCentral()
@@ -28,6 +30,7 @@ repositories {
 dependencies {
     implementation 'com.google.android.gms:play-services:4.+'
     implementation 'org.roboguice:roboguice:2.0'
+    implementation 'org.greenrobot:greendao:3.3.0'
     compile files('libs/nineoldandroids-2.4.0.jar')
     //noinspection GradleCompatible
     implementation 'com.android.support:support-v4:28.0.0'
@@ -49,7 +52,7 @@ dependencies {
     //testImplementation 'androidx.test:core:1.2.0'
 
     // Optional -- Mockito framework
-    testImplementation 'org.mockito:mockito-core:2.8.9'
+    testImplementation "org.mockito:mockito-core:2.+"
     implementation 'com.android.support:support-annotations:28.0.0'
     implementation 'com.android.support.test:rules:1.0.2'
     implementation 'com.android.support.test:runner:1.0.2'
@@ -61,8 +64,14 @@ dependencies {
     implementation 'org.powermock:powermock-module-junit4:1.7.4'
     implementation 'org.powermock:powermock-api-mockito:1.7.4'
     implementation 'com.android.support:multidex:1.0.3'
+    testImplementation 'org.robolectric:robolectric:3.1'
 
 
+}
+
+greendao{
+    schemaVersion 1
+   // targetGenDir "src/db/"
 }
 
 android {

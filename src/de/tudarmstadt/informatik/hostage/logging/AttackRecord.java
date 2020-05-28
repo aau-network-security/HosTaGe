@@ -7,16 +7,21 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Transient;
+
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Holds all necessary information about a single attack.
  */
+@Entity(nameInDb = "attack")
 public class AttackRecord implements Parcelable, Serializable {
-
+	@Transient
 	private static final long serialVersionUID = 6111024905373724227L;
-
+	@Id(autoincrement = true)
 	private long attack_id;
     private long sync_id;
 	private String bssid;
@@ -27,7 +32,7 @@ public class AttackRecord implements Parcelable, Serializable {
 	private String remoteIP;
 	private int remotePort;
 	private String externalIP;
-	private int wasInternalAttack; // 1 if attacker ip and local ip were in same subnet, else 0
+	private boolean wasInternalAttack= true;
 
 	public static final Parcelable.Creator<AttackRecord> CREATOR = new Parcelable.Creator<AttackRecord>() {
 		@Override
@@ -53,7 +58,7 @@ public class AttackRecord implements Parcelable, Serializable {
 		this.remoteIP = source.readString();
 		this.remotePort = source.readInt();
 		this.externalIP = source.readString();
-		this.wasInternalAttack = source.readInt();
+		this.wasInternalAttack = source.readByte() != 0;
 		this.bssid = source.readString();
         this.device = source.readString();
         this.sync_id = source.readLong();
@@ -77,6 +82,23 @@ public class AttackRecord implements Parcelable, Serializable {
 
     }
 
+				@Generated(hash = 392632362)
+				public AttackRecord(long attack_id, long sync_id, String bssid, String device, String protocol,
+						String localIP, int localPort, String remoteIP, int remotePort, String externalIP,
+						boolean wasInternalAttack) {
+					this.attack_id = attack_id;
+					this.sync_id = sync_id;
+					this.bssid = bssid;
+					this.device = device;
+					this.protocol = protocol;
+					this.localIP = localIP;
+					this.localPort = localPort;
+					this.remoteIP = remoteIP;
+					this.remotePort = remotePort;
+					this.externalIP = externalIP;
+					this.wasInternalAttack = wasInternalAttack;
+				}
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -91,7 +113,7 @@ public class AttackRecord implements Parcelable, Serializable {
 		dest.writeString(remoteIP);
 		dest.writeInt(remotePort);
 		dest.writeString(externalIP);
-		dest.writeInt(wasInternalAttack);
+		dest.writeByte((byte) (wasInternalAttack ? 1 : 0));
 		dest.writeString(bssid);
         dest.writeString(device);
         dest.writeLong(sync_id);
@@ -221,6 +243,9 @@ public class AttackRecord implements Parcelable, Serializable {
 		this.externalIP = externalIP;
 	}
 
-	public boolean getWasInternalAttack() {return wasInternalAttack == 1;}
-	public void setWasInternalAttack(boolean b) {wasInternalAttack = b ? 1 : 0;}
+	public boolean getWasInternalAttack() {return wasInternalAttack;}
+
+	public void setWasInternalAttack(boolean wasInternalAttack) {
+		this.wasInternalAttack = wasInternalAttack;
+	}
 }

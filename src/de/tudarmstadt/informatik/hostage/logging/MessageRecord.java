@@ -7,11 +7,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Transient;
+
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Holds all necessary information about a single message exchanged during an attack.
  */
+@Entity
 public class MessageRecord implements Parcelable, Serializable{
 	
 	private static final long serialVersionUID = -5936572995202342935L;
@@ -21,9 +27,11 @@ public class MessageRecord implements Parcelable, Serializable{
 	}
 
     // attack
+	@Id
 	private int id;
 	private long attack_id;
 	private long timestamp;
+	@Transient
 	private TYPE type;
 	private String packet;
 	
@@ -63,6 +71,14 @@ public class MessageRecord implements Parcelable, Serializable{
             this.type = TYPE.valueOf(source.readString());
             this.packet = source.readString(); 
     }
+
+				@Generated(hash = 1546530353)
+				public MessageRecord(int id, long attack_id, long timestamp, String packet) {
+					this.id = id;
+					this.attack_id = attack_id;
+					this.timestamp = timestamp;
+					this.packet = packet;
+				}
 
 	
 	@Override

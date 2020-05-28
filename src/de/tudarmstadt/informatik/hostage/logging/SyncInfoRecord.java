@@ -1,19 +1,36 @@
 package de.tudarmstadt.informatik.hostage.logging;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+
 import java.io.Serializable;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Holds the Information a specific device gathered about a network identified by its BSSID.
  * @author Lars Pandikow
  */
+@Entity
 public class SyncInfoRecord implements Serializable{
 
 	private static final long serialVersionUID = 7156818788190434192L;
-
+	@Id
 	private String deviceID;
 	private String BSSID;
 	private long number_of_attacks;
 	private long number_of_portscans;
+
+	@Generated(hash = 1640797190)
+	public SyncInfoRecord(String deviceID, String BSSID, long number_of_attacks,
+			long number_of_portscans) {
+		this.deviceID = deviceID;
+		this.BSSID = BSSID;
+		this.number_of_attacks = number_of_attacks;
+		this.number_of_portscans = number_of_portscans;
+	}
+	@Generated(hash = 1014952315)
+	public SyncInfoRecord() {
+	}
 
 	/**
 	 * @return the deviceID

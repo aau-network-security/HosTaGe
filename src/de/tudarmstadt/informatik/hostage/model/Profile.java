@@ -1,5 +1,8 @@
 package de.tudarmstadt.informatik.hostage.model;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Transient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,27 +24,41 @@ import java.util.List;
 import java.util.Map;
 
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * @author Alexander Brakowski
  * @created 14.01.14 18:04
  */
+@Entity
 public class Profile implements JSONSerializable<Profile> {
+	@Transient
 	public String mText;
+	@Transient
 	public String mLabel;
+	@Id(autoincrement = true)
+	public long id;
+	@Transient
 	public int mId;
 	public boolean mActivated;
+	@Transient
 	transient public Bitmap mIcon;
+	@Transient
 	transient public int mIconId;
 	public String mIconName;
 	public String mIconPath;
 
 	public boolean mEditable = false;
+	@Transient
 	public boolean mIsRandom = false;
-
+	@Transient
 	public HashMap<String, Boolean> mActiveProtocols = new HashMap<String, Boolean>();
+
+	@Transient
 	public String mGhostPorts = "";
+	@Transient
 	public boolean mGhostActive = false;
+	@Transient
 	public boolean mShowTooltip = false;
 
 	public Profile(){
@@ -86,6 +103,15 @@ public class Profile implements JSONSerializable<Profile> {
 		mActiveProtocols = (HashMap<String,Boolean>) in.readSerializable();
 
 
+	}
+
+	@Generated(hash = 721292028)
+	public Profile(long id, boolean mActivated, String mIconName, String mIconPath, boolean mEditable) {
+		this.id = id;
+		this.mActivated = mActivated;
+		this.mIconName = mIconName;
+		this.mIconPath = mIconPath;
+		this.mEditable = mEditable;
 	}
 
 	public void setIcon(Bitmap bitmap){
@@ -200,7 +226,7 @@ public class Profile implements JSONSerializable<Profile> {
 
 		JSONObject activeProtocols = json.optJSONObject("active_protocols");
 		if(activeProtocols != null){
-			Iterator keys = activeProtocols.keys();
+			Iterator<String> keys = activeProtocols.keys();
 
 			while(keys.hasNext()){
 				String protocol = (String) keys.next();
@@ -213,5 +239,45 @@ public class Profile implements JSONSerializable<Profile> {
 		}
 
 		return this;
+	}
+
+	public long getId() {
+		return this.id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public boolean getMActivated() {
+		return this.mActivated;
+	}
+
+	public void setMActivated(boolean mActivated) {
+		this.mActivated = mActivated;
+	}
+
+	public String getMIconName() {
+		return this.mIconName;
+	}
+
+	public void setMIconName(String mIconName) {
+		this.mIconName = mIconName;
+	}
+
+	public String getMIconPath() {
+		return this.mIconPath;
+	}
+
+	public void setMIconPath(String mIconPath) {
+		this.mIconPath = mIconPath;
+	}
+
+	public boolean getMEditable() {
+		return this.mEditable;
+	}
+
+	public void setMEditable(boolean mEditable) {
+		this.mEditable = mEditable;
 	}
 }

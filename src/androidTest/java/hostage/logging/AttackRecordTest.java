@@ -23,7 +23,7 @@ public class AttackRecordTest {
     private String remoteIP;
     private int remotePort;
     private String externalIP;
-    private int wasInternalAttack;
+    private boolean wasInternalAttack;
 
     @Before
     public void setUp() {
@@ -36,8 +36,8 @@ public class AttackRecordTest {
         localPort = 80;
         remoteIP = "127.0.0.1";
         remotePort = 3306;
-        externalIP = "127.0.0.1";
-        wasInternalAttack = 1;
+        externalIP = "127.0.1.1";
+        wasInternalAttack = true;
 
 
     }
@@ -53,12 +53,52 @@ public class AttackRecordTest {
         parcel.writeString(remoteIP);
         parcel.writeInt(remotePort);
         parcel.writeString(externalIP);
-        parcel.writeInt(wasInternalAttack);
+        parcel.writeValue(wasInternalAttack);
         parcel.writeString(bssid);
         parcel.writeString(device);
         parcel.writeLong(sync_id);
 
         AttackRecord record = new AttackRecord(parcel);
+        System.out.println("meow");
+        System.out.println(record.getAttack_id());
+
+
+
+       /* assertTrue(record.getAttack_id() == 1234L);
+        assertTrue(record.getSync_id() == 1234L) ;
+        assertTrue(record.getLocalIP().equals("127.0.0.1"));
+        assertTrue(record.getLocalPort() == 80) ;
+        assertTrue(record.getRemoteIP().equals("127.0.0.1"));
+        assertTrue(record.getRemotePort() == 3306) ;
+        assertTrue(record.getExternalIP().equals("127.0.1.1"));
+        assertTrue(record.getWasInternalAttack()) ;
+        assertTrue(record.getBssid().equals("Test"));
+        assertTrue(record.getDevice().equals("TestDevice"));
+        assertTrue(record.getProtocol().equals("Http"));
+*/
+
+    }
+
+
+
+    @Test
+    public void attackRecordTest(){
+
+
+        AttackRecord record = new AttackRecord();
+
+
+        record.setExternalIP(externalIP);
+        record.setAttack_id(attack_id);
+        record.setSync_id(sync_id);
+        record.setLocalIP(localIP);
+        record.setLocalPort(localPort);
+        record.setRemoteIP(remoteIP);
+        record.setRemotePort(remotePort);
+        record.setWasInternalAttack(wasInternalAttack);
+        record.setBssid(bssid);
+        record.setDevice(device);
+        record.setProtocol(protocol);
 
         assertTrue(record.getAttack_id() == 1234L);
         assertTrue(record.getSync_id() == 1234L) ;
@@ -66,7 +106,7 @@ public class AttackRecordTest {
         assertTrue(record.getLocalPort() == 80) ;
         assertTrue(record.getRemoteIP().equals("127.0.0.1"));
         assertTrue(record.getRemotePort() == 3306) ;
-        assertTrue(record.getExternalIP().equals("127.0.0.1"));
+        assertTrue(record.getExternalIP().equals("127.0.1.1"));
         assertTrue(record.getWasInternalAttack()) ;
         assertTrue(record.getBssid().equals("Test"));
         assertTrue(record.getDevice().equals("TestDevice"));
