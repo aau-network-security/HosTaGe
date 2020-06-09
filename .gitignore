@@ -33,3 +33,4 @@ native/build
 native/build.o
 /javadoc.xml
 /doc
+/greenDaoGenerator/

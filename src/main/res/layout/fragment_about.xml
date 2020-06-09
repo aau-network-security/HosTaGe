@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		xmlns:android="http://schemas.android.com/apk/res/android">
+	<ImageView
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:id="@+id/imageView" android:src="@drawable/hostage_logo_tilted"
+			android:layout_weight="0.6" android:layout_margin="24dp"/>
+
+	<TextView
+		android:id="@+id/hostage"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:clickable="false"
+		android:text="@string/hostage_with_url"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:textStyle="bold"
+		android:visibility="visible" />
+    <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:text=""
+    android:id="@+id/hostageVersion" android:layout_gravity="center_horizontal"/>
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:text="a low-interaction ICS honeypot for mobile devices"
+			android:id="@+id/textView7" android:layout_gravity="center_horizontal"
+			/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/hostage_email_only"
+        android:id="@+id/hostage_email_view" android:layout_gravity="center_horizontal"
+        android:autoLink="email"
+        />
+
+
+    <ScrollView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginRight="15dp">
+
+	<RelativeLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" android:layout_weight="0.7"
+			android:paddingTop="15dp">
+
+		<LinearLayout
+				android:orientation="vertical"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.5"
+				android:layout_alignTop="@+id/linearLayout" android:layout_alignParentLeft="true"
+				android:layout_alignParentStart="true" android:id="@+id/linearLayout2"
+				android:layout_marginLeft="10dp">
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+					  android:textAppearance="?android:attr/textAppearanceMedium"
+					  android:text="@string/ui_dev_by"
+					  android:id="@+id/record_details_text_bssid" android:layout_gravity="center_horizontal|left"
+					  android:singleLine="false" android:autoText="false"
+					  android:layout_marginTop="8dp" android:textStyle="bold"
+					  android:textColor="@android:color/holo_blue_dark"/>
+
+			<TextView
+				android:id="@+id/txtP2PSubheader"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_gravity="center_horizontal|left"
+				android:layout_marginTop="4dp"
+				android:autoText="false"
+				android:singleLine="false"
+				android:text="Manolis "
+				android:textAlignment="center"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:visibility="gone"
+				tools:visibility="gone" />
+
+			<TextView
+				android:id="@+id/textView3"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal|left"
+				android:layout_marginTop="4dp"
+				android:autoText="false"
+				android:singleLine="false"
+				android:text="Lars Pandikov"
+				android:textAlignment="center"
+				android:textAppearance="?android:attr/textAppearanceMedium" />
+
+			<TextView
+				android:id="@+id/textView5"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal|left"
+				android:layout_marginTop="4dp"
+				android:autoText="false"
+				android:singleLine="false"
+				android:text="Wulf Pfeiffer"
+				android:textAlignment="center"
+				android:textAppearance="?android:attr/textAppearanceMedium" />
+
+			<TextView
+				android:id="@+id/record_details_text_protocol"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal|left"
+				android:layout_marginTop="4dp"
+				android:autoText="false"
+				android:singleLine="false"
+				android:text="Mihai Plasoianu"
+				android:textAlignment="center"
+				android:textAppearance="?android:attr/textAppearanceMedium" />
+		</LinearLayout>
+		<LinearLayout
+				android:orientation="vertical"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+            android:id="@+id/linearLayout"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="false"
+            android:paddingTop="33dp">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="4dp"
+				android:autoText="false"
+				android:singleLine="false"
+				android:text="Emmanouil Vasilomanolakis"
+				android:textAlignment="center"
+				android:textAppearance="?android:attr/textAppearanceMedium" />
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:text="Shreyas Srinivasa " android:id="@+id/record_conversation_type"
+				android:singleLine="false"
+				android:autoText="false" android:layout_marginTop="4dp"
+				android:textAlignment="center" android:layout_gravity="center_horizontal"/>
+		</LinearLayout>
+	</RelativeLayout>
+    </ScrollView>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:layout_marginBottom="5dp">
+
+		<ImageView
+			android:layout_width="150dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="5dp"
+			android:layout_marginRight="5dp"
+			android:layout_weight="0.5"
+			android:src="@drawable/tud_logo" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/cased_logo"
+            android:layout_marginRight="5dp"
+            android:layout_weight="0.5"/>
+	</LinearLayout>
+</LinearLayout>

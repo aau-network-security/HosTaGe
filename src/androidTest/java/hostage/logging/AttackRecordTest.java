@@ -3,9 +3,11 @@ package hostage.logging;
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 
@@ -61,7 +63,7 @@ public class AttackRecordTest {
         AttackRecord record = new AttackRecord(parcel);
         System.out.println("meow");
         System.out.println(record.getAttack_id());
-
+       // assertTrue(record.getAttack_id() == 1234L);
 
 
        /* assertTrue(record.getAttack_id() == 1234L);

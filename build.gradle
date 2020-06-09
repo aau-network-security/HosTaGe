@@ -1,12 +1,9 @@
 buildscript {
     repositories {
-        mavenCentral()
-       // google()
         jcenter()
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
+        google()
+
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.3'
@@ -16,39 +13,37 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
-repositories {
-    mavenCentral()
-    maven {
-        url 'https://oss.sonatype.org/content/groups/public'
-    }
-    maven {
-        url 'https://maven.google.com/'
-        name 'Google'
+
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
+
+        maven { url "https://jitpack.io" }
+
     }
 }
-
 dependencies {
     implementation 'com.google.android.gms:play-services:4.+'
     implementation 'org.roboguice:roboguice:2.0'
     implementation 'org.greenrobot:greendao:3.3.0'
-    compile files('libs/nineoldandroids-2.4.0.jar')
-    //noinspection GradleCompatible
+    implementation files('libs/nineoldandroids-2.4.0.jar')
+    implementation 'com.github.hivemq.hivemq-community-edition:hivemq-community-edition:2020.1'
     implementation 'com.android.support:support-v4:28.0.0'
+    //implementation 'com.android.support:design:28.0.0'
     //compile fileTree(dir: 'libs', include: '*.jar')
-    compile files('libs/swipelistview-1.0.jar')
-    compile files('libs/sshlib-v1.1.jar')
-   // compile files('libs/chart-library2.2.jar')
-    //compile files('libs/jlan-5.jar')
-    compile files('libs/alfresco-jlan.jar')
-    compile files('libs/cryptix-jce-provider.jar')
+    implementation files('libs/swipelistview-1.0.jar')
+    implementation files('libs/sshlib-v1.1.jar')
+    implementation files('libs/alfresco-jlan.jar')
+    implementation files('libs/cryptix-jce-provider.jar')
     implementation 'org.snmp4j:snmp4j:1.10.1'
-    compile files('libs/snmp4j-agent-2.3.3.jar')
-    compile files('libs/VirusTotalAPI.jar')
+    implementation files('libs/snmp4j-agent-2.3.3.jar')
+    implementation files('libs/VirusTotalAPI.jar')
 
 
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.12'
-    // Optional -- Robolectric environment for Android X
     //testImplementation 'androidx.test:core:1.2.0'
 
     // Optional -- Mockito framework
@@ -59,18 +54,19 @@ dependencies {
     // Optional -- UI testing with Espresso
    // androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     // Optional -- UI testing with UI Automator for Android X
-   // implementation 'androidx.test.uiautomator:uiautomator:2.2.0'
-    implementation 'org.powermock:powermock:1.6.5'
-    implementation 'org.powermock:powermock-module-junit4:1.7.4'
-    implementation 'org.powermock:powermock-api-mockito:1.7.4'
+     //implementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+//    implementation 'org.powermock:powermock:1.6.5'
+//    implementation 'org.powermock:powermock-module-junit4:1.7.4'
+//    implementation 'org.powermock:powermock-api-mockito:1.7.4'
     implementation 'com.android.support:multidex:1.0.3'
-    testImplementation 'org.robolectric:robolectric:3.1'
-
+    // Optional -- Robolectric environment
+    testImplementation 'org.robolectric:robolectric:4.3'
 
 }
 
 greendao{
     schemaVersion 1
+    generateTests true
    // targetGenDir "src/db/"
 }
 
@@ -86,17 +82,26 @@ android {
         multiDexEnabled true
         //   signingConfig signingConfigs.config
     }
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
         }
-
+    }
+    sourceSets {
+//        main {
+//            manifest.srcFile 'AndroidManifest.xml'
+//            java.srcDirs = ['src']
+//            resources.srcDirs = ['src']
+//            aidl.srcDirs = ['src']
+//            renderscript.srcDirs = ['src']
+//            res.srcDirs = ['res']
+//            assets.srcDirs = ['assets']
+//        }
+//        test  {
+//            java.srcDirs file('src/test/java/')
+//            resources.srcDir file('src/test/resources')
+//        }
+         //test { java.srcDirs = ['src/test/java'] }
         // Move the tests to tests/java, tests/res, etc...
         //androidTest.setRoot('src')
 
@@ -143,5 +148,9 @@ android {
         abortOnError false
     }
     productFlavors {
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 }
