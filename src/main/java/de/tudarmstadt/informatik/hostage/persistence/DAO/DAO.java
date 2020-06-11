@@ -1,11 +1,18 @@
 package de.tudarmstadt.informatik.hostage.persistence.DAO;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
 import org.greenrobot.greendao.query.QueryBuilder;
 import org.greenrobot.greendao.query.WhereCondition;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 
@@ -161,5 +168,11 @@ public abstract class DAO {
             return 0;
         }
         return absDao.count();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 }
