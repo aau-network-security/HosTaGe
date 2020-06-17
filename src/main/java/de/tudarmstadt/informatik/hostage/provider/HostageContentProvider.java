@@ -10,13 +10,21 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBContract;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import org.greenrobot.greendao.DaoLog;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
+import de.tudarmstadt.informatik.hostage.logging.AttackRecordDao;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
+import de.tudarmstadt.informatik.hostage.logging.MessageRecordDao;
+import de.tudarmstadt.informatik.hostage.logging.NetworkRecordDao;
+import de.tudarmstadt.informatik.hostage.persistence.HostageDBContract;
 
 public class HostageContentProvider extends ContentProvider {
 
 	public static final String AUTHORITY = "de.tudarmstadt.informatik.hostage.provider";
+
+	public static final String BASE_PATH = "";
+	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
 
 	public static final Uri CONTENT_URI_NETWORK = Uri.parse("content://" + AUTHORITY + "/network");
 	public static final Uri CONTENT_URI_ATTACK = Uri.parse("content://" + AUTHORITY + "/attack");
@@ -48,59 +56,72 @@ public class HostageContentProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, "record-overview/#", NETWORK_OVERVIEW_ONE);
 	}
 
-	private HostageDBOpenHelper mDBOpenHelper;
+	//private HostageDBOpenHelper mDBOpenHelper;
+	private DaoSession daoSession = null;
+
 
 	@Override
 	public boolean onCreate() {
-		mDBOpenHelper = new HostageDBOpenHelper(getContext());
+		//mDBOpenHelper = new HostageDBOpenHelper(getContext());
+		daoSession = ((HostageApplication) getContext()).getDaoSession();
+
+		DaoLog.d("Content Provider started: " + CONTENT_URI);
+
 		return true;
+	}
+
+	protected SQLiteDatabase getDatabase() {
+		if(daoSession == null) {
+			throw new IllegalStateException("DaoSession must be set during content provider is active");
+		}
+		return ((HostageApplication) getContext()).getDb();
 	}
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-		SQLiteDatabase db = mDBOpenHelper.getWritableDatabase();
+		//SQLiteDatabase db = mDBOpenHelper.getWritableDatabase();
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 
 		int uriMatch = uriMatcher.match(uri);
 
 		if (isNetworkUriMatch(uriMatch)) {
-			queryBuilder.setTables(HostageDBContract.NetworkEntry.TABLE_NAME);
+			queryBuilder.setTables(NetworkRecordDao.TABLENAME);
 		} else if (isAttackUriMatch(uriMatch)) {
-			queryBuilder.setTables(HostageDBContract.AttackEntry.TABLE_NAME);
+			queryBuilder.setTables(AttackRecordDao.TABLENAME);
 		} else if (isPacketUriMatch(uriMatch)) {
-			queryBuilder.setTables(HostageDBContract.PacketEntry.TABLE_NAME);
+			queryBuilder.setTables(MessageRecordDao.TABLENAME);
 		}
 
 		if (uriMatch == NETWORK_ONE) {
 			String rowID = uri.getPathSegments().get(1);
-			queryBuilder.appendWhere(HostageDBContract.NetworkEntry.KEY_ID + "=" + rowID);
+			queryBuilder.appendWhere(NetworkRecordDao.Properties.Bssid + "=" + rowID);
 		} else if (uriMatch == ATTACK_ONE) {
 			String rowID = uri.getPathSegments().get(1);
-			queryBuilder.appendWhere(HostageDBContract.AttackEntry.KEY_ID + "=" + rowID);
+			queryBuilder.appendWhere(AttackRecordDao.Properties.Attack_id + "=" + rowID);
 		} else if (uriMatch == PACKET_ONE) {
 			String rowID = uri.getPathSegments().get(1);
-			queryBuilder.appendWhere(HostageDBContract.PacketEntry.KEY_ID + "=" + rowID);
+			queryBuilder.appendWhere(MessageRecordDao.Properties.Id + "=" + rowID);
 		}
-
+		SQLiteDatabase db = getDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 		return cursor;
 	}
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		SQLiteDatabase db = mDBOpenHelper.getWritableDatabase();
+		SQLiteDatabase db = getDatabase();
 
 		int uriMatch = uriMatcher.match(uri);
 
 		if (uriMatch == NETWORK_ONE) {
 			String rowID = uri.getPathSegments().get(1);
-			selection = HostageDBContract.NetworkEntry.KEY_ID + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
+			selection = NetworkRecordDao.Properties.Bssid  + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
 		} else if (uriMatch == ATTACK_ONE) {
 			String rowID = uri.getPathSegments().get(1);
-			selection = HostageDBContract.AttackEntry.KEY_ID + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
+			selection = AttackRecordDao.Properties.Attack_id + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
 		} else if (uriMatch == PACKET_ONE) {
 			String rowID = uri.getPathSegments().get(1);
-			selection = HostageDBContract.PacketEntry.KEY_ID + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
+			selection = MessageRecordDao.Properties.Id + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
 		}
 
 		if (selection == null) {
@@ -109,11 +130,11 @@ public class HostageContentProvider extends ContentProvider {
 
 		int deleteCount = 0;
 		if (isNetworkUriMatch(uriMatch)) {
-			deleteCount = db.delete(HostageDBContract.NetworkEntry.TABLE_NAME, selection, selectionArgs);
+			deleteCount = db.delete(NetworkRecordDao.TABLENAME, selection, selectionArgs);
 		} else if (isAttackUriMatch(uriMatch)) {
-			deleteCount = db.delete(HostageDBContract.AttackEntry.TABLE_NAME, selection, selectionArgs);
+			deleteCount = db.delete(AttackRecordDao.TABLENAME, selection, selectionArgs);
 		} else if (isPacketUriMatch(uriMatch)) {
-			deleteCount = db.delete(HostageDBContract.PacketEntry.TABLE_NAME, selection, selectionArgs);
+			deleteCount = db.delete(MessageRecordDao.TABLENAME, selection, selectionArgs);
 		}
 
 		getContext().getContentResolver().notifyChange(uri, null);
@@ -123,26 +144,26 @@ public class HostageContentProvider extends ContentProvider {
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		SQLiteDatabase db = mDBOpenHelper.getWritableDatabase();
+		SQLiteDatabase db = getDatabase();
 
 		int uriMatch = uriMatcher.match(uri);
 
 		long id = -1;
 		Uri insertedId = null;
 		if (isNetworkUriMatch(uriMatch)) {
-			id = db.insert(HostageDBContract.NetworkEntry.TABLE_NAME, null, values);
+			id = db.insert(NetworkRecordDao.TABLENAME, null, values);
 			if (id > -1) {
 				insertedId = ContentUris.withAppendedId(CONTENT_URI_NETWORK, id);
 			}
 		} else if (isAttackUriMatch(uriMatch)) {
-			id = db.insert(HostageDBContract.AttackEntry.TABLE_NAME, null, values);
+			id = db.insert(AttackRecordDao.TABLENAME, null, values);
 			if (id > -1) {
-				insertedId = ContentUris.withAppendedId(CONTENT_URI_NETWORK, id);
+				insertedId = ContentUris.withAppendedId(CONTENT_URI_ATTACK, id);
 			}
 		} else if (isPacketUriMatch(uriMatch)) {
-			id = db.insert(HostageDBContract.PacketEntry.TABLE_NAME, null, values);
+			id = db.insert(MessageRecordDao.TABLENAME, null, values);
 			if (id > -1) {
-				insertedId = ContentUris.withAppendedId(CONTENT_URI_NETWORK, id);
+				insertedId = ContentUris.withAppendedId(CONTENT_URI_PACKET, id);
 			}
 		}
 
@@ -156,28 +177,28 @@ public class HostageContentProvider extends ContentProvider {
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		SQLiteDatabase db = mDBOpenHelper.getWritableDatabase();
+		SQLiteDatabase db = getDatabase();
 
 		int uriMatch = uriMatcher.match(uri);
 
 		if (uriMatch == NETWORK_ONE) {
 			String rowID = uri.getPathSegments().get(1);
-			selection = HostageDBContract.NetworkEntry.KEY_ID + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
+			selection = NetworkRecordDao.Properties.Bssid + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
 		} else if (uriMatch == ATTACK_ONE) {
 			String rowID = uri.getPathSegments().get(1);
-			selection = HostageDBContract.AttackEntry.KEY_ID + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
+			selection =  AttackRecordDao.Properties.Attack_id + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
 		} else if (uriMatch == PACKET_ONE) {
 			String rowID = uri.getPathSegments().get(1);
-			selection = HostageDBContract.PacketEntry.KEY_ID + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
+			selection = MessageRecordDao.Properties.Id  + "=" + rowID + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
 		}
 
 		int updateCount = 0;
 		if (isNetworkUriMatch(uriMatch)) {
-			updateCount = db.update(HostageDBContract.NetworkEntry.TABLE_NAME, values, selection, selectionArgs);
+			updateCount = db.update(NetworkRecordDao.TABLENAME, values, selection, selectionArgs);
 		} else if (isAttackUriMatch(uriMatch)) {
-			updateCount = db.update(HostageDBContract.AttackEntry.TABLE_NAME, values, selection, selectionArgs);
+			updateCount = db.update(AttackRecordDao.TABLENAME, values, selection, selectionArgs);
 		} else if (isPacketUriMatch(uriMatch)) {
-			updateCount = db.update(HostageDBContract.PacketEntry.TABLE_NAME, values, selection, selectionArgs);
+			updateCount = db.update(MessageRecordDao.TABLENAME, values, selection, selectionArgs);
 		}
 
 		getContext().getContentResolver().notifyChange(uri, null);

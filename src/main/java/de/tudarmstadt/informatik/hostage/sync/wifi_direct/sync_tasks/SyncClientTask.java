@@ -2,11 +2,15 @@ package de.tudarmstadt.informatik.hostage.sync.wifi_direct.sync_tasks;
 
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.SyncData;
 import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.sync.Synchronizer;
 import de.tudarmstadt.informatik.hostage.sync.wifi_direct.WiFiP2pClientTask;
 import de.tudarmstadt.informatik.hostage.sync.wifi_direct.WiFiP2pSerializableObject;
@@ -17,16 +21,20 @@ import de.tudarmstadt.informatik.hostage.sync.wifi_direct.WiFiP2pSerializableObj
  */
 public class SyncClientTask extends WiFiP2pClientTask {
 
-    private HostageDBOpenHelper mdbh;
+    //private HostageDBOpenHelper mdbh;
+    private DaoSession dbSession;
+    private DAOHelper daoHelper;
     private Synchronizer synchronizer;
 
     public SyncClientTask(String hostIP,  WifiP2pDevice ownDevice,BackgroundTaskCompletionListener l, Context context) {
         super(hostIP, ownDevice, l);
-        mdbh = new HostageDBOpenHelper(context);
-        synchronizer = new Synchronizer(mdbh);
+        //mdbh = new HostageDBOpenHelper(context);
+        dbSession = HostageApplication.getInstances().getDaoSession();
+        daoHelper = new DAOHelper(dbSession,context);
+        synchronizer = new Synchronizer(dbSession,context);
     }
 
-    @Override
+@Override
     public WiFiP2pSerializableObject handleReceivedObject(WiFiP2pSerializableObject receivedObj) {
 
         if (receivedObj == null) {

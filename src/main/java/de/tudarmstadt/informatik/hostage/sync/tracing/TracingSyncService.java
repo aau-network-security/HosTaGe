@@ -10,15 +10,20 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.Record;
+import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 import de.tudarmstadt.informatik.hostage.logging.SyncData;
 import de.tudarmstadt.informatik.hostage.logging.SyncRecord;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.sync.Synchronizer;
 import de.tudarmstadt.informatik.hostage.sync.android.SyncUtils;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
@@ -49,8 +54,12 @@ public class TracingSyncService extends IntentService {
     private HttpClient httpClient;
 	private ResultReceiver receiver;
 
-	HostageDBOpenHelper dbh;
     Synchronizer synchronizer;
+    private DaoSession dbSession;
+    private DAOHelper daoHelper;
+    private ArrayList<RecordAll> records = new ArrayList<>();
+    private static int offset=0;
+    private int limit=50;
 
 	SharedPreferences pref;
 	Editor editor;
@@ -65,8 +74,9 @@ public class TracingSyncService extends IntentService {
 		super.onCreate();
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
 		editor = pref.edit();
-		dbh = new HostageDBOpenHelper(this);
-        synchronizer = new Synchronizer(dbh);
+        dbSession = HostageApplication.getInstances().getDaoSession();
+        daoHelper = new DAOHelper(dbSession,getApplicationContext());
+        synchronizer = new Synchronizer(dbSession,getApplicationContext());
 	}
 
 	/**
@@ -74,7 +84,7 @@ public class TracingSyncService extends IntentService {
 	 * the intent that started the service. When this method returns,
 	 * IntentService stops the service, as appropriate.
 	 */
-	@Override
+    @Override
 	protected void onHandleIntent(Intent intent) {
 		if (intent != null) {
 			final String action = intent.getAction();
@@ -89,7 +99,7 @@ public class TracingSyncService extends IntentService {
 	/**
 	 * Uploads all new Records to a server, specified in the settings.
 	 */
-	private void syncNewRecords() {
+    private void syncNewRecords() {
         long lastSyncTime = pref.getLong("LAST_SYNC_TIME", 0);
 
 
@@ -98,8 +108,9 @@ public class TracingSyncService extends IntentService {
 
         LogFilter filter = new LogFilter();
         filter.setAboveTimestamp(lastSyncTime);
+        //int recordsSize = daoHelper.getMessageRecordDAO().getRecordCount();
+        records = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter, offset);
 
-        ArrayList<Record> records = dbh.getRecordsForFilter(filter);
         StringWriter writer = new StringWriter();
 
         int size = records.size();
@@ -107,7 +118,7 @@ public class TracingSyncService extends IntentService {
         int currOffset = 1;
 
         boolean error = false;
-        for (Record record : records) {
+        for (RecordAll record : records) {
             SyncUtils.appendRecordToStringWriter(record, writer);
 
             if(currOffset == 100 || offset == size){

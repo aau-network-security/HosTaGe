@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,9 +39,12 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.Record;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.logging.RecordAll;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.adapter.StatisticListAdapter;
 import de.tudarmstadt.informatik.hostage.ui.dialog.ChecklistDialog;
@@ -125,14 +129,15 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
     private ArrayList<PlotComparisonItem> currentData;
 
-    private HostageDBOpenHelper dbh;
+    //private HostageDBOpenHelper dbh;
+    private DaoSession dbSession;
+    private DAOHelper daoHelper;
 
     private ListView legendListView;
 
     private Toast noDataNotificationToast;
-
-
     private String selectedCompareData = COMPARE_TITLE_AttacksPerProtocol;
+    private int offset=0;
 
 
     /**The Charttype.
@@ -189,7 +194,9 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
 	    getActivity().setTitle(getResources().getString(R.string.drawer_statistics));
 
-        dbh = new HostageDBOpenHelper(this.getBaseContext());
+        //dbh = new HostageDBOpenHelper(this.getBaseContext());
+        dbSession = HostageApplication.getInstances().getDaoSession();
+        daoHelper = new DAOHelper(dbSession,getApplicationContext());
 
         // Get the message from the intent
 
@@ -834,9 +841,9 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     public ArrayList<String> essids(){
         ArrayList<String> essids;
         if (this.currentPlotView instanceof BarGraph){
-            essids = dbh.getUniqueESSIDRecordsForProtocol(this.getCurrentSelectedProtocol());
+            essids = daoHelper.getNetworkRecordDAO().getUniqueESSIDRecordsForProtocol(this.getCurrentSelectedProtocol());
         } else {
-            essids = dbh.getUniqueESSIDRecords();
+            essids = daoHelper.getNetworkRecordDAO().getUniqueESSIDRecords();
         }
         return essids;
     }
@@ -861,9 +868,9 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     public ArrayList<String> bssids(){
         ArrayList<String> bssids ;
         if (this.currentPlotView instanceof BarGraph){
-            bssids = dbh.getUniqueBSSIDRecordsForProtocol(this.getCurrentSelectedProtocol());
+            bssids = daoHelper.getNetworkRecordDAO().getUniqueBSSIDRecordsForProtocol(this.getCurrentSelectedProtocol());
         } else {
-            bssids = dbh.getUniqueBSSIDRecords();
+            bssids = daoHelper.getNetworkRecordDAO().getUniqueBSSIDRecords();
         }
         return bssids;
     }
@@ -1123,9 +1130,9 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * Returns the DataBaseHandler result for the current filter.
      * @return records {@link java.util.ArrayList}, {@link Record Record}
      */
-     public ArrayList<Record> getFetchedRecords(){
+     public ArrayList<RecordAll> getFetchedRecords(){
         if (this.filter == null) this.clearFilter();
-        return this.dbh.getRecordsForFilter(this.filter);
+        return this.daoHelper.getAttackRecordDAO().getRecordsForFilter(this.filter);
     }
 
     /**Actualises the current plot in a background thread.*/
@@ -1310,7 +1317,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         ArrayList<PlotComparisonItem> plotItems = new ArrayList<PlotComparisonItem>();
          int index = 0;
         for (String title : this.getSelectedProtocolTitles()){
-            int attacksCount = this.dbh.getAttackPerProtocolCount(title);
+            int attacksCount = this.daoHelper.getAttackRecordDAO().getAttackPerProtocolCount(title);
             if (attacksCount == 0) continue;
             PlotComparisonItem item = new PlotComparisonItem(title,this.getColor(index), 0., (double) attacksCount);
             plotItems.add(item);
@@ -1336,12 +1343,12 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * @return plotItems {@link PlotComparisonItem PlotComparisonItems}
      */
     public ArrayList<PlotComparisonItem> attacksPerTime(){
-        HashMap<String,HashMap<Long, ArrayList<Record> > > lineMap = new HashMap<String, HashMap<Long, ArrayList<Record>>>();
+        HashMap<String,HashMap<Long, ArrayList<RecordAll> > > lineMap = new HashMap<String, HashMap<Long, ArrayList<RecordAll>>>();
 
         boolean shouldUseDate = this.selectedCompareData.equals(COMPARE_TITLE_AttacksPerDate);
 
-        ArrayList<Record> records = this.getFetchedRecords();
-        for (Record record : records){
+        ArrayList<RecordAll> records = this.getFetchedRecords();
+        for (RecordAll record : records){
             long timestamp = record.getTimestamp();
             long time = 0;
             if (shouldUseDate){
@@ -1351,21 +1358,21 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             }
 
             // GET CORRECT MAP
-            HashMap<Long, ArrayList<Record> > recordMap;
+            HashMap<Long, ArrayList<RecordAll> > recordMap;
             String groupKey = record.getSsid();
             if (lineMap.containsKey(groupKey)){
                 recordMap = lineMap.get(record.getSsid());
             } else {
-                recordMap = new HashMap<Long, ArrayList<Record> >();
+                recordMap = new HashMap<Long, ArrayList<RecordAll> >();
                 lineMap.put(groupKey, recordMap);
             }
 
             // GET LIST OF RECORDS
-            ArrayList<Record> list;
+            ArrayList<RecordAll> list;
             if (recordMap.containsKey(time)){
                 list = recordMap.get(time);
             } else {
-                list = new ArrayList<Record>();
+                list = new ArrayList<RecordAll>();
                 recordMap.put(time, list);
             }
             list.add(record);
@@ -1375,12 +1382,12 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
         int index = 0;
         for (String groupKey : lineMap.keySet()){
-            HashMap<Long, ArrayList<Record> > recordMap = lineMap.get(groupKey);
+            HashMap<Long, ArrayList<RecordAll> > recordMap = lineMap.get(groupKey);
             ArrayList<PlotComparisonItem> singleLineItems = new ArrayList<PlotComparisonItem>();
 
             int numbOfAttacks = 0;
             for (long time : recordMap.keySet()){
-                ArrayList<Record>list = recordMap.get(time);
+                ArrayList<RecordAll>list = recordMap.get(time);
                 if (list.size() == 0) continue;
                 PlotComparisonItem item = new PlotComparisonItem(this.getHourAsTimeString(time), 0 , (double)time, (double) list.size());
                 singleLineItems.add(item);
@@ -1425,28 +1432,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         protocollist.add(protocol);
         filter.setProtocols(protocollist);
 
-        ArrayList<PlotComparisonItem> plotItems = this.dbh.attacksPerBSSID(filter); //new ArrayList<PlotComparisonItem>();
+        ArrayList<PlotComparisonItem> plotItems = this.daoHelper.getNetworkRecordDAO().attacksPerBSSID(filter);
 
-        /*
-        HashMap<String, Integer> recordMap = new HashMap<String, Integer>();
-        ArrayList<Record> records = this.dbh.getRecordsForFilter(filter);
-        for (Record record : records){
-            int count = 0;
-            if (recordMap.containsKey(record.getBssid())){
-                count = recordMap.get(record.getBssid());
-            }
-            count++;
-            recordMap.put(record.getBssid(), count);
-        }
-        int index = 0;
-        for (String key : recordMap.keySet()){
-            double value = (double)recordMap.get(key);
-            if (value == 0.) continue;
-            PlotComparisonItem item = new PlotComparisonItem(key, this.getColor(index), 0., value);
-            plotItems.add(item);
-            index++;
-        }
-        */
         Collections.sort(plotItems, new Comparator<PlotComparisonItem>() {
             @Override
             public int compare(PlotComparisonItem s1, PlotComparisonItem s2) {
@@ -1467,28 +1454,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         protocollist.add(protocol);
         filter.setProtocols(protocollist);
 
-        ArrayList<PlotComparisonItem> plotItems = this.dbh.attacksPerESSID(filter); //new ArrayList<PlotComparisonItem>();
+        ArrayList<PlotComparisonItem> plotItems = this.daoHelper.getNetworkRecordDAO().attacksPerESSID(filter); //new ArrayList<PlotComparisonItem>();
 
-        /*
-        HashMap<String, Integer> recordMap = new HashMap<String, Integer>();
-        ArrayList<Record> records = this.dbh.getRecordsForFilter(filter);
-        for (Record record : records){
-            int count = 0;
-            if (recordMap.containsKey(record.getSsid())){
-                count = recordMap.get(record.getSsid());
-            }
-            count++;
-            recordMap.put(record.getSsid(), count);
-        }
-        int index = 0;
-        for (String key : recordMap.keySet()){
-            double value =  (double)recordMap.get(key);
-            if (value == 0.) continue;
-            PlotComparisonItem item = new PlotComparisonItem(key,this.getColor(index), 0. ,value);
-            plotItems.add(item);
-            index++;
-        }
-        */
         Collections.sort(plotItems, new Comparator<PlotComparisonItem>() {
             @Override
             public int compare(PlotComparisonItem s1, PlotComparisonItem s2) {
@@ -1731,9 +1698,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
     /**Returns a date as a formated string
-     * @param long date
+     * @param timeStamp date
      * @return String date format (H:mm  dd/MM/yyyy)*/
     private String getDateAsString(long timeStamp) {
         try {

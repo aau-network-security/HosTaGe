@@ -9,12 +9,16 @@ import java.util.HashMap;
 
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.SyncData;
 import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.sync.SyncMessage;
 import de.tudarmstadt.informatik.hostage.sync.Synchronizer;
 
@@ -28,15 +32,19 @@ public class CommunicationThread extends Thread {
 	private final ObjectInputStream objectInput;
 	private final ObjectOutputStream objectOuput;
 	private final Handler mHandler;
-	private final HostageDBOpenHelper mdbh;
+	private final DaoSession dbSession;
+	private final DAOHelper daoHelper;
+	//private final HostageDBOpenHelper mdbh;
     private Synchronizer synchronizer;
 
 	public CommunicationThread(Context con, BluetoothSocket socket, Handler handler) {
 		mmSocket = socket;
 		mHandler = handler;
 		context = con;
-		mdbh = new HostageDBOpenHelper(context);
-        synchronizer = new Synchronizer(mdbh);
+		//mdbh = new HostageDBOpenHelper(context);
+		dbSession = HostageApplication.getInstances().getDaoSession();
+		daoHelper = new DAOHelper(dbSession,context);
+        synchronizer = new Synchronizer(dbSession,context);
 
 		ObjectInputStream tmpIn = null;
 		ObjectOutputStream tmpOut = null;
@@ -67,7 +75,7 @@ public class CommunicationThread extends Thread {
 
 	@Override
 	public void run() {	
-		HashMap<String, Long> devices = mdbh.getSyncDeviceHashMap();
+		HashMap<String, Long> devices = this.daoHelper.getSyncDeviceDAO().getSyncDeviceHashMap();
 		write(new SyncMessage(SyncMessage.SYNC_REQUEST, devices));
 		// Keep listening to the InputStream until an exception occurs
 		while (true) {

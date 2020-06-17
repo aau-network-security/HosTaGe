@@ -21,10 +21,12 @@ import android.widget.TextView;
 
 
 import de.tudarmstadt.informatik.hostage.Handler;
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.model.Profile;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.adapter.ServicesListAdapter;
@@ -51,7 +53,9 @@ public class ServicesFragment extends TrackerFragment {
 
     private ArrayList<ServicesListItem> protocolList;
 
-    private HostageDBOpenHelper dbh = new HostageDBOpenHelper(MainActivity.getContext());
+    //private HostageDBOpenHelper dbh = new HostageDBOpenHelper(MainActivity.getContext());
+    private DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+    private DAOHelper daoHelper = new DAOHelper(dbSession,getContext());
 
     private String[] protocols;
 
@@ -128,7 +132,7 @@ public class ServicesFragment extends TrackerFragment {
                     if (sender.equals(Handler.class.getName()) && values[0].equals(getString(R.string.broadcast_started))) {
                         for (ServicesListItem item : protocolList) {
                             if (item.protocol.equals(values[1])) {
-                                item.attacks = dbh.getNumAttacksSeenByBSSID(item.protocol,
+                                item.attacks = daoHelper.getAttackRecordDAO().getNumAttacksSeenByBSSID(item.protocol,
                                         mConnectionInfo.getString(
                                                 getString(R.string.connection_info_bssid), null));
                             }
@@ -178,7 +182,7 @@ public class ServicesFragment extends TrackerFragment {
         int i = 0;
         for (String protocol : protocols) {
             protocolList.add(new ServicesListItem(protocol));
-            protocolList.get(i).attacks = dbh.getNumAttacksSeenByBSSID(protocolList.get(i).protocol,
+            protocolList.get(i).attacks = daoHelper.getAttackRecordDAO().getNumAttacksSeenByBSSID(protocolList.get(i).protocol,
                     mConnectionInfo.getString(getString(R.string.connection_info_bssid), null));
             i++;
         }

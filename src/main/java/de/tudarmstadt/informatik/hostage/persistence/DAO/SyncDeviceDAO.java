@@ -7,24 +7,33 @@ import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 
 
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
+import de.tudarmstadt.informatik.hostage.logging.AttackRecordDao;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
+import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
 import de.tudarmstadt.informatik.hostage.logging.SyncDeviceDao;
 import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
+import de.tudarmstadt.informatik.hostage.logging.SyncRecord;
+
+import static de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO.currentDevice;
 
 
 public class SyncDeviceDAO extends DAO {
-    private static SyncDevice thisDevice = null;
+    public static SyncDevice thisDevice = null;
     private Context context;
     private DaoSession daoSession;
 
     public SyncDeviceDAO(DaoSession daoSession){
         this.daoSession= daoSession;
+        this.generateCurrentDevice();
 
     }
 
@@ -43,6 +52,7 @@ public class SyncDeviceDAO extends DAO {
      */
     public void insert( SyncDevice record){
         SyncDeviceDao recordDao = this.daoSession.getSyncDeviceDao();
+        record.setDeviceID(UUID.randomUUID().toString());
         insertElement(recordDao,record);
     }
 
@@ -84,8 +94,7 @@ public class SyncDeviceDAO extends DAO {
      * Updates the Timestamps of synchronization devices from a HashMap.
      * @param devices HashMap of device ids and their synchronization timestamps.
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public synchronized void updateSyncDevices(HashMap<String, Long> devices){
+public synchronized void updateSyncDevices(HashMap<String, Long> devices){
         SyncDeviceDao recordDao = this.daoSession.getSyncDeviceDao();
         ArrayList<SyncDevice> allDevices = this.getSyncDevices();
 
@@ -122,6 +131,54 @@ public class SyncDeviceDAO extends DAO {
         syncInfo.deviceMap  = deviceMap;
         syncInfo.bssids = networkRecordDAO.getAllBSSIDS();
         return syncInfo;
+    }
+
+    /**
+     * Returns all device ids.
+     * @return list of all device ids.
+     */
+    public synchronized  ArrayList<String> getAllDevicesIds(){
+        ArrayList<String> idsList = new ArrayList<String>();
+        ArrayList<SyncDevice> syncDevices = this.getSyncDevices();
+
+        for(SyncDevice record:syncDevices){
+            String s = record.getDeviceID();
+            idsList.add(s);
+        }
+
+        return idsList;
+
+    }
+
+    /**
+     * Adds a given {@link SyncRecord}s to the database.
+     *
+     * @param records {@link List}<AttackRecord>
+     *            The added {@link SyncRecord}s .
+     */
+    synchronized public void insertSyncRecords(List<SyncRecord> records) {
+        AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);
+        MessageRecordDAO messageRecordDAO = new MessageRecordDAO(this.daoSession);
+
+        for (SyncRecord record : records){
+            AttackRecord attackRecord = record.getAttackRecord();
+            attackRecordDAO.insert(attackRecord);
+
+            if(record.getMessageRecords() == null){
+                MessageRecord msg = new MessageRecord(true);
+                msg.setAttack_id(attackRecord.getAttack_id());
+                msg.setType(MessageRecord.TYPE.RECEIVE);
+                msg.setPacket("");
+                msg.setTimestamp(System.currentTimeMillis());
+
+                messageRecordDAO.insert(msg);
+            } else {
+                messageRecordDAO.insertMessageRecords(record.getMessageRecords());
+            }
+        }
+        attackRecordDAO.updateSyncDevicesMaxID();
+
+
     }
 
 
@@ -193,4 +250,71 @@ public class SyncDeviceDAO extends DAO {
         this.insertSyncDevices(devices);
     }
 
-}
+    /**
+     * Returns all missing / newly inserted and updated {@link SyncDevice}s.
+     * @param oldDeviceMap map with device id and max sync_id for the device
+     * @param includeMissing boolean
+     * @return array of {@link SyncDevice}s
+     */
+    public synchronized  ArrayList<SyncDevice> getUpdatedDevicesFor(HashMap<String, Long> oldDeviceMap, boolean includeMissing){
+        ArrayList<SyncDevice> devices = this.getSyncDevices();
+        ArrayList<SyncDevice> recordList = new ArrayList<SyncDevice>();
+
+        boolean actualiseOwnDevice = false;
+        if (oldDeviceMap.containsKey(currentDevice().getDeviceID()) || includeMissing){
+            actualiseOwnDevice = true;
+        }
+        for(SyncDevice record:devices){
+            if (currentDevice().getDeviceID().equals(record.getDeviceID()) && actualiseOwnDevice)
+                record.setHighest_attack_id(currentDevice().getHighest_attack_id());
+
+            if (oldDeviceMap.containsKey(record.getDeviceID())){
+                Long oldSyncId = oldDeviceMap.get(record.getDeviceID());
+                if (oldSyncId < record.getHighest_attack_id()){
+                    recordList.add(record);
+                }
+            } else {
+                if (includeMissing)
+                    recordList.add(record);
+            }
+
+        }
+        return recordList;
+    }
+
+    /**
+     * Returns all new {@link AttackRecord}s for the given devices (including all missing devices).
+     * @param deviceMap map of device id and max sync_id of it
+     * @param includeMissingDevices boolean
+     * @return list of {@link AttackRecord}s
+     */
+    public synchronized  ArrayList<SyncRecord> getUnsyncedAttacksFor(HashMap<String,Long> deviceMap, boolean includeMissingDevices) {
+        ArrayList<SyncDevice> updatedDevices = this.getUpdatedDevicesFor(deviceMap, includeMissingDevices);
+        ArrayList<SyncRecord> recordList = new ArrayList<SyncRecord>();
+        AttackRecordDao attackRecordDao = this.daoSession.getAttackRecordDao();
+        SyncRecord syncRecord= new SyncRecord();
+
+
+        SyncDevice currentDevice = currentDevice();
+        for (SyncDevice sDevice : updatedDevices) {
+            String deviceID = sDevice.getDeviceID();
+            Long maxID = deviceMap.get(deviceID);
+            long checkId = -1;
+            if (maxID != null) checkId = maxID.longValue();
+
+            QueryBuilder<AttackRecord> qb = attackRecordDao.queryBuilder();
+            qb.where(AttackRecordDao.Properties.Device.eq(deviceID),AttackRecordDao.Properties.Sync_id.gt(maxID));
+           // qb.join(SyncDevice.class
+             //       ,AttackRecordDao.Properties.Device).and(AttackRecordDao.Properties.Device.eq(deviceID)
+            //,AttackRecordDao.Properties.Sync_id.gt(maxID)); //with join
+            ArrayList<AttackRecord> devices = (ArrayList<AttackRecord>) qb.list();
+
+            if(devices!= null)
+                syncRecord = new SyncRecord(devices.get(0));
+                recordList.add(syncRecord);
+        }
+        return recordList;
+
+    }
+
+    }

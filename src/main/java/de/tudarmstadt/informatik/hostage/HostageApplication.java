@@ -1,17 +1,26 @@
 package de.tudarmstadt.informatik.hostage;
 
 import android.app.Application;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.analytics.GoogleAnalytics;
 
 import de.tudarmstadt.informatik.hostage.R;
+import de.tudarmstadt.informatik.hostage.logging.DaoMaster;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 
 /**
  * Created by Fabio Arnold on 28.03.14.
  */
 public class HostageApplication extends Application {
 	private Tracker mAppTracker = null;
+	private DaoMaster.DevOpenHelper mHelper;
+	private SQLiteDatabase db;
+	private DaoMaster mDaoMaster;
+	private DaoSession mDaoSession;
+	public static HostageApplication instances;
+
 
 	public synchronized Tracker getTracker() {
 		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
@@ -19,5 +28,35 @@ public class HostageApplication extends Application {
 			mAppTracker = analytics.newTracker(R.xml.app_tracker);
 		}
 		return mAppTracker;
+	}
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		instances = this;
+		setDatabase();
+	}
+
+	/**
+	 * Setting up green Dao
+	 */
+	private void setDatabase() {
+		// Note: The default DaoMaster.DevOpenHelper deletes all tables when the database is upgraded, meaning that this will result in data loss.
+		mHelper = new DaoMaster.DevOpenHelper(this, "hostage-db", null);
+		db = mHelper.getWritableDatabase();
+		// Note: This database connection belongs to DaoMaster, so multiple sessions refer to the same database connection.
+		mDaoMaster = new DaoMaster(db);
+		mDaoSession = mDaoMaster.newSession();
+
+	}
+	public static HostageApplication getInstances(){
+		return instances;
+	}
+
+	public DaoSession getDaoSession() {
+		return mDaoSession;
+	}
+	public SQLiteDatabase getDb() {
+		return db;
 	}
 }

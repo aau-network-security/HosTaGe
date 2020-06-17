@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.List;
+import java.util.UUID;
 
 import android.content.Context;
 import android.content.Intent;
@@ -223,7 +224,8 @@ public class Handler implements Runnable {
 		record.setAttack_id(attack_id);		
 		record.setType(type);
 		record.setTimestamp(System.currentTimeMillis());
-		record.setPacket(packet);
+		if(packet != null && !packet.isEmpty())
+			record.setPacket(packet);
 		return record;
 	}
 	
@@ -232,12 +234,13 @@ public class Handler implements Runnable {
 	 * 
 	 * @return The AttackRecord representing the attack.
 	 */
+	//TODO Problem with setDevice
     public AttackRecord createAttackRecord() {
 		AttackRecord record = new AttackRecord();
 		record.setAttack_id(attack_id);
         record.setSync_id(attack_id);
-        record.setDevice(SyncDevice.currentDevice().getDeviceID());
-
+        //record.setDevice(SyncDevice.currentDevice().getDeviceID());
+        record.setDevice(UUID.randomUUID().toString()); //problem
 		record.setProtocol(protocol.toString());
 		record.setExternalIP(externalIP);
 		record.setLocalIP(client.getLocalAddress().getHostAddress());
@@ -322,7 +325,6 @@ public class Handler implements Runnable {
 			}
 		}
 		while (!thread.isInterrupted() && (inputLine = reader.read()) != null) {
-            System.out.println("inputLine "+bytesToHex(inputLine.getBytes()));
 			outputLine = protocol.processMessage(inputLine);
 			log(MessageRecord.TYPE.RECEIVE, inputLine.toString());
 			if (outputLine != null) {

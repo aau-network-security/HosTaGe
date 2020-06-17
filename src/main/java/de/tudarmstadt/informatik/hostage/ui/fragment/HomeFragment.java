@@ -30,11 +30,12 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 
-
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.model.Profile;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 import de.tudarmstadt.informatik.hostage.services.MultiStageAlarm;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
@@ -77,7 +78,8 @@ public class HomeFragment extends Fragment {
 
 	private SharedPreferences mConnectionInfo;
 
-	private HostageDBOpenHelper mDbHelper;
+	private  DaoSession dbSession;
+	private  DAOHelper daoHelper;
 
 	private boolean mReceiverRegistered;
 
@@ -199,7 +201,7 @@ public class HomeFragment extends Fragment {
 		}
 
 		boolean hasActiveListeners = false;
-		int totalAttacks = mDbHelper.getNumAttacksSeenByBSSID(
+		int totalAttacks = daoHelper.getAttackRecordDAO().getNumAttacksSeenByBSSID(
 				mConnectionInfo.getString(getString(R.string.connection_info_bssid), null));
 
 		if (MainActivity.getInstance().getHostageService() != null) {
@@ -271,7 +273,8 @@ public class HomeFragment extends Fragment {
 			activity.setTitle(getResources().getString(R.string.drawer_overview));
 		}
 
-		mDbHelper = new HostageDBOpenHelper(getActivity());
+		dbSession = HostageApplication.getInstances().getDaoSession();
+		daoHelper = new DAOHelper(dbSession, getContext());
 
 		mProfileManager = ProfileManager.getInstance();
 		mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);

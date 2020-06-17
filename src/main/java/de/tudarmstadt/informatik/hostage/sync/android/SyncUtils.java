@@ -55,6 +55,7 @@ import java.util.Map;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.Record;
+import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 import de.tudarmstadt.informatik.hostage.logging.SyncData;
 import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
 import de.tudarmstadt.informatik.hostage.logging.SyncRecord;
@@ -195,6 +196,40 @@ public class SyncUtils {
             e.printStackTrace();
         }
     }
+
+    public static void appendRecordToStringWriter(RecordAll record, Writer stream){
+        try {
+            stream.append(
+                    "{" +
+                            "\"sensor\":{" +
+                            "\"name\":\"HosTaGe\"," +
+                            "\"type\":\"Honeypot\"" +
+                            "}," +
+                            "\"src\":{" +
+                            "\"ip\":\"" + record.getRemoteIP() + "\"," +
+                            "\"port\":" + record.getRemotePort() +
+                            "}," +
+                            "\"dst\":{" +
+                            "\"ip\":\"" + record.getLocalIP() + "\"," +
+                            "\"port\":" + record.getLocalPort() +
+                            "}," +
+                            "\"type\":" + (protocolsTypeMap.containsKey(record.getProtocol()) ? protocolsTypeMap.get(record.getProtocol()) : 0) + "," +
+                            "\"log\":\"" + record.getProtocol() + "\"," +
+                            "\"md5sum\":\"\"," +
+                            "\"date\":" + (int)(record.getTimestamp() / 1000) + "," +
+                            "\"bssid\":\"" + record.getBssid() + "\"," +
+                            "\"ssid\":\"" + record.getSsid() + "\"," +
+                            "\"device\":\"" + record.getDevice() + "\"," +
+                            "\"sync_id\":\"" + record.getSync_id() + "\"," +
+                            "\"internal_attack\":\"" + record.isWasInternalAttack() + "\"," +
+                            "\"external_ip\":\"" + record.getExternalIP() + "\"" +
+                            "}\n"
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static boolean uploadRecordsToServer(String entity, String serverAddress){
         HttpPost httppost;

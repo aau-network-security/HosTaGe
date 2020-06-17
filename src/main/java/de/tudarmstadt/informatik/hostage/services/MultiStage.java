@@ -18,14 +18,17 @@ import java.util.Comparator;
 import java.util.List;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.Logger;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.Record;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.logging.RecordAll;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 
 
@@ -43,6 +46,12 @@ public class MultiStage extends Service {
     int stackLport;
     String stackssid;
     String stackbssid;
+    private DaoSession dbSession;
+    private DAOHelper daoHelper;
+    private static int offset=0;
+    private int limit=50;
+    private int size;
+    List<RecordAll> recordArray = new ArrayList<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -57,12 +66,18 @@ public class MultiStage extends Service {
     public void onCreate() {
         super.onCreate();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            dbSession = HostageApplication.getInstances().getDaoSession();
+            daoHelper = new DAOHelper(dbSession,getApplicationContext());
             startCustomForeground();
             fetchData();
         }
 
-        else
+        else {
+            dbSession = HostageApplication.getInstances().getDaoSession();
+            daoHelper = new DAOHelper(dbSession,getApplicationContext());
             startForeground(1, new Notification());
+            fetchData();
+        }
     }
 
     @Override
@@ -88,14 +103,19 @@ public class MultiStage extends Service {
         LogFilter filter = new LogFilter();
 
         filter.setAboveTimestamp(filterTime);
+        //size = daoHelper.getMessageRecordDAO().getRecordCount();
+        recordArray = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter);
 
-        HostageDBOpenHelper mDBOpenHelper = new HostageDBOpenHelper(this);
-        List<Record> recordArray = mDBOpenHelper.getRecordsForFilter(filter);
-        Collections.sort(recordArray, new Comparator<Record>() {
-            public int compare(Record one, Record other) {
-                return one.getRemoteIP().compareTo(other.getRemoteIP());
-            }
-        });
+        if(!recordArray.isEmpty())
+            Collections.sort(recordArray, new Comparator<RecordAll>() {
+                public int compare(RecordAll one, RecordAll other) {
+                    try {
+                        return one.getRemoteIP().compareTo(other.getRemoteIP());
+                    }catch (Exception e){
+                        return  0;
+                    }
+                }
+            });
         ArrayList<Stackbean> b = new ArrayList<Stackbean>();
         String prevRemoteIP = "";
         String prevProt = "";
@@ -103,28 +123,30 @@ public class MultiStage extends Service {
         int prevrport = 0;
         String prevLocalIP = "";
 
+        try {
+            if (recordArray.size() != 0) {
+                for (RecordAll tmp : recordArray) {
 
-        if (recordArray.size() != 0) {
-            for (Record tmp : recordArray) {
+                    if ((prevRemoteIP.equals(tmp.getRemoteIP()) && !prevProt.equals(tmp.getProtocol()) && !prevProt.contentEquals("MULTISTAGE"))) {
 
-                if ((prevRemoteIP.equals(tmp.getRemoteIP()) && !prevProt.equals(tmp.getProtocol()) && !prevProt.contentEquals("MULTISTAGE"))) {
+                        b.add(new Stackbean(prevRemoteIP, prevLocalIP, prevProt, prevrport, prevlport, bssid, ssid));
+                        b.add(new Stackbean(tmp.getRemoteIP(), tmp.getLocalIP(), tmp.getProtocol(), tmp.getRemotePort(), tmp.getLocalPort(), tmp.getBssid(), tmp.getSsid()));         //,tmp.getLocalPort(),tmp.getRemotePort()));
+                    }
+                    prevRemoteIP = tmp.getRemoteIP();
+                    prevProt = tmp.getProtocol();
+                    prevrport = tmp.getRemotePort();
+                    prevlport = tmp.getLocalPort();
+                    externalIP = tmp.getExternalIP();
+                    bssid = tmp.getBssid();
+                    ssid = tmp.getSsid();
+                    prevLocalIP = tmp.getLocalIP();
 
-                    b.add(new Stackbean(prevRemoteIP, prevLocalIP, prevProt, prevrport, prevlport, bssid, ssid));
-                    b.add(new Stackbean(tmp.getRemoteIP(), tmp.getLocalIP(), tmp.getProtocol(), tmp.getRemotePort(), tmp.getLocalPort(), tmp.getBssid(), tmp.getSsid()));         //,tmp.getLocalPort(),tmp.getRemotePort()));
+
                 }
-                prevRemoteIP = tmp.getRemoteIP();
-                prevProt = tmp.getProtocol();
-                prevrport = tmp.getRemotePort();
-                prevlport = tmp.getLocalPort();
-                externalIP = tmp.getExternalIP();
-                bssid = tmp.getBssid();
-                ssid = tmp.getSsid();
-                prevLocalIP = tmp.getLocalIP();
-
-
             }
-        }
+        }catch (Exception e){
 
+        }
         if (b.size() != 0) {
             StringBuilder message = new StringBuilder();
             for (Stackbean tmp : b) {
@@ -143,7 +165,8 @@ public class MultiStage extends Service {
 
                //Toast.makeText(MainActivity.getInstance().getApplicationContext(), message, Toast.LENGTH_LONG).show();
             }
-            log(MessageRecord.TYPE.RECEIVE, message.toString(), stackRemoteIP, stackLocalIp, stackProtocol,stackRport, stackLport,stackbssid, stackssid);
+            log(MessageRecord.TYPE.RECEIVE, message.toString(),externalIP,
+                    stackRemoteIP, stackLocalIp, stackProtocol,stackRport, stackLport,stackbssid, stackssid);
             b.clear();
             message.equals("");
 
@@ -165,11 +188,11 @@ public class MultiStage extends Service {
      * @param bssid Basic service set identifier
      * @param ssid Service set identifier-Name of the Wifi Network
      */
-    public void log(MessageRecord.TYPE type, String message, String remoteip, String localip, String protocol, int rport, int lport, String bssid, String ssid) {
+    public void log(MessageRecord.TYPE type, String message,String externalIP, String remoteip, String localip, String protocol, int rport, int lport, String bssid, String ssid) {
 
         AttackRecord attackRecord = new AttackRecord(true);
 
-        attackRecord.setProtocol("MULTISTAGE");
+        attackRecord.setProtocol(protocol);
         attackRecord.setExternalIP(externalIP);
         attackRecord.setLocalIP(localip);
         attackRecord.setLocalPort(lport);

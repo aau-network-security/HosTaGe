@@ -220,7 +220,6 @@ public class MainActivity extends Activity {
 	/**
 	 * {@inheritDoc}
 	 */
-	@RequiresApi(api = Build.VERSION_CODES.O)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -387,11 +386,13 @@ public class MainActivity extends Activity {
 	/**
 	 * Starts the hostage service and binds this activity to the service
 	 */
-	//TODO 			context.startForegroundService(getServiceIntent()); problem!
-	@RequiresApi(api = Build.VERSION_CODES.O)
 	public void startAndBind() {
 		if (!isServiceRunning()) {
-			context.startForegroundService(getServiceIntent());
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+				context.startForegroundService(getServiceIntent());
+			else
+				startService(getServiceIntent());
+
 		}
 
 		bindService();

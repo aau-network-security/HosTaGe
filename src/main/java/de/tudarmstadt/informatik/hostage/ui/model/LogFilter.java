@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import de.tudarmstadt.informatik.hostage.logging.Record;
+import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 
 
 public class LogFilter implements Parcelable {
@@ -203,7 +203,7 @@ public class LogFilter implements Parcelable {
 	}
 
     /**
-     * Set the protocols which a {@link Record Record} can have.
+     * Set the protocols which a {@link RecordAll Record} can have.
      * @param protocols ArrayList<String>
      */
 	public void setProtocols(ArrayList<String> protocols) {
@@ -211,7 +211,7 @@ public class LogFilter implements Parcelable {
 	}
 
     /**
-     * Set the bssids which a {@link Record Record} can have.
+     * Set the bssids which a {@link RecordAll Record} can have.
      * @param bssids ArrayList<String>
      */
 	public void setBSSIDs(ArrayList<String> bssids) {
@@ -219,7 +219,7 @@ public class LogFilter implements Parcelable {
 	}
 
     /**
-     * Set the Essids which a {@link Record Record} can have.
+     * Set the Essids which a {@link RecordAll Record} can have.
      * @param essids ArrayList<String>
      */
 	public void setESSIDs(ArrayList<String> essids) {
@@ -227,7 +227,7 @@ public class LogFilter implements Parcelable {
 	}
 
     /**
-     * Set the minimal Timestamp a filter {@link Record Record} can have.
+     * Set the minimal Timestamp a filter {@link RecordAll Record} can have.
      * @param timestamp long
      */
 	public void setAboveTimestamp(long timestamp) {
@@ -235,7 +235,7 @@ public class LogFilter implements Parcelable {
 	}
 
     /**
-     * Set the maximal Timestamp a filtered {@link Record Record} can have.
+     * Set the maximal Timestamp a filtered {@link RecordAll Record} can have.
      * @param timestamp long
      */
 	public void setBelowTimestamp(long timestamp) {

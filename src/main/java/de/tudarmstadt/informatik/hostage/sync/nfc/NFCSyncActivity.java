@@ -42,13 +42,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.SyncInfoRecord;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.sync.tracing.TracingSyncService;
 
 
@@ -109,10 +113,12 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 	@Override
 	public NdefMessage createNdefMessage(NfcEvent event) {
 		// Get Networkdata
-		HostageDBOpenHelper dbh = new HostageDBOpenHelper(this);
-		ArrayList<NetworkRecord> localNetworkInformation = dbh.getNetworkInformation();
-		HashMap<String, Long> devices_local = dbh.getSyncDeviceHashMap();
-		ArrayList<SyncInfoRecord> syncInfo = dbh.getSyncInfo();
+		//HostageDBOpenHelper dbh = new HostageDBOpenHelper(this);
+		DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+		DAOHelper daoHelper = new DAOHelper(dbSession,getApplicationContext());
+		ArrayList<NetworkRecord> localNetworkInformation = daoHelper.getNetworkRecordDAO().getNetworkInformation();
+		HashMap<String, Long> devices_local = daoHelper.getSyncDeviceDAO().getSyncDeviceHashMap();
+		ArrayList<SyncInfoRecord> syncInfo = daoHelper.getSyncInfoRecordDAO().getSyncInfo();
 		
 		NdefMessage msg = null;
 		try {
@@ -188,11 +194,13 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 		// only one message sent during the beam
 		NdefMessage msg = (NdefMessage) rawMsgs[0];
 		try {
-			HostageDBOpenHelper dbh = new HostageDBOpenHelper(this);
+			DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+			DAOHelper daoHelper = new DAOHelper(dbSession,getApplicationContext());
+			//HostageDBOpenHelper dbh = new HostageDBOpenHelper(this);
 
 			ArrayList<NetworkRecord> remoteNetworkInformation = (ArrayList<NetworkRecord>) deserialize(msg.getRecords()[0].getPayload());
 			HashMap<String, Long> devices_remote = (HashMap<String, Long>) deserialize(msg.getRecords()[1].getPayload());
-			HashMap<String, Long> devices_local = dbh.getSyncDeviceHashMap();
+			HashMap<String, Long> devices_local = daoHelper.getSyncDeviceDAO().getSyncDeviceHashMap();
 			ArrayList<SyncInfoRecord> syncInfo = (ArrayList<SyncInfoRecord>) deserialize(msg.getRecords()[2].getPayload());
 			
 			long tracing_timestamp = 0;
@@ -214,9 +222,9 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 				}				    
 			}	
 			
-			dbh.updateSyncDevices(devices_remote);
-			dbh.updateSyncInfo(syncInfo);
-			dbh.updateNetworkInformation(remoteNetworkInformation);
+			daoHelper.getSyncDeviceDAO().updateSyncDevices(devices_remote);
+			daoHelper.getSyncInfoRecordDAO().updateSyncInfo(syncInfo);
+			daoHelper.getNetworkRecordDAO().updateNetworkInformation(remoteNetworkInformation);
 			mHandler.obtainMessage(MESSAGE_RECEIVED).sendToTarget();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

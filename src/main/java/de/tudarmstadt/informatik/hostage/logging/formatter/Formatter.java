@@ -2,6 +2,7 @@ package de.tudarmstadt.informatik.hostage.logging.formatter;
 
 
 import de.tudarmstadt.informatik.hostage.logging.Record;
+import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 
 public abstract class Formatter {
 
@@ -20,5 +21,8 @@ public abstract class Formatter {
 	 * @return Formatted human-readable String.
 	 */
 	abstract public String format(Record record);
+
+	abstract public String format(RecordAll record);
+
 
 }

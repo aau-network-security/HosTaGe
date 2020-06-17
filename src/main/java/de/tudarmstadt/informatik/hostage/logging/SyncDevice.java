@@ -6,7 +6,7 @@ import org.greenrobot.greendao.annotation.Id;
 
 import org.greenrobot.greendao.annotation.Generated;
 
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 
 /**
  * Created by Julien on 04.12.2014.
@@ -58,6 +58,6 @@ public class SyncDevice {
      */
     public static SyncDevice currentDevice()
     {
-        return HostageDBOpenHelper.currentDevice();
+        return AttackRecordDAO.currentDevice();
     }
 }

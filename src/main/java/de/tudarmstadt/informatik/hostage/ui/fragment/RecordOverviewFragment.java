@@ -10,8 +10,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -28,6 +31,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,15 +45,18 @@ import java.util.Locale;
 import java.util.Random;
 
 import de.tudarmstadt.informatik.hostage.Handler;
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.LogExport;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.Record;
+import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 import de.tudarmstadt.informatik.hostage.logging.SyncData;
 import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.sync.android.SyncUtils;
 import de.tudarmstadt.informatik.hostage.sync.bluetooth.BluetoothSyncActivity;
 import de.tudarmstadt.informatik.hostage.sync.tracing.TracingSyncActivity;
@@ -65,6 +72,8 @@ import de.tudarmstadt.informatik.hostage.ui.popup.AbstractPopupItem;
 import de.tudarmstadt.informatik.hostage.ui.popup.SimplePopupItem;
 import de.tudarmstadt.informatik.hostage.ui.popup.SimplePopupTable;
 import de.tudarmstadt.informatik.hostage.ui.popup.SplitPopupItem;
+
+import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 
 
 public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimeDialogFragment.DateTimeDialogFragmentListener {
@@ -101,10 +110,15 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
     private Toast noDataNotificationToast;
 
-    HostageDBOpenHelper dbh;
+    private DaoSession dbSession;
+    private DAOHelper daoHelper;
+
+    private static int offset=0;
+    private int limit=50;
 
     private String sectionToOpen = "";
     private ArrayList<Integer> openSections;
+    private ProgressBar progressBar;
 
 	private SharedPreferences pref;
 
@@ -112,7 +126,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
     private boolean mReceiverRegistered = false;
     private BroadcastReceiver mReceiver;
-
+    private ExpandableListView mylist;
+    ArrayList<RecordAll> data= new ArrayList<>();
 
 
     /* DATE CONVERSION STUFF*/
@@ -129,9 +144,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     static final String TODAY = MainActivity.getInstance().getResources().getString( R.string.TODAY);
     static final String YESTERDAY = MainActivity.getInstance().getResources().getString( R.string.YESTERDAY);
 
-
-    private SyncInfo si ;// = s.getSyncInfo();
-    private SyncData sd ;//= s.getSyncData(si);
 
     /**
      * Constructor
@@ -153,21 +165,12 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         setHasOptionsMenu(true);
 		getActivity().setTitle(getResources().getString(R.string.drawer_records));
 
-		dbh = new HostageDBOpenHelper(this.getActivity().getBaseContext());
-	    pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        dbSession = HostageApplication.getInstances().getDaoSession();
+        daoHelper = new DAOHelper(dbSession,getApplicationContext());
+        //data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter, offset);
+        data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter);
+        pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-	    // Get the message from the intent
-        //this.addRecordToDB(4,4,4);
-        /*
-         Synchronizer s = new Synchronizer(this.dbh);
-         si = s.getSyncInfo();
-        HashMap<String, Long> map = new HashMap<String, Long>();
-        map.put(SyncDevice.currentDevice().getDeviceID(), new Long(-1));
-        si.deviceMap = map;
-         sd = s.getSyncData(si);
-
-         s.updateFromSyncData(sd);
-         */
         if (this.filter == null){
             Intent intent = this.getActivity().getIntent();
             LogFilter filter = intent.getParcelableExtra(LogFilter.LOG_FILTER_INTENT_KEY);
@@ -185,7 +188,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
 		View rootView = inflater.inflate(this.getLayoutId(), container, false);
         this.rootView = rootView;
-		ExpandableListView mylist = rootView.findViewById(R.id.loglistview);
+        mylist = rootView.findViewById(R.id.loglistview);
 
         this.spinner = rootView.findViewById(R.id.progressBar1);
         this.spinner.setVisibility(View.GONE);
@@ -193,6 +196,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		this.expListView = mylist;
 
         this.initialiseListView();
+
+        setListViewFooter();
+        setListOnScrollListener();
 
         ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -232,6 +238,34 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		return rootView;
 	 }
 
+
+    private void setListOnScrollListener(){
+
+        expListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            boolean manualScroll;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if(scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
+                        data.size())
+                    populateListGradually();
+
+                }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
+
+        }
+
+        );
+    }
+
+
+    private void setListViewFooter(){
+        View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.footer_listview_progressbar, null);
+        progressBar = view.findViewById(R.id.progressBar);
+        expListView.addFooterView(progressBar);
+    }
 
     /**Initialises the expandable list view in a backgorund thread*/
     private void initialiseListView(){
@@ -302,7 +336,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             @Override
             public void run()
             {
-                //RecordOverviewFragment.this.addRecordToDB(40, 10, 4);
                 updateUI(doInBackground());
             }
 
@@ -327,7 +360,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     *
     * @param  item {@link AbstractPopupItem AbstractPopupItem }
     * */
-	public void onFilterMenuItemSelected(AbstractPopupItem item) {
+    public void onFilterMenuItemSelected(AbstractPopupItem item) {
 		String title = item.getTitle();
 
         if (item instanceof SplitPopupItem){
@@ -366,7 +399,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         }
 		//return super.onOptionsItemSelected(item);
 	}
-
 
     @Override
     public void onStart() {
@@ -531,7 +563,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     *  Reloads the data in the ExpandableListView for the given filter object.
     *  @param  mylist {@link ExpandableListView ExpandableListView}
     * */
-	private RecordListAdapter populateListViewFromDB(ExpandableListView mylist) {
+    private RecordListAdapter populateListViewFromDB(ExpandableListView mylist) {
         ArrayList<String> groupTitle = new ArrayList<String>();
 
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = this.fetchDataForFilter(this.filter, groupTitle);
@@ -548,11 +580,19 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         return adapter;
 	}
 
+	private void populateListGradually(){
+        int recordsSize = daoHelper.getMessageRecordDAO().getRecordCount();
+        if(offset+limit<recordsSize-1) {
+            offset+=limit;
+            data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter, offset);
+            progressBar.setVisibility(View.GONE);
+        }
+
+        actualiseListViewInBackground(); //check
+    }
+
     private HashMap<String, ArrayList<ExpandableListItem>> fetchDataForFilter(LogFilter filter, ArrayList<String> groupTitle){
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = new HashMap<String, ArrayList<ExpandableListItem>>();
-
-        ArrayList<Record> data = dbh.getRecordsForFilter(filter == null ? this.filter : filter);
-
         // Adding Items to ListView
         String[] keys = new String[] { RecordOverviewFragment.this.getString(R.string.RecordBSSID), RecordOverviewFragment.this.getString(R.string.RecordSSID), RecordOverviewFragment.this.getString(R.string.RecordProtocol), RecordOverviewFragment.this.getString(R.string.RecordTimestamp)};
         int[] ids = new int[] {R.id.RecordTextFieldBSSID, R.id.RecordTextFieldSSID, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp };
@@ -571,7 +611,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         }
 
 
-        for (Record val : data) {
+        for (RecordAll val : data) {
             // DO GROUPING IN HERE
             HashMap<String, String> map = new HashMap<String, String>();
             map.put(RecordOverviewFragment.this.getString(R.string.RecordBSSID), val.getBssid());
@@ -765,8 +805,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
                 mListPosition = i;
                 mItemPosition = i2;
-	            HostageDBOpenHelper dbh = new HostageDBOpenHelper(getBaseContext());
-                Record rec = dbh.getRecordOfAttackId((int) item.getTag());
+                DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+                DAOHelper daoHelper = new DAOHelper(dbSession,getApplicationContext());
+                RecordAll rec = daoHelper.getAttackRecordDAO().getRecordOfAttackId((int) item.getTag());
                 RecordOverviewFragment.this.pushRecordDetailViewForRecord(rec);
                 return true;
             }
@@ -1009,13 +1050,13 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     }
 
     /**opens the bssid filter dialog*/
-	private void openBSSIDFilterDialog(){
+    private void openBSSIDFilterDialog(){
 		ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_BSSID,this.bssids(), this.selectedBSSIDs(), true , this);
 	    newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_BSSID);
 	}
 
     /**opens the essid filter dialog*/
-	private void openESSIDFilterDialog(){
+    private void openESSIDFilterDialog(){
 		ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_ESSID,this.essids(), this.selectedESSIDs(), true , this);
 	    newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_ESSID);
 	}
@@ -1057,7 +1098,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     /**returns the group title for the given record. Uses the groupingKey to decied which value of the record should be used.
     * @param  rec {@link Record Record }
     * @return String grouptitle*/
-    public String getGroupValue(Record rec){
+    public String getGroupValue(RecordAll rec){
         int index = this.groupingTitles().indexOf(this.groupingKey);
         switch (index){
             case 1:
@@ -1262,8 +1303,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * Returns all unique bssids.
     * @return ArrayList<String>
     * */
-	public ArrayList<String> bssids(){
-		ArrayList<String> records = dbh.getUniqueBSSIDRecords();
+    public ArrayList<String> bssids(){
+		ArrayList<String> records = daoHelper.getNetworkRecordDAO().getUniqueBSSIDRecords();
 		return records;
 	}
     /**
@@ -1271,7 +1312,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * The index of the selected bssid is the same index in the bssids() array.
     * @return boolean array, length == bssids().length
     * */
-	public boolean[] selectedBSSIDs(){
+    public boolean[] selectedBSSIDs(){
 		ArrayList<String> bssids = this.bssids();
 		boolean[] selected = new boolean[bssids.size()];
 
@@ -1287,8 +1328,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * Returns all unique essids.
     * @return ArrayList<String>
     * */
-	public ArrayList<String> essids(){
-		ArrayList<String> records = dbh.getUniqueESSIDRecords();
+    public ArrayList<String> essids(){
+		ArrayList<String> records = daoHelper.getNetworkRecordDAO().getUniqueESSIDRecords();
 		return records;
 	}
     /**
@@ -1296,7 +1337,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * The index of the selected essid is the same index in the essids() array.
     * @return boolean array, length == essids().length
     * */
-	public boolean[] selectedESSIDs(){
+    public boolean[] selectedESSIDs(){
 		ArrayList<String> essids = this.essids();
 		boolean[] selected = new boolean[essids.size()];
 
@@ -1361,7 +1402,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * Will be called if the users clicks the positiv button on a ChechlistDialog.
      * @param  dialog  {@link ChecklistDialog ChecklistDialog }
      */
-	public void onDialogPositiveClick(ChecklistDialog dialog) {
+    public void onDialogPositiveClick(ChecklistDialog dialog) {
 		String title = dialog.getTitle();
 		if(title.equals(FILTER_MENU_TITLE_BSSID)){
             ArrayList<String> titles =dialog.getSelectedItemTitles();
@@ -1428,7 +1469,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      */
     public void deleteFilteredAttacks(){
         LogFilter filter = this.filter;
-        dbh.deleteAttacksByFilter(filter);
+        daoHelper.getAttackRecordDAO().deleteAttacksByFilter(filter,offset);
         this.actualiseListViewInBackground();
     }
 
@@ -1452,7 +1493,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * @param maxMessagePerAttack maximal number of messages per attack
     * */
 	private void addRecordToDB( int createNetworks, int attacksPerNetwork, int maxMessagePerAttack) {
-        if ((dbh.getRecordCount() > 0)) dbh.clearData();
+        if ((daoHelper.getMessageRecordDAO().getRecordCount() > 0)) daoHelper.getAttackRecordDAO().clearData();
 
 		Calendar cal = Calendar.getInstance();
 
@@ -1547,19 +1588,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         }
 
-        dbh.updateNetworkInformation(networkRecords);
-        dbh.insertAttackRecords(attackRecords);
-        dbh.insertMessageRecords(messageRecords);
-//        int countAllLogs = dbh.getAllRecords().size();
-//        int countRecords = dbh.getRecordCount();
-//        int countAttacks = dbh.getAttackCount();
-//
-//        if ((countRecords == 0)) {
-//            Record rec = dbh.getRecordOfAttackId(0);
-//            Record rec2 = dbh.getRecord(0);
-//
-//            System.out.println("" + "Could not create logs!");
-//        }
+        daoHelper.getNetworkRecordDAO().updateNetworkInformation(networkRecords);
+        daoHelper.getAttackRecordDAO().insertAttackRecords(attackRecords);
+        daoHelper.getMessageRecordDAO().insertMessageRecords(messageRecords);
 
     }
 
@@ -1567,7 +1598,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     /**Navigation. Shows the record detail view for the given record
     * @param  record  {@link Record Record } to show
     * */
-    private void pushRecordDetailViewForRecord(Record record){
+    private void pushRecordDetailViewForRecord(RecordAll record){
 
         FragmentManager fm = this.getActivity().getFragmentManager();
 

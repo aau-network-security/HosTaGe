@@ -17,6 +17,7 @@ import de.tudarmstadt.informatik.hostage.logging.DaoMaster;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecordDao;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.NetworkRecordDAO;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 import de.tudarmstadt.informatik.hostage.ui.model.PlotComparisonItem;
@@ -191,7 +192,7 @@ public class NetworkRecordDAOTest {
         daoSession.insert(record);
         daoSession.insert(networkRecord);
 
-        ArrayList<NetworkRecord> records = networkRecorDAO.selectionBSSIDFromFilter(filter);
+        ArrayList<NetworkRecord> records = networkRecorDAO.selectionBSSIDFromFilter(filter,0);
 
         assertEquals(filter1,records.get(0).getBssid());
         assertEquals(filter2,records.get(1).getBssid());
@@ -220,7 +221,7 @@ public class NetworkRecordDAOTest {
         daoSession.insert(record);
         daoSession.insert(networkRecord);
 
-        ArrayList<NetworkRecord> records = networkRecorDAO.selectionESSIDFromFilter(filter);
+        ArrayList<NetworkRecord> records = networkRecorDAO.selectionESSIDFromFilter(filter,0);
 
         assertEquals(filter1,records.get(0).getSsid());
         assertEquals(filter2,records.get(1).getSsid());
@@ -319,6 +320,32 @@ public class NetworkRecordDAOTest {
 
         ArrayList<PlotComparisonItem> plots = networkRecorDAO.attacksPerESSID(filter);
         assertNotNull(plots);
+
+    }
+
+    @Test
+    public void testJoins(){
+        AttackRecord attackRecord = new AttackRecord();
+
+        String bssid = "test";
+        String protocol = "protocol";
+        String packet = "packet";
+
+        attackRecord.setAttack_id(2);
+        attackRecord.setProtocol(protocol);
+        attackRecord.setBssid(bssid);
+        record.setBssid(bssid);
+        record.setPacket(packet);
+        //attackRecord.setRecord(record); //not necessary
+
+        daoSession.insert(attackRecord);
+        daoSession.insert(record);
+
+        ArrayList<NetworkRecord> records = networkRecorDAO.joinAttacks(bssid,protocol);
+
+        assertEquals(1,records.size());
+        assertEquals(bssid,records.get(0).getBssid());
+        assertEquals(packet,records.get(0).getPacket());
 
     }
 

@@ -5,7 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.HostageApplication;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.MessageRecordDAO;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.NetworkRecordDAO;
 
 
 /**
@@ -98,8 +102,9 @@ public class Logger extends IntentService {
 
 	}
 
-	private HostageDBOpenHelper mDbHelper;
-
+	//private HostageDBOpenHelper mDbHelper;
+	private DaoSession dbSession;
+	private DAOHelper daoHelper;
 	public Logger() {
 		super("Logger");
 	}
@@ -107,18 +112,20 @@ public class Logger extends IntentService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mDbHelper = new HostageDBOpenHelper(getApplicationContext());
+		dbSession = HostageApplication.getInstances().getDaoSession();
+		daoHelper = new DAOHelper(dbSession,getApplicationContext());
+		//mDbHelper = new HostageDBOpenHelper(getApplicationContext());
 	}
 
 	private void handleActionLog(MessageRecord record) {
-		mDbHelper.addMessageRecord(record);
+		daoHelper.getMessageRecordDAO().insert(record);
 	}
 	private void handleActionLog(AttackRecord record) {
-		mDbHelper.addAttackRecord(record);
-		mDbHelper.updateSyncAttackCounter(record);
+		daoHelper.getAttackRecordDAO().addAttackRecord(record);
+		daoHelper.getAttackRecordDAO().updateSyncAttackCounter(record);
 	}
 	private void handleActionLog(NetworkRecord record) {
-		mDbHelper.updateNetworkInformation(record);
+		daoHelper.getNetworkRecordDAO().insert(record);
 	}
 
 	/**
@@ -140,8 +147,11 @@ public class Logger extends IntentService {
 			}else if(ACTION_LOG_PORTSCAN.equals(action)){
 				final AttackRecord attackRecord = intent.getParcelableExtra(EXTRA_RECORD);
 				final NetworkRecord networkRecord = intent.getParcelableExtra(EXTRA_RECORD2);
+				attackRecord.setRecord(networkRecord);
+
 				MessageRecord messageRecord = new MessageRecord(true);
 				messageRecord.setAttack_id(attackRecord.getAttack_id());
+				messageRecord.setRecord(attackRecord);
 				//messageRecord.setId(0);
 				messageRecord.setPacket("");
 				messageRecord.setTimestamp(intent.getLongExtra(EXTRA_TIMESTAMP, 0));
@@ -153,6 +163,9 @@ public class Logger extends IntentService {
 				final AttackRecord attackRecord = intent.getParcelableExtra(EXTRA_RECORD);
 				final NetworkRecord networkRecord = intent.getParcelableExtra(EXTRA_RECORD2);
 				final MessageRecord msgRecord = intent.getParcelableExtra(EXTRA_RECORD3);
+				msgRecord.setRecord(attackRecord);
+				attackRecord.setRecord(networkRecord);
+
 				handleActionLog(attackRecord);
 				handleActionLog(networkRecord);
 				handleActionLog(msgRecord);

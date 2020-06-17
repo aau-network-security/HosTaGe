@@ -4,27 +4,35 @@ package de.tudarmstadt.informatik.hostage.sync;
  * Created by Julien on 08.12.2014.
  */
 
+import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.SyncData;
 import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
 import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
 import de.tudarmstadt.informatik.hostage.logging.SyncRecord;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 
 
 public class Synchronizer {
 
-    private HostageDBOpenHelper dbh;
+    //private HostageDBOpenHelper dbh;
+    private DaoSession dbSession;
+    private DAOHelper daoHelper;
 
-    public Synchronizer(HostageDBOpenHelper dbh){
+    public Synchronizer(DaoSession daoSession, Context context){
         super();
-        this.dbh = dbh;
+        this.dbSession = daoSession;
+        this.daoHelper= new DAOHelper(daoSession,context);
     }
 
 
@@ -33,7 +41,7 @@ public class Synchronizer {
      * @return  ArrayList<SyncDevice>
      */
     public SyncInfo getSyncInfo(){
-        return this.dbh.getOwnState();
+        return this.daoHelper.getSyncDeviceDAO().getOwnState();
     }
 
 
@@ -104,7 +112,7 @@ public class Synchronizer {
     private void updateNewNetworks(ArrayList<NetworkRecord> others){
         if (others != null && others.size() > 0){
             Log.i("DEBUG_Sync", "Updating Network Data Objects: " + others.size());
-            this.dbh.updateNetworkInformation(others);
+            this.daoHelper.getNetworkRecordDAO().updateNetworkInformation(others);
         }
     }
 
@@ -116,7 +124,7 @@ public class Synchronizer {
 
         if (otherDeviceIds != null){
             ArrayList<SyncDevice> otherDevices = new ArrayList<SyncDevice>();
-            ArrayList<String> ownDevicesds = this.dbh.getAllDevicesIds();
+            ArrayList<String> ownDevicesds = this.daoHelper.getSyncDeviceDAO().getAllDevicesIds();
 
             if (otherDeviceIds.size() > 0)
                 Log.i("DEBUG_Sync", "Updating Devices: " + otherDevices.size());
@@ -131,7 +139,7 @@ public class Synchronizer {
             }
 
             if (otherDevices.size() > 0)
-                this.dbh.updateSyncDevices(otherDevices);
+                this.daoHelper.getSyncDeviceDAO().updateSyncDevices(otherDevices);
         }
     }
 
@@ -159,7 +167,7 @@ public class Synchronizer {
     private void updateNewAttacks(ArrayList<SyncRecord> updates){
         if (updates != null && updates.size() > 0) {
             Log.i("DEBUG_Sync", "Updating Attack Objects: " + updates.size());
-            this.dbh.insertSyncRecords(updates);
+            this.daoHelper.getSyncDeviceDAO().insertSyncRecords(updates);
         }
     }
 
@@ -180,7 +188,7 @@ public class Synchronizer {
     private ArrayList<SyncRecord> getUnsyncedRecords(SyncInfo si){
 
         if (si.deviceMap != null){
-            ArrayList<SyncRecord> records = this.dbh.getUnsyncedAttacksFor(si.deviceMap, true);
+            ArrayList<SyncRecord> records = daoHelper.getSyncDeviceDAO().getUnsyncedAttacksFor(si.deviceMap, true);
             Log.i("DEBUG_Sync", "Sending Attack Objects: " + records.size());
             return records;
         }
@@ -192,10 +200,10 @@ public class Synchronizer {
      * @param otherBSSIDs list of other bssids
      * @return array list of network records to push.
      */
-    private ArrayList<NetworkRecord> getMissingNetworkInformation(ArrayList<String> otherBSSIDs){
+private ArrayList<NetworkRecord> getMissingNetworkInformation(ArrayList<String> otherBSSIDs){
 
         if (otherBSSIDs != null){
-            ArrayList<NetworkRecord> records = this.dbh.getMissingNetworkRecords(otherBSSIDs);
+            ArrayList<NetworkRecord> records = this.daoHelper.getNetworkRecordDAO().getMissingNetworkRecords(otherBSSIDs);
             Log.i("DEBUG_Sync", "Sending Network Objects: " + records.size());
             return records;
 

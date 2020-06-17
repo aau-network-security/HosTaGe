@@ -14,9 +14,12 @@ import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 
+import de.tudarmstadt.informatik.hostage.Hostage;
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.logging.formatter.Formatter;
 import de.tudarmstadt.informatik.hostage.logging.formatter.TraCINgFormatter;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 
 /**
  * The LogExport is used to write a text representation of all logs in the database.
@@ -31,7 +34,10 @@ public class LogExport extends IntentService{
 	Handler mMainThreadHandler = null;
 
 	SharedPreferences pref;
-	HostageDBOpenHelper dbh;
+	//HostageDBOpenHelper dbh;
+	DaoSession dbSession;
+	//AttackRecordDAO attackRecordDAO;
+	DAOHelper daoHelper;
 	
 	public LogExport() {
 		super(LogExport.class.getName());
@@ -41,7 +47,9 @@ public class LogExport extends IntentService{
 	public void onCreate() {
 		super.onCreate();
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
-		dbh = new HostageDBOpenHelper(this);
+		//dbh = new HostageDBOpenHelper(this);
+		dbSession = HostageApplication.getInstances().getDaoSession();
+		daoHelper = new DAOHelper(dbSession,getApplicationContext());
 		mMainThreadHandler = new Handler();
 	}
 	
@@ -87,8 +95,8 @@ public class LogExport extends IntentService{
 				return;
 			}
 
-			ArrayList<Record> records = dbh.getAllRecords();
-			for (Record record : records) {
+			ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getAllRecords();
+			for (RecordAll record : records) {
 				log.write((record.toString(format)).getBytes());
 			}
 			log.flush();

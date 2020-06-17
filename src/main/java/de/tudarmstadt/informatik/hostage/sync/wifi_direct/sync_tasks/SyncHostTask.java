@@ -2,14 +2,18 @@ package de.tudarmstadt.informatik.hostage.sync.wifi_direct.sync_tasks;
 
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.SyncData;
 import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.sync.Synchronizer;
 import de.tudarmstadt.informatik.hostage.sync.wifi_direct.WiFiP2pSerializableObject;
 import de.tudarmstadt.informatik.hostage.sync.wifi_direct.WiFiP2pServerTask;
@@ -26,20 +30,24 @@ public class SyncHostTask extends WiFiP2pServerTask {
     public static final String SYNC_DATA_REQUEST = "sync_data_request";
     public static final String SYNC_DATA_RESPONSE = "sync_data_response";
 
-    private HostageDBOpenHelper mdbh;
+    //private HostageDBOpenHelper mdbh;
     private Synchronizer synchronizer;
+    private DaoSession dbSession;
+    private DAOHelper daoHelper;
 
     private Map<String, SyncInfo> receivedInfoPerDevice;
 
     public SyncHostTask(  WifiP2pDevice ownDevice, BackgroundTaskCompletionListener l , Context context) {
         super(ownDevice , l);
-        mdbh = new HostageDBOpenHelper(context);
-        synchronizer = new Synchronizer(mdbh);
+        //mdbh = new HostageDBOpenHelper(context);
+        dbSession = HostageApplication.getInstances().getDaoSession();
+        daoHelper = new DAOHelper(dbSession,context);
+        synchronizer = new Synchronizer(dbSession,context);
 
         this.receivedInfoPerDevice = new HashMap<String, SyncInfo>();
     }
 
-    @Override
+@Override
     public WiFiP2pSerializableObject handleReceivedObject(WiFiP2pSerializableObject receivedObj){
         if (receivedObj != null) {
             Log.i("DEBUG_WiFiP2p_Host", "Received: " + receivedObj.getRequestIdentifier());

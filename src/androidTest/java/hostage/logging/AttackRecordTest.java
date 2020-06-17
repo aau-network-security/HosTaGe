@@ -61,8 +61,7 @@ public class AttackRecordTest {
         parcel.writeLong(sync_id);
 
         AttackRecord record = new AttackRecord(parcel);
-        System.out.println("meow");
-        System.out.println(record.getAttack_id());
+
        // assertTrue(record.getAttack_id() == 1234L);
 
 

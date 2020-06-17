@@ -135,7 +135,6 @@ public class SyncDeviceDAOTest {
         record.setHighest_attack_id(1);
         attackRecord.setSyncDevice(record);
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(daoSession);
-        attackRecordDAO.thisDevice = record;
 
         daoSession.insert(attackRecord);
         daoSession.insert(networkRecord);

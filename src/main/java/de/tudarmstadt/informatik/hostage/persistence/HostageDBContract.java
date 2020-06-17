@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
  * @author Mihai Plasoianu
  * @author Lars Pandikow
  */
+@Deprecated
 public final class HostageDBContract {
 
 	public static abstract class NetworkEntry implements BaseColumns {

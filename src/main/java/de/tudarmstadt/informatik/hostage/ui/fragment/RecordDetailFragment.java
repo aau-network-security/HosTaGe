@@ -26,10 +26,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.Record;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.logging.RecordAll;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 
@@ -49,12 +52,14 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	/**
 	 * Hold the record of which the detail informations should be shown
 	 */
-	private Record mRecord;
+	private RecordAll mRecord;
 
 	/**
 	 * The database helper to retrieve data from the database
 	 */
-	public HostageDBOpenHelper mDBOpenHelper;
+	private DaoSession dbSession;
+	private DAOHelper daoHelper;
+	//public HostageDBOpenHelper mDBOpenHelper;
 
 	/**
 	 * The layout inflater
@@ -81,7 +86,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	 * Sets the record of which the details should be displayed
 	 * @param rec the record to be used
 	 */
-	public void setRecord(Record rec) {
+	public void setRecord(RecordAll rec) {
 		this.mRecord = rec;
 	}
 
@@ -89,7 +94,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	 * Retriebes the record which is used for the display of the detail informations
 	 * @return the record
 	 */
-	public Record getRecord() {
+	public RecordAll getRecord() {
 		return this.mRecord;
 	}
 
@@ -119,9 +124,12 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		super.onCreateView(inflater, container, savedInstanceState);
 
 		mInflater = inflater;
-		getActivity().setTitle(mRecord.getSsid());
+		if(mRecord!=null)
+			getActivity().setTitle(mRecord.getSsid());
 
-		this.mDBOpenHelper = new HostageDBOpenHelper(this.getActivity().getBaseContext());
+		//this.mDBOpenHelper = new HostageDBOpenHelper(this.getActivity().getBaseContext());
+		dbSession = HostageApplication.getInstances().getDaoSession();
+		daoHelper = new DAOHelper(dbSession,getContext());
 
 		this.mRootView = inflater.inflate(this.getLayoutId(), container, false);
 		this.assignViews(mRootView);
@@ -162,7 +170,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	 */
 	private void configurateRootView(View rootView) {
 
-		mRecordDetailsTextAttackType.setText(mRecord.getWasInternalAttack() ? R.string.RecordInternalAttack : R.string.RecordExternalAttack);
+		mRecordDetailsTextAttackType.setText(mRecord.isWasInternalAttack() ? R.string.RecordInternalAttack : R.string.RecordExternalAttack);
 		mRecordDetailsTextBssid.setText(mRecord.getBssid());
 		mRecordDetailsTextSsid.setText(mRecord.getSsid());
 		if (mRecord.getRemoteIP() != null)
@@ -170,10 +178,10 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 			mRecordDetailsTextProtocol.setText(mRecord.getProtocol());
 
-		ArrayList<Record> conversation = this.mDBOpenHelper.getConversationForAttackID(mRecord.getAttack_id());
+		ArrayList<RecordAll> conversation = this.daoHelper.getAttackRecordDAO().getConversationForAttackID(mRecord.getAttack_id());
 
 		// display the conversation of the attack
-		for (Record r : conversation) {
+		for (RecordAll r : conversation) {
 			View row;
 
 			String from = r.getLocalIP() == null ? "-" : r.getLocalIP() + ":" + r.getLocalPort();
@@ -230,7 +238,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 														int which) {
-										mDBOpenHelper.deleteByAttackID(mRecord.getAttack_id());
+										daoHelper.getAttackRecordDAO().deleteByAttackID(mRecord.getAttack_id());
 
 										MainActivity.getInstance().navigateBack();
 									}
@@ -326,8 +334,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	private void getConversation() throws IOException {
 
 
-		ArrayList<Record> conversation = this.mDBOpenHelper.getConversationForAttackID(mRecord.getAttack_id());
-		for (Record r : conversation) {
+		ArrayList<RecordAll> conversation = this.daoHelper.getAttackRecordDAO().getConversationForAttackID(mRecord.getAttack_id());
+		for (RecordAll r : conversation) {
 
 			String mydata = r.getPacket();
 			ArrayList<String> myTokensList = new ArrayList<String>();
@@ -532,13 +540,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		}
 
 	}
-
-
-
-
-
-
-
 
 
 	private boolean isExternalStorageWritable() {

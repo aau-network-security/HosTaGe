@@ -6,15 +6,20 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.Record;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.logging.RecordAll;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 
 
@@ -25,7 +30,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String TAG = "SyncAdapter";
     private final SharedPreferences pref;
     private final SharedPreferences.Editor editor;
-    private final HostageDBOpenHelper dbh;
+    private final DaoSession dbSession;
+    private final DAOHelper daoHelper;
+    private ArrayList<RecordAll> records = new ArrayList<>();
+    private static int offset=0;
+    private int limit=50;
 
     private Context context;
 
@@ -39,7 +48,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         pref = PreferenceManager.getDefaultSharedPreferences(context);
         editor = pref.edit();
-        dbh = new HostageDBOpenHelper(context);
+        dbSession = HostageApplication.getInstances().getDaoSession();
+        daoHelper = new DAOHelper(dbSession,getContext());
     }
 
     /**
@@ -57,7 +67,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      * <p>The syncResult argument allows you to pass information back to the method that triggered
      * the sync.
      */
-    @Override
+@Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         // We will only do a one-direction sync. That is, only sending data to the tracing server.
         // For bidirectional syncing, we will still have to decide how much data should be requested from the server,
@@ -72,15 +82,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Log.i(TAG, "Connecting to " + serverAddress);
         LogFilter filter = new LogFilter();
         filter.setAboveTimestamp(lastSyncTime);
+        //int recordsSize = daoHelper.getMessageRecordDAO().getRecordCount();
+        records = this.daoHelper.getAttackRecordDAO().getRecordsForFilter(filter, offset);
 
-        ArrayList<Record> records = dbh.getRecordsForFilter(filter);
         StringWriter writer = new StringWriter();
 
         int size = records.size();
         int offset = 1;
         int currOffset = 1;
         boolean error = false;
-        for (Record record : records) {
+        for (RecordAll record : records) {
             SyncUtils.appendRecordToStringWriter(record, writer);
 
             if(currOffset == 100 || offset == size){

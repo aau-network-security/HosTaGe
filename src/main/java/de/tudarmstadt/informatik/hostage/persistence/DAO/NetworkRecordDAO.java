@@ -4,6 +4,8 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 
 
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -37,6 +39,14 @@ public class NetworkRecordDAO extends DAO {
         return  networkRecords;
 
     }
+
+    private ArrayList<NetworkRecord> getNetworkRecordsLimit(int offset){
+        int limit = 50;
+        NetworkRecordDao recordDao = this.daoSession.getNetworkRecordDao();
+        ArrayList<NetworkRecord> networkRecords = (ArrayList<NetworkRecord>) selectElementsOffset(recordDao,offset,limit);
+        return  networkRecords;
+
+    }
     /**
      * Gets all network related data stored in the database
      * @return An ArrayList with an Network for all Entry in the network table.
@@ -52,9 +62,7 @@ public class NetworkRecordDAO extends DAO {
     public synchronized void updateNetworkInformation(ArrayList<NetworkRecord> networkInformation) {
         NetworkRecordDao recordDao = this.daoSession.getNetworkRecordDao();
         updateElements(recordDao,networkInformation);
-
     }
-
 
     /**
      * Updated the network table with a new {@link NetworkRecord}.
@@ -85,6 +93,18 @@ public class NetworkRecordDAO extends DAO {
         return  bssidList;
     }
 
+    public synchronized ArrayList<String> getAllESSIDS() {
+        ArrayList<String> ssidList = new ArrayList<String>();
+        ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
+
+        for(NetworkRecord record:networkRecords){
+            String s = record.getSsid();
+            ssidList.add(s);
+        }
+
+        return  ssidList;
+    }
+
     /**
      * Returns all missing bssids.
      *
@@ -104,8 +124,7 @@ public class NetworkRecordDAO extends DAO {
      *
      * @return a list of missing network records.
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public synchronized ArrayList<NetworkRecord> getMissingNetworkRecords(ArrayList<String> otherBSSIDs) {
+public synchronized ArrayList<NetworkRecord> getMissingNetworkRecords(ArrayList<String> otherBSSIDs) {
         ArrayList<String> missingBSSIDs = getMissingNetworkBssids( otherBSSIDs);
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
         ArrayList<NetworkRecord> missingNetworkRecords = new ArrayList<NetworkRecord>();
@@ -141,10 +160,9 @@ public class NetworkRecordDAO extends DAO {
      * Deletes networkRecords from the network table for the given filter object.
      * @param filter
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void deleteFromFilter(LogFilter filter){
-        ArrayList<NetworkRecord> filterBSSIDs = selectionBSSIDFromFilter(filter);
-        ArrayList<NetworkRecord> filterESSIDs = selectionESSIDFromFilter(filter);
+public void deleteFromFilter(LogFilter filter){
+        ArrayList<NetworkRecord> filterBSSIDs = selectionBSSIDFromFilter(filter,0);
+        ArrayList<NetworkRecord> filterESSIDs = selectionESSIDFromFilter(filter,0);
 
         NetworkRecordDao recordDao = this.daoSession.getNetworkRecordDao();
         recordDao.deleteInTx(filterBSSIDs);
@@ -158,19 +176,68 @@ public class NetworkRecordDAO extends DAO {
      * @param filter (LogFilter)
      * @return QueryBuilder<AttackRecord> query
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
+public ArrayList<NetworkRecord> selectionBSSIDFromFilter(LogFilter filter,int offset) {
+        ArrayList<String> filterBSSIDs = new ArrayList<>();
+        if(filter!=null)
+            filterBSSIDs = filter.getBSSIDs();
+        ArrayList<NetworkRecord> networkRecords = this.getNetworkRecordsLimit(offset);
+        ArrayList<NetworkRecord> list = new ArrayList<>();
+
+        if(filter==null || filterBSSIDs.isEmpty())
+            return networkRecords;
+
+            for (final String current : filterBSSIDs) {
+                list.add(networkRecords.stream().filter(o -> o.getBssid().equals(current)).findAny().orElse(null));
+            }
+        list.removeAll(Collections.singleton(null));
+
+        return list;
+
+    }
+
+    /**
+     * Returns the query for the given filter.
+     * @param filter (LogFilter)
+     * @return QueryBuilder<AttackRecord> query
+     */
+    public ArrayList<NetworkRecord> selectionESSIDFromFilter(LogFilter filter,int offset) {
+        ArrayList<String>  filterESSIDs = new ArrayList<>();
+        if(filter!=null)
+           filterESSIDs = filter.getESSIDs();
+        ArrayList<NetworkRecord> networkRecords = this.getNetworkRecordsLimit(offset);
+        ArrayList<NetworkRecord> list = new ArrayList<>();
+
+        if(filter==null || filterESSIDs.isEmpty())
+            return networkRecords;
+
+            for (final String current : filterESSIDs) {
+                list.add(networkRecords.stream().filter(o -> o.getSsid().equals(current)).findAny().orElse(null));
+            }
+
+        list.removeAll(Collections.singleton(null));
+
+        return list;
+
+    }
+
+
+    /**
+     * Returns the query for the given filter.
+     * @param filter (LogFilter)
+     * @return QueryBuilder<AttackRecord> query
+     */
     public ArrayList<NetworkRecord> selectionBSSIDFromFilter(LogFilter filter) {
-        ArrayList<String> filterBSSIDs = filter.getBSSIDs();
+        ArrayList<String> filterBSSIDs = new ArrayList<>();
+        if(filter!=null)
+            filterBSSIDs = filter.getBSSIDs();
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
         ArrayList<NetworkRecord> list = new ArrayList<>();
 
+        if(filter==null || filterBSSIDs.isEmpty())
+            return networkRecords;
 
-        if(filterBSSIDs != null && filterBSSIDs.size() > 0) {
-            for (final String current : filterBSSIDs) {
-
-                list.add(networkRecords.stream().filter(o -> o.getBssid().equals(current)).findAny().orElse(null));
-
-            }
+        for (final String current : filterBSSIDs) {
+            list.add(networkRecords.stream().filter(o -> o.getBssid().equals(current)).findAny().orElse(null));
         }
         list.removeAll(Collections.singleton(null));
 
@@ -183,19 +250,18 @@ public class NetworkRecordDAO extends DAO {
      * @param filter (LogFilter)
      * @return QueryBuilder<AttackRecord> query
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public ArrayList<NetworkRecord> selectionESSIDFromFilter(LogFilter filter) {
-        ArrayList<String> filterESSIDs = filter.getESSIDs();
+        ArrayList<String>  filterESSIDs = new ArrayList<>();
+        if(filter!=null)
+            filterESSIDs = filter.getESSIDs();
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
         ArrayList<NetworkRecord> list = new ArrayList<>();
 
+        if(filter==null || filterESSIDs.isEmpty())
+            return networkRecords;
 
-        if(filterESSIDs != null && filterESSIDs.size() > 0) {
-            for (final String current : filterESSIDs) {
-
-                list.add(networkRecords.stream().filter(o -> o.getSsid().equals(current)).findAny().orElse(null));
-
-            }
+        for (final String current : filterESSIDs) {
+            list.add(networkRecords.stream().filter(o -> o.getSsid().equals(current)).findAny().orElse(null));
         }
 
         list.removeAll(Collections.singleton(null));
@@ -209,8 +275,7 @@ public class NetworkRecordDAO extends DAO {
      *
      * @return A ArrayList with received Records.
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public synchronized ArrayList<String> getUniqueESSIDRecords() {
+public synchronized ArrayList<String> getUniqueESSIDRecords() {
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
 
         ArrayList<String> essids= new ArrayList<>();
@@ -226,8 +291,7 @@ public class NetworkRecordDAO extends DAO {
      *
      * @return A ArrayList with received Records.
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public synchronized ArrayList<String> getUniqueBSSIDRecords() {
+public synchronized ArrayList<String> getUniqueBSSIDRecords() {
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
 
         ArrayList<String> bssids= new ArrayList<>();
@@ -238,8 +302,7 @@ public class NetworkRecordDAO extends DAO {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public synchronized ArrayList<String> getUniqueESSIDRecordsForProtocol(String protocol) {
+public synchronized ArrayList<String> getUniqueESSIDRecordsForProtocol(String protocol) {
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);
         ArrayList<AttackRecord> filteredAttackRecords = attackRecordDAO.getAttacksPerProtocol(protocol);
 
@@ -254,8 +317,7 @@ public class NetworkRecordDAO extends DAO {
         return  distinctEssids;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String protocol) {
+public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String protocol) {
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);
         ArrayList<AttackRecord> filteredAttackRecords = attackRecordDAO.getAttacksPerProtocol(protocol);
 
@@ -270,27 +332,51 @@ public class NetworkRecordDAO extends DAO {
 
         return  distinctBssids;
 
-
     }
 
     /**
-     * Returns PlotComparisionItems for attacks per essid.
+     * Returns PlotComparisionItems for attacks per bssid.
      * @param filter (LogFilter) filter object
      *
      * @return ArrayList<PlotComparisonItem>
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public synchronized ArrayList<PlotComparisonItem> attacksPerESSID(LogFilter filter) {
+    //TODO Fix offset
+    public synchronized ArrayList<PlotComparisonItem> attacksPerBSSID(LogFilter filter) {
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);
-        ArrayList<AttackRecord> filteredAttackRecords = attackRecordDAO.selectionQueryFromFilter(filter);
+        ArrayList<PlotComparisonItem> plots = new ArrayList<PlotComparisonItem>();
+
+         if(filter == null || filter.getBSSIDs().isEmpty())
+            return  addPlotComparison(plots,this.getNetworkRecords());
+
+        ArrayList<AttackRecord> filteredAttackRecords = attackRecordDAO.selectionQueryFromFilter(filter,0);
 
         ArrayList<NetworkRecord> filterNetworkRecords=  new ArrayList<>();
         filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord())).collect(Collectors.toList());
 
 
+        return  addPlotComparison(plots,filterNetworkRecords);
+    }
+
+    /**
+     * Returns PlotComparisionItems for attacks per bssid.
+     * @param filter (LogFilter) filter object
+     *
+     * @return ArrayList<PlotComparisonItem>
+     */
+    //TODO fix offset
+    public synchronized ArrayList<PlotComparisonItem> attacksPerESSID(LogFilter filter) {
+        AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);
+        ArrayList<AttackRecord> filteredAttackRecords = attackRecordDAO.selectionQueryFromFilter(filter,0);
         ArrayList<PlotComparisonItem> plots = new ArrayList<PlotComparisonItem>();
 
-        return  addPlotComparison(plots,filterNetworkRecords);
+
+        if(filter == null || filter.getESSIDs().isEmpty())
+            return  addPlotComparison(plots,this.getNetworkRecords());
+
+        ArrayList<NetworkRecord> filterNetworkRecords=  new ArrayList<>();
+        filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord())).collect(Collectors.toList());
+
+        return  addPlotComparisonEssid(plots,filterNetworkRecords);
     }
 
     private  ArrayList<PlotComparisonItem> addPlotComparison( ArrayList<PlotComparisonItem> plots, ArrayList<NetworkRecord> filterNetworkRecords){
@@ -307,6 +393,35 @@ public class NetworkRecordDAO extends DAO {
         }
 
         return  plots;
+    }
+
+    private  ArrayList<PlotComparisonItem> addPlotComparisonEssid( ArrayList<PlotComparisonItem> plots, ArrayList<NetworkRecord> filterNetworkRecords){
+        int counter = 0;
+        ArrayList<String> ssids = getAllESSIDS();
+        for(NetworkRecord record: filterNetworkRecords){
+            String title = record.getSsid(); // COLUMN_NAME_SSID
+            double value =  Collections.frequency(ssids, title);// COUNT
+            if (value == 0.) continue;
+            PlotComparisonItem plotItem = new PlotComparisonItem(title, this.getColor(counter), 0. , value);
+            plots.add(plotItem);
+            counter++;
+        }
+
+        return  plots;
+    }
+
+    public ArrayList<NetworkRecord>  joinAttacks(String bssid,String protocol){
+        AttackRecordDao attackRecordDao = this.daoSession.getAttackRecordDao();
+        NetworkRecordDao networkRecordDao = this.daoSession.getNetworkRecordDao();
+
+        QueryBuilder<NetworkRecord> qb = networkRecordDao.queryBuilder();
+        qb.join(AttackRecord.class
+                ,AttackRecordDao.Properties.Bssid).where(AttackRecordDao.Properties.Protocol.eq(protocol));
+
+        ArrayList<NetworkRecord> attacks = (ArrayList<NetworkRecord>) qb.list();
+
+        return attacks;
+
     }
 
     /** Returns the color for the given index

@@ -38,10 +38,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.SyncData;
 import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.sync.Synchronizer;
 
 
@@ -73,7 +75,9 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
     private ClientAsyncTask clientAsync;
     private ServerAsyncTask serverAsync;
 
-    private HostageDBOpenHelper mDbHelper;
+   // private HostageDBOpenHelper mDbHelper;
+    private  DaoSession dbSession;
+    private  DAOHelper daoHelper;
     private Synchronizer synchronizer;
 
     private void extractFromView(){
@@ -156,8 +160,10 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDbHelper = new HostageDBOpenHelper(getApplicationContext());
-        synchronizer = new Synchronizer(mDbHelper);
+        //mDbHelper = new HostageDBOpenHelper(getApplicationContext());
+        dbSession = HostageApplication.getInstances().getDaoSession();
+        daoHelper = new DAOHelper(dbSession,getApplicationContext());
+        synchronizer = new Synchronizer(dbSession,getApplicationContext());
 
         setContentView(R.layout.activity_p2_psync);
 

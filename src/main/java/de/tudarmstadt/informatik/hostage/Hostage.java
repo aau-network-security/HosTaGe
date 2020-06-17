@@ -50,7 +50,7 @@ import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 
 import de.tudarmstadt.informatik.hostage.logging.DaoMaster;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.services.MultiStageAlarm;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
@@ -73,13 +73,10 @@ import static de.tudarmstadt.informatik.hostage.commons.HelperUtils.getBSSID;
 public class Hostage extends Service {
 
 	private HashMap<String, Boolean> mProtocolActiveAttacks;
-	private Boolean multistage_service;
-	private DaoMaster.DevOpenHelper mHelper;
-	private SQLiteDatabase db;
-	private DaoMaster mDaoMaster;
-	private DaoSession mDaoSession;
-
 	MultiStageAlarm alarm = new MultiStageAlarm();
+	private Boolean multistage_service;
+	DaoSession dbSession;
+
 
 	public class LocalBinder extends Binder {
 		public Hostage getService() {
@@ -151,7 +148,7 @@ public class Hostage extends Service {
 	 * 
 	 * @see MainActivity #BROADCAST
 	 */
-	//TODO change bssid to 4g....
+	//TODO change bssid for 4g....
 	private BroadcastReceiver netReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -294,7 +291,6 @@ public class Hostage extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		setDatabase();
 
 		Hostage.context = getApplicationContext();
 		implementedProtocols = getImplementedProtocols();
@@ -321,27 +317,6 @@ public class Hostage extends Service {
 		super.onDestroy();
 	}
 
-	/**
-	 * Setting up green Dao
-	 */
-	private void setDatabase() {
-		// Note: The default DaoMaster.DevOpenHelper deletes all tables when the database is upgraded, meaning that this will result in data loss.
-		mHelper = new DaoMaster.DevOpenHelper(this, "hostage-db", null);
-		db = mHelper.getWritableDatabase();
-		// Note: This database connection belongs to DaoMaster, so multiple sessions refer to the same database connection.
-		mDaoMaster = new DaoMaster(db);
-		mDaoSession = mDaoMaster.newSession();
-
-//		AttackRecord record = new AttackRecord();
-//		AttackRecordDao recordDao = mDaoSession.getAttackRecordDao();
-//		recordDao.insert(record);
-	}
-	public DaoSession getDaoSession() {
-		return mDaoSession;
-	}
-	public SQLiteDatabase getDb() {
-		return db;
-	}
 
 
 	@Override
@@ -560,7 +535,10 @@ public class Hostage extends Service {
 			return; // prevent NullPointerException
 		}
 
-		HostageDBOpenHelper dbh = new HostageDBOpenHelper(this);
+		//HostageDBOpenHelper dbh = new HostageDBOpenHelper(this);
+		dbSession = HostageApplication.getInstances().getDaoSession();
+
+		AttackRecordDAO attackRecordDAO = new AttackRecordDAO(dbSession);
 		boolean activeHandlers = false;
 		boolean bssidSeen = false;
 		boolean listening = false;
@@ -571,7 +549,7 @@ public class Hostage extends Service {
 			if (listener.getHandlerCount() > 0) {
 				activeHandlers = true;
 			}
-			if (dbh.bssidSeen(listener.getProtocolName(), getBSSID(getApplicationContext()))) {
+			if (attackRecordDAO.bssidSeen(listener.getProtocolName(), getBSSID(getApplicationContext()))) {
 				bssidSeen = true;
 			}
 		}

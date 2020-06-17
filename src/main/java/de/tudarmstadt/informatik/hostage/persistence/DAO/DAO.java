@@ -26,6 +26,15 @@ public abstract class DAO {
         return qb.list();
     }
 
+    public <T> List<T> selectElementsOffset(AbstractDao<T, ?> dao,int offset,int limit) {
+        if (dao == null) {
+            return null;
+        }
+        QueryBuilder<T> qb = dao.queryBuilder();
+        qb.offset(offset).limit(limit).build();
+        return qb.list();
+    }
+
     public <T> void insertElements(AbstractDao<T, ?> absDao, List<T> items) {
         if (items == null || items.size() == 0 || absDao == null) {
             return;
@@ -170,8 +179,7 @@ public abstract class DAO {
         return absDao.count();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Set<Object> seen = ConcurrentHashMap.newKeySet();
         return t -> seen.add(keyExtractor.apply(t));
     }

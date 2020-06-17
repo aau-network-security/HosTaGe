@@ -1,5 +1,7 @@
 package de.tudarmstadt.informatik.hostage.logging;
 
+import de.tudarmstadt.informatik.hostage.logging.formatter.Formatter;
+
 public class RecordAll {
     private long id;
     private long attack_id;
@@ -22,7 +24,7 @@ public class RecordAll {
     private String externalIP;
     private boolean wasInternalAttack= true;
 
-    public RecordAll(int id, long attack_id, long timestamp,
+    public RecordAll(long id, long attack_id, long timestamp,
                      MessageRecord.TYPE type, String packet, String bssid, String ssid, long timestampLocation, double latitude, double longitude, float accuracy, long sync_id, String device, String protocol, String localIP, int localPort, String remoteIP, int remotePort, String externalIP, boolean wasInternalAttack) {
         this.id = id;
         this.attack_id = attack_id;
@@ -55,7 +57,7 @@ public class RecordAll {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -210,4 +212,17 @@ public class RecordAll {
     public void setWasInternalAttack(boolean wasInternalAttack) {
         this.wasInternalAttack = wasInternalAttack;
     }
+
+    @Override
+    public String toString() {
+        return toString(null);
+    }
+
+    public String toString(Formatter formatter) {
+        if (null == formatter) {
+            return Formatter.getDefault().format(this);
+        }
+        return formatter.format(this);
+    }
+
 }

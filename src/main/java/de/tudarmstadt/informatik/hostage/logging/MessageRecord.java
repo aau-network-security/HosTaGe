@@ -27,13 +27,13 @@ import org.greenrobot.greendao.annotation.NotNull;
 public class MessageRecord extends RecordAll implements Parcelable, Serializable{
 	
 	private static final long serialVersionUID = -5936572995202342935L;
-	
+
 	public enum TYPE {
 		SEND, RECEIVE
 	}
 
     // attack
-	@Id
+	@Id(autoincrement = true)
 	private long id;
 	private long attack_id;
 	private long timestamp;
@@ -65,6 +65,7 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
 
 
     public MessageRecord() {
+    	super();
 
     }
 
@@ -73,15 +74,15 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
 
             SharedPreferences.Editor editor = pref.edit();
-            int message_id = pref.getInt("MESSAGE_ID_COUNTER", 0);
-            editor.putInt("MESSAGE_ID_COUNTER", message_id + 1);
+            long message_id = pref.getLong("MESSAGE_ID_COUNTER", 0L);
+            editor.putLong("MESSAGE_ID_COUNTER", message_id + 1L);
             editor.commit();
             this.id = message_id;
-        }
+		}
     }
 
     public MessageRecord(Parcel source) {
-            this.id = source.readInt();
+            this.id = source.readLong();
             this.attack_id = source.readLong();
             this.timestamp = source.readLong();
             this.type = TYPE.valueOf(source.readString());
@@ -113,24 +114,22 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
 	/**
 	 * @return the id
 	 */
+	@Override
 	public long getId() {
 		return id;
 	}
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
+
 	/**
 	 * @return the attack_id
 	 */
+	@Override
 	public long getAttack_id() {
 		return attack_id;
 	}
 	/**
 	 * @param attack_id the attack_id to set
 	 */
+	@Override
 	public void setAttack_id(long attack_id) {
 		this.attack_id = attack_id;
 	}
@@ -143,24 +142,28 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
 	/**
 	 * @param timestamp the timestamp to set
 	 */
+	@Override
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
 	/**
 	 * @return the type
 	 */
+	@Override
 	public TYPE getType() {
 		return type;
 	}
 	/**
 	 * @param type the type to set
 	 */
+	@Override
 	public void setType(TYPE type) {
 		this.type = type;
 	}
 	/**
 	 * @return the packet
 	 */
+	@Override
 	public String getPacket() {
 		return packet;
 	}
@@ -255,10 +258,17 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
 					this.id = id;
 				}
 
+				public void setId(Long id) {
+					this.id = id;
+				}
+
 				/** called by internal mechanisms, do not call yourself. */
 				@Generated(hash = 450551306)
 				public void __setDaoSession(DaoSession daoSession) {
 					this.daoSession = daoSession;
 					myDao = daoSession != null ? daoSession.getMessageRecordDao() : null;
 				}
+
+
+
 }

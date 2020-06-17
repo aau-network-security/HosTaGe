@@ -87,8 +87,8 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
 
             SharedPreferences.Editor editor = pref.edit();
-            int attack_id = pref.getInt("ATTACK_ID_COUNTER", 0);
-            editor.putInt("ATTACK_ID_COUNTER", attack_id + 1);
+            Long attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
+            editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
             editor.commit();
             this.attack_id = attack_id;
             this.sync_id = attack_id;
@@ -365,10 +365,16 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 		}
 	}
 
+	public void setAttack_id(Long attack_id) {
+		this.attack_id = attack_id;
+	}
+
 	/** called by internal mechanisms, do not call yourself. */
 	@Generated(hash = 1925184755)
 	public void __setDaoSession(DaoSession daoSession) {
 		this.daoSession = daoSession;
 		myDao = daoSession != null ? daoSession.getAttackRecordDao() : null;
 	}
+
+
 }

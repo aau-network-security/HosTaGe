@@ -52,6 +52,14 @@ public class MessageRecordDAO extends DAO {
         ArrayList<MessageRecord> messageRecords = (ArrayList<MessageRecord>) selectElements(recordDao);
 
         return  messageRecords;
+    }
+
+    public ArrayList<MessageRecord> getAllMessageRecordsLimit(int offset){
+        int limit = 50;
+        MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
+        ArrayList<MessageRecord> messageRecords = (ArrayList<MessageRecord>) selectElementsOffset(recordDao,offset,limit);
+
+        return  messageRecords;
 
     }
 
@@ -88,6 +96,39 @@ public class MessageRecordDAO extends DAO {
 
     }
 
+    public long getRecordsCount(){
+        MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
+        return  countElements(recordDao);
+    }
+
+    /**
+     * Returns the query for the given filter.
+     * @param filter (LogFilter)
+     * @return QueryBuilder<AttackRecord> query
+     */
+    public ArrayList<MessageRecord> selectionQueryFromFilter(LogFilter filter,int offset) {
+        MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
+        ArrayList<MessageRecord> list = getAllMessageRecordsLimit(offset);
+
+            if(filter == null)
+                return list;
+
+            if(filter.getBelowTimestamp() == 0 || filter.getAboveTimestamp() == 0)
+                return list;
+            QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
+
+            qb.and(MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
+                    MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp()));
+            try {
+                list = (ArrayList<MessageRecord>) qb.list();
+            } catch (Exception e) {
+                list = getAllMessageRecords();
+                return list;
+            }
+
+        return list;
+    }
+
     /**
      * Returns the query for the given filter.
      * @param filter (LogFilter)
@@ -95,14 +136,25 @@ public class MessageRecordDAO extends DAO {
      */
     public ArrayList<MessageRecord> selectionQueryFromFilter(LogFilter filter) {
         MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
+        ArrayList<MessageRecord> list = this.getAllMessageRecords();
+
+        if(filter == null)
+            return list;
+
+        if(filter.getBelowTimestamp() == 0 || filter.getAboveTimestamp() == 0)
+            return list;
         QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
 
-            qb.and(MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
-                    MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp()));
+        qb.and(MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
+                MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp()));
+        try {
+            list = (ArrayList<MessageRecord>) qb.list();
+        } catch (Exception e) {
+            list = getAllMessageRecords();
+            return list;
+        }
 
-        ArrayList<MessageRecord> list = (ArrayList<MessageRecord>) qb.list();
         return list;
-
     }
 
     public void deleteFromFilter(LogFilter filter){
@@ -110,8 +162,8 @@ public class MessageRecordDAO extends DAO {
         QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
 
 
-        deleteElementsByCondition(recordDao,qb.and(MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
-                MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp())));
+        deleteElementsByCondition(recordDao,MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
+                MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp()));
 
     }
 

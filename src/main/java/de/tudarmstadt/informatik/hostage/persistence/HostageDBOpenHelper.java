@@ -37,6 +37,7 @@ import de.tudarmstadt.informatik.hostage.ui.model.PlotComparisonItem;
  * @author Lars Pandikow
  *
  */
+@Deprecated
 public class HostageDBOpenHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "hostage.db";

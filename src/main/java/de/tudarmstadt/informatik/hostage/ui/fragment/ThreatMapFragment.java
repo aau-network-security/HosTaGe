@@ -21,7 +21,9 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.view.InflateException;
@@ -43,10 +45,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.Record;
-import de.tudarmstadt.informatik.hostage.persistence.HostageDBOpenHelper;
+import de.tudarmstadt.informatik.hostage.logging.RecordAll;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 
@@ -76,6 +81,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	// needed for LIVE threat map
 	private boolean mReceiverRegistered = false;
 	private BroadcastReceiver mReceiver;
+	private int offset =0;
 
 	/**
 	 * if google play services aren't available an error notification will be displayed
@@ -310,13 +316,14 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 			}
 
 			private HashMap<String, ArrayList<SSIDArea>> doInBackground() {
-				HostageDBOpenHelper dbh = new HostageDBOpenHelper(getActivity());
-				ArrayList<Record> records = dbh.getRecordsForFilter(new LogFilter());
+				 DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+				 DAOHelper daoHelper = new DAOHelper(dbSession,getContext());
+				 ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getRecordsForFilter(new LogFilter());
 
-				HashMap<String, ArrayList<SSIDArea>> threatAreas
+				 HashMap<String, ArrayList<SSIDArea>> threatAreas
 						= new HashMap<String, ArrayList<SSIDArea>>();
 
-				for (Record record : records) {
+				for (RecordAll record : records) {
 					LatLng location = new LatLng(record.getLatitude(), record.getLongitude());
 					//Log.i("hostage.location", "lat: " + hostage.location.latitude + " long: " + hostage.location.longitude);
 					ArrayList<SSIDArea> areas;

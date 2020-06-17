@@ -9,6 +9,7 @@ import de.tudarmstadt.informatik.hostage.logging.formatter.Formatter;
  * Record that holds all information of a message including full attack and network information.
  * This class should be avoided but is necessary due to inter group complications.
  */
+@Deprecated
 public class Record implements Serializable {
     private static final long serialVersionUID = 1L;
 

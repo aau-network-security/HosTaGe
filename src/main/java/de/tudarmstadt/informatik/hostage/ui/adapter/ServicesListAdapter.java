@@ -261,13 +261,10 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      * @param holder   ViewHolder which represents the item in the View
      * @param drawable int which represents the ID of the drawable we want to display, e.g. on a present attack it should be R.drawable.services_circle_red
      */
-	@SuppressLint("NewApi")
 	private void setBackground(ViewHolder holder, int drawable) {
-        if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
-            holder.circle.setBackgroundDrawable(MainActivity.getInstance().getResources().getDrawable(drawable));
-        } else {
-            holder.circle.setBackground(MainActivity.getInstance().getResources().getDrawable(drawable));
-        }
+
+	    holder.circle.setBackground(MainActivity.getInstance().getResources().getDrawable(drawable));
+
     }
 
     /**
