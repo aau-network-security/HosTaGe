@@ -3,7 +3,6 @@ package de.tudarmstadt.informatik.hostage.sync.wifi_direct.sync_tasks;
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.util.HashMap;

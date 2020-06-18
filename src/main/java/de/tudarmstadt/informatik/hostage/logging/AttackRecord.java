@@ -94,7 +94,7 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
             this.sync_id = attack_id;
 
             SyncDevice currentDevice = SyncDevice.currentDevice();
-            if(currentDevice!=null) {
+			if(currentDevice!=null) {
 				currentDevice.setHighest_attack_id(attack_id);
 				this.setDevice(currentDevice.getDeviceID());
 			}

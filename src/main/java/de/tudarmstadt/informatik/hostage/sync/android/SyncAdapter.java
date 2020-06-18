@@ -9,7 +9,6 @@ import android.content.SyncResult;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.io.StringWriter;

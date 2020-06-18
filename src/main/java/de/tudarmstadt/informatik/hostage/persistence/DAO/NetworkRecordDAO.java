@@ -1,7 +1,6 @@
 package de.tudarmstadt.informatik.hostage.persistence.DAO;
 
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 
 
 import org.greenrobot.greendao.query.QueryBuilder;

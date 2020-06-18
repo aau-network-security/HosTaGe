@@ -37,12 +37,12 @@ import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
 
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
@@ -307,6 +307,8 @@ public class Hostage extends Service {
 
 	}
 
+
+
 	@Override
 	public void onDestroy() {
 		cancelNotification();
@@ -371,8 +373,8 @@ public class Hostage extends Service {
 			if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
 				if (!listener.isRunning()) {
 					if (listener.start()) {
-//						 Toast.makeText(getApplicationContext(), port
-//						 + " SERVICE STARTED!", Toast.LENGTH_SHORT).show();
+						// Toast.makeText(getApplicationContext(), protocolName
+						// + " SERVICE STARTED!", Toast.LENGTH_SHORT).show();
 						return true;
 					}
 					Toast.makeText(getApplicationContext(), protocolName + " SERVICE COULD NOT BE STARTED!", Toast.LENGTH_SHORT).show();

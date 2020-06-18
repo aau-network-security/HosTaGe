@@ -10,11 +10,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,6 +26,8 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -167,7 +167,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         dbSession = HostageApplication.getInstances().getDaoSession();
         daoHelper = new DAOHelper(dbSession,getApplicationContext());
-        //data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter, offset);
         data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter);
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
@@ -197,8 +196,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         this.initialiseListView();
 
-//        setListViewFooter();
-//        setListOnScrollListener();
+        //setListViewFooter();
+        //setListOnScrollListener();
 
         ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -567,9 +566,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         ArrayList<String> groupTitle = new ArrayList<String>();
 
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = this.fetchDataForFilter(this.filter, groupTitle);
-
         data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter);
-
         RecordListAdapter adapter = null;
         if (mylist.getAdapter() != null && mylist.getAdapter() instanceof RecordListAdapter){
             adapter = (RecordListAdapter) mylist.getAdapter();

@@ -23,8 +23,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.text.Html;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -33,11 +32,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -49,7 +51,6 @@ import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
-import de.tudarmstadt.informatik.hostage.logging.Record;
 import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
@@ -61,9 +62,7 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
  *
  * Created by Fabio Arnold on 10.02.14.
  */
-public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnInfoWindowClickListener,
-		GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener,
+public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback,
 		LocationListener {
 
 	private static GoogleMap sMap = null;
@@ -75,7 +74,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	private static HashMap<String, String> sMarkerIDToSSID = new HashMap<String, String>();
 
 	private LocationManager mLocationManager;
-	//private LocationClient mLocationClient;
 	private String mLocationProvider;
 
 	// needed for LIVE threat map
@@ -89,10 +87,10 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	 * @return true if the google play services are available
 	 */
 	private boolean isGooglePlay() {
-		int status = isGooglePlayServicesAvailable(getActivity());
+		int status = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getContext());
 		boolean result = status == ConnectionResult.SUCCESS;
 		if (!result) {
-			getErrorDialog(status, getActivity(), 10).show();
+			GoogleApiAvailability.getInstance().getErrorDialog(getActivity(),status,10).show();
 		}
 		return result;
 	}
@@ -143,24 +141,12 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		recordOverviewFragment.setAllowBack(true);
 
 		MainActivity.getInstance().injectFragment(recordOverviewFragment);
-		//recordOverviewFragment.showDetailsForSSID(getActivity(), ssid);
-		//}
+
 	}
 
 	/**
 	 * callbacks from LocationClient
 	 */
-	@Override
-	public void onConnected(Bundle bundle) {
-	}
-
-	@Override
-	public void onDisconnected() {
-	}
-
-	@Override
-	public void onConnectionFailed(ConnectionResult connectionResult) {
-	}
 
 	@Override
 	public void onLocationChanged(Location location) {
@@ -179,6 +165,8 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	@Override
 	public void onProviderDisabled(String provider) {
 	}
+
+
 
 	/**
 	 * helper class
@@ -396,7 +384,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 					final MapFragment mapFragment = (MapFragment) getFragmentManager()
 							.findFragmentById(R.id.threatmapfragment);
 					if (mapFragment != null) {
-						sMap = mapFragment.getMap();
+						mapFragment.getMapAsync(this);
 					}
 				}
 			} else {
@@ -471,6 +459,11 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		}
 
 		return sView;
+	}
+
+	@Override
+	public void onMapReady(GoogleMap googleMap) {
+		sMap = googleMap;
 	}
 
 	@SuppressLint("MissingPermission")
