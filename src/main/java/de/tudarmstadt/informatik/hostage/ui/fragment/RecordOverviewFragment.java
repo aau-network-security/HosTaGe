@@ -197,8 +197,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         this.initialiseListView();
 
-        setListViewFooter();
-        setListOnScrollListener();
+//        setListViewFooter();
+//        setListOnScrollListener();
 
         ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -567,6 +567,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         ArrayList<String> groupTitle = new ArrayList<String>();
 
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = this.fetchDataForFilter(this.filter, groupTitle);
+
+        data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter);
 
         RecordListAdapter adapter = null;
         if (mylist.getAdapter() != null && mylist.getAdapter() instanceof RecordListAdapter){

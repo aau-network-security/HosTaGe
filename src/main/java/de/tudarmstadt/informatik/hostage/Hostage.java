@@ -307,8 +307,6 @@ public class Hostage extends Service {
 
 	}
 
-
-
 	@Override
 	public void onDestroy() {
 		cancelNotification();
@@ -373,8 +371,8 @@ public class Hostage extends Service {
 			if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
 				if (!listener.isRunning()) {
 					if (listener.start()) {
-						// Toast.makeText(getApplicationContext(), protocolName
-						// + " SERVICE STARTED!", Toast.LENGTH_SHORT).show();
+//						 Toast.makeText(getApplicationContext(), port
+//						 + " SERVICE STARTED!", Toast.LENGTH_SHORT).show();
 						return true;
 					}
 					Toast.makeText(getApplicationContext(), protocolName + " SERVICE COULD NOT BE STARTED!", Toast.LENGTH_SHORT).show();

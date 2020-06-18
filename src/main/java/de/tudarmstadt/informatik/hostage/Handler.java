@@ -41,14 +41,14 @@ public class Handler implements Runnable {
 	/** Time until the socket throws a time out. The time is in milliseconds. */
 	private int TIMEOUT;
 
-	private Hostage service;
+	private de.tudarmstadt.informatik.hostage.Hostage service;
 	protected Protocol protocol;
 	private Socket client;
 	protected Thread thread;
 	
 	SharedPreferences pref; 
 
-	private int attack_id;
+	private long attack_id;
 	//private int message_id = 0;
 	private String externalIP;
 	private String BSSID;
@@ -189,8 +189,8 @@ public class Handler implements Runnable {
 	 */
 	private synchronized void getAndIncrementAttackID(SharedPreferences pref) {
 		Editor editor = pref.edit();
-		attack_id = pref.getInt("ATTACK_ID_COUNTER", 0);
-		editor.putInt("ATTACK_ID_COUNTER", attack_id + 1);
+		attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
+		editor.putLong("ATTACK_ID_COUNTER", attack_id + 1L);
 		editor.commit();
 	}
 

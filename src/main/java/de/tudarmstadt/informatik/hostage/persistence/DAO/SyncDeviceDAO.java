@@ -33,14 +33,13 @@ public class SyncDeviceDAO extends DAO {
 
     public SyncDeviceDAO(DaoSession daoSession){
         this.daoSession= daoSession;
-        this.generateCurrentDevice();
 
     }
 
     public SyncDeviceDAO(DaoSession daoSession,Context context){
         this.daoSession= daoSession;
         this.context = context;
-
+        //this.generateCurrentDevice();
     }
 
 
@@ -206,7 +205,7 @@ public synchronized void updateSyncDevices(HashMap<String, Long> devices){
      */
     public SyncDevice generateCurrentDevice() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this.context);
-        int attack_id = pref.getInt("ATTACK_ID_COUNTER", 0);
+        long attack_id = pref.getInt("ATTACK_ID_COUNTER", 0);
 
         if (thisDevice == null) {
             String deviceUUID = pref.getString("CURRENT_DEVICE_IDENTIFIER", UUID.randomUUID().toString());
@@ -224,7 +223,7 @@ public synchronized void updateSyncDevices(HashMap<String, Long> devices){
         return thisDevice;
     }
 
-    private void deviceExist(SyncDevice device, int attack_id){
+    private void deviceExist(SyncDevice device, long attack_id){
         SyncDevice record = new SyncDevice();
         record.setDeviceID(device.getDeviceID());
         record.setLast_sync_timestamp(device.getLast_sync_timestamp());
@@ -234,7 +233,7 @@ public synchronized void updateSyncDevices(HashMap<String, Long> devices){
 
     }
 
-    private void createNewDevice(String deviceUUID ,int attack_id, SharedPreferences pref){
+    private void createNewDevice(String deviceUUID ,long attack_id, SharedPreferences pref){
         // CREATE A NEW SYNC DEVICE
         thisDevice = new SyncDevice();
         // ITS IMPORTANT TO CREATE A COMPLETE NEW DEVICE UUID

@@ -174,7 +174,7 @@ public class AttackRecordDAO extends  DAO {
      * @param attack_id  The attack id to match the query against.
      * @return The number of different attacks in the database since the given attack_id.
      */
-    public synchronized int getAttackPerProtocolCount(String protocol, int attack_id) {
+    public synchronized int getAttackPerProtocolCount(String protocol, long attack_id) {
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
 
         QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
@@ -196,7 +196,7 @@ public class AttackRecordDAO extends  DAO {
      * @param bssid The BSSID of the access point.
      * @return The number of different attacks in the database since the given attack_id.
      */
-    public synchronized int getAttackPerProtocolCount(String protocol, int attack_id, String bssid) {
+    public synchronized int getAttackPerProtocolCount(String protocol, long attack_id, String bssid) {
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
 
         QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
