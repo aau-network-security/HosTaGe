@@ -102,7 +102,6 @@ public class Logger extends IntentService {
 
 	}
 
-	//private HostageDBOpenHelper mDbHelper;
 	private DaoSession dbSession;
 	private DAOHelper daoHelper;
 	public Logger() {
@@ -114,7 +113,6 @@ public class Logger extends IntentService {
 		super.onCreate();
 		dbSession = HostageApplication.getInstances().getDaoSession();
 		daoHelper = new DAOHelper(dbSession,getApplicationContext());
-		//mDbHelper = new HostageDBOpenHelper(getApplicationContext());
 	}
 
 	private void handleActionLog(MessageRecord record) {

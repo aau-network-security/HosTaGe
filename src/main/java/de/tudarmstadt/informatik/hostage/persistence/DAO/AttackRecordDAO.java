@@ -4,12 +4,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Build;
 import android.preference.PreferenceManager;
-
-
-import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
-import org.greenrobot.greendao.query.WhereCondition;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -214,7 +209,7 @@ public class AttackRecordDAO extends  DAO {
      */
     synchronized public void updateUntrackedAttacks(){
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
-        SyncDevice ownDevice = this.currentDevice();
+        SyncDevice ownDevice = currentDevice();
         long highestID = ownDevice.getHighest_attack_id();
 
         List<AttackRecord> records = recordDao.queryBuilder()
@@ -271,10 +266,7 @@ public class AttackRecordDAO extends  DAO {
         qb.where(AttackRecordDao.Properties.Protocol.eq(protocol),AttackRecordDao.Properties.Bssid.eq(BSSID));
         List<AttackRecord> records = qb.list();
 
-        if(!records.isEmpty())
-            return  true;
-
-        return  false;
+        return !records.isEmpty();
     }
 
     public synchronized int getNumAttacksSeenByBSSID(String BSSID) {
@@ -315,10 +307,10 @@ public class AttackRecordDAO extends  DAO {
         ArrayList<SyncDevice> allDevices = deviceDAO.getSyncDevices();
         long highestID = 0;
         for (SyncDevice device : allDevices){
-            Long sync_id = Long.valueOf(device.getDeviceID()).longValue();
+            Long sync_id = Long.valueOf(device.getDeviceID());
 
             highestID = device.getHighest_attack_id();
-            if (sync_id != null && highestID < sync_id) highestID = sync_id;
+            if (sync_id != 0 && highestID < sync_id) highestID = sync_id;
 
         }
         for (SyncDevice device : allDevices){
@@ -335,7 +327,7 @@ public class AttackRecordDAO extends  DAO {
             for (AttackRecord element : attackRecords) {
                 AttackRecord record = this.createAttackRecord(element);
                 record.setDevice(ownDevice.getDeviceID());
-                highestID = (highestID > record.getAttack_id())? highestID : record.getAttack_id();
+                highestID = Math.max(highestID, record.getAttack_id());
                 this.insert(record);
 
             }
@@ -557,17 +549,18 @@ public class AttackRecordDAO extends  DAO {
      */
     public ArrayList<AttackRecord> selectionQueryFromFilter(LogFilter filter,int offset) {
         ArrayList<String> filterProtocols = new ArrayList<>();
-        if(filter!= null)
-            filterProtocols = filter.getProtocols();
         ArrayList<AttackRecord> attackRecords = this.getAttackRecordsLimit(offset);
         ArrayList<AttackRecord> list = new ArrayList<>();
+
+        if(filter!= null)
+            filterProtocols = filter.getProtocols();
 
         if(filterProtocols.isEmpty())
             return attackRecords;
 
-            for (final String current : filterProtocols) {
-                list.add(attackRecords.stream().filter(o -> o.getProtocol().equals(current)).findAny().orElse(null));
-            }
+        for (final String current : filterProtocols) {
+            list.addAll(attackRecords.stream().filter(o -> o.getProtocol().equals(current)).collect(Collectors.toList()));
+        }
 
         list.removeAll(Collections.singleton(null));
 
@@ -582,16 +575,17 @@ public class AttackRecordDAO extends  DAO {
      */
     public ArrayList<AttackRecord> selectionQueryFromFilter(LogFilter filter) {
         ArrayList<String> filterProtocols = new ArrayList<>();
-        if(filter!= null)
-            filterProtocols = filter.getProtocols();
         ArrayList<AttackRecord> attackRecords = this.getAttackRecords();
         ArrayList<AttackRecord> list = new ArrayList<>();
+
+        if(filter!= null)
+            filterProtocols = filter.getProtocols();
 
         if(filterProtocols.isEmpty())
             return attackRecords;
 
         for (final String current : filterProtocols) {
-            list.add(attackRecords.stream().filter(o -> o.getProtocol().equals(current)).findAny().orElse(null));
+            list.addAll(attackRecords.stream().filter(o -> o.getProtocol().equals(current)).collect(Collectors.toList()));
         }
 
         list.removeAll(Collections.singleton(null));

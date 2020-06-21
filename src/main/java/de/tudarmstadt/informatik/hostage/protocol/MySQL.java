@@ -74,7 +74,7 @@ public class MySQL implements Protocol {
 			request = requestPacket.getBytes();
 		}
 		List<Packet> responsePackets = new ArrayList<Packet>();
-		if (request != null)
+		if (request != null && request.length !=0)
 			lastReceivedMessage = request;
 
 		switch (state) {

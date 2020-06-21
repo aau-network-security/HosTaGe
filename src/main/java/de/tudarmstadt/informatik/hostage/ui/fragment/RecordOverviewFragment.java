@@ -167,7 +167,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         dbSession = HostageApplication.getInstances().getDaoSession();
         daoHelper = new DAOHelper(dbSession,getApplicationContext());
-        data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter);
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         if (this.filter == null){
@@ -196,8 +195,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         this.initialiseListView();
 
-        //setListViewFooter();
-        //setListOnScrollListener();
 
         ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -566,7 +563,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         ArrayList<String> groupTitle = new ArrayList<String>();
 
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = this.fetchDataForFilter(this.filter, groupTitle);
-        data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter);
         RecordListAdapter adapter = null;
         if (mylist.getAdapter() != null && mylist.getAdapter() instanceof RecordListAdapter){
             adapter = (RecordListAdapter) mylist.getAdapter();
@@ -595,6 +591,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         // Adding Items to ListView
         String[] keys = new String[] { RecordOverviewFragment.this.getString(R.string.RecordBSSID), RecordOverviewFragment.this.getString(R.string.RecordSSID), RecordOverviewFragment.this.getString(R.string.RecordProtocol), RecordOverviewFragment.this.getString(R.string.RecordTimestamp)};
         int[] ids = new int[] {R.id.RecordTextFieldBSSID, R.id.RecordTextFieldSSID, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp };
+        data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter);
 
         HashMap<String, Integer> mapping = new HashMap<String, Integer>();
         int i = 0;
