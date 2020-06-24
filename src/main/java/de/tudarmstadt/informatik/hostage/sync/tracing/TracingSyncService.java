@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import de.tudarmstadt.informatik.hostage.HostageApplication;

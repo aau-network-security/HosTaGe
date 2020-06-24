@@ -37,6 +37,7 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -282,7 +283,7 @@ public class AttackRecordDAOTest {
         AttackRecord recordSecond = new AttackRecord();
 
         LogFilter filter =  attackRecordFilter(smb, http,recordSecond);
-        ArrayList<AttackRecord> records = attackRecordDAO.selectionQueryFromFilter(filter,0);
+        ArrayList<AttackRecord> records = attackRecordDAO.selectionQueryFromFilter(filter);
 
         assertEquals(http,records.get(0).getProtocol());
         assertEquals(smb,records.get(1).getProtocol());
@@ -421,9 +422,10 @@ public class AttackRecordDAOTest {
     private LogFilter attackRecordFilter(String smb, String http, AttackRecord recordSecond){
         LogFilter filter = new LogFilter();
         ArrayList<String> filterProtocols = new ArrayList<>();
-
+        String notExistent= "random";
         filterProtocols.add(http);
         filterProtocols.add(smb);
+        filterProtocols.add(notExistent);
 
         filter.setProtocols(filterProtocols);
         recordSecond.setAttack_id(2);

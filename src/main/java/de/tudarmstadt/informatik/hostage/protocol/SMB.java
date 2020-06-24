@@ -50,7 +50,7 @@ public class SMB implements Protocol {
 
     SharedPreferences pref;
 
-    private int attack_id;
+    private long attack_id;
     private String externalIP;
     private String BSSID;
     private String SSID;
@@ -117,8 +117,8 @@ public class SMB implements Protocol {
 
     private synchronized void getAndIncrementAttackID(SharedPreferences pref) {
         SharedPreferences.Editor editor = pref.edit();
-        attack_id = pref.getInt("ATTACK_ID_COUNTER", 0);
-        editor.putInt("ATTACK_ID_COUNTER", attack_id + 1);
+        attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
+        editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
         editor.commit();
     }
 

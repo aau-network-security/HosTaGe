@@ -48,8 +48,7 @@ public class Handler implements Runnable {
 	
 	SharedPreferences pref; 
 
-	private int attack_id;
-	//private int message_id = 0;
+	private long attack_id;
 	private String externalIP;
 	private String BSSID;
 	private String SSID;
@@ -189,8 +188,8 @@ public class Handler implements Runnable {
 	 */
 	private synchronized void getAndIncrementAttackID(SharedPreferences pref) {
 		Editor editor = pref.edit();
-		attack_id = pref.getInt("ATTACK_ID_COUNTER", 0);
-		editor.putInt("ATTACK_ID_COUNTER", attack_id + 1);
+		attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
+		editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
 		editor.commit();
 	}
 

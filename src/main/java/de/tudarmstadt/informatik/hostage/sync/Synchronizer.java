@@ -6,7 +6,6 @@ package de.tudarmstadt.informatik.hostage.sync;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.util.ArrayList;

@@ -1,5 +1,6 @@
 package de.tudarmstadt.informatik.hostage.services;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,8 +10,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.RequiresApi;
 
+
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,7 +90,6 @@ public class MultiStage extends Service {
 
         return START_STICKY;
     }
-
 
 
     //fetch data of records of last 10 mins
@@ -192,7 +193,7 @@ public class MultiStage extends Service {
 
         AttackRecord attackRecord = new AttackRecord(true);
 
-        attackRecord.setProtocol(protocol);
+        attackRecord.setProtocol("MULTISTAGE");
         attackRecord.setExternalIP(externalIP);
         attackRecord.setLocalIP(localip);
         attackRecord.setLocalPort(lport);

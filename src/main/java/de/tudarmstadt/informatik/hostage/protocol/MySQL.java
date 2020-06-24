@@ -74,7 +74,7 @@ public class MySQL implements Protocol {
 			request = requestPacket.getBytes();
 		}
 		List<Packet> responsePackets = new ArrayList<Packet>();
-		if (request != null)
+		if (request != null && request.length !=0)
 			lastReceivedMessage = request;
 
 		switch (state) {
@@ -183,7 +183,7 @@ public class MySQL implements Protocol {
 		byte[] buffer = ByteBuffer.allocate(4).putInt(response.length).array();
 		byte[] packetLength = { buffer[3], buffer[2], buffer[1] };
 		byte[] packetNumber = new byte[1];
-		if (lastReceivedMessage != null)
+		if (lastReceivedMessage != null && lastReceivedMessage.length != 0)
 			packetNumber[0] = (byte) (lastReceivedMessage[3] + 1);
 		else
 			packetNumber[0] = 0x00;

@@ -25,9 +25,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.widget.DrawerLayout;
+
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -39,6 +37,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.legacy.app.ActionBarDrawerToggle;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.R;

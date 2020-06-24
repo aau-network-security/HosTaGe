@@ -1,7 +1,6 @@
 package de.tudarmstadt.informatik.hostage.persistence.DAO;
 
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 
 
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -161,8 +160,8 @@ public synchronized ArrayList<NetworkRecord> getMissingNetworkRecords(ArrayList<
      * @param filter
      */
 public void deleteFromFilter(LogFilter filter){
-        ArrayList<NetworkRecord> filterBSSIDs = selectionBSSIDFromFilter(filter,0);
-        ArrayList<NetworkRecord> filterESSIDs = selectionESSIDFromFilter(filter,0);
+        ArrayList<NetworkRecord> filterBSSIDs = selectionBSSIDFromFilter(filter);
+        ArrayList<NetworkRecord> filterESSIDs = selectionESSIDFromFilter(filter);
 
         NetworkRecordDao recordDao = this.daoSession.getNetworkRecordDao();
         recordDao.deleteInTx(filterBSSIDs);
@@ -187,7 +186,7 @@ public ArrayList<NetworkRecord> selectionBSSIDFromFilter(LogFilter filter,int of
             return networkRecords;
 
             for (final String current : filterBSSIDs) {
-                list.add(networkRecords.stream().filter(o -> o.getBssid().equals(current)).findAny().orElse(null));
+                list.addAll(networkRecords.stream().filter(o -> o.getBssid().equals(current)).collect(Collectors.toList()));
             }
         list.removeAll(Collections.singleton(null));
 
@@ -211,7 +210,7 @@ public ArrayList<NetworkRecord> selectionBSSIDFromFilter(LogFilter filter,int of
             return networkRecords;
 
             for (final String current : filterESSIDs) {
-                list.add(networkRecords.stream().filter(o -> o.getSsid().equals(current)).findAny().orElse(null));
+                list.addAll(networkRecords.stream().filter(o -> o.getSsid().equals(current)).collect(Collectors.toList()));
             }
 
         list.removeAll(Collections.singleton(null));
@@ -237,7 +236,7 @@ public ArrayList<NetworkRecord> selectionBSSIDFromFilter(LogFilter filter,int of
             return networkRecords;
 
         for (final String current : filterBSSIDs) {
-            list.add(networkRecords.stream().filter(o -> o.getBssid().equals(current)).findAny().orElse(null));
+            list.addAll(networkRecords.stream().filter(o -> o.getBssid().equals(current)).collect(Collectors.toList()));
         }
         list.removeAll(Collections.singleton(null));
 
@@ -261,7 +260,7 @@ public ArrayList<NetworkRecord> selectionBSSIDFromFilter(LogFilter filter,int of
             return networkRecords;
 
         for (final String current : filterESSIDs) {
-            list.add(networkRecords.stream().filter(o -> o.getSsid().equals(current)).findAny().orElse(null));
+            list.addAll(networkRecords.stream().filter(o -> o.getSsid().equals(current)).collect(Collectors.toList()));
         }
 
         list.removeAll(Collections.singleton(null));

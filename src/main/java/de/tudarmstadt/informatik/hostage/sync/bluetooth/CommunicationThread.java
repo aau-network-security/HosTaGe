@@ -11,7 +11,6 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import de.tudarmstadt.informatik.hostage.HostageApplication;

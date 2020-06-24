@@ -404,31 +404,30 @@ public class MODBUS implements Protocol {
 
     /* gets the type of request made from the master */
     private int getRequestType(byte[] request) {
+        if(request.length !=0) {
+            int requestType = request[7];
 
-        int requestType=request[7];
+            if (requestType == 17) {
+                requestType = MODBUS_SERVICE;
+            } else if (requestType == 5) {
+                requestType = WRITE_COIL;
+            } else if (requestType == 1) {
+                requestType = READ_COILS;
+            } else if (requestType == 6) {
+                requestType = WRITE_SINGLE_REGISTER;
+            } else if (requestType == 4) {
+                requestType = READ_INPUT_REGISTERS;
+            } else if (requestType == 2) {
+                requestType = READ_INPUT_DISCRETES;
+            } else if (requestType == 3) {
+                requestType = READ_HOLDING_REGISTERS;
+            }
+            System.out.println(requestType);
+            return requestType;
+        }
+        int requestType = MODBUS_SERVICE;
 
-        if (requestType == 17) {
-            requestType = MODBUS_SERVICE;
-        } else if (requestType == 5) {
-            requestType = WRITE_COIL;
-        } else if (requestType == 1) {
-            requestType = READ_COILS;
-        } else if (requestType == 6) {
-            requestType = WRITE_SINGLE_REGISTER;
-        } else if (requestType == 4) {
-            requestType = READ_INPUT_REGISTERS;
-        }
-        else if (requestType==2){
-            requestType = READ_INPUT_DISCRETES;
-        }
-        else if (requestType==3){
-            requestType = READ_HOLDING_REGISTERS;
-        }
-
-       System.out.println(requestType);
         return requestType;
-
-
 
     }
 
