@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "283609891050",
+    "firebase_url": "https://hostage-4f7c7.firebaseio.com",
+    "project_id": "hostage-4f7c7",
+    "storage_bucket": "hostage-4f7c7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283609891050:android:c9df120509b30ca36e9793",
+        "android_client_info": {
+          "package_name": "de.tudarmstadt.informatik.hostage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "283609891050-36dl28rq07gt758o64dotvfceotf9deg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0RyNSaOfTPFui8xfnibzPI8qt0bklFXQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "283609891050-36dl28rq07gt758o64dotvfceotf9deg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
