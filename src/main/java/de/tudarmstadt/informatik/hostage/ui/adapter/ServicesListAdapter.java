@@ -1,6 +1,7 @@
 package de.tudarmstadt.informatik.hostage.ui.adapter;
 
 import java.util.List;
+import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -14,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import de.tudarmstadt.informatik.hostage.Listener;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.model.Profile;
@@ -30,7 +33,6 @@ import de.tudarmstadt.informatik.hostage.ui.model.ServicesListItem;
 public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
     private final Context context;
     private final List<ServicesListItem> values;
-    int sdk = Build.VERSION.SDK_INT;
     private Context mActivity;
     private Switch mServicesSwitch;
     private CompoundButton.OnCheckedChangeListener mListener;
@@ -89,6 +91,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
             assert rowView != null;
             holder.protocolName = rowView.findViewById(R.id.services_item_name);
             holder.recordedAttacks = rowView.findViewById(R.id.services_item_rec_attacks);
+            holder.port = rowView.findViewById(R.id.services_item_port);
             holder.activated = rowView.findViewById(R.id.services_item_switch);
             holder.circle = rowView.findViewById(R.id.services_circle);
             rowView.setTag(holder);
@@ -97,6 +100,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
         }
 
         holder.protocolName.setText(item.protocol);
+        setRealPortListening(holder,item);
         holder.activated.setTag(item);
 
         this.updateStatus(item, holder);
@@ -268,6 +272,24 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
     }
 
     /**
+     * Adds the real port number in every item of the list
+     */
+    private void setRealPortListening(ViewHolder holder,ServicesListItem item){
+        Map<String,Integer> ports = Listener.getRealPorts();
+        String protocol = item.protocol;
+        if(ports.containsKey(protocol)){
+            int realPort = ports.entrySet().stream()
+                    .filter(e -> e.getKey().equals(protocol))
+                    .map(Map.Entry::getValue)
+                    .findFirst().get();
+
+            holder.port.setText(String.format(MainActivity.getContext().getResources().getString(R.string.open_ports) + "  %d", realPort));
+        }else {
+            holder.port.setText(String.format(MainActivity.getContext().getResources().getString(R.string.open_ports) + "  %d", item.port));
+        }
+    }
+
+    /**
      * ViewHolder stands for a row in the view
      */
     private class ViewHolder {
@@ -275,6 +297,8 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
         public TextView protocolName;
 
         public TextView recordedAttacks;
+
+        public TextView port;
 
         public Switch activated;
 

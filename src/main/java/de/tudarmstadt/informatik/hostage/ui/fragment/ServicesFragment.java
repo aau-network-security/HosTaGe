@@ -60,6 +60,8 @@ public class ServicesFragment extends TrackerFragment {
 
     private String[] protocols;
 
+    private int[] originalPorts;
+
     private SharedPreferences mConnectionInfo;
 
     private boolean mReceiverRegistered = false;
@@ -173,6 +175,7 @@ public class ServicesFragment extends TrackerFragment {
         assignViews();
 
         protocols = getResources().getStringArray(R.array.protocols);
+        originalPorts = getResources().getIntArray(R.array.ports);
         mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 
         updateUI();
@@ -182,7 +185,7 @@ public class ServicesFragment extends TrackerFragment {
         protocolList = new ArrayList<ServicesListItem>();
         int i = 0;
         for (String protocol : protocols) {
-            protocolList.add(new ServicesListItem(protocol));
+            protocolList.add(new ServicesListItem(protocol,originalPorts[i]));
             protocolList.get(i).attacks = daoHelper.getAttackRecordDAO().getNumAttacksSeenByBSSID(protocolList.get(i).protocol,
                     mConnectionInfo.getString(getString(R.string.connection_info_bssid), null));
             i++;
@@ -260,6 +263,7 @@ public class ServicesFragment extends TrackerFragment {
         return rootView;
 
     }
+
 
     /**
      * called on start of this fragment.
