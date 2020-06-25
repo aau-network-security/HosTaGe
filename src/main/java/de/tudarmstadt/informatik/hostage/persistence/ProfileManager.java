@@ -654,7 +654,6 @@ public class  ProfileManager {
 		nuclearPlant.mActiveProtocols.put("HTTP", true);
 		nuclearPlant.mActiveProtocols.put("FTP", true);
 		nuclearPlant.mActiveProtocols.put("TELNET", true);
-		//nuclearPlant.mActiveProtocols.put("SNMP",true);
 		nuclearPlant.mActiveProtocols.put("S7COMM",true);
 		nuclearPlant.mActiveProtocols.put("SMTP",true);
 		this.addProfile(nuclearPlant, false);
@@ -685,7 +684,6 @@ public class  ProfileManager {
 
 		modbusMaster.mActiveProtocols.put("MODBUS",true);
 		modbusMaster.mActiveProtocols.put("SMB",true);
-		//modbusMaster.mActiveProtocols.put("SNMP", true);
 		modbusMaster.mActiveProtocols.put("S7COMM",true);
 		modbusMaster.mGhostActive = true;
 		modbusMaster.mGhostPorts = "135";

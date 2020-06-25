@@ -2,7 +2,6 @@ buildscript {
     repositories {
         jcenter()
         google()
-
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.3'
@@ -18,7 +17,6 @@ allprojects {
         google()
 
         maven { url "https://jitpack.io" }
-
     }
 }
 dependencies {
@@ -38,9 +36,11 @@ dependencies {
     implementation 'org.greenrobot:greendao:3.3.0'
     implementation 'org.greenrobot:greendao-generator:3.3.0'
     //hive-Mq
-    implementation 'com.github.hivemq.hivemq-community-edition:hivemq-community-edition:2020.1'
     implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: '1.2.0'
-    //android X migration
+    //moquette
+    implementation 'io.moquette:moquette-broker:0.12.1'
+
+    //androidX legacy support
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.preference:preference:1.1.1'
 
@@ -54,6 +54,8 @@ dependencies {
     implementation files('libs/snmp4j-agent-2.3.3.jar')
     implementation files('libs/VirusTotalAPI.jar')
 
+    //switchButton
+    implementation 'com.github.zcweng:switch-button:0.0.3@aar'
 
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.12'
@@ -82,6 +84,10 @@ greendao{
     //generateTests true
    // targetGenDir "src/db/"
 }
+//this is for the conflict of common apache libraries between moquette and VirusTotalApi
+configurations {
+    all*.exclude group: 'commons-codec', module: 'commons-codec'
+}
 
 android {
     compileSdkVersion 28
@@ -93,7 +99,9 @@ android {
         targetSdkVersion 28
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        useLibrary 'org.apache.http.legacy'
         //   signingConfig signingConfigs.config
+
     }
     testOptions {
         unitTests {
@@ -111,6 +119,7 @@ android {
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
+
 
     packagingOptions {
         pickFirst "META-INF/DEPENDENCIES"

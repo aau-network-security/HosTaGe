@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 
 /**
@@ -67,24 +68,17 @@ public class MyLocationManager {
 		}
 	};
 
-	//TODO implement missing Permission
-	@RequiresApi(api = Build.VERSION_CODES.M)
 	public MyLocationManager(Context context) {
 		// Acquire a reference to the system Location Manager
 		locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
-		if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			// TODO: Consider calling
-			//    Activity#requestPermissions
-			// here to request the missing permissions, and then overriding
-			//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-			//                                          int[] grantResults)
-			// to handle the case where the user grants the permission. See the documentation
-			// for Activity#requestPermissions for more details.
-			return ;
+		if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+				PackageManager.PERMISSION_GRANTED &&
+				ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+						PackageManager.PERMISSION_GRANTED) {
+			newestLocation = locationManager
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		}
-		newestLocation = locationManager
-				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 	}
 
 	/**
@@ -112,8 +106,7 @@ public class MyLocationManager {
 	 * {@link MyLocationManager#newestLocation
 	 * newestLocation} if a hostage.location provider is enabled and available.
 	 */
-	//TODO implement missing Permission
-	@RequiresApi(api = Build.VERSION_CODES.M)
+
 	public void startUpdates(Context context) {
 		boolean gpsEnabled = false;
 		boolean networkEnabled = false;
@@ -137,20 +130,17 @@ public class MyLocationManager {
 
 		// Register the listener with the Location Manager to receive hostage.location updates
 		if (gpsEnabled)
-			if ( context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-				// TODO: Consider calling
-				//    Activity#requestPermissions
-				// here to request the missing permissions, and then overriding
-				//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-				//                                          int[] grantResults)
-				// to handle the case where the user grants the permission. See the documentation
-				// for Activity#requestPermissions for more details.
-				return;
-			}locationManager.requestLocationUpdates(
-				LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-		if (networkEnabled)
-			locationManager.requestLocationUpdates(
-					LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+			if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+				PackageManager.PERMISSION_GRANTED &&
+				ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+						PackageManager.PERMISSION_GRANTED) {
+
+				locationManager.requestLocationUpdates(
+						LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+				if (networkEnabled)
+					locationManager.requestLocationUpdates(
+							LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+			}
 	}
 
 	/**
