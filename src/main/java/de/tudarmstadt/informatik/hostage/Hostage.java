@@ -2,8 +2,10 @@ package de.tudarmstadt.informatik.hostage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -25,7 +27,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.Uri;
@@ -47,14 +48,11 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 
-
-import de.tudarmstadt.informatik.hostage.logging.DaoMaster;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.services.MultiStageAlarm;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
-
 
 
 import static de.tudarmstadt.informatik.hostage.commons.HelperUtils.getBSSID;
@@ -74,7 +72,6 @@ public class Hostage extends Service {
 
 	private HashMap<String, Boolean> mProtocolActiveAttacks;
 	MultiStageAlarm alarm = new MultiStageAlarm();
-	private Boolean multistage_service;
 	DaoSession dbSession;
 
 
@@ -83,7 +80,6 @@ public class Hostage extends Service {
 			return Hostage.this;
 		}
 	}
-
 
 
 	/**
@@ -121,7 +117,6 @@ public class Hostage extends Service {
 	}
 
 	private static Context context;
-    Listener listener;
 
 	/**
 	 * Returns the application context.
@@ -134,8 +129,6 @@ public class Hostage extends Service {
 
 	private LinkedList<Protocol> implementedProtocols;
 	private ArrayList<Listener> listeners = new ArrayList<Listener>();
-
-	private NotificationCompat.Builder builder;
 
 	private SharedPreferences connectionInfo;
 
@@ -217,6 +210,8 @@ public class Hostage extends Service {
 		}
 		return false;
 	}
+
+
 
 	/**
 	 * Determines if a protocol with the given name is running on its default
@@ -308,7 +303,6 @@ public class Hostage extends Service {
 	}
 
 
-
 	@Override
 	public void onDestroy() {
 		cancelNotification();
@@ -323,15 +317,9 @@ public class Hostage extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
-
-
-		/*SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		multistage_service=sp.getBoolean("pref_multistage",true);*/
-
 		startMultiStage();
 
 		return START_STICKY;
-
 	}
 
 	private void stopMultiStage() {
@@ -373,8 +361,7 @@ public class Hostage extends Service {
 			if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
 				if (!listener.isRunning()) {
 					if (listener.start()) {
-						// Toast.makeText(getApplicationContext(), protocolName
-						// + " SERVICE STARTED!", Toast.LENGTH_SHORT).show();
+
 						return true;
 					}
 					Toast.makeText(getApplicationContext(), protocolName + " SERVICE COULD NOT BE STARTED!", Toast.LENGTH_SHORT).show();
@@ -386,8 +373,7 @@ public class Hostage extends Service {
 		Listener listener = createListener(protocolName, port);
 		if (listener != null) {
 			if (listener.start()) {
-				// Toast.makeText(getApplicationContext(), protocolName +
-				// " SERVICE STARTED!", Toast.LENGTH_SHORT).show();
+
 				return true;
 			}
 		}
@@ -535,15 +521,15 @@ public class Hostage extends Service {
 			return; // prevent NullPointerException
 		}
 
-		//HostageDBOpenHelper dbh = new HostageDBOpenHelper(this);
 		dbSession = HostageApplication.getInstances().getDaoSession();
 
 		AttackRecordDAO attackRecordDAO = new AttackRecordDAO(dbSession);
 		boolean activeHandlers = false;
 		boolean bssidSeen = false;
 		boolean listening = false;
-
-		for (Listener listener : listeners) {
+		Iterator<Listener> iterator = listeners.iterator();
+		while(iterator.hasNext()) {
+			Listener listener = iterator.next();
 			if (listener.isRunning())
 				listening = true;
 			if (listener.getHandlerCount() > 0) {

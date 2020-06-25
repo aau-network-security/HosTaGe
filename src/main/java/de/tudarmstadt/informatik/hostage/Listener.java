@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 import javax.net.ssl.SSLContext;
@@ -21,9 +23,11 @@ import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.Logger;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.net.MyServerSocketFactory;
+import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.protocol.SMB;
 import de.tudarmstadt.informatik.hostage.protocol.SSLProtocol;
+import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
 import de.tudarmstadt.informatik.hostage.system.Device;
 
 
@@ -52,9 +56,11 @@ public class Listener implements Runnable {
     private Hostage service;
     private ConnectionRegister conReg;
     private boolean running = false;
+    private int mqttport =1883;
 
     private static Semaphore mutex = new Semaphore(1); // to enable atomic section in portscan detection
 
+    private static Map<String,Integer> realPorts = new HashMap<>();
     /**
      * Constructor for the class. Instantiate class variables.
      *
@@ -125,29 +131,33 @@ public class Listener implements Runnable {
     public void refreshHandlers() {
         for (Iterator<Handler> iterator = handlers.iterator(); iterator.hasNext(); ) {
             Handler handler = iterator.next();
-            if (handler.isTerminated()) {
+            if(handler == null){
                 conReg.closeConnection();
                 iterator.remove();
+            }else {
+                if (handler.isTerminated()) {
+                    conReg.closeConnection();
+                    iterator.remove();
+                }
             }
         }
     }
 
     @Override
     public void run() {
-
-
         if (protocol.toString().equals("")) return;
 
-        //||(protocol.toString().equals("SNMP"))) return;
-
         while (!thread.isInterrupted()) {
-            addHandler();
+            try {
+                addHandler();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         for (Handler handler : handlers) {
             //TODO kann ConcurrentModificationException auslösen, da über collection iteriert wird während elemente entfernt werden
             handler.kill();
         }
-        //initMultiStage();
     }
 
     /**
@@ -175,22 +185,28 @@ public class Listener implements Runnable {
             ((SMB) protocol).initialize(this);
         }
 
-
-
+        if(port==mqttport)
+            return notifyUI(true);
         try {
             server = new MyServerSocketFactory().createServerSocket(port);
-            if (server == null)
+            if (server == null) {
                 server = new MyServerSocketFactory().createServerSocket(0);
+                addRealPorts(protocol.toString(), server.getLocalPort());
+            }
                 if (server == null)
                     return false;
             (this.thread = new Thread(this)).start();
-            running = true;
-            service.notifyUI(this.getClass().getName(),
-                    new String[]{service.getString(R.string.broadcast_started), protocol.toString(), Integer.toString(port)});
-            return true;
+            return notifyUI(true);
         } catch (IOException e) {
             return false;
         }
+    }
+
+    private boolean notifyUI(boolean running){
+        this.running = running;
+        service.notifyUI(this.getClass().getName(),
+                new String[]{service.getString(R.string.broadcast_started), protocol.toString(), Integer.toString(port)});
+        return true;
     }
 
     /**
@@ -198,28 +214,42 @@ public class Listener implements Runnable {
      * running in and notifies the background service.
      */
     public void stop() {
+        if(stopMqttBroker())
+            return;
         try {
-//            if (protocol.toString().equals("")) {
-//                ((SMB) protocol).stop();
-//
-//            }
-
             server.close();
             thread.interrupt();
-            running = false;
-            service.notifyUI(this.getClass().getName(),
-                    new String[]{service.getString(R.string.broadcast_stopped), protocol.toString(), Integer.toString(port)});
+            notifyUI(false);
         } catch (IOException e) {
         }
+    }
+
+    public boolean stopMqttBroker(){
+        if(port == mqttport) {
+            MQTT.brokerStop();
+            notifyUI(false);
+            return true;
+        }
+        return false;
     }
 
     /**
      * Waits for an incoming connection, accepts it and starts a {@link Handler}
      */
-    private void addHandler() {
+    private void addHandler() throws Exception {
+
         if (conReg.isConnectionFree()) {
             try {
+//                       System.out.println("outsideHandler");
+//
+//                    if(!MQTTHandler.getCurrentConnectedMessages().isEmpty()) {
+//                        System.out.println("insideHandler");
+//                        startHandler();
+//                        return;
+//                    }
+
                 final Socket client = server.accept();
+
                 if (ConnectionGuard.portscanInProgress()) {
                     // ignore everything for the duration of the port scan
                     client.close();
@@ -281,6 +311,9 @@ public class Listener implements Runnable {
         return new Handler(service, listener, protocol, client);
     }
 
+    private Handler newInstance(Hostage service, Listener listener, Protocol protocol) {
+        return new Handler(service, listener, protocol);
+    }
     /**
      * Starts a {@link Handler} with the given socket.
      *
@@ -289,7 +322,10 @@ public class Listener implements Runnable {
      */
     private void startHandler(Socket client) throws Exception {
         handlers.add(newInstance(service, this, protocol.toString().equals("CIFS") ? protocol : protocol.getClass().newInstance(), client));
-        //handlers.add(newInstance(service, this, protocol.toString().equals("SNMP") ? protocol : protocol.getClass().newInstance(), client));
+    }
+
+    private void startHandler() throws Exception {
+        handlers.add(newInstance(service, this, protocol.toString().equals("CIFS") ? protocol : protocol.getClass().newInstance()));
     }
 
     /**
@@ -313,9 +349,22 @@ public class Listener implements Runnable {
      * @param timestamp Timestamp when the portscan has been detected.
      */
     private void logPortscan(Socket client, long timestamp) {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(service);
         SharedPreferences connInfo = service.getSharedPreferences(service.getString(R.string.connection_info), Context.MODE_PRIVATE);
 
+        AttackRecord attackRecord = logAttackRecord(connInfo, client);
+        NetworkRecord networkRecord = logNetworkRecord(connInfo);
+
+        Logger.logPortscan(Hostage.getContext(), attackRecord, networkRecord, timestamp);
+
+        // now that the record exists we can inform the ui
+        // only handler informs about attacks so its name is used here
+        service.notifyUI(Handler.class.getName(),
+                new String[]{service.getString(R.string.broadcast_started), "PORTSCAN",
+                        Integer.toString(client.getPort())});
+    }
+
+
+    public AttackRecord logAttackRecord(SharedPreferences connInfo, Socket client){
         AttackRecord attackRecord = new AttackRecord(true);
 
         attackRecord.setProtocol("PORTSCAN");
@@ -326,6 +375,11 @@ public class Listener implements Runnable {
         attackRecord.setRemotePort(client.getPort());
         attackRecord.setBssid(connInfo.getString(service.getString(R.string.connection_info_bssid), null));
 
+        return attackRecord;
+
+    }
+
+    public NetworkRecord logNetworkRecord(SharedPreferences connInfo){
         NetworkRecord networkRecord = new NetworkRecord();
         networkRecord.setBssid(connInfo.getString(service.getString(R.string.connection_info_bssid), null));
         networkRecord.setSsid(connInfo.getString(service.getString(R.string.connection_info_ssid), null));
@@ -340,13 +394,16 @@ public class Listener implements Runnable {
             networkRecord.setAccuracy(Float.MAX_VALUE);
             networkRecord.setTimestampLocation(0);
         }
-        Logger.logPortscan(Hostage.getContext(), attackRecord, networkRecord, timestamp);
 
-        // now that the record exists we can inform the ui
-        // only handler informs about attacks so its name is used here
-        service.notifyUI(Handler.class.getName(),
-                new String[]{service.getString(R.string.broadcast_started), "PORTSCAN",
-                        Integer.toString(client.getPort())});
+        return networkRecord;
+    }
+
+    public void addRealPorts(String protocol, Integer port){
+        realPorts.put(protocol,port);
+    }
+
+    public static Map<String,Integer>  getRealPorts(){
+        return realPorts;
     }
 
 

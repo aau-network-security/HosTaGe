@@ -8,6 +8,7 @@
         <item>HTTP</item>
         <item>HTTPS</item>
         <item>MySQL</item>
+        <item>MQTT</item>
         <item>MODBUS</item>
         <item>S7COMM</item>
         <item>SNMP</item>
@@ -25,6 +26,7 @@
         <item>A protocol to exchange or transfer hypertext. It is the foundation of data communication for the World Wide Web</item>
         <item>The same as HTTP, but using a secure connections based on SSL/TLS</item>
         <item>The world\'s second most widely used relational database management system</item>
+        <item>MQTT(MQ Telemetry Transportor Message Queuing Telemetry Transport) is an open OASIS and ISO standard (ISO/IEC 20922) lightweight, publish-subscribe network protocol that transports messages between devices</item>
         <item>ICS SCADA MODBUS</item>
         <item>Siemens SIMATIC Communication Protocol</item>
         <item>Simple Network Management Protocol</item>
@@ -34,4 +36,23 @@
         <item> Mail Transfer Protocol used to send and receive emails</item>
         <item>A network protocol used on the Internet or local area networks to provide a bidirectional interactive text-oriented communication facility using a virtual terminal connection</item>
     </string-array>
+
+    <integer-array name="ports">
+        <item>7</item>
+        <item>21</item>
+        <item>1433</item>
+        <item>80</item>
+        <item>443</item>
+        <item>3306</item>
+        <item>1883</item>
+        <item>502</item>
+        <item>102</item>
+        <item>161</item>
+        <item>5060</item>
+        <item>1025</item>
+        <item>22</item>
+        <item>25</item>
+        <item>23</item>
+
+    </integer-array>
 </resources>
