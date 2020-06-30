@@ -11,7 +11,7 @@ import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecordDao;
 import de.tudarmstadt.informatik.hostage.logging.Record;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
-
+import io.moquette.logging.LoggingUtils;
 
 
 public class MessageRecordDAO extends DAO {
@@ -155,6 +155,34 @@ public class MessageRecordDAO extends DAO {
         }
 
         return list;
+    }
+
+    /**
+     * Returns the query for the given filter.
+     * @param filter (LogFilter)
+     * @return QueryBuilder<AttackRecord> query
+     */
+    public ArrayList<MessageRecord> selectionQueryFromFilterMultiStage(LogFilter filter) {
+        return filterList(filter);
+    }
+
+    private ArrayList<MessageRecord> filterList(LogFilter filter){
+        MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
+
+        ArrayList<MessageRecord> list = new ArrayList<>();
+
+        QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
+
+        qb.and(MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
+                MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp()));
+        try {
+            list = (ArrayList<MessageRecord>) qb.list();
+        } catch (Exception e) {
+            return list;
+        }
+
+        return list;
+
     }
 
     public void deleteFromFilter(LogFilter filter){

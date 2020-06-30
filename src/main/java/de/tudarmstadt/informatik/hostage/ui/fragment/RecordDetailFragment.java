@@ -129,7 +129,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 		//this.mDBOpenHelper = new HostageDBOpenHelper(this.getActivity().getBaseContext());
 		dbSession = HostageApplication.getInstances().getDaoSession();
-		daoHelper = new DAOHelper(dbSession,getContext());
+		daoHelper = new DAOHelper(dbSession,getActivity());
 
 		this.mRootView = inflater.inflate(this.getLayoutId(), container, false);
 		this.assignViews(mRootView);

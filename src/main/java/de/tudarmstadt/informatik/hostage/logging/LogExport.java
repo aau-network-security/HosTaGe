@@ -49,7 +49,7 @@ public class LogExport extends IntentService{
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
 		//dbh = new HostageDBOpenHelper(this);
 		dbSession = HostageApplication.getInstances().getDaoSession();
-		daoHelper = new DAOHelper(dbSession,getApplicationContext());
+		daoHelper = new DAOHelper(dbSession,this);
 		mMainThreadHandler = new Handler();
 	}
 	

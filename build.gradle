@@ -6,10 +6,13 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.3'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
+        classpath 'com.google.gms:google-services:4.3.3' //added gms support
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.2.0'
     }
 }
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'com.google.firebase.crashlytics'
 
 allprojects {
     repositories {
@@ -54,8 +57,8 @@ dependencies {
     implementation files('libs/snmp4j-agent-2.3.3.jar')
     implementation files('libs/VirusTotalAPI.jar')
 
-    //switchButton
-    implementation 'com.github.zcweng:switch-button:0.0.3@aar'
+    //materialDesign
+    implementation 'com.google.android.material:material:1.3.0-alpha01'
 
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.12'
@@ -100,6 +103,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         useLibrary 'org.apache.http.legacy'
+
         //   signingConfig signingConfigs.config
 
     }

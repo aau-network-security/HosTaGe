@@ -169,15 +169,15 @@ public class Handler implements Runnable {
 	public void run() {
 		service.notifyUI(this.getClass().getName(),
 				new String[] { service.getString(R.string.broadcast_started), protocol.toString(), Integer.toString(listener.getPort()) });
-//		if(protocol.getPort() == 1883){
-//			try {
-//				handleMQTTPackets();
-//			} catch (UnknownHostException e) {
-//				e.printStackTrace();
-//			}
-//			kill();
-//			return;
-//		}
+		if(!MQTTHandler.getCurrentConnectedMessages().isEmpty()){
+			try {
+				handleMQTTPackets();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+			kill();
+			return;
+		}
 
 		InputStream in;
 		OutputStream out;
@@ -251,13 +251,14 @@ public class Handler implements Runnable {
 	 * 
 	 * @return The AttackRecord representing the attack.
 	 */
-	//TODO Problem with setDevice
     public AttackRecord createAttackRecord() {
 		AttackRecord record = new AttackRecord();
 		record.setAttack_id(attack_id);
         record.setSync_id(attack_id);
-        //record.setDevice(SyncDevice.currentDevice().getDeviceID());
-        record.setDevice(UUID.randomUUID().toString()); //problem
+        if(SyncDevice.currentDevice()!=null)
+        	record.setDevice(SyncDevice.currentDevice().getDeviceID());
+        else
+        	record.setDevice(UUID.randomUUID().toString());
 		record.setProtocol(protocol.toString());
 		record.setExternalIP(externalIP);
 		record.setLocalIP(client.getLocalAddress().getHostAddress());

@@ -56,8 +56,8 @@ public class SyncDevice {
      * Returns a SyncDevice Object representing the current device.
      * @return {@link SyncDevice}
      */
-    public static SyncDevice currentDevice()
-    {
+    public static SyncDevice currentDevice() {
+
         return AttackRecordDAO.currentDevice();
     }
 }

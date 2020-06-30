@@ -166,7 +166,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		getActivity().setTitle(getResources().getString(R.string.drawer_records));
 
         dbSession = HostageApplication.getInstances().getDaoSession();
-        daoHelper = new DAOHelper(dbSession,getApplicationContext());
+        daoHelper = new DAOHelper(dbSession,getActivity());
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         if (this.filter == null){
@@ -802,7 +802,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 mListPosition = i;
                 mItemPosition = i2;
                 DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-                DAOHelper daoHelper = new DAOHelper(dbSession,getApplicationContext());
+                DAOHelper daoHelper = new DAOHelper(dbSession,getActivity());
                 RecordAll rec = daoHelper.getAttackRecordDAO().getRecordOfAttackId((int) item.getTag());
                 RecordOverviewFragment.this.pushRecordDetailViewForRecord(rec);
                 return true;

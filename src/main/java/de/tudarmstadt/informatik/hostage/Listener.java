@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 import javax.net.ssl.SSLContext;
@@ -15,6 +17,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 
 import de.tudarmstadt.informatik.hostage.R;
@@ -52,6 +55,7 @@ public class Listener implements Runnable {
 
     private ServerSocket server;
     private Thread thread;
+    private Thread socketsThread;
     private int port;
     private Hostage service;
     private ConnectionRegister conReg;
@@ -133,10 +137,12 @@ public class Listener implements Runnable {
             Handler handler = iterator.next();
             if(handler == null){
                 conReg.closeConnection();
+                socketsThread.interrupt();
                 iterator.remove();
             }else {
                 if (handler.isTerminated()) {
                     conReg.closeConnection();
+                    socketsThread.interrupt();
                     iterator.remove();
                 }
             }
@@ -149,13 +155,12 @@ public class Listener implements Runnable {
 
         while (!thread.isInterrupted()) {
             try {
-                addHandler();
+                fullHandler();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         for (Handler handler : handlers) {
-            //TODO kann ConcurrentModificationException auslösen, da über collection iteriert wird während elemente entfernt werden
             handler.kill();
         }
     }
@@ -165,7 +170,6 @@ public class Listener implements Runnable {
      * and notifies the background service.
      */
     public boolean start() {
-
         if (protocol.toString().equals("")) {
             if (!Device.isPortRedirectionAvailable()) {
 				/*
@@ -185,8 +189,6 @@ public class Listener implements Runnable {
             ((SMB) protocol).initialize(this);
         }
 
-        if(port==mqttport)
-            return notifyUI(true);
         try {
             server = new MyServerSocketFactory().createServerSocket(port);
             if (server == null) {
@@ -221,6 +223,7 @@ public class Listener implements Runnable {
             thread.interrupt();
             notifyUI(false);
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -233,69 +236,91 @@ public class Listener implements Runnable {
         return false;
     }
 
+
     /**
      * Waits for an incoming connection, accepts it and starts a {@link Handler}
      */
-    private void addHandler() throws Exception {
-
+    private void fullHandler() throws IOException {
         if (conReg.isConnectionFree()) {
-            try {
-//                       System.out.println("outsideHandler");
-//
-//                    if(!MQTTHandler.getCurrentConnectedMessages().isEmpty()) {
-//                        System.out.println("insideHandler");
-//                        startHandler();
-//                        return;
-//                    }
-
-                final Socket client = server.accept();
-
-                if (ConnectionGuard.portscanInProgress()) {
-                    // ignore everything for the duration of the port scan
-                    client.close();
-                    return;
-                }
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            String ip = client.getInetAddress().getHostAddress();
-
-                            // the mutex should prevent multiple hostage.logging of a portscan
-                            mutex.acquire();
-                            if (ConnectionGuard.portscanInProgress()) {
-                                mutex.release();
-                                client.close();
-                                return;
-                            }
-                            if (ConnectionGuard.registerConnection(port, ip)) { // returns true when a port scan is detected
-                                logPortscan(client, System.currentTimeMillis());
-                                mutex.release();
-                                client.close();
-                                return;
-                            }
-                            mutex.release();
-                            Thread.sleep(100); // wait to see if other listeners detected a portscan
-                            if (ConnectionGuard.portscanInProgress()) {
-                                client.close();
-                                return; // prevent starting a handler
-                            }
-
-                            if (protocol.isSecure()) {
-                                startSecureHandler(client);
-                            } else {
-                                startHandler(client);
-                            }
-                            conReg.newOpenConnection();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            ExecutorService threadPool = Executors.newFixedThreadPool(1);
+            Socket client = server.accept();
+            Thread socketsThread = socketsThread(client);
+            threadPool.submit(socketsThread);
         }
+    }
+
+
+    private Thread socketsThread(Socket client){
+        socketsThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    if (checkPostScanInProgressNomutex(client))
+                        return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String ip = client.getInetAddress().getHostAddress();
+
+                    // the mutex should prevent multiple hostage.logging of a portscan
+                    try {
+                        mutex.acquire();
+                        if (checkPostScanInProgress(client))
+                            return;
+
+                        if (checkRegisteredConnection(client, ip))
+                            return;
+
+                        mutex.release();
+                        Thread.sleep(100); // wait to see if other listeners detected a portscan
+
+                        if (checkPostScanInProgressNomutex(client))
+                            return;
+
+                        if (protocol.isSecure()) {
+                            startSecureHandler(client);
+                        } else {
+                            startHandler(client);
+                        }
+                        conReg.newOpenConnection();
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+            }
+        });
+
+       return socketsThread;
+    }
+
+    private boolean checkPostScanInProgress(Socket client) throws IOException {
+        if (ConnectionGuard.portscanInProgress()) {
+            mutex.release();
+            client.close();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkPostScanInProgressNomutex(Socket client) throws IOException {
+        if (ConnectionGuard.portscanInProgress()) {
+            client.close();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkRegisteredConnection(Socket client,String ip) throws IOException {
+        if (ConnectionGuard.registerConnection(port, ip)) { // returns true when a port scan is detected
+            logPortscan(client, System.currentTimeMillis());
+            mutex.release();
+            client.close();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -311,9 +336,6 @@ public class Listener implements Runnable {
         return new Handler(service, listener, protocol, client);
     }
 
-    private Handler newInstance(Hostage service, Listener listener, Protocol protocol) {
-        return new Handler(service, listener, protocol);
-    }
     /**
      * Starts a {@link Handler} with the given socket.
      *
@@ -322,10 +344,6 @@ public class Listener implements Runnable {
      */
     private void startHandler(Socket client) throws Exception {
         handlers.add(newInstance(service, this, protocol.toString().equals("CIFS") ? protocol : protocol.getClass().newInstance(), client));
-    }
-
-    private void startHandler() throws Exception {
-        handlers.add(newInstance(service, this, protocol.toString().equals("CIFS") ? protocol : protocol.getClass().newInstance()));
     }
 
     /**
@@ -364,7 +382,7 @@ public class Listener implements Runnable {
     }
 
 
-    public AttackRecord logAttackRecord(SharedPreferences connInfo, Socket client){
+    private AttackRecord logAttackRecord(SharedPreferences connInfo, Socket client){
         AttackRecord attackRecord = new AttackRecord(true);
 
         attackRecord.setProtocol("PORTSCAN");
@@ -379,7 +397,7 @@ public class Listener implements Runnable {
 
     }
 
-    public NetworkRecord logNetworkRecord(SharedPreferences connInfo){
+    private NetworkRecord logNetworkRecord(SharedPreferences connInfo){
         NetworkRecord networkRecord = new NetworkRecord();
         networkRecord.setBssid(connInfo.getString(service.getString(R.string.connection_info_bssid), null));
         networkRecord.setSsid(connInfo.getString(service.getString(R.string.connection_info_ssid), null));
@@ -398,7 +416,7 @@ public class Listener implements Runnable {
         return networkRecord;
     }
 
-    public void addRealPorts(String protocol, Integer port){
+    private void addRealPorts(String protocol, Integer port){
         realPorts.put(protocol,port);
     }
 

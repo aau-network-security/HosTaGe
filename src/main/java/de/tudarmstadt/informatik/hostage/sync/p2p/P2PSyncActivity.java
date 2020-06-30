@@ -162,8 +162,8 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
         super.onCreate(savedInstanceState);
         //mDbHelper = new HostageDBOpenHelper(getApplicationContext());
         dbSession = HostageApplication.getInstances().getDaoSession();
-        daoHelper = new DAOHelper(dbSession,getApplicationContext());
-        synchronizer = new Synchronizer(dbSession,getApplicationContext());
+        daoHelper = new DAOHelper(dbSession,this);
+        synchronizer = new Synchronizer(dbSession,this);
 
         setContentView(R.layout.activity_p2_psync);
 

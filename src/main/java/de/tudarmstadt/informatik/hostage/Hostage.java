@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -73,7 +72,6 @@ public class Hostage extends Service {
 	private HashMap<String, Boolean> mProtocolActiveAttacks;
 	MultiStageAlarm alarm = new MultiStageAlarm();
 	DaoSession dbSession;
-
 
 	public class LocalBinder extends Binder {
 		public Hostage getService() {
@@ -263,7 +261,7 @@ public class Hostage extends Service {
 	 * @param values
 	 *            Detailed information about the event.
 	 */
-	public void notifyUI(String sender, String[] values) {
+	public synchronized void notifyUI(String sender, String[] values) {
 		createNotification();
 		// Send Notification
 		if (sender.equals(Handler.class.getName()) && values[0].equals(getString(R.string.broadcast_started))) {
@@ -361,7 +359,6 @@ public class Hostage extends Service {
 			if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
 				if (!listener.isRunning()) {
 					if (listener.start()) {
-
 						return true;
 					}
 					Toast.makeText(getApplicationContext(), protocolName + " SERVICE COULD NOT BE STARTED!", Toast.LENGTH_SHORT).show();
@@ -373,7 +370,6 @@ public class Hostage extends Service {
 		Listener listener = createListener(protocolName, port);
 		if (listener != null) {
 			if (listener.start()) {
-
 				return true;
 			}
 		}
@@ -506,6 +502,7 @@ public class Hostage extends Service {
 		for (Protocol protocol : implementedProtocols) {
 			if (protocolName.equals(protocol.toString())) {
 				Listener listener = new Listener(this, protocol, port);
+				addMQTTListener(protocol, port);
 				listeners.add(listener);
 				return listener;
 			}
@@ -513,10 +510,17 @@ public class Hostage extends Service {
 		return null;
 	}
 
+	private void addMQTTListener(Protocol protocolName, int port){
+		if(protocolName.toString().equals("MQTT")) {
+			MQTTListener listener = new MQTTListener(this, protocolName, port);
+			listeners.add(listener);
+		}
+	}
+
 	/**
 	 * Creates a Notification in the notification bar.
 	 */
-	private void createNotification() {
+	private synchronized void createNotification() {
 		if (MainActivity.getInstance() == null) {
 			return; // prevent NullPointerException
 		}
@@ -537,10 +541,10 @@ public class Hostage extends Service {
 			}
 			if (attackRecordDAO.bssidSeen(listener.getProtocolName(), getBSSID(getApplicationContext()))) {
 				bssidSeen = true;
-			}
-		}
+		}			}
 
-		PendingIntent resultPendingIntent = intentNotificationGenerator();
+
+	PendingIntent resultPendingIntent = intentNotificationGenerator();
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			CharSequence name = "Under Attack";

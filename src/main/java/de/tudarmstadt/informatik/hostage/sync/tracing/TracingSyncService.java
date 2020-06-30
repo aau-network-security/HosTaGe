@@ -74,8 +74,8 @@ public class TracingSyncService extends IntentService {
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
 		editor = pref.edit();
         dbSession = HostageApplication.getInstances().getDaoSession();
-        daoHelper = new DAOHelper(dbSession,getApplicationContext());
-        synchronizer = new Synchronizer(dbSession,getApplicationContext());
+        daoHelper = new DAOHelper(dbSession,this);
+        synchronizer = new Synchronizer(dbSession,this);
 	}
 
 	/**

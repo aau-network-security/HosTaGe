@@ -275,7 +275,7 @@ public class HomeFragment extends Fragment {
 		}
 
 		dbSession = HostageApplication.getInstances().getDaoSession();
-		daoHelper = new DAOHelper(dbSession, getContext());
+		daoHelper = new DAOHelper(dbSession, getActivity());
 
 		mProfileManager = ProfileManager.getInstance();
 		mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);

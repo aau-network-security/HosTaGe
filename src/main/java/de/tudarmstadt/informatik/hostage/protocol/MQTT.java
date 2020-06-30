@@ -25,13 +25,15 @@ public class MQTT implements Protocol {
 
     private int port = 1883;
     private int brokerPort = 1883;
+    private static boolean brokerStarted = false; //prevents the server started multiple times from the threads
    // private static final String MQTT_URI = "broker.mqttdashboard.com";
     private static final String MQTT_URI = "localhost";
     private static io.moquette.broker.Server broker = new io.moquette.broker.Server();
     private MQTTHandler handler = new MQTTHandler();
 
     public MQTT() throws Exception {
-        broker();
+        if(!brokerStarted)
+            broker();
         //publish(client(),"test/topic","payload");
     }
 
@@ -109,8 +111,11 @@ public class MQTT implements Protocol {
             broker.startServer(memoryConfig);
             broker.addInterceptHandler(handler.getHandler());
             Log.d(TAG,"Server Started");
+            brokerStarted=true;
         }
-        catch (IOException e) { e.printStackTrace(); }
+        catch (IOException e) { e.printStackTrace();
+        brokerStarted= false;
+        }
     }
 
     /**

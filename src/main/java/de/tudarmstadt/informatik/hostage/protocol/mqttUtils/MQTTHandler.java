@@ -9,6 +9,7 @@ import java.util.UUID;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
+import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
 import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import io.moquette.broker.ClientDescriptor;
@@ -158,7 +159,7 @@ public class MQTTHandler {
         if(!clients.isEmpty() && !getCurrentConnectedMessages().isEmpty()) {
             for (ClientDescriptor item : clients) {
                 if(item!=null){
-                    if (item.getClientID() == getCurrentConnectedMessages().get(0).getClientID()) {
+                    if (item.getClientID().equals(getCurrentConnectedMessages().get(0).getClientID())) {
                         ipAddress = item.getAddress();
                     }
                 }
@@ -178,7 +179,7 @@ public class MQTTHandler {
         if(!clients.isEmpty() && !getCurrentConnectedMessages().isEmpty()) {
 
             for (ClientDescriptor item : clients) {
-                if (item.getClientID() == getCurrentConnectedMessages().get(0).getClientID()) {
+                if (item.getClientID().equals(getCurrentConnectedMessages().get(0).getClientID())) {
                     port = item.getPort();
                 }
             }
@@ -218,9 +219,11 @@ public class MQTTHandler {
 
         record.setAttack_id(attack_id);
         record.setSync_id(attack_id);
-        //record.setDevice(SyncDevice.currentDevice().getDeviceID());
-        record.setDevice(UUID.randomUUID().toString()); //problem
-        record.setProtocol(protocol.toString());
+        if(SyncDevice.currentDevice()!=null)
+            record.setDevice(SyncDevice.currentDevice().getDeviceID());
+        else
+            record.setDevice(UUID.randomUUID().toString());
+        record.setProtocol("MQTT");
         record.setExternalIP(externalIP);
         record.setLocalIP(internalIp);
         record.setLocalPort(brokerPort);

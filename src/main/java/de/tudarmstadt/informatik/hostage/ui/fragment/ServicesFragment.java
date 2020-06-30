@@ -56,7 +56,7 @@ public class ServicesFragment extends TrackerFragment {
 
     //private HostageDBOpenHelper dbh = new HostageDBOpenHelper(MainActivity.getContext());
     private DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-    private DAOHelper daoHelper = new DAOHelper(dbSession,getContext());
+    private DAOHelper daoHelper = new DAOHelper(dbSession,getActivity());
 
     private String[] protocols;
 
