@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -35,7 +36,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
-import androidx.appcompat.app.ActionBar;
+import android.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.legacy.app.ActionBarDrawerToggle;
@@ -67,7 +68,7 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
  * @author Alexander Brakowski
  * @created 12.01.14 23:24
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 	public static volatile Context context;
 
 	/** singleton instance of the MainActivity **/
@@ -249,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
 		arr.recycle();
 
 		// configures the action bar
-		ActionBar actionBar = getSupportActionBar();
+		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_HOME_AS_UP);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);
@@ -288,13 +289,13 @@ public class MainActivity extends AppCompatActivity {
 			R.string.drawer_close /* "close drawer" description for accessibility */
 		) {
 			public void onDrawerClosed(View view) {
-				getSupportActionBar().setTitle(mTitle);
+				getActionBar().setTitle(mTitle);
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 			}
 
 			public void onDrawerOpened(View drawerView) {
-				getSupportActionBar().setTitle(mDrawerTitle);
+				getActionBar().setTitle(mDrawerTitle);
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 			}
@@ -489,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void setTitle(CharSequence title) {
 		mTitle = title;
-		getSupportActionBar().setTitle(mTitle);
+		getActionBar().setTitle(mTitle);
 	}
 
 	/**
