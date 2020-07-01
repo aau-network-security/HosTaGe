@@ -133,7 +133,7 @@
     <string name="TODAY">Today</string>
     <string name="YESTERDAY">Yesterday</string>
 
-    <string name="hostage_with_url"><a href="https://cyber.aau.dk/">HosTaGe ICS</a></string>
+    <string name="hostage_with_url"><a href="https://aau-network-security.github.io/HosTaGe/">HosTaGe v2.0.0</a></string>
     <string name="hostage_email"><a href="mailto:hostage@es.aau.dk?Subject=Inquiry">Tell us what do you think about HosTaGe</a></string>
     <string name="hostage_email_only" translatable="false">hostage@es.aau.dk</string>
     <string name="ui_dev_by">Developers team:</string>

@@ -94,7 +94,7 @@
 				android:layout_marginTop="4dp"
 				android:autoText="false"
 				android:singleLine="false"
-				android:text="Lars Pandikov"
+				android:text="Eirini Lygerou"
 				android:textAlignment="center"
 				android:textAppearance="?android:attr/textAppearanceMedium" />
 
