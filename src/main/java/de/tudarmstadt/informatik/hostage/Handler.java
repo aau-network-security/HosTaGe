@@ -49,7 +49,7 @@ public class Handler implements Runnable {
 	private Socket client;
 	protected Thread thread;
 	
-	SharedPreferences pref; 
+	private SharedPreferences pref;
 
 	private long attack_id;
 	private String externalIP;
@@ -156,7 +156,6 @@ public class Handler implements Runnable {
 			intent.setAction(TracingSyncService.ACTION_START_SYNC);
 			service.startService(intent);
 		}
-		//TODO kann ConcurrentModificationException auslösen, da über collection iteriert wird während elemente entfernt werden
 		listener.refreshHandlers();
 	}
 

@@ -86,15 +86,13 @@ public class MQTTListener extends Listener {
     @Override
     public boolean start() {
         (this.thread = new Thread(this)).start();
-        notifyUI(true);
-        return true;
-
+        return notifyUI(true);
     }
 
     private boolean notifyUI(boolean running){
         this.running = running;
         getService().notifyUI(this.getClass().getName(),
-                new String[]{getService().getString(R.string.broadcast_started), super.getProtocol().toString(), Integer.toString(super.getPort())});
+                new String[]{getService().getString(R.string.broadcast_started), super.getProtocolName(), Integer.toString(super.getPort())});
         return true;
     }
 

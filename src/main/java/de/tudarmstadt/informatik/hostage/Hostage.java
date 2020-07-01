@@ -373,6 +373,7 @@ public class Hostage extends Service {
 				return true;
 			}
 		}
+
 		Toast.makeText(getApplicationContext(), protocolName + " SERVICE COULD NOT BE STARTED!", Toast.LENGTH_SHORT).show();
 		return false;
 	}
@@ -502,7 +503,9 @@ public class Hostage extends Service {
 		for (Protocol protocol : implementedProtocols) {
 			if (protocolName.equals(protocol.toString())) {
 				Listener listener = new Listener(this, protocol, port);
-				addMQTTListener(protocol, port);
+				if(protocolName.equals("MQTT")) {
+					return addMQTTListener(protocol, port);
+				}
 				listeners.add(listener);
 				return listener;
 			}
@@ -510,11 +513,11 @@ public class Hostage extends Service {
 		return null;
 	}
 
-	private void addMQTTListener(Protocol protocolName, int port){
-		if(protocolName.toString().equals("MQTT")) {
+	private MQTTListener addMQTTListener(Protocol protocolName, int port){
 			MQTTListener listener = new MQTTListener(this, protocolName, port);
 			listeners.add(listener);
-		}
+
+		return listener;
 	}
 
 	/**
