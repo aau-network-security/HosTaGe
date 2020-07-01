@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "283609891050-jdphgin4k1cl79jdc1fjs9qkak9bmquj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.tudarmstadt.informatik.hostage",
+            "certificate_hash": "3611fd3f232bc7a9f8afbd41824c9d1ae2efc9f8"
+          }
+        },
+        {
           "client_id": "283609891050-36dl28rq07gt758o64dotvfceotf9deg.apps.googleusercontent.com",
           "client_type": 3
         }
