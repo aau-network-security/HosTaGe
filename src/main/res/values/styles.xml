@@ -5,7 +5,7 @@
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
     <style name="AppBaseTheme" parent="android:Theme.Light">
-        <!--
+		<!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
@@ -14,8 +14,12 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+		<!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+
+	<style name="Theme.App" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+		<item name="switchStyle">@style/Widget.App.Switch</item>
+	</style>
 
 
 	<style name="DoneBarActionButton" parent="android:style/Widget.Holo.ActionButton">
@@ -50,5 +54,14 @@
 		<item name="android:paddingRight">4dp</item>
 		<item name="android:background">@drawable/profile_protocol_badge</item>
 		<item name="android:textColor">@color/dark_grey</item>
+	</style>
+
+	<style name="Widget.App.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+		<item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
+	</style>
+
+	<style name="ThemeOverlay.App.Switch" parent="">
+		<item name="colorOnSurface">@color/green</item>
+		<item name="colorSecondary">@color/green</item>
 	</style>
 </resources>
