@@ -502,10 +502,10 @@ public class Hostage extends Service {
 	private Listener createListener(String protocolName, int port) {
 		for (Protocol protocol : implementedProtocols) {
 			if (protocolName.equals(protocol.toString())) {
-				Listener listener = new Listener(this, protocol, port);
 				if(protocolName.equals("MQTT")) {
 					return addMQTTListener(protocol, port);
 				}
+				Listener listener = new Listener(this, protocol, port);
 				listeners.add(listener);
 				return listener;
 			}
@@ -760,7 +760,7 @@ public class Hostage extends Service {
 
 
 		SetExternalIPTask externalIPTask = new SetExternalIPTask();
-		externalIPTask.execute("http://ip2country.sourceforge.net/ip2c.php?format=JSON");
+		externalIPTask.execute("https://api.ipify.org?format=json");
 
 		this.mProtocolActiveAttacks.clear();
 	}
