@@ -22,8 +22,6 @@ import de.tudarmstadt.informatik.hostage.logging.SyncDeviceDao;
 import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
 import de.tudarmstadt.informatik.hostage.logging.SyncRecord;
 
-import static de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO.currentDevice;
-
 
 public class SyncDeviceDAO extends DAO {
     public static SyncDevice thisDevice = null;
@@ -38,7 +36,7 @@ public class SyncDeviceDAO extends DAO {
     public SyncDeviceDAO(DaoSession daoSession,Context context){
         this.daoSession= daoSession;
         this.context = context;
-        //this.generateCurrentDevice();
+        this.generateCurrentDevice();
     }
 
 
@@ -203,22 +201,22 @@ public synchronized void updateSyncDevices(HashMap<String, Long> devices){
      * @return {@link SyncDevice}
      */
     public SyncDevice generateCurrentDevice() {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this.context);
-        long attack_id = pref.getInt("ATTACK_ID_COUNTER", 0);
 
-        if (thisDevice == null) {
+        if (context != null){
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this.context);
+        long attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
+
+        if (thisDevice != null) {
             String deviceUUID = pref.getString("CURRENT_DEVICE_IDENTIFIER", UUID.randomUUID().toString());
             SyncDeviceDao deviceDao = this.daoSession.getSyncDeviceDao();
 
             SyncDevice device = selectElementByCondition(deviceDao, SyncDeviceDao.Properties.DeviceID.eq(deviceUUID));
+            deviceExist(device, attack_id);
+        } else
+            createNewDevice(attack_id, pref);
 
-            if(device != null)
-                deviceExist(device,attack_id);
-            else
-                createNewDevice(deviceUUID , attack_id, pref);
-
-        }
         thisDevice.setHighest_attack_id(attack_id - 1);
+        }
         return thisDevice;
     }
 
@@ -232,15 +230,15 @@ public synchronized void updateSyncDevices(HashMap<String, Long> devices){
 
     }
 
-    private void createNewDevice(String deviceUUID ,long attack_id, SharedPreferences pref){
+    private void createNewDevice(long attack_id, SharedPreferences pref){
         // CREATE A NEW SYNC DEVICE
         thisDevice = new SyncDevice();
         // ITS IMPORTANT TO CREATE A COMPLETE NEW DEVICE UUID
-        deviceUUID = UUID.randomUUID().toString();
+        String deviceUUID = UUID.randomUUID().toString();
         thisDevice.setDeviceID(deviceUUID);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString("CURRENT_DEVICE_IDENTIFIER", thisDevice.getDeviceID());
-        editor.commit();
+        editor.apply();
         thisDevice.setLast_sync_timestamp(0);
         thisDevice.setHighest_attack_id(attack_id-1);
         ArrayList<SyncDevice> devices = new ArrayList<SyncDevice>();
@@ -257,14 +255,16 @@ public synchronized void updateSyncDevices(HashMap<String, Long> devices){
     public synchronized  ArrayList<SyncDevice> getUpdatedDevicesFor(HashMap<String, Long> oldDeviceMap, boolean includeMissing){
         ArrayList<SyncDevice> devices = this.getSyncDevices();
         ArrayList<SyncDevice> recordList = new ArrayList<SyncDevice>();
+        AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession,this.context);
+
 
         boolean actualiseOwnDevice = false;
-        if (oldDeviceMap.containsKey(currentDevice().getDeviceID()) || includeMissing){
+        if (oldDeviceMap.containsKey(attackRecordDAO.currentDevice().getDeviceID()) || includeMissing){
             actualiseOwnDevice = true;
         }
         for(SyncDevice record:devices){
-            if (currentDevice().getDeviceID().equals(record.getDeviceID()) && actualiseOwnDevice)
-                record.setHighest_attack_id(currentDevice().getHighest_attack_id());
+            if (attackRecordDAO.currentDevice().getDeviceID().equals(record.getDeviceID()) && actualiseOwnDevice)
+                record.setHighest_attack_id(attackRecordDAO.currentDevice().getHighest_attack_id());
 
             if (oldDeviceMap.containsKey(record.getDeviceID())){
                 Long oldSyncId = oldDeviceMap.get(record.getDeviceID());
@@ -289,11 +289,12 @@ public synchronized void updateSyncDevices(HashMap<String, Long> devices){
     public synchronized  ArrayList<SyncRecord> getUnsyncedAttacksFor(HashMap<String,Long> deviceMap, boolean includeMissingDevices) {
         ArrayList<SyncDevice> updatedDevices = this.getUpdatedDevicesFor(deviceMap, includeMissingDevices);
         ArrayList<SyncRecord> recordList = new ArrayList<SyncRecord>();
+        AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession,this.context);
         AttackRecordDao attackRecordDao = this.daoSession.getAttackRecordDao();
         SyncRecord syncRecord= new SyncRecord();
 
 
-        SyncDevice currentDevice = currentDevice();
+        SyncDevice currentDevice = attackRecordDAO.currentDevice();
         for (SyncDevice sDevice : updatedDevices) {
             String deviceID = sDevice.getDeviceID();
             Long maxID = deviceMap.get(deviceID);

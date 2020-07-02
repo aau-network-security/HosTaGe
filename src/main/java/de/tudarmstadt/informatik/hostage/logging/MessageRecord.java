@@ -71,7 +71,12 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
 
     public MessageRecord(boolean autoincrement){
         if (autoincrement){
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
+			if(MainActivity.getContext() == null){
+				this.id=0;
+				return;
+			}
+
+			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
 
             SharedPreferences.Editor editor = pref.edit();
             long message_id = pref.getLong("MESSAGE_ID_COUNTER", 0L);

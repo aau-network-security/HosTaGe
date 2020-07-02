@@ -308,7 +308,6 @@ public class HTTP implements Protocol {
 			SecureRandom rndm = new SecureRandom();
 
 				try {
-					sb.equals("");
 					Socket client = new Socket(sources[rndm.nextInt(sources.length)], 17);
 					BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 					while (!in.ready())
@@ -322,9 +321,7 @@ public class HTTP implements Protocol {
 					e.printStackTrace();
 				}
 
-
 			return sb.toString();
-
 			}
 
 

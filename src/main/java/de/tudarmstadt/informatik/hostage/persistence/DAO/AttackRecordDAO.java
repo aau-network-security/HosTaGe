@@ -32,7 +32,7 @@ import static de.tudarmstadt.informatik.hostage.persistence.DAO.SyncDeviceDAO.th
 
 public class AttackRecordDAO extends  DAO {
     private DaoSession daoSession;
-    private  Context context;
+    private static Context context;
 
 
     public AttackRecordDAO(DaoSession daoSession){
@@ -42,7 +42,7 @@ public class AttackRecordDAO extends  DAO {
 
     public AttackRecordDAO(DaoSession daoSession,Context context){
         this.daoSession= daoSession;
-        this.context = context;
+        AttackRecordDAO.context = context;
 
     }
 
@@ -53,7 +53,7 @@ public class AttackRecordDAO extends  DAO {
      *            The added {@link AttackRecord} .
      */
 
-    public  void insert(AttackRecord record){
+    public void insert(AttackRecord record){
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
         insertElement(recordDao,record);
     }
@@ -222,7 +222,7 @@ public class AttackRecordDAO extends  DAO {
     }
 
     synchronized public void updateSyncAttackCounter(AttackRecord record){
-        SyncDeviceDAO recordDao = new SyncDeviceDAO(this.daoSession,this.context);
+        SyncDeviceDAO recordDao = new SyncDeviceDAO(this.daoSession,context);
         SyncDevice device = new SyncDevice();
         device.setLast_sync_timestamp(System.currentTimeMillis());
         device.setHighest_attack_id(record.getAttack_id());
@@ -300,10 +300,8 @@ public class AttackRecordDAO extends  DAO {
 
     }
 
-
-
-        private void setMaxIDinDevices( ){
-        SyncDeviceDAO deviceDAO = new SyncDeviceDAO(this.daoSession,this.context);
+    private void setMaxIDinDevices( ){
+        SyncDeviceDAO deviceDAO = new SyncDeviceDAO(this.daoSession,context);
         ArrayList<SyncDevice> allDevices = deviceDAO.getSyncDevices();
         long highestID = 0;
         for (SyncDevice device : allDevices){
@@ -375,7 +373,7 @@ public class AttackRecordDAO extends  DAO {
         SharedPreferences pref = null;
         if (thisDevice != null){
             if(MainActivity.getContext() != null)
-                pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
+                pref = PreferenceManager.getDefaultSharedPreferences(context);
                 if(pref == null)
                     thisDevice.setHighest_attack_id(1);
                 else {
@@ -439,6 +437,12 @@ public class AttackRecordDAO extends  DAO {
         return sortLists( filter,messageRecords);
     }
 
+    public synchronized ArrayList<RecordAll> getRecordsForFilterMutliStage(LogFilter filter){
+        MessageRecordDAO messageRecordDAO = new MessageRecordDAO(this.daoSession);
+        ArrayList<RecordAll> allRecords = new ArrayList<>(messageRecordDAO.selectionQueryFromFilterMultiStage(filter));
+
+        return allRecords;
+    }
 
     public synchronized ArrayList<RecordAll> getRecordsForFilter(LogFilter filter,int offset) {
         MessageRecordDAO messageRecordDAO = new MessageRecordDAO(this.daoSession);

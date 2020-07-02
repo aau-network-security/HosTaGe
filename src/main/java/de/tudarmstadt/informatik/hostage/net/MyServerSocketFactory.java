@@ -33,9 +33,7 @@ public class MyServerSocketFactory extends ServerSocketFactory {
 					SocketImpl impl = getImpl(socket);
 					injectFD(fd, impl);
 					setBound(socket);
-				} catch (NoSuchFieldException e) {
-				} catch (IllegalAccessException e) {
-				} catch (IllegalArgumentException e) {
+				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 				}
 			} else if (Device.isPortRedirectionAvailable()) { // use ip tables
 				int redirectedPort = HelperUtils.getRedirectedPort(port);

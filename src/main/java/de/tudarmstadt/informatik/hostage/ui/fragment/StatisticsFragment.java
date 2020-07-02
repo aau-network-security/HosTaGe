@@ -196,7 +196,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
         //dbh = new HostageDBOpenHelper(this.getBaseContext());
         dbSession = HostageApplication.getInstances().getDaoSession();
-        daoHelper = new DAOHelper(dbSession,getApplicationContext());
+        daoHelper = new DAOHelper(dbSession,getActivity());
 
         // Get the message from the intent
 

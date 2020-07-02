@@ -1,6 +1,7 @@
 package de.tudarmstadt.informatik.hostage.commons;
 
 import org.apache.http.HttpVersion;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
@@ -9,6 +10,7 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
+
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -549,6 +551,52 @@ public final class HelperUtils {
 		return  result;
 	}
 
+	public static long ipToLong(String ipAddress) {
+
+		String[] ipAddressInArray = ipAddress.split("\\.");
+
+		long result = 0;
+		for (int i = 0; i < ipAddressInArray.length; i++) {
+
+			int power = 3 - i;
+			int ip = Integer.parseInt(ipAddressInArray[i]);
+			result += ip * Math.pow(256, power);
+
+		}
+
+		return result;
+	}
+
+	public int IPtoIntTest(String address){
+		int result = 0;
+
+		// iterate over each octet
+		for(String part : address.split(Pattern.quote("."))) {
+			// shift the previously parsed bits over by 1 byte
+			result = result << 8;
+			// set the low order bits to the current octet
+			result |= Integer.parseInt(part);
+		}
+
+		return  result;
+	}
+
+	public long ipToLongTest(String ipAddress) {
+
+		String[] ipAddressInArray = ipAddress.split("\\.");
+
+		long result = 0;
+		for (int i = 0; i < ipAddressInArray.length; i++) {
+
+			int power = 3 - i;
+			int ip = Integer.parseInt(ipAddressInArray[i]);
+			result += ip * Math.pow(256, power);
+
+		}
+
+		return result;
+	}
+
 
 	public static boolean isNetworkAvailable(Context context) {
 		if(context == null) return false;
@@ -560,6 +608,20 @@ public final class HelperUtils {
 
 	public static int getRedirectedPort(int port){
 		return port + 1024 + 27113;
+	}
+
+	/**
+	 * Converts InetAddress to int
+	 * @param address
+	 * @return
+	 */
+	public static int getInetAddress(InetAddress address){
+		int result = 0;
+		for (byte b: address.getAddress()) {
+			result = result << 8 | (b & 0xFF);
+		}
+
+		return result;
 	}
 
 	public static String getNetworkClass(Context context) {

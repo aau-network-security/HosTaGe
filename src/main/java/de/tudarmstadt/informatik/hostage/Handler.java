@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +25,9 @@ import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
 import de.tudarmstadt.informatik.hostage.nio.Reader;
 import de.tudarmstadt.informatik.hostage.nio.Writer;
 import de.tudarmstadt.informatik.hostage.protocol.GHOST;
+import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
+import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
 import de.tudarmstadt.informatik.hostage.sync.tracing.TracingSyncService;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
@@ -46,7 +49,7 @@ public class Handler implements Runnable {
 	private Socket client;
 	protected Thread thread;
 	
-	SharedPreferences pref; 
+	private SharedPreferences pref;
 
 	private long attack_id;
 	private String externalIP;
@@ -102,13 +105,9 @@ public class Handler implements Runnable {
 	}
 
     public Handler(Hostage service, Listener listener, Protocol protocol){
-        this.service = service;
+		this.service = service;
         this.listener = listener;
         this.protocol = protocol;
-        if (protocol.toString().equals("GHOST")) {
-            ((GHOST) protocol).setAttackerIP(client.getInetAddress());
-            ((GHOST) protocol).setCurrentPort(listener.getPort());
-        }
 
         this.thread = new Thread(this);
         pref = PreferenceManager.getDefaultSharedPreferences(service);
@@ -124,7 +123,9 @@ public class Handler implements Runnable {
         internalIPAddress = connInfo.getInt(service.getString(R.string.connection_info_internal_ip), 0);
 
         logged = false;
-    }
+		thread.start();
+
+	}
 
 	/**
 	 * Determines if the interrupt flag of the thread is set.
@@ -142,8 +143,10 @@ public class Handler implements Runnable {
 		service.notifyUI(this.getClass().getName(),
 				new String[] { service.getString(R.string.broadcast_started), protocol.toString(), Integer.toString(listener.getPort()) });
 		thread.interrupt();
+
 		try {
-			client.close();
+			if(client != null)
+				client.close();
 		} catch (Exception e) {
 			
 		} 
@@ -153,7 +156,6 @@ public class Handler implements Runnable {
 			intent.setAction(TracingSyncService.ACTION_START_SYNC);
 			service.startService(intent);
 		}
-		//TODO kann ConcurrentModificationException auslösen, da über collection iteriert wird während elemente entfernt werden
 		listener.refreshHandlers();
 	}
 
@@ -166,16 +168,32 @@ public class Handler implements Runnable {
 	public void run() {
 		service.notifyUI(this.getClass().getName(),
 				new String[] { service.getString(R.string.broadcast_started), protocol.toString(), Integer.toString(listener.getPort()) });
+		if(!MQTTHandler.getCurrentConnectedMessages().isEmpty()){
+			try {
+				handleMQTTPackets();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+			kill();
+			return;
+		}
+
 		InputStream in;
 		OutputStream out;
 		try {
-			in = client.getInputStream();
-			out = client.getOutputStream();
-			talkToClient(in, out);
+			if(client!=null) {
+				in = client.getInputStream();
+				out = client.getOutputStream();
+				talkToClient(in, out);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		kill();
+	}
+
+	private void handleMQTTPackets() throws UnknownHostException {
+		logMQTTPackets();
 	}
 
 	/**
@@ -219,8 +237,7 @@ public class Handler implements Runnable {
 	 */
 	public MessageRecord createMessageRecord(MessageRecord.TYPE type, String packet) {
 		MessageRecord record = new MessageRecord(true);
-		//record.setId(message_id++); // autoincrement
-		record.setAttack_id(attack_id);		
+		record.setAttack_id(attack_id);
 		record.setType(type);
 		record.setTimestamp(System.currentTimeMillis());
 		if(packet != null && !packet.isEmpty())
@@ -233,13 +250,14 @@ public class Handler implements Runnable {
 	 * 
 	 * @return The AttackRecord representing the attack.
 	 */
-	//TODO Problem with setDevice
     public AttackRecord createAttackRecord() {
 		AttackRecord record = new AttackRecord();
 		record.setAttack_id(attack_id);
         record.setSync_id(attack_id);
-        //record.setDevice(SyncDevice.currentDevice().getDeviceID());
-        record.setDevice(UUID.randomUUID().toString()); //problem
+        if(SyncDevice.currentDevice()!=null)
+        	record.setDevice(SyncDevice.currentDevice().getDeviceID());
+        else
+        	record.setDevice(UUID.randomUUID().toString());
 		record.setProtocol(protocol.toString());
 		record.setExternalIP(externalIP);
 		record.setLocalIP(client.getLocalAddress().getHostAddress());
@@ -286,6 +304,16 @@ public class Handler implements Runnable {
 			Logger.log(Hostage.getContext(), createMessageRecord(type, packet));
 		}
 	}
+
+	public void log(MessageRecord.TYPE type) throws UnknownHostException {
+    	if(!logged){
+			Logger.log(Hostage.getContext(), createNetworkRecord());
+			Logger.log(Hostage.getContext(), MQTTHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
+			Logger.log(Hostage.getContext(),MQTTHandler.createMessageRecord(type,attack_id));
+			logged = true;
+		}
+	}
+
 
 
     //just for debugging purpose
@@ -336,5 +364,9 @@ public class Handler implements Runnable {
 				break;
 			}
 		}
+	}
+
+	protected void logMQTTPackets() throws UnknownHostException {
+		log(MessageRecord.TYPE.RECEIVE);
 	}
 }

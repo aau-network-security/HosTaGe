@@ -1,6 +1,5 @@
 package de.tudarmstadt.informatik.hostage.services;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,7 +9,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
-
 
 import androidx.annotation.RequiresApi;
 
@@ -28,7 +26,6 @@ import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.Logger;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
-import de.tudarmstadt.informatik.hostage.logging.Record;
 import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
@@ -69,14 +66,14 @@ public class MultiStage extends Service {
         super.onCreate();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             dbSession = HostageApplication.getInstances().getDaoSession();
-            daoHelper = new DAOHelper(dbSession,getApplicationContext());
+            daoHelper = new DAOHelper(dbSession,this);
             startCustomForeground();
             fetchData();
         }
 
         else {
             dbSession = HostageApplication.getInstances().getDaoSession();
-            daoHelper = new DAOHelper(dbSession,getApplicationContext());
+            daoHelper = new DAOHelper(dbSession,this);
             startForeground(1, new Notification());
             fetchData();
         }
@@ -105,7 +102,7 @@ public class MultiStage extends Service {
 
         filter.setAboveTimestamp(filterTime);
         //size = daoHelper.getMessageRecordDAO().getRecordCount();
-        recordArray = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter);
+        recordArray = daoHelper.getAttackRecordDAO().getRecordsForFilterMutliStage(filter);
 
         if(!recordArray.isEmpty())
             Collections.sort(recordArray, new Comparator<RecordAll>() {
@@ -216,13 +213,11 @@ public class MultiStage extends Service {
             networkRecord.setTimestampLocation(0);
         }
 
-
         MessageRecord messageRecord = new MessageRecord(true);
         messageRecord.setAttack_id(attackRecord.getAttack_id());
         messageRecord.setType(type);
         messageRecord.setTimestamp(System.currentTimeMillis());
         messageRecord.setPacket(message);
-
 
         Logger.logMultiStageAttack(Hostage.getContext(), attackRecord, networkRecord, messageRecord, System.currentTimeMillis());
 

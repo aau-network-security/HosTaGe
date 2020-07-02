@@ -7,5 +7,6 @@
         <color name="holo_dark_green">#ff669900</color>
 		<color name="holo_yellow">#FFFFBB33</color>
         <color name="apptheme_color">#33b5e5</color>
+        <color name="green">#81c784</color>
 
 </resources>

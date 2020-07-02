@@ -112,7 +112,7 @@ public class Logger extends IntentService {
 	public void onCreate() {
 		super.onCreate();
 		dbSession = HostageApplication.getInstances().getDaoSession();
-		daoHelper = new DAOHelper(dbSession,getApplicationContext());
+		daoHelper = new DAOHelper(dbSession,this);
 	}
 
 	private void handleActionLog(MessageRecord record) {

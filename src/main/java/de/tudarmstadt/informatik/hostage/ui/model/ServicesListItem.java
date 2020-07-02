@@ -9,6 +9,7 @@ package de.tudarmstadt.informatik.hostage.ui.model;
 public class ServicesListItem {
 	public String protocol;
 	public int attacks;
+	public int port;
 
 	public boolean activated;
 
@@ -17,8 +18,9 @@ public class ServicesListItem {
      *
      * @param protocol protocol of this item, e.g. ftp
      */
-	public ServicesListItem(String protocol){
+	public ServicesListItem(String protocol,int port){
 		this.protocol = protocol;
+		this.port = port;
 		this.activated = false;
 	}
 }

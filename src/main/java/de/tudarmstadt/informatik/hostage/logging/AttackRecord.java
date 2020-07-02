@@ -84,7 +84,14 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 
     public AttackRecord(boolean autoincrement){
         if (autoincrement){
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
+        	if(MainActivity.getContext() == null){
+				this.attack_id = 0;
+				this.sync_id = 0;
+
+				return;
+			}
+
+			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
 
             SharedPreferences.Editor editor = pref.edit();
             Long attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);

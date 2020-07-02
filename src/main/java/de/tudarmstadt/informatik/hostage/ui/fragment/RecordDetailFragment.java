@@ -129,7 +129,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 		//this.mDBOpenHelper = new HostageDBOpenHelper(this.getActivity().getBaseContext());
 		dbSession = HostageApplication.getInstances().getDaoSession();
-		daoHelper = new DAOHelper(dbSession,getContext());
+		daoHelper = new DAOHelper(dbSession,getActivity());
 
 		this.mRootView = inflater.inflate(this.getLayoutId(), container, false);
 		this.assignViews(mRootView);
@@ -314,6 +314,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		else if(protocol.contains("MODBUS")){port=502;}
 		else if(protocol.contains("TELNET")){port=23;}
 		else if(protocol.contains("SMB")){port=1025;}
+		else if(protocol.contains("MQTT")){port=1883;}
 		else if(protocol.contains("HTTPS")){port=443;}
 		else if(protocol.contains("ECHO")){port=7;}
 		else if(protocol.contains("FTP")){port=21;}

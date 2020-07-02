@@ -114,7 +114,7 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 		// Get Networkdata
 		//HostageDBOpenHelper dbh = new HostageDBOpenHelper(this);
 		DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-		DAOHelper daoHelper = new DAOHelper(dbSession,getApplicationContext());
+		DAOHelper daoHelper = new DAOHelper(dbSession,this);
 		ArrayList<NetworkRecord> localNetworkInformation = daoHelper.getNetworkRecordDAO().getNetworkInformation();
 		HashMap<String, Long> devices_local = daoHelper.getSyncDeviceDAO().getSyncDeviceHashMap();
 		ArrayList<SyncInfoRecord> syncInfo = daoHelper.getSyncInfoRecordDAO().getSyncInfo();
@@ -194,7 +194,7 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 		NdefMessage msg = (NdefMessage) rawMsgs[0];
 		try {
 			DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-			DAOHelper daoHelper = new DAOHelper(dbSession,getApplicationContext());
+			DAOHelper daoHelper = new DAOHelper(dbSession,this);
 			//HostageDBOpenHelper dbh = new HostageDBOpenHelper(this);
 
 			ArrayList<NetworkRecord> remoteNetworkInformation = (ArrayList<NetworkRecord>) deserialize(msg.getRecords()[0].getPayload());
