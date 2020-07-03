@@ -1,4 +1,4 @@
-package hostage.persistence;
+package de.tudarmstadt.informatik.hostage.persistence;
 
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.query.Query;
@@ -17,7 +17,6 @@ import de.tudarmstadt.informatik.hostage.logging.DaoMaster;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecordDao;
-import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.NetworkRecordDAO;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 import de.tudarmstadt.informatik.hostage.ui.model.PlotComparisonItem;
@@ -92,7 +91,7 @@ public class NetworkRecordDAOTest {
     public void testGetUniqueESSIDRecords(){
         NetworkRecord recordSecond = new NetworkRecord();
         NetworkRecord recordThird = new NetworkRecord();
-        String essid =  "test";
+        String essid = "de/tudarmstadt/informatik/hostage/test";
         String essidSecond = "ssid";
         record.setBssid("1");
         record.setSsid(essid);
@@ -139,7 +138,7 @@ public class NetworkRecordDAOTest {
 
     @Test
     public void testUpdateNetworkInformation(){
-        String before = "test";
+        String before = "de/tudarmstadt/informatik/hostage/test";
         String after = "newTest";
         record.setBssid("1");
         record.setSsid(before);
@@ -157,7 +156,7 @@ public class NetworkRecordDAOTest {
     @Test
     public void testGetMissingNetworkRecords(){
         ArrayList<String> otherBSSIDs = new ArrayList<>();
-        String other = "test";
+        String other = "de/tudarmstadt/informatik/hostage/test";
         String secondOther = "other";
         String normal = "normal";
         otherBSSIDs.add(other);
@@ -232,7 +231,7 @@ public class NetworkRecordDAOTest {
     @Test
     public void testGetUniqueESSIDRecordsForProtocol(){
         String protocol= "http";
-        String essid = "test";
+        String essid = "de/tudarmstadt/informatik/hostage/test";
 
         AttackRecord attackRecord = new AttackRecord();
         attackRecord.setAttack_id(2);
@@ -267,7 +266,7 @@ public class NetworkRecordDAOTest {
     @Test
     public void testGetUniqueBSSIDRecordsForProtocol(){
         String protocol= "http";
-        String bssid = "test";
+        String bssid = "de/tudarmstadt/informatik/hostage/test";
 
         AttackRecord attackRecord = new AttackRecord();
         attackRecord.setAttack_id(2);
@@ -302,7 +301,7 @@ public class NetworkRecordDAOTest {
     @Test
     public void  attacksPerESSID(){
         String protocol= "http";
-        String essid = "test";
+        String essid = "de/tudarmstadt/informatik/hostage/test";
 
         LogFilter filter = new LogFilter();
         ArrayList<String> protocols = new ArrayList<>();
@@ -327,7 +326,7 @@ public class NetworkRecordDAOTest {
     public void testJoins(){
         AttackRecord attackRecord = new AttackRecord();
 
-        String bssid = "test";
+        String bssid = "de/tudarmstadt/informatik/hostage/test";
         String protocol = "protocol";
         String packet = "packet";
 

@@ -1,4 +1,4 @@
-package hostage.location;
+package de.tudarmstadt.informatik.hostage.location;
 
 import android.location.Location;
 

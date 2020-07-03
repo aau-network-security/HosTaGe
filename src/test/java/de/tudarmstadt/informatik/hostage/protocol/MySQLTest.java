@@ -1,4 +1,4 @@
-package hostage.logging.formatter.protocol;
+package de.tudarmstadt.informatik.hostage.protocol;
 
 import org.junit.Test;
 

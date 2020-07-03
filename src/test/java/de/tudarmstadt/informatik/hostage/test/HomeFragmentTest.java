@@ -1,8 +1,6 @@
-package test;
+package de.tudarmstadt.informatik.hostage.test;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class HomeFragmentTest {
 

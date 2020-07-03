@@ -372,7 +372,7 @@ public class AttackRecordDAO extends  DAO {
     public static SyncDevice currentDevice(){
         SharedPreferences pref = null;
         if (thisDevice != null){
-            if(MainActivity.getContext() != null)
+            if(MainActivity.getContext() != null && context!=null)
                 pref = PreferenceManager.getDefaultSharedPreferences(context);
                 if(pref == null)
                     thisDevice.setHighest_attack_id(1);

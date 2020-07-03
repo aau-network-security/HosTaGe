@@ -1,4 +1,4 @@
-package hostage.persistence;
+package de.tudarmstadt.informatik.hostage.persistence;
 
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.query.Query;

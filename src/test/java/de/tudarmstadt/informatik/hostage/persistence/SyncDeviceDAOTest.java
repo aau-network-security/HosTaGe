@@ -1,4 +1,4 @@
-package hostage.persistence;
+package de.tudarmstadt.informatik.hostage.persistence;
 
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.query.Query;
@@ -14,14 +14,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
-import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.DaoMaster;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
-import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
 import de.tudarmstadt.informatik.hostage.logging.SyncDeviceDao;
-import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
-import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.SyncDeviceDAO;
 
 import static junit.framework.TestCase.assertNotNull;
@@ -108,7 +104,7 @@ public class SyncDeviceDAOTest {
 
     @Test
     public void  testUpdateSyncDevices(){
-        String deviceId = "test";
+        String deviceId = "de/tudarmstadt/informatik/hostage/test";
         HashMap<String, Long> devices =  new HashMap<>();
         devices.put(deviceId,1L);
 
@@ -124,28 +120,27 @@ public class SyncDeviceDAOTest {
 
     }
 
-    @Test
-    public void testGetOwnState(){
-        AttackRecord attackRecord = new AttackRecord();
-        NetworkRecord networkRecord = new NetworkRecord();
-        networkRecord.setBssid("1");
-        attackRecord.setAttack_id(1);
-        attackRecord.setRecord(networkRecord);
-        record.setDeviceID("2");
-        record.setHighest_attack_id(1);
-        attackRecord.setSyncDevice(record);
-        AttackRecordDAO attackRecordDAO = new AttackRecordDAO(daoSession);
-
-        daoSession.insert(attackRecord);
-        daoSession.insert(networkRecord);
-        daoSession.insert(record);
-
-        SyncInfo info = syncDeviceDAO.getOwnState();
-        assertEquals(1,info.bssids.size());
-        assertEquals("1",info.bssids.get(0));
-        assertEquals(1,info.deviceMap.size());
-
-    }
+//    @Test
+//    public void testGetOwnState(){
+//        AttackRecord attackRecord = new AttackRecord();
+//        NetworkRecord networkRecord = new NetworkRecord();
+//        networkRecord.setBssid("1");
+//        attackRecord.setAttack_id(1);
+//        attackRecord.setRecord(networkRecord);
+//        record.setDeviceID("2");
+//        record.setHighest_attack_id(1);
+//        attackRecord.setSyncDevice(record);
+//
+//        daoSession.insert(attackRecord);
+//        daoSession.insert(networkRecord);
+//        daoSession.insert(record);
+//
+//        SyncInfo info = syncDeviceDAO.getOwnState();
+//        assertEquals(1,info.bssids.size());
+//        assertEquals("1",info.bssids.get(0));
+//        assertEquals(1,info.deviceMap.size());
+//
+//    }
 
     @After
     public void breakdown(){

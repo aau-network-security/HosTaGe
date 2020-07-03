@@ -1,9 +1,4 @@
-package hostage.persistence;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
+package de.tudarmstadt.informatik.hostage.persistence;
 
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.query.Query;
@@ -11,7 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
@@ -25,15 +19,10 @@ import de.tudarmstadt.informatik.hostage.logging.DaoMaster;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
-import de.tudarmstadt.informatik.hostage.logging.NetworkRecordDao;
 import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
 import de.tudarmstadt.informatik.hostage.logging.SyncDeviceDao;
-import de.tudarmstadt.informatik.hostage.logging.SyncInfoRecordDao;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
-import de.tudarmstadt.informatik.hostage.persistence.DAO.NetworkRecordDAO;
-import de.tudarmstadt.informatik.hostage.persistence.DAO.SyncDeviceDAO;
-import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 
 import static org.junit.Assert.assertEquals;
@@ -149,7 +138,7 @@ public class AttackRecordDAOTest {
     public void testGetAttackPerProtocolCountThreeArguments(){
         String protocol = "Http";
         String protocol2 = "smb";
-        String bssid = "test";
+        String bssid = "de/tudarmstadt/informatik/hostage/test";
 
         AttackRecord secondRecord = new AttackRecord();
 
@@ -230,7 +219,7 @@ public class AttackRecordDAOTest {
     @Test
     public void testBssidSeen(){
         String protocol = "http";
-        String bssid = "test";
+        String bssid = "de/tudarmstadt/informatik/hostage/test";
         record.setProtocol(protocol);
         record.setBssid(bssid);
 
@@ -243,7 +232,7 @@ public class AttackRecordDAOTest {
 
     @Test
     public void testGetNumAttacksSeenByBSSID(){
-        String bssid = "test";
+        String bssid = "de/tudarmstadt/informatik/hostage/test";
         record.setBssid(bssid);
 
         daoSession.insert(record);
@@ -257,7 +246,7 @@ public class AttackRecordDAOTest {
 
     @Test
     public void testGetNumAttacksSeenByBSSIDProtocol(){
-        String bssid = "test";
+        String bssid = "de/tudarmstadt/informatik/hostage/test";
         String protocol = "http";
         String protocol2 = "smb";
         AttackRecord secondRecord = new AttackRecord();
@@ -340,10 +329,10 @@ public class AttackRecordDAOTest {
         String http = "http";
         String smb = "smb";
 
-        String firstBssid = "test";
+        String firstBssid = "de/tudarmstadt/informatik/hostage/test";
         String secondBssid = "test1";
 
-        String firstEssid = "test";
+        String firstEssid = "de/tudarmstadt/informatik/hostage/test";
         String secondEssid = "test1";
 
 
@@ -452,10 +441,10 @@ public class AttackRecordDAOTest {
         String http = "http";
         String smb = "smb";
 
-        String firstBssid = "test";
+        String firstBssid = "de/tudarmstadt/informatik/hostage/test";
         String secondBssid = "test1";
 
-        String firstEssid = "test";
+        String firstEssid = "de/tudarmstadt/informatik/hostage/test";
         String secondEssid = "test1";
 
 

@@ -1,27 +1,21 @@
-package hostage.protocols;
+package de.tudarmstadt.informatik.hostage.protocols;
 
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.tudarmstadt.informatik.hostage.protocol.MQTT;
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
 import io.moquette.interception.InterceptHandler;
 import io.moquette.interception.messages.InterceptAcknowledgedMessage;
 import io.moquette.interception.messages.InterceptConnectMessage;
@@ -42,7 +36,7 @@ public class MQTTTest {
     final String clientIdSubscribe = "clientIdSub";
     final String clientIdPublish = "clientIdPub";
     final String topic = "subjectdirectory.changed";
-    final String message = "test payload";
+    final String message = "de.tudarmstadt.informatik.hostage.test payload";
     final int publishCount = 5000;
     static ArrayList<InterceptPublishMessage> messages = new ArrayList<>();
     MemoryConfig memoryConfig = new MemoryConfig(new Properties());
@@ -113,7 +107,7 @@ public class MQTTTest {
     public void testMoquette() throws Exception{
 
         assertEquals("SUCCESS",client.connect().getReturnCode().name());
-        client.publishWith().topic(topic).qos(MqttQos.AT_LEAST_ONCE).payload("test".getBytes()).send();
+        client.publishWith().topic(topic).qos(MqttQos.AT_LEAST_ONCE).payload("de/tudarmstadt/informatik/hostage/test".getBytes()).send();
 
 
         assertEquals(1,messages.size());

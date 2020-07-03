@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
+import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
+import de.tudarmstadt.informatik.hostage.commons.SubnetUtils;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
@@ -152,10 +154,9 @@ public class MQTTHandler {
      * Gets the IP address of the current connected client
      * @return
      */
-    //TODO change ip
-    public static String getIPCurrentClient() {
+    private static String getIPCurrentClient() {
         Collection<ClientDescriptor> clients = MQTT.listConnectedClients();
-        String  ipAddress = "192.168.1.4";
+        String  ipAddress = "localhost";
         if(!clients.isEmpty() && !getCurrentConnectedMessages().isEmpty()) {
             for (ClientDescriptor item : clients) {
                 if(item!=null){
@@ -173,7 +174,7 @@ public class MQTTHandler {
      * @return
      */
 
-    public static int getPortCurrentClient() {
+    private static int getPortCurrentClient() {
         Collection<ClientDescriptor> clients = MQTT.listConnectedClients();
         int  port = 0;
         if(!clients.isEmpty() && !getCurrentConnectedMessages().isEmpty()) {
@@ -210,11 +211,7 @@ public class MQTTHandler {
 
     public static AttackRecord createAttackRecord(Long attack_id, String externalIP, Protocol protocol,int subnetMask,String BSSID,int internalIPAddress) throws UnknownHostException {
         AttackRecord record = new AttackRecord();
-        String internalIp = String.format("%d.%d.%d.%d",
-                        (internalIPAddress & 0xff),
-                        (internalIPAddress >> 8 & 0xff),
-                        (internalIPAddress >> 16 & 0xff),
-                        (internalIPAddress >> 24 & 0xff));
+        String internalIp = HelperUtils.intToStringIp(internalIPAddress);
         String remoteIp = getIPCurrentClient();
 
         record.setAttack_id(attack_id);
@@ -228,14 +225,23 @@ public class MQTTHandler {
         record.setLocalIP(internalIp);
         record.setLocalPort(brokerPort);
         int remoteIPAddress = HelperUtils.getInetAddress(InetAddress.getByName(remoteIp));
-        record.setWasInternalAttack(
-                (remoteIPAddress & subnetMask) == (internalIPAddress & subnetMask));
+        record.setWasInternalAttack(checkIfIsInternalAttack(remoteIPAddress,internalIp));
         record.setRemoteIP(remoteIp);
         record.setRemotePort(getPortCurrentClient());
         record.setBssid(BSSID);
 
         removeCurrentConnected(); //removes the current client in order to be able to log the next attack
         return record;
+    }
+
+    private static boolean checkIfIsInternalAttack(int remoteIPAddress,String internalIPAddress){
+        int prefix = Hostage.prefix;
+        SubnetUtils utils = new SubnetUtils(internalIPAddress+"/"+prefix);
+        String remoteIP = HelperUtils.intToStringIp(remoteIPAddress);
+
+        boolean isInRange = utils.getInfo().isInRange(remoteIP);
+
+        return isInRange;
     }
 
     /**

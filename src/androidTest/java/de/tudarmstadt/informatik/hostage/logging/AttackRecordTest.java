@@ -1,15 +1,11 @@
-package hostage.logging;
+package de.tudarmstadt.informatik.hostage.logging;
 
 import android.os.Parcel;
-import android.support.test.runner.AndroidJUnit4;
 
-
+import androidx.test.runner.AndroidJUnit4;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-
-import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 
 import static org.junit.Assert.assertTrue;
 

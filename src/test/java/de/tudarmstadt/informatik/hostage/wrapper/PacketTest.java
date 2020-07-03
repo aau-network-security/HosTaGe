@@ -1,8 +1,6 @@
-package hostage.wrapper;
+package de.tudarmstadt.informatik.hostage.wrapper;
 
 import org.junit.Test;
-
-import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 import static org.junit.Assert.assertTrue;
 

@@ -34,7 +34,7 @@ public class MQTT implements Protocol {
     public MQTT() throws Exception {
         if(!brokerStarted)
             broker();
-        //publish(client(),"test/topic","payload");
+        //publish(client(),"de.tudarmstadt.informatik.hostage.test/topic","payload");
     }
 
 

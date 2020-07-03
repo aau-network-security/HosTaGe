@@ -16,6 +16,7 @@ import android.preference.PreferenceManager;
 
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
+import de.tudarmstadt.informatik.hostage.commons.SubnetUtils;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.Logger;
@@ -34,7 +35,7 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 /**
  * Abstract class for a connection handler using a given protocol.
- * 
+ *
  * @author Mihai Plasoianu
  * @author Wulf Pfeiffer
  * @author Lars Pandikow
@@ -48,7 +49,7 @@ public class Handler implements Runnable {
 	protected Protocol protocol;
 	private Socket client;
 	protected Thread thread;
-	
+
 	private SharedPreferences pref;
 
 	private long attack_id;
@@ -58,7 +59,7 @@ public class Handler implements Runnable {
 
 	private int subnetMask;
 	private int internalIPAddress;
-	
+
 	private boolean logged;
 
 	private Listener listener;
@@ -66,7 +67,7 @@ public class Handler implements Runnable {
 	/**
 	 * Constructor of the class. Initializes class variables for communication
 	 * and hostage.logging. Then starts itself in a new Thread.
-	 * 
+	 *
 	 * @param service
 	 *            The background service.
 	 * @param listener
@@ -101,7 +102,7 @@ public class Handler implements Runnable {
 
 		setSoTimeout(client);
 		logged = false;
-		thread.start();		
+		thread.start();
 	}
 
     public Handler(Hostage service, Listener listener, Protocol protocol){
@@ -129,7 +130,7 @@ public class Handler implements Runnable {
 
 	/**
 	 * Determines if the interrupt flag of the thread is set.
-	 * 
+	 *
 	 * @return True when the flag is set, else false.
 	 */
 	public boolean isTerminated() {
@@ -148,8 +149,8 @@ public class Handler implements Runnable {
 			if(client != null)
 				client.close();
 		} catch (Exception e) {
-			
-		} 
+
+		}
 		boolean upload = pref.getBoolean("pref_auto_synchronize", false);
 		if(upload){
 			Intent intent = new Intent(service, TracingSyncService.class);
@@ -199,7 +200,7 @@ public class Handler implements Runnable {
 	/**
 	 * Gets attack ID for the attack. Also increases the attack ID counter by
 	 * one. Method is synchronized for thread safety.
-	 * 
+	 *
 	 * @param pref
 	 *            The default SharedPreference of the application
 	 * @return Unique integer attack ID
@@ -213,7 +214,7 @@ public class Handler implements Runnable {
 
 	/**
 	 * Set the timeout of the socket to the hard coded time out variable.
-	 * 
+	 *
 	 * @param client
 	 *            The socket
 	 * @see #TIMEOUT
@@ -228,7 +229,7 @@ public class Handler implements Runnable {
 
 	/**
 	 * Creates a MessageRecord for a message exchanged with a client.
-	 * 
+	 *
 	 * @param type
 	 *            The type of the message.
 	 * @param packet
@@ -244,10 +245,10 @@ public class Handler implements Runnable {
 			record.setPacket(packet);
 		return record;
 	}
-	
+
 	/**
 	 * Creates a AttackRecord for a specific attack from a client.
-	 * 
+	 *
 	 * @return The AttackRecord representing the attack.
 	 */
     public AttackRecord createAttackRecord() {
@@ -262,24 +263,37 @@ public class Handler implements Runnable {
 		record.setExternalIP(externalIP);
 		record.setLocalIP(client.getLocalAddress().getHostAddress());
 		record.setLocalPort(client.getLocalPort());
-		int remoteIPAddress = HelperUtils.packInetAddress(client.getInetAddress().getAddress());
-		record.setWasInternalAttack(
-				(remoteIPAddress & subnetMask) == (internalIPAddress & subnetMask));
+
+		record.setWasInternalAttack(checkIfIsInternalAttack());
 		record.setRemoteIP(client.getInetAddress().getHostAddress());
 		record.setRemotePort(client.getPort());
 		record.setBssid(BSSID);
 		return record;
 	}
-	
+
+	private boolean checkIfIsInternalAttack(){
+		int prefix = Hostage.prefix;
+
+		String internalIp = HelperUtils.intToStringIp(internalIPAddress);
+
+		int remoteIPAddress = HelperUtils.packInetAddress(client.getInetAddress().getAddress());
+		SubnetUtils utils = new SubnetUtils(internalIp+"/"+prefix);
+		String remoteIP = HelperUtils.intToStringIp(remoteIPAddress);
+
+		boolean isInRange = utils.getInfo().isInRange(remoteIP);
+
+		return isInRange;
+	}
+
 	/**
 	 * Creates a NetworkRecord containing information about the current network.
-	 * 
+	 *
 	 * @return The NetworkRecord representing the current network.
 	 */
     public NetworkRecord createNetworkRecord() {
 		NetworkRecord record = new NetworkRecord();
-		record.setBssid(BSSID);		
-		record.setSsid(SSID);		
+		record.setBssid(BSSID);
+		record.setSsid(SSID);
 		if (MyLocationManager.getNewestLocation() != null) {
 			record.setLatitude(MyLocationManager.getNewestLocation().getLatitude());
 			record.setLongitude(MyLocationManager.getNewestLocation().getLongitude());
@@ -314,8 +328,6 @@ public class Handler implements Runnable {
 		}
 	}
 
-
-
     //just for debugging purpose
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
     public static String bytesToHex(byte[] bytes) {
@@ -331,7 +343,7 @@ public class Handler implements Runnable {
 	/**
 	 * Communicates with a client using the corresponding protocol
 	 * implementation.
-	 * 
+	 *
 	 * @param in
 	 *            InputStream of the socket.
 	 * @param out

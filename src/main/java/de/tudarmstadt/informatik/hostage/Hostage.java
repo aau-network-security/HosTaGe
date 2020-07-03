@@ -1,5 +1,6 @@
 package de.tudarmstadt.informatik.hostage;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,7 +42,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
@@ -72,6 +72,7 @@ public class Hostage extends Service {
 	private HashMap<String, Boolean> mProtocolActiveAttacks;
 	MultiStageAlarm alarm = new MultiStageAlarm();
 	DaoSession dbSession;
+	public static int prefix;
 
 	public class LocalBinder extends Binder {
 		public Hostage getService() {
@@ -114,6 +115,23 @@ public class Hostage extends Service {
 		}
 	}
 
+	private static class FindPrefix extends AsyncTask<String, String, Integer> {
+		@Override
+		protected Integer doInBackground(String... strings) {
+			try {
+				return HelperUtils.getPrefix(strings);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+			return 24;
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			prefix=result;
+		}
+	}
+
 	private static Context context;
 
 	/**
@@ -139,14 +157,13 @@ public class Hostage extends Service {
 	 * 
 	 * @see MainActivity #BROADCAST
 	 */
-	//TODO change bssid for 4g....
 	private BroadcastReceiver netReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String bssid_old = connectionInfo.getString(getString(R.string.connection_info_bssid), "");
 			String bssid_new;
 			if (HelperUtils.isCellurarConnected(context)){
-				bssid_new = "not Available";
+				bssid_new = HelperUtils.getNetworkClass(context);
 			}
 			else {
 				 bssid_new = getBSSID(context);
@@ -718,20 +735,12 @@ public class Hostage extends Service {
 	 * @see MainActivity #CONNECTION_INFO
 	 */
 	private void updateConnectionInfo() {
-
 		if (!HelperUtils.isNetworkAvailable(context) ){
 			return; // no connection
 		}
 
 		if (HelperUtils.isCellurarConnected(context)) {
-
-			int ipAddress = HelperUtils.getCellularIP();
-			String ssid= "not Available";
-			String bssid= "not Available";
-			int netmask= 0;
-
-			updateEditor( ssid,bssid, ipAddress, netmask);
-
+			addCellularInfo(context);
 
 		}else {
 			final WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -745,24 +754,44 @@ public class Hostage extends Service {
 				return;
 			}
 
-			String ssid = connectionInfo.getSSID();
-			int ipAddress = dhcpInfo.ipAddress;
-			String bssid= connectionInfo.getBSSID();
-			int netmask= dhcpInfo.netmask;
-
-			if (ssid.startsWith("\"") && ssid.endsWith("\"")) { // trim those quotes
-				ssid = ssid.substring(1, ssid.length() - 1);
-			}
-
-			updateEditor( ssid,bssid, ipAddress, netmask);
-
+			addWifiInfo(connectionInfo,dhcpInfo);
 		}
 
-
-		SetExternalIPTask externalIPTask = new SetExternalIPTask();
-		externalIPTask.execute("https://api.ipify.org?format=json");
+		findExternalIp();
 
 		this.mProtocolActiveAttacks.clear();
+	}
+
+
+	private void addCellularInfo(Context context){
+		int ipAddress = HelperUtils.getCellularIP();
+		String ssid= HelperUtils.getNetworkClass(context);
+		String bssid= HelperUtils.getNetworkClass(context);
+		int netmask= 0;
+
+		updateEditor(ssid,bssid, ipAddress, netmask);
+
+	}
+
+	private void addWifiInfo(WifiInfo connectionInfo,DhcpInfo dhcpInfo){
+		String ssid = connectionInfo.getSSID();
+		int ipAddress = dhcpInfo.ipAddress;
+		String bssid= connectionInfo.getBSSID();
+		int netmask= dhcpInfo.netmask;
+
+		if (ssid.startsWith("\"") && ssid.endsWith("\"")) { // trim those quotes
+			ssid = ssid.substring(1, ssid.length() - 1);
+		}
+
+		FindPrefix findPrefix = new FindPrefix();
+		findPrefix.execute(HelperUtils.inetAddressToString(netmask));
+
+		updateEditor( ssid,bssid, ipAddress, netmask);
+	}
+
+	private void findExternalIp(){
+		SetExternalIPTask externalIPTask = new SetExternalIPTask();
+		externalIPTask.execute("https://api.ipify.org?format=json");
 	}
 
 	/**

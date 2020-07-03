@@ -1,4 +1,4 @@
-package hostage.persistence;
+package de.tudarmstadt.informatik.hostage.persistence;
 
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.query.Query;
@@ -17,9 +17,7 @@ import de.tudarmstadt.informatik.hostage.logging.DaoMaster;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecordDao;
-import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.MessageRecordDAO;
-import de.tudarmstadt.informatik.hostage.persistence.DAO.NetworkRecordDAO;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
