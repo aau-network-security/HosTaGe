@@ -230,7 +230,7 @@ public class SyncUtils {
         }
     }
 
-
+    @Deprecated
     public static boolean uploadRecordsToServer(String entity, String serverAddress){
         HttpPost httppost;
         try {

@@ -151,13 +151,20 @@ public class Handler implements Runnable {
 		} catch (Exception e) {
 
 		}
+		//uploadTracing();
+		listener.refreshHandlers();
+	}
+
+	@Deprecated
+	//TODO Temporary removed TracingMonitor
+	private void uploadTracing(){
 		boolean upload = pref.getBoolean("pref_auto_synchronize", false);
 		if(upload){
 			Intent intent = new Intent(service, TracingSyncService.class);
 			intent.setAction(TracingSyncService.ACTION_START_SYNC);
 			service.startService(intent);
 		}
-		listener.refreshHandlers();
+
 	}
 
 	/**

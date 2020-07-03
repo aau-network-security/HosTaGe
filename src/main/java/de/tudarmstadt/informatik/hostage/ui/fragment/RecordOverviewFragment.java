@@ -59,7 +59,6 @@ import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.sync.android.SyncUtils;
 import de.tudarmstadt.informatik.hostage.sync.bluetooth.BluetoothSyncActivity;
-import de.tudarmstadt.informatik.hostage.sync.tracing.TracingSyncActivity;
 import de.tudarmstadt.informatik.hostage.sync.wifi_direct.ui.WiFiP2pSyncActivity;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.adapter.RecordListAdapter;
@@ -445,9 +444,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 							/*case 1:
 								getActivity().startActivity(new Intent(getActivity(), NFCSyncActivity.class));
 								break;*/
-
+                            //TODO Temporary removed TracingMonitor
 							case 1:
-                                startActivityForResult(new Intent(getActivity(), TracingSyncActivity.class), 0);
+                                //startActivityForResult(new Intent(getActivity(), TracingSyncActivity.class), 0);
 								break;
                             case 2:
                                 startActivityForResult(new Intent(getActivity(), WiFiP2pSyncActivity.class), 0);

@@ -146,7 +146,7 @@ android {
         debug {
             debuggable true
             jniDebuggable true
-            testCoverageEnabled true
+//            testCoverageEnabled true
             resValue "string", "google_maps_api_key", "AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4"
         }
         if (doSigningForRelease) {

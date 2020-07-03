@@ -33,6 +33,7 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
  * 
  * @author Lars Pandikow
  */
+@Deprecated
 public class TracingSyncService extends IntentService {
 
 	public static final String REMOTE_DEVICE = "de.tudarmstadt.informatik.hostage.REMOTE_DEVICE";
@@ -98,6 +99,7 @@ public class TracingSyncService extends IntentService {
 	/**
 	 * Uploads all new Records to a server, specified in the settings.
 	 */
+	@Deprecated
     private void syncNewRecords() {
         long lastSyncTime = pref.getLong("LAST_SYNC_TIME", 0);
 
