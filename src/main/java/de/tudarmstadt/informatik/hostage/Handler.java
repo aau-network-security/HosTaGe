@@ -176,7 +176,7 @@ public class Handler implements Runnable {
 	public void run() {
 		service.notifyUI(this.getClass().getName(),
 				new String[] { service.getString(R.string.broadcast_started), protocol.toString(), Integer.toString(listener.getPort()) });
-		if(!MQTTHandler.getCurrentConnectedMessages().isEmpty()){
+		if(MQTTHandler.isAnAttackOngoing()){
 			try {
 				handleMQTTPackets();
 			} catch (UnknownHostException e) {

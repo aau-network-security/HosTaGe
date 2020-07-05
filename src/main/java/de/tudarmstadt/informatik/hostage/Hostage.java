@@ -318,6 +318,7 @@ public class Hostage extends Service {
 	}
 
 
+
 	@Override
 	public void onDestroy() {
 		cancelNotification();

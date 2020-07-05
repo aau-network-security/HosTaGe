@@ -277,7 +277,11 @@ public class HomeFragment extends Fragment {
 		dbSession = HostageApplication.getInstances().getDaoSession();
 		daoHelper = new DAOHelper(dbSession, getActivity());
 
-		mProfileManager = ProfileManager.getInstance();
+		try {
+			mProfileManager = ProfileManager.getInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 
 		mRootView = inflater.inflate(R.layout.fragment_home, container, false);
@@ -348,25 +352,29 @@ public class HomeFragment extends Fragment {
 							setStateNotConnected();
 						} else { // network available
 							boolean protocolActivated = false;
-							if (ProfileManager.getInstance().getCurrentActivatedProfile() == null) {
-								MainActivity.getInstance().startMonitorServices(Arrays.asList(
-										getResources().getStringArray(R.array.protocols)));
-							} else {
-								ProfileManager profileManager = ProfileManager.getInstance();
+							try {
+								if (ProfileManager.getInstance().getCurrentActivatedProfile() == null) {
+									MainActivity.getInstance().startMonitorServices(Arrays.asList(
+											getResources().getStringArray(R.array.protocols)));
+								} else {
+									ProfileManager profileManager = ProfileManager.getInstance();
 
-								if (profileManager.isRandomActive()) {
-									profileManager
-											.randomizeProtocols(profileManager.getRandomProfile());
-								}
+									if (profileManager.isRandomActive()) {
+										profileManager
+												.randomizeProtocols(profileManager.getRandomProfile());
+									}
 
-								Profile currentProfile = profileManager
-										.getCurrentActivatedProfile();
-								List<String> protocols = currentProfile.getActiveProtocols();
-								if (protocols.size() > 0 || currentProfile.mGhostActive) {
-									protocols.add("GHOST");
-									MainActivity.getInstance().startMonitorServices(protocols);
-									protocolActivated = true;
+									Profile currentProfile = profileManager
+											.getCurrentActivatedProfile();
+									List<String> protocols = currentProfile.getActiveProtocols();
+									if (protocols.size() > 0 || currentProfile.mGhostActive) {
+										protocols.add("GHOST");
+										MainActivity.getInstance().startMonitorServices(protocols);
+										protocolActivated = true;
+									}
 								}
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 
 							if (protocolActivated) {

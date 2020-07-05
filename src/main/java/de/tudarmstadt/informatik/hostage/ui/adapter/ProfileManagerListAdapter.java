@@ -171,10 +171,14 @@ public class ProfileManagerListAdapter extends ArrayAdapter<Profile> {
 						    })
 						    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 							    public void onClick(DialogInterface dialog, int which) {
-								    ProfileManager profileManager = ProfileManager.getInstance();
-
-								    profileManager.deleteProfile(item);
-								    profileManager.getProfileListAdapter().notifyDataSetChanged();
+									ProfileManager profileManager = null;
+									try {
+										profileManager = ProfileManager.getInstance();
+										profileManager.deleteProfile(item);
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+									profileManager.getProfileListAdapter().notifyDataSetChanged();
 								    mList.closeOpenedItems();
 							    }
 						    })

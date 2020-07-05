@@ -231,7 +231,11 @@ public class MainActivity extends AppCompatActivity {
 		MainActivity.context = getApplicationContext();
 
 		setContentView(R.layout.activity_drawer_main);
-		mProfileManager = ProfileManager.getInstance();
+		try {
+			mProfileManager = ProfileManager.getInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// check for the porthack and iptables
 		//Device.checkCapabilities();

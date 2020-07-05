@@ -103,13 +103,21 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
         setRealPortListening(holder,item);
         holder.activated.setTag(item);
 
-        this.updateStatus(item, holder);
+        try {
+            this.updateStatus(item, holder);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         holder.activated.setOnCheckedChangeListener(
                 new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         ServicesListItem item = (ServicesListItem) buttonView.getTag();
-                        mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
+                        try {
+                            mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         //SK: Temp bugfix
                         //if (!HelperUtils.isNetworkAvailable(mActivity)) {
                         if (isChecked && !HelperUtils.isWifiConnected(mActivity)) {
@@ -211,7 +219,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      * @param item   ServiceListItem which has information about current item, e.g. protocol, activated, attacks
      * @param holder ViewHolder which represents the item in the View
      */
-    private void updateStatus(ServicesListItem item, ViewHolder holder) {
+    private void updateStatus(ServicesListItem item, ViewHolder holder) throws Exception {
 		boolean serviceIsActive = false;
 		// determine if service is active
         if(item.protocol.equals("GHOST")) {

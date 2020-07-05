@@ -40,9 +40,7 @@ public class MQTTHandler {
     private static ArrayList<InterceptUnsubscribeMessage> interceptUnsubscribeMessages = new ArrayList<>();
     private static ArrayList<InterceptAcknowledgedMessage> interceptAcknowledgedMessages = new ArrayList<>();
 
-    final static int brokerPort = 1883;
-
-    InterceptHandler handler;
+    private final static int brokerPort = 1883;
 
     /**
      * Intercepts all the captured packets from the broker and adds the to the appropriate list.
@@ -54,7 +52,7 @@ public class MQTTHandler {
                 InterceptConnectionLostMessage.class, InterceptPublishMessage.class, InterceptSubscribeMessage.class,
                 InterceptUnsubscribeMessage.class, InterceptAcknowledgedMessage.class};
 
-        handler= new InterceptHandler() {
+        InterceptHandler handler = new InterceptHandler() {
             @Override
             public String getID() {
                 return null;
@@ -67,7 +65,7 @@ public class MQTTHandler {
 
             @Override
             public void onConnect(InterceptConnectMessage interceptConnectMessage) {
-                interceptConnectMessages.add(interceptConnectMessage);
+                //interceptConnectMessages.add(interceptConnectMessage);
                 currentConnectedMessages.add(interceptConnectMessage);
 
             }
@@ -86,14 +84,14 @@ public class MQTTHandler {
 
             @Override
             public void onPublish(InterceptPublishMessage interceptPublishMessage) {
-                publishMessages.add(interceptPublishMessage);
+                // publishMessages.add(interceptPublishMessage);
                 currentPublishMessages.add(interceptPublishMessage);
 
             }
 
             @Override
             public void onSubscribe(InterceptSubscribeMessage interceptSubscribeMessage) {
-                interceptSubscribeMessages.add(interceptSubscribeMessage);
+                // interceptSubscribeMessages.add(interceptSubscribeMessage);
                 currentSubscribeMessages.add(interceptSubscribeMessage);
             }
 
@@ -151,6 +149,26 @@ public class MQTTHandler {
     }
 
     /**
+     * Checks if there is an ongoing attack, without confusing the SensorProfile client as an attacker.
+     * @return
+     */
+
+    public static boolean isAnAttackOngoing(){
+        Collection<ClientDescriptor> clients = MQTT.listConnectedClients();
+
+        if(!clients.isEmpty() && !getCurrentConnectedMessages().isEmpty()) {
+            for (ClientDescriptor item : clients) {
+                if (item != null) {
+                    if(item.getClientID().equals(SensorProfile.getClientID()) && clients.size()==1)
+                        return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Gets the IP address of the current connected client
      * @return
      */
@@ -160,13 +178,32 @@ public class MQTTHandler {
         if(!clients.isEmpty() && !getCurrentConnectedMessages().isEmpty()) {
             for (ClientDescriptor item : clients) {
                 if(item!=null){
-                    if (item.getClientID().equals(getCurrentConnectedMessages().get(0).getClientID())) {
+                    if (item.getClientID().equals(getCurrentConnectedMessages()
+                            .get(currentConnectedMessages.size()-1).getClientID())) { //ArrayList preserves order of inserted items.
                         ipAddress = item.getAddress();
                     }
                 }
             }
         }
         return ipAddress;
+    }
+
+    private static String getPublishedTopics(){
+        StringBuilder packet = new StringBuilder();
+        if(!publishMessages.isEmpty()){
+            for(InterceptPublishMessage message:publishMessages){
+                if(message!=null) {
+                    if (message.getClientID().equals(currentConnectedMessages.get(currentConnectedMessages.size() - 1).getClientID())) {
+                        packet.append("TopicName: ").append(message.getTopicName())
+                                .append(" ").append("Message: ").append(message.getPayload())
+                                .append(" ").append(System.getProperty("line.separator"));
+                    }
+                }
+
+            }
+
+        }
+        return packet.toString();
     }
 
     /**
@@ -180,7 +217,7 @@ public class MQTTHandler {
         if(!clients.isEmpty() && !getCurrentConnectedMessages().isEmpty()) {
 
             for (ClientDescriptor item : clients) {
-                if (item.getClientID().equals(getCurrentConnectedMessages().get(0).getClientID())) {
+                if (item.getClientID().equals(getCurrentConnectedMessages().get(currentConnectedMessages.size()-1).getClientID())) {
                     port = item.getPort();
                 }
             }
@@ -194,7 +231,7 @@ public class MQTTHandler {
 
     public static void removeCurrentConnected(){
         if(!currentConnectedMessages.isEmpty())
-            currentConnectedMessages.remove(currentConnectedMessages.get(0));
+            currentConnectedMessages.clear();
     }
 
     /**
@@ -239,9 +276,7 @@ public class MQTTHandler {
         SubnetUtils utils = new SubnetUtils(internalIPAddress+"/"+prefix);
         String remoteIP = HelperUtils.intToStringIp(remoteIPAddress);
 
-        boolean isInRange = utils.getInfo().isInRange(remoteIP);
-
-        return isInRange;
+        return utils.getInfo().isInRange(remoteIP);
     }
 
     /**
@@ -256,7 +291,7 @@ public class MQTTHandler {
         record.setAttack_id(attack_id);
         record.setType(type);
         record.setTimestamp(System.currentTimeMillis());
-        record.setPacket("");
+        record.setPacket(getPublishedTopics());
         return record;
     }
 

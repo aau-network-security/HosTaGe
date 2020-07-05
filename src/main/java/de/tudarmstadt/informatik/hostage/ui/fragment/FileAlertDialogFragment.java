@@ -32,11 +32,6 @@ public class FileAlertDialogFragment extends DialogFragment {
         String fname= "undefined";
         String ssid = "undefined";
         String protocol = "undefined";
-        ProfileManager mProfileManager;
-        mProfileManager = ProfileManager.getInstance();
-
-
-
 
         // get infos about the current connection using SharedPreferences
         final Activity activity = getActivity();

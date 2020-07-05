@@ -66,13 +66,24 @@ public class ProfileManagerFragment extends TrackerFragment {
         View rootView = inflater.inflate(R.layout.fragment_profile_manager, container, false);
 	    list = rootView.findViewById(R.id.profile_manager_listview);
 
-		final ProfileManager pmanager = ProfileManager.getInstance();
-		pmanager.loadData();
+		ProfileManager pmanager = null;
+		try {
+			pmanager = ProfileManager.getInstance();
+			pmanager.loadData();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	    String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
 	    mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
 
-        final List<Profile> strList = new LinkedList<Profile>(pmanager.getProfilesList());
+		List<Profile> strList = null;
+		try {
+			strList = new LinkedList<Profile>(pmanager.getProfilesList());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// show an help item in the listview to indicate, that the items in the list are swipeable
 	    if(strList.size() > 0 && !mSharedPreferences.getBoolean("dismissedProfileSwipeHelp", false)){
@@ -88,13 +99,15 @@ public class ProfileManagerFragment extends TrackerFragment {
         list.setAdapter(mAdapter);
 
 		// add open and close actions to the items of the list view
+		ProfileManager finalPmanager = pmanager;
+		List<Profile> finalStrList = strList;
 		list.setSwipeListViewListener(new BaseSwipeListViewListener() {
 			@Override
 			public void onOpened(int position, boolean toRight){
 				Profile profile = mAdapter.getItem(position);
 				if(profile.mShowTooltip){
 					mAdapter.remove(profile);
-					strList.remove(profile);
+					finalStrList.remove(profile);
 					list.dismiss(position);
 
 					mSharedPreferences.edit().putBoolean("dismissedProfileSwipeHelp", true).commit();
@@ -107,7 +120,11 @@ public class ProfileManagerFragment extends TrackerFragment {
 				Profile profile = mAdapter.getItem(position);
 				if(profile.mShowTooltip) return;
 
-				pmanager.activateProfile(profile);
+				try {
+					finalPmanager.activateProfile(profile);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
 				mAdapter.notifyDataSetChanged();
 			}

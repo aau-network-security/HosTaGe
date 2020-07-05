@@ -138,7 +138,7 @@ public class MQTTListener extends Listener {
                     if (ConnectionGuard.portscanInProgress())
                         return;
 
-                    if(!MQTTHandler.getCurrentConnectedMessages().isEmpty()) {
+                    if(MQTTHandler.isAnAttackOngoing()) {
                         startHandler();
 
                         conReg.newOpenConnection();

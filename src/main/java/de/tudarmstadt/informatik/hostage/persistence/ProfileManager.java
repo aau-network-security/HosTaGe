@@ -9,13 +9,11 @@ import android.content.SharedPreferences;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -28,11 +26,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.Listener;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.model.Profile;
+import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.SensorProfile;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.adapter.ProfileManagerListAdapter;
 
@@ -90,7 +88,7 @@ public class  ProfileManager {
 	 *
 	 * @return the singleton instance
 	 */
-	public static ProfileManager getInstance(){
+	public static ProfileManager getInstance() throws Exception {
 		if(INSTANCE == null){
 			INSTANCE = new ProfileManager();
 		}
@@ -111,6 +109,7 @@ public class  ProfileManager {
 		String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
 		mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
 		mSharedEditor = mSharedPreferences.edit();
+		mSharedEditor.apply();
 	}
 
 	/**
@@ -144,7 +143,7 @@ public class  ProfileManager {
 	 * The profiles were serialized into JSON and persisted into the android private file.
 	 * See {@see ProfileManager#persistData}.
 	 */
-	public void loadData(){
+	public void loadData() throws Exception {
 		try {
             String UTF8 = "utf8";
             int BUFFER_SIZE = 8192;
@@ -180,13 +179,7 @@ public class  ProfileManager {
 				}
 			}
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (StreamCorruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
+		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		} finally {
 			if(mProfiles.size() == 0){
@@ -219,19 +212,17 @@ public class  ProfileManager {
 
 			fnw.close();
 			fout.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-	}
+    }
 
 	/**
 	 * Retrieves all the profiles as an List
 	 * @return a list that holds all the profiles
 	 */
-	public List<Profile> getProfilesList(){
+	public List<Profile> getProfilesList() throws Exception {
 		return new ArrayList<Profile>(getProfilesCollection());
 	}
 
@@ -239,7 +230,7 @@ public class  ProfileManager {
 	 * Retrieves all the profiles as an collection
 	 * @return a collection of all the profiles
 	 */
-	public Collection<Profile> getProfilesCollection(){
+	public Collection<Profile> getProfilesCollection() throws Exception {
 		if(mProfiles.size() == 0 || mProfiles == null){
 			this.loadData();
 		}
@@ -308,7 +299,7 @@ public class  ProfileManager {
 	 * @param id the id of the profile
 	 * @return the profile
 	 */
-	public Profile getProfile(int id){
+	public Profile getProfile(int id) throws Exception {
 		if(mProfiles.size() == 0){
 			loadData();
 		}
@@ -360,7 +351,7 @@ public class  ProfileManager {
 	 *
 	 * @param profile the profile to delete
 	 */
-	public void deleteProfile(Profile profile){
+	public void deleteProfile(Profile profile) throws Exception {
 		if(this.mProfiles.containsKey(profile.mId)){
 			Profile p = getProfile(profile.mId);
 			this.mProfiles.remove(profile.mId);
@@ -392,7 +383,7 @@ public class  ProfileManager {
 	 * Same as {@see activateProfile(Profile profile, boolean persist)} but with persist arg being always true
 	 * @param profile the profile to active
 	 */
-	public void activateProfile(Profile profile){
+	public void activateProfile(Profile profile) throws Exception {
 		this.activateProfile(profile, true);
 	}
 
@@ -402,7 +393,7 @@ public class  ProfileManager {
 	 * @param profile the profile to activate
 	 * @param persist indicates if the profile should be persisted after activating
 	 */
-	public void activateProfile(Profile profile, boolean persist){
+	public void activateProfile(Profile profile, boolean persist) throws Exception {
 		if(profile.equals(this.mCurrentActivatedProfile) || (mCurrentActivatedProfile != null && profile.mId == mCurrentActivatedProfile.mId)) return;
 
 		if(this.mCurrentActivatedProfile != null){
@@ -441,9 +432,17 @@ public class  ProfileManager {
 				}
 
 				MainActivity.getInstance().startMonitorServices(protocolsToStart);
+                activateMQTTSensorProfile(profile);
 			}
 		}
 	}
+
+	private void activateMQTTSensorProfile(Profile profile) throws Exception {
+	    if(profile.mLabel.equals("MQTT Sensor")) {
+            SensorProfile sensorProfile = new SensorProfile();
+            sensorProfile.startSensor();
+        }
+    }
 
 	/**
 	 * Checks if the "random" profile is currently active
@@ -520,7 +519,26 @@ public class  ProfileManager {
 	/**
 	 * Fills the profiles manager with default profiles
 	 */
-	public void fillWithDefaultData(){
+	public void fillWithDefaultData() throws Exception {
+		addWindowsSevenProfile();
+		addWindowsXPProfile();
+		addServerHTTPProfile();
+		addServerWebProfile();
+		addUnixMachineProfile();
+		addLinuxMachineProfile();
+		addVoipServer();
+		addRandomProfile();
+		addNuclearPlantProfile();
+		addModbusMasterProfile();
+		addSNMPProfile();
+		addParanoidProfile();
+        addMQTTBrokerProfile();
+        addMQTTSensorProfile();
+
+		persistData();
+	}
+
+	private void addWindowsSevenProfile(){
 		Profile windowsSeven = new Profile(
 				0,
 				"Windows 7",
@@ -540,11 +558,13 @@ public class  ProfileManager {
 		windowsSeven.mActiveProtocols.put("ECHO", true);
 
 		this.addProfile(windowsSeven, false);
+	}
 
+	private void addWindowsXPProfile(){
 		Profile windowsXP = new Profile(
 				1,
 				"Windows XP",
-                MainActivity.getInstance().getString(R.string.profile_xp_desc),
+				MainActivity.getInstance().getString(R.string.profile_xp_desc),
 				R.drawable.ic_profile_xp,
 				false
 		);
@@ -561,10 +581,13 @@ public class  ProfileManager {
 
 		this.addProfile(windowsXP, false);
 
+	}
+
+	private void addServerHTTPProfile(){
 		Profile serverHTTP = new Profile(
 				2,
 				"Web Server Apache",
-                MainActivity.getInstance().getString(R.string.profile_webserv_apache_desc),
+				MainActivity.getInstance().getString(R.string.profile_webserv_apache_desc),
 				R.drawable.ic_profile_apache,
 				false
 		);
@@ -575,10 +598,13 @@ public class  ProfileManager {
 
 		this.addProfile(serverHTTP, false);
 
+	}
+
+	private void addServerWebProfile(){
 		Profile serverWeb = new Profile(
 				3,
 				"Web Server IIS",
-                MainActivity.getInstance().getString(R.string.profile_webserv_iis_desc),
+				MainActivity.getInstance().getString(R.string.profile_webserv_iis_desc),
 				R.drawable.ic_profile_apache,
 				false
 		);
@@ -589,10 +615,13 @@ public class  ProfileManager {
 
 		this.addProfile(serverWeb, false);
 
+	}
+
+	private void addUnixMachineProfile(){
 		Profile unixMachine = new Profile(
 				4,
 				"\"Hardened\" Linux system ",
-                MainActivity.getInstance().getString(R.string.profile_linux_hard_desc),
+				MainActivity.getInstance().getString(R.string.profile_linux_hard_desc),
 				R.drawable.ic_profile_unix,
 				false
 		);
@@ -601,10 +630,13 @@ public class  ProfileManager {
 
 		this.addProfile(unixMachine, false);
 
+	}
+
+	private void addLinuxMachineProfile(){
 		Profile linuxMachine = new Profile(
 				5,
 				"Linux system",
-                MainActivity.getInstance().getString(R.string.profile_linux_desc),
+				MainActivity.getInstance().getString(R.string.profile_linux_desc),
 				R.drawable.ic_profile_linux,
 				false
 		);
@@ -617,10 +649,13 @@ public class  ProfileManager {
 
 		this.addProfile(linuxMachine, false);
 
+	}
+
+	private void addVoipServer(){
 		Profile voipServer = new Profile(
 				6,
 				"VOIP Server",
-                MainActivity.getInstance().getString(R.string.profile_voip_desc),
+				MainActivity.getInstance().getString(R.string.profile_voip_desc),
 				R.drawable.ic_profile_asterisks,
 				false
 		);
@@ -629,10 +664,13 @@ public class  ProfileManager {
 
 		this.addProfile(voipServer, false);
 
+	}
+
+	private void addRandomProfile(){
 		Profile randomProfile = new Profile(
 				7,
 				"Random",
-                MainActivity.getInstance().getString(R.string.profile_random_desc),
+				MainActivity.getInstance().getString(R.string.profile_random_desc),
 				R.drawable.ic_launcher,
 				false
 		);
@@ -641,7 +679,9 @@ public class  ProfileManager {
 
 		this.addProfile(randomProfile, false);
 
+	}
 
+	private void addNuclearPlantProfile(){
 		Profile nuclearPlant = new Profile(
 				8,
 				"Nuclear Power Plant",
@@ -656,10 +696,12 @@ public class  ProfileManager {
 		nuclearPlant.mActiveProtocols.put("TELNET", true);
 		nuclearPlant.mActiveProtocols.put("S7COMM",true);
 		nuclearPlant.mActiveProtocols.put("SMTP",true);
+
 		this.addProfile(nuclearPlant, false);
+	}
 
-
-		/*Profile waterPlant = new Profile(
+	private void addWaterPlantProfile(){
+		Profile waterPlant = new Profile(
 				9,
 				"Water Distribution & Treatment Plant",
 				MainActivity.getInstance().getString(R.string.profile_waterPlant_desc),
@@ -672,8 +714,10 @@ public class  ProfileManager {
 		waterPlant.mActiveProtocols.put("FTP", true);
 		waterPlant.mActiveProtocols.put("TELNET", true);
 		this.addProfile(waterPlant, false);
-*/
 
+	}
+
+	private void addModbusMasterProfile(){
 		Profile modbusMaster = new Profile(
 				10,
 				"Modbus Master",
@@ -696,6 +740,9 @@ public class  ProfileManager {
 
 		this.addProfile(modbusMaster, false);
 
+	}
+
+	private void addSNMPProfile(){
 		Profile SNMPProfile = new Profile(
 				11,
 				"SNMP",
@@ -707,13 +754,13 @@ public class  ProfileManager {
 
 		SNMPProfile.mActiveProtocols.put("SNMP",true);
 		this.addProfile(SNMPProfile,false);
+	}
 
-
-
+	private void addParanoidProfile() throws Exception {
 		Profile paranoidProfile = new Profile(
 				12,
 				"Paranoid",
-                MainActivity.getInstance().getString(R.string.profile_paranoid_desc),
+				MainActivity.getInstance().getString(R.string.profile_paranoid_desc),
 				R.drawable.ic_profile_paranoid,
 				false
 		);
@@ -729,8 +776,33 @@ public class  ProfileManager {
 		mIncrementValue = 8;
 
 		this.activateProfile(paranoidProfile, false);
+	}
 
-		persistData();
+	private void addMQTTBrokerProfile(){
+	    Profile mqttBroker = new Profile(
+	            13,
+                "MQTT Broker",
+                "This profile simulates an MQTT Broker",
+                R.drawable.ic_profile_broker,
+                false
+        );
+
+	    mqttBroker.mActiveProtocols.put("MQTT",true);
+		this.addProfile(mqttBroker,false);
+
+	}
+
+    private void addMQTTSensorProfile(){
+        Profile mqttSensor = new Profile(
+                14,
+                "MQTT Sensor",
+                "This profile simulates a Humidity/Temperature Sensor",
+                R.drawable.ic_profile_sensor,
+                false
+        );
+
+        mqttSensor.mActiveProtocols.put("MQTT",true);
+		this.addProfile(mqttSensor,false);
 	}
 
 }

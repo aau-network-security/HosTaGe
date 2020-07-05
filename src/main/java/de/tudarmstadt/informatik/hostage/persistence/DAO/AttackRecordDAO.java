@@ -32,7 +32,7 @@ import static de.tudarmstadt.informatik.hostage.persistence.DAO.SyncDeviceDAO.th
 
 public class AttackRecordDAO extends  DAO {
     private DaoSession daoSession;
-    private static Context context;
+    private Context context;
 
 
     public AttackRecordDAO(DaoSession daoSession){
@@ -42,7 +42,7 @@ public class AttackRecordDAO extends  DAO {
 
     public AttackRecordDAO(DaoSession daoSession,Context context){
         this.daoSession= daoSession;
-        AttackRecordDAO.context = context;
+        this.context = context;
 
     }
 
@@ -320,7 +320,6 @@ public class AttackRecordDAO extends  DAO {
     }
 
     private void addUpdatedRecords(List<AttackRecord> attackRecords, SyncDevice ownDevice,long highestID ){
-
         if(!attackRecords.isEmpty()){
             for (AttackRecord element : attackRecords) {
                 AttackRecord record = this.createAttackRecord(element);
@@ -369,7 +368,7 @@ public class AttackRecordDAO extends  DAO {
     }
 
 
-    public static SyncDevice currentDevice(){
+    public SyncDevice currentDevice(){
         SharedPreferences pref = null;
         if (thisDevice != null){
             if(MainActivity.getContext() != null && context!=null)

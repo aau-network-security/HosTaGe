@@ -196,7 +196,11 @@ public class ServicesFragment extends TrackerFragment {
         if (switchChangeListener == null) {
             switchChangeListener = new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
+                    try {
+                        mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     //SK: Temp bugfix
                         //if (!HelperUtils.isNetworkAvailable(getActivity())) {
 					//replaced with if (!HelperUtils.isWifiConnected(getActivity())) {
