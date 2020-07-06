@@ -3,11 +3,15 @@ package de.tudarmstadt.informatik.hostage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
+
+import static de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler.isTopicPublished;
 
 public class MQTTListener extends Listener {
     private ArrayList<Handler> handlers = new ArrayList<Handler>();
@@ -114,8 +118,11 @@ public class MQTTListener extends Listener {
 
     private void fullHandler() throws IOException {
         if (conReg.isConnectionFree()) {
+            ExecutorService threadPool = Executors.newFixedThreadPool(1);
+
             Thread brokerThread = brokerThread();
-            brokerThread.start();
+            threadPool.submit(brokerThread);
+            threadPool.shutdown();
 
         }
     }
@@ -138,9 +145,9 @@ public class MQTTListener extends Listener {
                     if (ConnectionGuard.portscanInProgress())
                         return;
 
+                    //isTopicPublished(); //The record wont get updated.
                     if(MQTTHandler.isAnAttackOngoing()) {
                         startHandler();
-
                         conReg.newOpenConnection();
                     }
                 } catch (Exception e) {

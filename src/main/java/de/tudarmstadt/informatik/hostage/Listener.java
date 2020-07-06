@@ -246,6 +246,7 @@ public class Listener implements Runnable {
             Socket client = server.accept();
             Thread socketsThread = socketsThread(client);
             threadPool.submit(socketsThread);
+            threadPool.shutdown();
         }
     }
 

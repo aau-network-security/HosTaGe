@@ -4,14 +4,18 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.commons.SubnetUtils;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
+import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import io.moquette.broker.ClientDescriptor;
@@ -65,7 +69,7 @@ public class MQTTHandler {
 
             @Override
             public void onConnect(InterceptConnectMessage interceptConnectMessage) {
-                //interceptConnectMessages.add(interceptConnectMessage);
+                interceptConnectMessages.add(interceptConnectMessage);
                 currentConnectedMessages.add(interceptConnectMessage);
 
             }
@@ -154,9 +158,34 @@ public class MQTTHandler {
      */
 
     public static boolean isAnAttackOngoing(){
+        return isAnAttackerConnected(getCurrentConnectedMessages());
+    }
+
+    /**
+     * Checks if a topic is published from an Attacker and updates the record.
+     */
+
+    public static void isTopicPublished(){
+        boolean isAnAttackerConnected = isAnAttackerConnected(currentPublishMessages);
+        if(isAnAttackerConnected){
+            if(!currentPublishMessages.isEmpty()) {
+                DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+
+                DAOHelper daoHelper = new DAOHelper(dbSession);
+                MessageRecord record = daoHelper.getMessageRecordDAO().getLastedInsertedRecord();
+                record.setPacket(getPublishedTopics());
+                daoHelper.getMessageRecordDAO().updateRecord(record);
+
+                currentPublishMessages.clear();
+            }
+        }
+
+    }
+
+    private static boolean isAnAttackerConnected(ArrayList<?> connectedMessages){
         Collection<ClientDescriptor> clients = MQTT.listConnectedClients();
 
-        if(!clients.isEmpty() && !getCurrentConnectedMessages().isEmpty()) {
+        if(!clients.isEmpty() && !connectedMessages.isEmpty()) {
             for (ClientDescriptor item : clients) {
                 if (item != null) {
                     if(item.getClientID().equals(SensorProfile.getClientID()) && clients.size()==1)
@@ -166,6 +195,8 @@ public class MQTTHandler {
             return true;
         }
         return false;
+
+
     }
 
     /**
@@ -189,21 +220,21 @@ public class MQTTHandler {
     }
 
     private static String getPublishedTopics(){
-        StringBuilder packet = new StringBuilder();
-        if(!publishMessages.isEmpty()){
-            for(InterceptPublishMessage message:publishMessages){
+        String packet = "";
+
+        if(!currentPublishMessages.isEmpty()){
+            InterceptPublishMessage message = currentPublishMessages.get(0);
                 if(message!=null) {
-                    if (message.getClientID().equals(currentConnectedMessages.get(currentConnectedMessages.size() - 1).getClientID())) {
-                        packet.append("TopicName: ").append(message.getTopicName())
-                                .append(" ").append("Message: ").append(message.getPayload())
-                                .append(" ").append(System.getProperty("line.separator"));
+                    if (message.getClientID().equals(interceptConnectMessages.get(interceptConnectMessages.size()-1).getClientID())) {
+
+                        packet+="TopicName: "+message.getTopicName()+" "+
+                                "Message Clientid: "+message.getClientID()+
+                                "/n";
                     }
                 }
 
-            }
-
         }
-        return packet.toString();
+        return packet;
     }
 
     /**
@@ -254,7 +285,7 @@ public class MQTTHandler {
         record.setAttack_id(attack_id);
         record.setSync_id(attack_id);
         if(SyncDevice.currentDevice()!=null)
-            record.setDevice(SyncDevice.currentDevice().getDeviceID());
+            record.setDevice(Objects.requireNonNull(SyncDevice.currentDevice()).getDeviceID());
         else
             record.setDevice(UUID.randomUUID().toString());
         record.setProtocol("MQTT");

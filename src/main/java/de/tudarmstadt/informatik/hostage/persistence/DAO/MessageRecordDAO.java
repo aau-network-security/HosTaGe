@@ -46,6 +46,30 @@ public class MessageRecordDAO extends DAO {
 
     }
 
+    /**
+     * Returns Last Inserted Record.
+     * @return
+     */
+
+    public MessageRecord getLastedInsertedRecord(){
+        MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
+        MessageRecord record = new MessageRecord();
+
+        List<MessageRecord> messageRecords = recordDao.queryBuilder()
+                .orderAsc(MessageRecordDao.Properties.Id)
+                .limit(1)
+                .list();
+        if(!messageRecords.isEmpty()){
+            return messageRecords.get(0);
+        }
+        return  record;
+    }
+
+    public void updateRecord(MessageRecord record){
+        MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
+
+        updateElement(recordDao,record);
+    }
 
     public ArrayList<MessageRecord> getAllMessageRecords(){
         MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();

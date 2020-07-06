@@ -71,7 +71,7 @@ public class Hostage extends Service {
 
 	private HashMap<String, Boolean> mProtocolActiveAttacks;
 	MultiStageAlarm alarm = new MultiStageAlarm();
-	DaoSession dbSession;
+	private DaoSession dbSession;
 	public static int prefix;
 
 	public class LocalBinder extends Binder {
@@ -306,7 +306,7 @@ public class Hostage extends Service {
 		implementedProtocols = getImplementedProtocols();
 		connectionInfo = getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 		connectionInfoEditor = connectionInfo.edit();
-		connectionInfoEditor.commit();
+		connectionInfoEditor.apply();
 		
 		mProtocolActiveAttacks = new HashMap<String, Boolean>();
 
@@ -552,9 +552,7 @@ public class Hostage extends Service {
 		boolean activeHandlers = false;
 		boolean bssidSeen = false;
 		boolean listening = false;
-		Iterator<Listener> iterator = listeners.iterator();
-		while(iterator.hasNext()) {
-			Listener listener = iterator.next();
+		for (Listener listener : listeners) {
 			if (listener.isRunning())
 				listening = true;
 			if (listener.getHandlerCount() > 0) {
@@ -562,7 +560,8 @@ public class Hostage extends Service {
 			}
 			if (attackRecordDAO.bssidSeen(listener.getProtocolName(), getBSSID(getApplicationContext()))) {
 				bssidSeen = true;
-		}			}
+			}
+		}
 
 
 	PendingIntent resultPendingIntent = intentNotificationGenerator();

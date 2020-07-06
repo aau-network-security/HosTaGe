@@ -25,6 +25,17 @@ public class DAOHelper {
 
     }
 
+    public DAOHelper(DaoSession daoSession){
+        this.daoSession= daoSession;
+        this.messageRecordDAO = new MessageRecordDAO(daoSession);
+        this.networkRecordDAO = new NetworkRecordDAO(daoSession);
+        this.profileDAO = new ProfileDAO(daoSession);
+        this.syncInfoRecordDAO = new SyncInfoRecordDAO(daoSession);
+        this.attackRecordDAO = new AttackRecordDAO(daoSession);
+        this.syncDeviceDAO = new SyncDeviceDAO(daoSession);
+
+    }
+
     public DaoSession getDaoSession() {
         return daoSession;
     }

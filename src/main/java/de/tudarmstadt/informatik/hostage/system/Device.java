@@ -47,33 +47,28 @@ public class Device {
 				porthack = false;
 				break;
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 
 		// TODO: test with various devices, cannot run programm su permission denied
-		if (Build.VERSION.SDK_INT >= 18) { // iptables isn't fully implemented on older versions
-			final String ipTablesList = "iptables -L -n -t nat"; // list all rules in NAT table
-			try {
-				Process p = new ProcessBuilder("su", "-c", ipTablesList).start();
-				switch (p.waitFor()) {
-					case 0: // everything is fine
-						iptables = true; // iptables available and working
-						break;
+		// iptables isn't fully implemented on older versions
+		final String ipTablesList = "iptables -L -n -t nat"; // list all rules in NAT table
+		try {
+			Process p = new ProcessBuilder("su", "-c", ipTablesList).start();
+			switch (p.waitFor()) {
+				case 0: // everything is fine
+					iptables = true; // iptables available and working
+					break;
 
-					case 3: // no such table
-					case 127: // command not found
-					default: // unexpected return code
-						// while testing code 3 has been returned when table NAT is not available
-						iptables = false;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				case 3: // no such table
+				case 127: // command not found
+				default: // unexpected return code
+					// while testing code 3 has been returned when table NAT is not available
+					iptables = false;
 			}
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
 		}
 
 		initialized = true;

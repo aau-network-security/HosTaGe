@@ -113,9 +113,7 @@ public class MODBUS implements Protocol {
         switch (requestType){
 
             case MODBUS_SERVICE:
-               // responsePackets.add(new Packet(request,getDeviceInfo()));
                 responsePackets.add(new Packet(getDeviceInfo()+"\r\n","EE:FF:66:88:GH:JI:DJ"));
-                System.out.println(responsePackets);
                 break;
 
             case READ_INPUT_REGISTERS:
