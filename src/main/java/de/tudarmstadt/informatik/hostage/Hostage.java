@@ -3,7 +3,6 @@ package de.tudarmstadt.informatik.hostage;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
-
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -171,7 +169,6 @@ public class Hostage extends Service {
 			if (bssid_new == null || !bssid_new.equals(bssid_old)) {
 				deleteConnectionData();
 				updateConnectionInfo();
-				getLocationData();
 				notifyUI(this.getClass().getName(), new String[] { getString(R.string.broadcast_connectivity) });
 			}
 		}
@@ -313,7 +310,6 @@ public class Hostage extends Service {
 		createNotification();
 		registerNetReceiver();
 		updateConnectionInfo();
-		getLocationData();
 
 	}
 
@@ -686,14 +682,6 @@ public class Hostage extends Service {
 		return implementedProtocols;
 	}
 
-	/**
-	 * Starts an Instance of MyLocationManager to set the hostage.location within this
-	 * class.
-	 */
-	private void getLocationData() {
-		MyLocationManager locationManager = new MyLocationManager(this);
-		locationManager.getUpdates(60 * 1000, 3,context);
-	}
 
 	// Notifications
 
@@ -762,7 +750,6 @@ public class Hostage extends Service {
 		this.mProtocolActiveAttacks.clear();
 	}
 
-
 	private void addCellularInfo(Context context){
 		int ipAddress = HelperUtils.getCellularIP();
 		String ssid= HelperUtils.getNetworkClass(context);
@@ -810,9 +797,7 @@ public class Hostage extends Service {
 		editor.putInt(getString(R.string.connection_info_internal_ip), ipAddress);
 		editor.putInt(getString(R.string.connection_info_subnet_mask), netmask);
 
-
-		editor.commit();
-
+		editor.apply();
 
 	}
 

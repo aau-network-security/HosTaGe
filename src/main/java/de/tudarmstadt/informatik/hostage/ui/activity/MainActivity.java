@@ -18,6 +18,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ import androidx.legacy.app.ActionBarDrawerToggle;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.R;
+import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.model.Profile;
 import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 import de.tudarmstadt.informatik.hostage.sync.android.SyncUtils;
@@ -69,6 +71,8 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
  */
 public class MainActivity extends AppCompatActivity {
 	public static volatile Context context;
+
+	MyLocationManager locationManager;
 
 	/** singleton instance of the MainActivity **/
 	private static MainActivity sInstance = null;
@@ -208,6 +212,18 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+		locationManager.stopUpdates();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		locationManager.getUpdates(60 * 1000, 3,context);
+
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -215,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onStop() {
 		this.unbindService();
+		locationManager.stopUpdates();
 		super.onStop();
 	}
 
@@ -231,6 +248,8 @@ public class MainActivity extends AppCompatActivity {
 		MainActivity.context = getApplicationContext();
 
 		setContentView(R.layout.activity_drawer_main);
+
+		getLocationData();
 		try {
 			mProfileManager = ProfileManager.getInstance();
 		} catch (Exception e) {
@@ -386,6 +405,15 @@ public class MainActivity extends AppCompatActivity {
 				});
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+
+	/**
+	 * Starts an Instance of MyLocationManager to set the hostage.location within this
+	 * class.
+	 */
+	private void getLocationData() {
+		locationManager = new MyLocationManager(this);
+		locationManager.getUpdates(60 * 1000, 3,context);
 	}
 
 	/**
