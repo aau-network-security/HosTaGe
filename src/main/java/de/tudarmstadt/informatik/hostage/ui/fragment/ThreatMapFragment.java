@@ -7,7 +7,6 @@ import java.util.Map;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,11 +19,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import android.provider.Settings;
 import android.text.Html;
+import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +40,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -69,17 +67,19 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback,
 		LocationListener {
 
-	private static GoogleMap sMap;
+	private GoogleMap sMap = null;
 	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
-	private static MapView mapView = null;
+	private  MapView mapView = null;
 
-	private static Thread mLoader = null;
+	private  Thread mLoader = null;
 
-	private static HashMap<String, String> sMarkerIDToSSID = new HashMap<String, String>();
+	private  HashMap<String, String> sMarkerIDToSSID = new HashMap<String, String>();
 
 	private LocationManager mLocationManager;
 	private String mLocationProvider;
+
+	private LayoutInflater inflater;
 
 	// needed for LIVE threat map
 	private boolean mReceiverRegistered = false;
@@ -129,9 +129,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	 */
 	@Override
 	public void onInfoWindowClick(Marker marker) {
-		//MainActivity.getInstance().displayView(MainActivity.MainMenuItem.RECORDS.getValue());
-		//RecordOverviewFragment recordOverviewFragment = (RecordOverviewFragment)MainActivity.getInstance().getCurrentFragment();
-		//if (recordOverviewFragment != null) {
 		String ssid = sMarkerIDToSSID.get(marker.getId());
 
 		ArrayList<String> ssids = new ArrayList<String>();
@@ -202,8 +199,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		public static final float MAX_DISTANCE = 1000.0f; // 1km
 
 		public SSIDArea(LatLng initialLocation) {
-			//mMinimum = new Point(360.0, 360.0);
-			//mMaximum = new Point(-360.0, -360.0);
 			mMinimum = new Point(initialLocation.latitude, initialLocation.longitude);
 			mMaximum = new Point(initialLocation.latitude, initialLocation.longitude);
 			numPoints = 1;
@@ -317,7 +312,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 				for (RecordAll record : records) {
 					LatLng location = new LatLng(record.getLatitude(), record.getLongitude());
-					//Log.i("hostage.location", "lat: " + hostage.location.latitude + " long: " + hostage.location.longitude);
+					Log.i("hostage.location ", "lat: " + record.getLatitude() + " long: " + record.getLongitude());
 					ArrayList<SSIDArea> areas;
 					if (threatAreas.containsKey(record.getSsid())) {
 						areas = threatAreas.get(record.getSsid());
@@ -348,7 +343,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 			}
 		});
 
-		mLoader.start(); // run!
+		mLoader.start();
 	}
 
 	/**
@@ -373,7 +368,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		}
 
 		View rootView = inflater.inflate(R.layout.fragment_threatmap, container, false);
-
+		this.inflater =inflater;
 
 		if (rootView != null) {
 			ViewGroup parent = (ViewGroup) rootView.getParent();
@@ -384,7 +379,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 		try {
 			if (isGooglePlay()) {
-
 				if(rootView !=null)
 					mapView  = rootView
 							.findViewById(R.id.threatmapfragment);
@@ -400,7 +394,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 						.setCancelable(false)
 						.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								// :D-|< :D-/< :D-\<
 							}
 						});
 				AlertDialog alert = builder.create();
@@ -411,60 +404,8 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 			e.printStackTrace();
 		}
 
-		if (sMap != null) {
-			sMap.setOnInfoWindowClickListener(this);
-			// custom info window layout
-			sMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-				@Override
-				public View getInfoWindow(Marker marker) {
-					return null;
-				}
-
-				@Override
-				public View getInfoContents(Marker marker) {
-					View view = inflater.inflate(R.layout.fragment_threatmap_infowindow, null);
-					if (view != null) {
-						TextView titleTextView = view
-								.findViewById(R.id.threatmap_infowindow_title);
-						if (titleTextView != null) {
-							titleTextView.setText(marker.getTitle());
-						}
-					}
-					return view;
-				}
-			});
-
-			mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-			Criteria criteria = new Criteria();
-			criteria.setAccuracy(Criteria.ACCURACY_FINE);
-			mLocationProvider = mLocationManager.getBestProvider(criteria, false);
-
-			requestPermissionUpdates();
-
-			sMap.setMyLocationEnabled(true);
-
-			LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
-			sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tudarmstadt, 13));
-
-			populateMap();
-
-			registerBroadcastReceiver();
-		}
-
 		// tell the user to enable wifi so map data can be streamed
-		if (activity != null && !HelperUtils.isNetworkAvailable(activity)) {
-			new AlertDialog.Builder(activity)
-					.setTitle(R.string.information)
-					.setMessage(R.string.no_network_connection_threatmap_msg)
-					.setPositiveButton(android.R.string.ok,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-													int which) {
-								}
-							}
-					)
-					.setIcon(android.R.drawable.ic_dialog_info).show();
-		}
+		networkConnectionCheck();
 
 		return rootView;
 	}
@@ -483,9 +424,58 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 	}
 
+	private void setInfoWindowAdapter(){
+		sMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+			@Override
+			public View getInfoWindow(Marker marker) {
+				return null;
+			}
+
+			@Override
+			public View getInfoContents(Marker marker) {
+				View view = inflater.inflate(R.layout.fragment_threatmap_infowindow, null);
+				if (view != null) {
+					TextView titleTextView = view
+							.findViewById(R.id.threatmap_infowindow_title);
+					if (titleTextView != null) {
+						titleTextView.setText(marker.getTitle());
+					}
+				}
+				return view;
+			}
+		});
+
+		locationChecker();
+
+	}
+
+
+	private void locationChecker(){
+		final AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+		mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+		Criteria criteria = new Criteria();
+		criteria.setAccuracy(Criteria.ACCURACY_FINE);
+		mLocationProvider = mLocationManager.getBestProvider(criteria, false);
+
+		requestPermissionUpdates();
+
+		sMap.setMyLocationEnabled(true);
+
+		LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
+		sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tudarmstadt, 13));
+
+		populateMap();
+
+		registerBroadcastReceiver();
+	}
+
 	@Override
 	public void onMapReady(GoogleMap googleMap) {
 		sMap = googleMap;
+		sMap.getUiSettings().setZoomControlsEnabled(true);
+		sMap.setOnInfoWindowClickListener(this);
+		setInfoWindowAdapter();
 	}
 
 	@Override
@@ -508,13 +498,32 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		}
 	}
 
+
+	private void networkConnectionCheck(){
+		final AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+		if (activity != null && !HelperUtils.isNetworkAvailable(activity)) {
+			new AlertDialog.Builder(activity)
+					.setTitle(R.string.information)
+					.setMessage(R.string.no_network_connection_threatmap_msg)
+					.setPositiveButton(android.R.string.ok,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+													int which) {
+								}
+							}
+					)
+					.setIcon(android.R.drawable.ic_dialog_info).show();
+		}
+
+	}
+
 	/**
 	 * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
 	 * @param requestCode
 	 * @param permissions
 	 * @param grantResults
 	 */
-
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		if (requestCode == 10) {
