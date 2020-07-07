@@ -31,33 +31,15 @@ public class Device {
 		porthack = false;
 		iptables = false;
 
-		porthackFilepath = getPorthackFilepath();
-		String porthackExists = "[ -e "+porthackFilepath+" ]"; // checks existence of porthack
+		portHackCheck();
 
-		try {
-			Process p = new ProcessBuilder("su", "-c", porthackExists).start();
-			switch (p.waitFor()) {
-			case 0: porthack = true;
-			// fall through and don't break
-			case 1: root = true; // 0 and 1 are valid return values of the porthack
-				break;
-
-			case 127: // command not found or executable
-				root = false;
-				porthack = false;
-				break;
-			}
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		// TODO: test with various devices, cannot run programm su permission denied
-		// iptables isn't fully implemented on older versions
 		final String ipTablesList = "iptables -L -n -t nat"; // list all rules in NAT table
+
 		try {
 			Process p = new ProcessBuilder("su", "-c", ipTablesList).start();
-			switch (p.waitFor()) {
+            switch (p.waitFor()) {
 				case 0: // everything is fine
+					root=true;
 					iptables = true; // iptables available and working
 					break;
 
@@ -75,18 +57,39 @@ public class Device {
 		Log.i("TESTEST", "initialized");
 	}
 
+
+	private static void portHackCheck(){
+		porthackFilepath = getPorthackFilepath();
+		String porthackExists = "[ -e "+porthackFilepath+" ]"; // checks existence of porthack
+
+		try {
+			Process p = new ProcessBuilder("su", "-c", porthackExists).start();
+			switch (p.waitFor()) {
+				case 0: porthack = true;
+					// fall through and don't break
+				case 1: root = true; // 0 and 1 are valid return values of the porthack
+					break;
+
+				case 127: // command not found or executable
+					root = false;
+					porthack = false;
+					break;
+			}
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public static boolean isRooted() {
-		assert(initialized);
 		return root;
 	}
 
 	public static boolean isPorthackInstalled() {
-		assert(initialized);
 		return porthack;
 	}
 
 	public static boolean isPortRedirectionAvailable() { // using iptables
-		assert(initialized);
 		return iptables;
 	}
 	/**
@@ -113,9 +116,6 @@ public class Device {
 				e.printStackTrace();
 			}
 			os.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return false;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -134,9 +134,7 @@ public class Device {
 				p = new ProcessBuilder("su", "-c", "sh "+scriptFilePath).start();
 				p.waitFor(); // stall the main thread
 				// TODO: check return value?
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
+			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -183,7 +181,7 @@ public class Device {
 	public static boolean deployPorthack() {
 		String porthack = getPorthackName();
 		if (!deployAsset("payload/"+porthack, porthack)) {
-			return false; // :(
+			return false;
 		}
 
 		// make port hack executable
@@ -194,9 +192,7 @@ public class Device {
 				return false;
 			}
 			logOutput(p.getInputStream());
-		} catch (IOException e) {
-			return false;
-		} catch (InterruptedException e) {
+		} catch (IOException | InterruptedException e) {
 			return false;
 		}
 

@@ -49,6 +49,7 @@ import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.services.MultiStageAlarm;
+import de.tudarmstadt.informatik.hostage.system.Device;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 
@@ -310,6 +311,7 @@ public class Hostage extends Service {
 		createNotification();
 		registerNetReceiver();
 		updateConnectionInfo();
+		Device.checkCapabilities();
 
 	}
 

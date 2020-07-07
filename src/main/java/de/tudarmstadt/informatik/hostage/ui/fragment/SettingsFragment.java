@@ -83,7 +83,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
 	}
 
 	private void updatePorthackStatus() {
-		Device.checkCapabilities(); // get current situation
+		//Device.checkCapabilities(); // moved in Hostage Service
 
 		if (Device.isPorthackInstalled()) {
 			mPorthackText.setText(R.string.yes);
