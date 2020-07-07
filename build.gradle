@@ -115,6 +115,10 @@ android {
             includeAndroidResources = true
         }
     }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
     sourceSets {
 
         // Move the build types to build-types/<type>
@@ -150,14 +154,14 @@ android {
             debuggable true
             jniDebuggable true
 //            testCoverageEnabled true
-            resValue "string", "google_maps_api_key", "AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4"
+            //resValue "string", "google_maps_api_key", "AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4"
         }
         if (doSigningForRelease) {
             release {
                 debuggable false
                 jniDebuggable false
                 signingConfig signingConfigs.release
-                resValue "string", "google_maps_api_key", "AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4"
+                //resValue "string", "google_maps_api_key", "AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4"
             }
         }
         release {

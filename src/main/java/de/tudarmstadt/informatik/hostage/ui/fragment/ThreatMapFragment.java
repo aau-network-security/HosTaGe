@@ -1,14 +1,11 @@
 package de.tudarmstadt.informatik.hostage.ui.fragment;
 
-import static com.google.android.gms.common.GooglePlayServicesUtil.getErrorDialog;
-import static com.google.android.gms.common.GooglePlayServicesUtil.isGooglePlayServicesAvailable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
@@ -16,14 +13,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.provider.Settings;
 import android.text.Html;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -32,6 +32,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -39,6 +42,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -65,9 +69,10 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback,
 		LocationListener {
 
-	private static GoogleMap sMap = null;
+	private static GoogleMap sMap;
+	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
-	private static View sView = null;
+	private static MapView mapView = null;
 
 	private static Thread mLoader = null;
 
@@ -79,7 +84,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	// needed for LIVE threat map
 	private boolean mReceiverRegistered = false;
 	private BroadcastReceiver mReceiver;
-	private int offset =0;
+	private int offset = 0;
 
 	/**
 	 * if google play services aren't available an error notification will be displayed
@@ -90,7 +95,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		int status = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getContext());
 		boolean result = status == ConnectionResult.SUCCESS;
 		if (!result) {
-			GoogleApiAvailability.getInstance().getErrorDialog(getActivity(),status,10).show();
+			GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), status, 10).show();
 		}
 		return result;
 	}
@@ -165,7 +170,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	@Override
 	public void onProviderDisabled(String provider) {
 	}
-
 
 
 	/**
@@ -264,7 +268,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 					return;
 				}
 
-				Activity activity = getActivity();
+				AppCompatActivity activity = (AppCompatActivity) getActivity();
 				if (activity != null) {
 					activity.runOnUiThread(new Runnable() {
 						@Override
@@ -304,11 +308,11 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 			}
 
 			private HashMap<String, ArrayList<SSIDArea>> doInBackground() {
-				 DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-				 DAOHelper daoHelper = new DAOHelper(dbSession,getActivity());
-				 ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getRecordsForFilter(new LogFilter());
+				DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+				DAOHelper daoHelper = new DAOHelper(dbSession);
+				ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getRecordsForFilter(new LogFilter());
 
-				 HashMap<String, ArrayList<SSIDArea>> threatAreas
+				HashMap<String, ArrayList<SSIDArea>> threatAreas
 						= new HashMap<String, ArrayList<SSIDArea>>();
 
 				for (RecordAll record : records) {
@@ -358,35 +362,38 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	 * @param savedInstanceState the savedInstanceState
 	 * @return the view
 	 */
-	@SuppressLint("MissingPermission")
 	@Override
 	public View onCreateView(final LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+							 Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 
-		final Activity activity = getActivity();
+		final AppCompatActivity activity = (AppCompatActivity) getActivity();
 		if (activity != null) {
 			activity.setTitle(getResources().getString(R.string.drawer_threat_map));
 		}
 
-		if (sView != null) {
-			ViewGroup parent = (ViewGroup) sView.getParent();
+		View rootView = inflater.inflate(R.layout.fragment_threatmap, container, false);
+
+
+		if (rootView != null) {
+			ViewGroup parent = (ViewGroup) rootView.getParent();
 			if (parent != null) {
-				parent.removeView(sView);
+				parent.removeView(rootView);
 			}
 		}
 
 		try {
-			sView = inflater.inflate(R.layout.fragment_threatmap, container, false);
 			if (isGooglePlay()) {
-				final FragmentManager fragmentManager = getFragmentManager();
-				if (fragmentManager != null) {
-					final MapFragment mapFragment = (MapFragment) getFragmentManager()
-							.findFragmentById(R.id.threatmapfragment);
-					if (mapFragment != null) {
-						mapFragment.getMapAsync(this);
+
+				if(rootView !=null)
+					mapView  = rootView
+							.findViewById(R.id.threatmapfragment);
+					if (mapView != null) {
+						mapView.onCreate(savedInstanceState);
+						mapView.getMapAsync(this);
+						mapView.onResume();
+
 					}
-				}
 			} else {
 				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.getInstance());
 				builder.setMessage(Html.fromHtml(getString(R.string.google_play_services_unavailable)))
@@ -401,7 +408,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 			}
 		} catch (InflateException e) {
 			// map already exists
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 
 		if (sMap != null) {
@@ -427,11 +434,12 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 				}
 			});
 
-			mLocationManager = (LocationManager)activity.getSystemService(Context.LOCATION_SERVICE);
+			mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 			Criteria criteria = new Criteria();
 			criteria.setAccuracy(Criteria.ACCURACY_FINE);
 			mLocationProvider = mLocationManager.getBestProvider(criteria, false);
-			mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
+
+			requestPermissionUpdates();
 
 			sMap.setMyLocationEnabled(true);
 
@@ -451,14 +459,28 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
-										int which) {
+													int which) {
 								}
 							}
 					)
 					.setIcon(android.R.drawable.ic_dialog_info).show();
 		}
 
-		return sView;
+		return rootView;
+	}
+
+
+	private void requestPermissionUpdates(){
+		if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+				!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
+				Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+			ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+
+			return;
+		}
+		mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
+
 	}
 
 	@Override
@@ -466,7 +488,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		sMap = googleMap;
 	}
 
-	@SuppressLint("MissingPermission")
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -475,7 +496,48 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 			populateMap();
 		}
 		if (mLocationManager != null) {
+			if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+					!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+					!= PackageManager.PERMISSION_GRANTED) {
+
+				ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+
+				return;
+			}
 			mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
+		}
+	}
+
+	/**
+	 * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
+	 * @param requestCode
+	 * @param permissions
+	 * @param grantResults
+	 */
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if (requestCode == 10) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+			} else {
+				if (!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+					androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
+					dialog.setTitle("Permission Required");
+					dialog.setCancelable(false);
+					dialog.setMessage("You have to Allow permission to access user location");
+					dialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package",
+									getContext().getPackageName(), null));
+						}
+					});
+					androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
+					alertDialog.show();
+				}
+				//Code for deny if needed
+			}
 		}
 	}
 

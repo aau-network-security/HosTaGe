@@ -135,11 +135,13 @@ public class MyLocationManager implements ActivityCompat.OnRequestPermissionsRes
 			gpsEnabled = locationManager
 					.isProviderEnabled(LocationManager.GPS_PROVIDER);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		try {
 			networkEnabled = locationManager
 					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 
 		// don't start listeners if no provider is enabled
@@ -246,10 +248,9 @@ public class MyLocationManager implements ActivityCompat.OnRequestPermissionsRes
 		// Check whether the new hostage.location fix is more or less accurate
 		int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation
 				.getAccuracy());
-		boolean isMoreAccurate = accuracyDelta < 0;
 
 		// Determine hostage.location quality using a combination of timeliness and
 		// accuracy
-        return isMoreAccurate;
+        return accuracyDelta < 0;
     }
 }
