@@ -305,14 +305,15 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 			private HashMap<String, ArrayList<SSIDArea>> doInBackground() {
 				DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
 				DAOHelper daoHelper = new DAOHelper(dbSession);
-				ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getRecordsForFilter(new LogFilter());
+				LogFilter filter = null;
+				ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter);
 
 				HashMap<String, ArrayList<SSIDArea>> threatAreas
 						= new HashMap<String, ArrayList<SSIDArea>>();
 
 				for (RecordAll record : records) {
 					LatLng location = new LatLng(record.getLatitude(), record.getLongitude());
-					Log.i("hostage.location ", "lat: " + record.getLatitude() + " long: " + record.getLongitude());
+					//Log.i("hostage.location ", "lat: " + record.getLatitude() + " long: " + record.getLongitude());
 					ArrayList<SSIDArea> areas;
 					if (threatAreas.containsKey(record.getSsid())) {
 						areas = threatAreas.get(record.getSsid());

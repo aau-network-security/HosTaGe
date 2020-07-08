@@ -430,10 +430,9 @@ public class AttackRecordDAO extends  DAO {
         ArrayList<MessageRecord> messageRecords =new ArrayList<>();
 
         ArrayList<NetworkRecord> distinctNetworkRecords =  distinctNetworkRecords(filter);
-
         messageRecords = updatedMessageRecordsFields( attackRecords,distinctNetworkRecords,records);
 
-        return sortLists( filter,messageRecords);
+        return sortLists(filter,messageRecords);
     }
 
     public synchronized ArrayList<RecordAll> getRecordsForFilterMutliStage(LogFilter filter){
@@ -518,6 +517,10 @@ public class AttackRecordDAO extends  DAO {
                 record.setBssid(current.getBssid());
                 record.setSsid(current.getSsid());
                 record.setRemoteIP(current.getRemoteIP());
+                record.setTimestampLocation(current.getTimestampLocation());
+                record.setLatitude(current.getLatitude());
+                record.setLongitude(current.getLongitude());
+                record.setAccuracy(current.getAccuracy());
                 updatedAttackRecords.add(record);
             }
         }

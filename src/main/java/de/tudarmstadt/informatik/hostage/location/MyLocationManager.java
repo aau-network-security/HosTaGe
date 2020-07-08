@@ -166,8 +166,6 @@ public class MyLocationManager implements ActivityCompat.OnRequestPermissionsRes
 			locationManager.requestLocationUpdates(
 					LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
-		System.out.println("check");
-
 	}
 
 
