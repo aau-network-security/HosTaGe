@@ -430,19 +430,10 @@ public class  ProfileManager {
 						}
 					}
 				}
-
 				MainActivity.getInstance().startMonitorServices(protocolsToStart);
-                activateMQTTSensorProfile(profile);
 			}
 		}
 	}
-
-	private void activateMQTTSensorProfile(Profile profile) throws Exception {
-	    if(profile.mLabel.equals("MQTT Sensor")) {
-            SensorProfile sensorProfile = new SensorProfile();
-            sensorProfile.startSensor();
-        }
-    }
 
 	/**
 	 * Checks if the "random" profile is currently active

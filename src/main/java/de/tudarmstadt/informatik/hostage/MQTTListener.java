@@ -6,10 +6,13 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
+import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
+import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.SensorProfile;
 
 import static de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler.isTopicPublished;
 
@@ -131,10 +134,12 @@ public class MQTTListener extends Listener {
         brokerThread =  new Thread(new Runnable() {
             @Override
             public void run() {
-                if (ConnectionGuard.portscanInProgress())
-                    return;
-
                 try {
+                    monitorSensorProfile();
+
+                    if (ConnectionGuard.portscanInProgress())
+                        return;
+
                     mutex.acquire();
 
                     if (checkPostScanInProgress())
@@ -158,6 +163,13 @@ public class MQTTListener extends Listener {
 
         return brokerThread;
 
+    }
+
+    private void monitorSensorProfile() throws Exception {
+        if(ProfileManager.getInstance().getCurrentActivatedProfile().mId == 14){
+            SensorProfile sensorProfile = new SensorProfile();
+            sensorProfile.startSensor();
+        }
     }
 
     private boolean checkPostScanInProgress() throws IOException {

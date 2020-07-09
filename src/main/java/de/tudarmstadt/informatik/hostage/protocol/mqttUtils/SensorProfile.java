@@ -20,10 +20,10 @@ public class SensorProfile {
     public void startSensor() throws Exception {
         MQTT mqtt = new MQTT();
         Mqtt3BlockingClient client = mqtt.client(clientId);
-        mqtt.publish(client,"/Temperature",String.valueOf(temperature)+"°C");
-        mqtt.publish(client,"/Humidity",String.valueOf(humidity)+"%");
-
+        mqtt.publish(client, "/Temperature", String.valueOf(temperature) + "°C");
+        mqtt.publish(client, "/Humidity", String.valueOf(humidity) + "%");
     }
+
 
     public static String getClientID(){
         return clientId;
