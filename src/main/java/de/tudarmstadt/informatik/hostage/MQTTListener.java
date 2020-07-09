@@ -145,7 +145,7 @@ public class MQTTListener extends Listener {
                     if (ConnectionGuard.portscanInProgress())
                         return;
 
-                    //isTopicPublished(); //The record wont get updated.
+                    isTopicPublished(); //The record wont get updated.
                     if(MQTTHandler.isAnAttackOngoing()) {
                         startHandler();
                         conReg.newOpenConnection();

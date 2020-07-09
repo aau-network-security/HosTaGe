@@ -364,6 +364,7 @@ public class AttackRecordDAO extends  DAO {
         record.setBssid(existingRecord.getBssid());
         record.setSync_id(existingRecord.getSync_id());
         record.setDevice(existingRecord.getDevice());
+
         return record;
     }
 
@@ -529,7 +530,6 @@ public class AttackRecordDAO extends  DAO {
     }
 
     public ArrayList<AttackRecord> addNetworkFields(ArrayList<AttackRecord> attackRecords,ArrayList<NetworkRecord> networkRecords){
-
         ArrayList<AttackRecord > updatedAttackRecords = new ArrayList<>();
         NetworkRecord current = new NetworkRecord();
 
@@ -641,6 +641,19 @@ public class AttackRecordDAO extends  DAO {
         allRecords.addAll(records);
 
         return allRecords;
+
+    }
+
+    public AttackRecord getMatchingAttackRecord(MessageRecord record){
+        AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
+        QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
+        try {
+            qb.where(AttackRecordDao.Properties.Attack_id.eq(record.getAttack_id()));
+            return qb.list().get(0);
+
+        }catch (Exception e){
+            return new AttackRecord();
+        }
 
     }
 

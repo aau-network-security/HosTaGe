@@ -45,6 +45,8 @@ public class MQTTHandler {
     private static ArrayList<InterceptAcknowledgedMessage> interceptAcknowledgedMessages = new ArrayList<>();
 
     private final static int brokerPort = 1883;
+    private static String packet = "";
+
 
     /**
      * Intercepts all the captured packets from the broker and adds the to the appropriate list.
@@ -170,12 +172,13 @@ public class MQTTHandler {
         if(isAnAttackerConnected){
             if(!currentPublishMessages.isEmpty()) {
                 DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-
                 DAOHelper daoHelper = new DAOHelper(dbSession);
                 MessageRecord record = daoHelper.getMessageRecordDAO().getLastedInsertedRecord();
-                record.setPacket(getPublishedTopics());
-                daoHelper.getMessageRecordDAO().updateRecord(record);
-
+                AttackRecord attackRecord = daoHelper.getAttackRecordDAO().getMatchingAttackRecord(record);
+                if(attackRecord.getProtocol().equals("MQTT")) {//prevents to change packets content accidentally when two simultaneously attacks occur.
+                        record.setPacket(getPublishedTopics());
+                        daoHelper.getMessageRecordDAO().updateRecord(record);
+                    }
                 currentPublishMessages.clear();
             }
         }
@@ -220,19 +223,18 @@ public class MQTTHandler {
     }
 
     private static String getPublishedTopics(){
-        String packet = "";
-
         if(!currentPublishMessages.isEmpty()){
-            InterceptPublishMessage message = currentPublishMessages.get(0);
-                if(message!=null) {
-                    if (message.getClientID().equals(interceptConnectMessages.get(interceptConnectMessages.size()-1).getClientID())) {
-
-                        packet+="TopicName: "+message.getTopicName()+" "+
-                                "Message Clientid: "+message.getClientID()+
+           for(InterceptPublishMessage message:currentPublishMessages) {
+                if (message != null && !message.getClientID().equals(SensorProfile.getClientID())) {
+                    if (message.getClientID().equals(interceptConnectMessages.get(interceptConnectMessages.size() - 1).getClientID())) {
+                        packet += "TopicName: " + message.getTopicName() + " " +
+                                "Message Clientid: " + message.getClientID() +
                                 "/n";
+                        return packet;
+
                     }
                 }
-
+            }
         }
         return packet;
     }

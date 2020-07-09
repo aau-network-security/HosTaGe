@@ -56,7 +56,7 @@ public class MessageRecordDAO extends DAO {
         MessageRecord record = new MessageRecord();
 
         List<MessageRecord> messageRecords = recordDao.queryBuilder()
-                .orderAsc(MessageRecordDao.Properties.Id)
+                .orderDesc(MessageRecordDao.Properties.Id)
                 .limit(1)
                 .list();
         if(!messageRecords.isEmpty()){
