@@ -3,6 +3,8 @@ package de.tudarmstadt.informatik.hostage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -106,7 +108,7 @@ public class MQTTListener extends Listener {
     @Override
     public void stop() { stopMqttBroker();}
 
-    public boolean stopMqttBroker(){
+    public void stopMqttBroker(){
         if(super.getPort() == mqttport) {
             MQTT.brokerStop();
             if(brokerThread!=null)
@@ -114,19 +116,17 @@ public class MQTTListener extends Listener {
             if(thread!=null)
                 thread.interrupt();
             notifyUI(false);
-            return true;
         }
-        return false;
     }
 
-    private void fullHandler() throws IOException {
+    private void fullHandler() throws Exception {
         if (conReg.isConnectionFree()) {
             ExecutorService threadPool = Executors.newFixedThreadPool(1);
 
             Thread brokerThread = brokerThread();
             threadPool.submit(brokerThread);
+            startsMonitoringProfile();
             threadPool.shutdown();
-
         }
     }
 
@@ -135,8 +135,6 @@ public class MQTTListener extends Listener {
             @Override
             public void run() {
                 try {
-                    monitorSensorProfile();
-
                     if (ConnectionGuard.portscanInProgress())
                         return;
 
@@ -150,7 +148,7 @@ public class MQTTListener extends Listener {
                     if (ConnectionGuard.portscanInProgress())
                         return;
 
-                    isTopicPublished(); //The record wont get updated.
+                    isTopicPublished();
                     if(MQTTHandler.isAnAttackOngoing()) {
                         startHandler();
                         conReg.newOpenConnection();
@@ -165,11 +163,33 @@ public class MQTTListener extends Listener {
 
     }
 
-    private void monitorSensorProfile() throws Exception {
+    private void startsMonitoringProfile() throws Exception {
         if(ProfileManager.getInstance().getCurrentActivatedProfile().mId == 14){
-            SensorProfile sensorProfile = new SensorProfile();
-            sensorProfile.startSensor();
+            Timer timer = scheduleMonitorSensorProfile();
+            TimeUnit.SECONDS.sleep(5); //this method is on the loop, so it is necessary to wait until it stops.
+            timer.cancel();
         }
+    }
+
+    private Timer scheduleMonitorSensorProfile(){
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    monitorSensorProfile();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            }, 3000, 4000 );//milliseconds
+
+        return timer;
+    }
+
+    private void monitorSensorProfile() throws Exception {
+        SensorProfile sensorProfile = new SensorProfile();
+        sensorProfile.startSensor();
     }
 
     private boolean checkPostScanInProgress() throws IOException {

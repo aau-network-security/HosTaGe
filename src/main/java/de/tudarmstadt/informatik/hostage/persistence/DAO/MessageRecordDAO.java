@@ -11,7 +11,6 @@ import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecordDao;
 import de.tudarmstadt.informatik.hostage.logging.Record;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
-import io.moquette.logging.LoggingUtils;
 
 
 public class MessageRecordDAO extends DAO {

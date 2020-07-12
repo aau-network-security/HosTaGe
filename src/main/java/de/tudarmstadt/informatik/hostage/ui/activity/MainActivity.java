@@ -246,10 +246,9 @@ public class MainActivity extends AppCompatActivity {
 
 		// sets the static context reference to the application context
 		MainActivity.context = getApplicationContext();
-
 		setContentView(R.layout.activity_drawer_main);
-
 		getLocationData();
+
 		try {
 			mProfileManager = ProfileManager.getInstance();
 		} catch (Exception e) {

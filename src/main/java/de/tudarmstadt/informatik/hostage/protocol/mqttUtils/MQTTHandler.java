@@ -4,8 +4,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.HostageApplication;
@@ -30,16 +33,16 @@ import io.moquette.interception.messages.InterceptUnsubscribeMessage;
 
 public class MQTTHandler {
     private static ArrayList<InterceptPublishMessage> publishMessages = new ArrayList<>();
-    private static   ArrayList<InterceptPublishMessage> currentPublishMessages = new ArrayList<>();
+    private static ArrayList<InterceptPublishMessage> currentPublishMessages = new ArrayList<>();
 
     private static ArrayList<InterceptConnectMessage> interceptConnectMessages = new ArrayList<>();
-    private static   ArrayList<InterceptConnectMessage> currentConnectedMessages = new ArrayList<>();
+    private static ArrayList<InterceptConnectMessage> currentConnectedMessages = new ArrayList<>();
 
     private static ArrayList<InterceptDisconnectMessage> interceptDisconnectMessages = new ArrayList<>();
     private static ArrayList<InterceptConnectionLostMessage> interceptConnectionLostMessages = new ArrayList<>();
 
     private static ArrayList<InterceptSubscribeMessage> interceptSubscribeMessages = new ArrayList<>();
-    private static   ArrayList<InterceptSubscribeMessage> currentSubscribeMessages = new ArrayList<>();
+    private static ArrayList<InterceptSubscribeMessage> currentSubscribeMessages = new ArrayList<>();
 
     private static ArrayList<InterceptUnsubscribeMessage> interceptUnsubscribeMessages = new ArrayList<>();
     private static ArrayList<InterceptAcknowledgedMessage> interceptAcknowledgedMessages = new ArrayList<>();
@@ -49,7 +52,7 @@ public class MQTTHandler {
 
 
     /**
-     * Intercepts all the captured packets from the broker and adds the to the appropriate list.
+     * Intercepts all the captured packets from the broker and adds them to the appropriate list.
      * @return
      */
 
@@ -90,7 +93,7 @@ public class MQTTHandler {
 
             @Override
             public void onPublish(InterceptPublishMessage interceptPublishMessage) {
-                // publishMessages.add(interceptPublishMessage);
+                publishMessages.add(interceptPublishMessage);
                 currentPublishMessages.add(interceptPublishMessage);
 
             }
@@ -142,11 +145,11 @@ public class MQTTHandler {
         return interceptAcknowledgedMessages;
     }
 
-    public static ArrayList<InterceptPublishMessage> getCurrentPublishMessages() {
+    public synchronized static ArrayList<InterceptPublishMessage> getCurrentPublishMessages() {
         return currentPublishMessages;
     }
 
-    public static ArrayList<InterceptConnectMessage> getCurrentConnectedMessages() {
+    public synchronized static ArrayList<InterceptConnectMessage> getCurrentConnectedMessages() {
         return currentConnectedMessages;
     }
 
@@ -159,23 +162,23 @@ public class MQTTHandler {
      * @return
      */
 
-    public static boolean isAnAttackOngoing(){
-        return isAnAttackerConnected(getCurrentConnectedMessages());
+    public synchronized static boolean isAnAttackOngoing(){
+        return isAnAttackerConnected();
     }
 
     /**
      * Checks if a topic is published from an Attacker and updates the record.
      */
-
-    public static void isTopicPublished(){
-        boolean isAnAttackerConnected = isAnAttackerConnected(currentPublishMessages);
-        if(isAnAttackerConnected){
+    public synchronized static void isTopicPublished(){
+       // boolean isAnAttackerConnected = discoverAttack();
+        boolean isMessagePublished = isMessagePublished();
+        if(isMessagePublished){
             if(!currentPublishMessages.isEmpty()) {
                 DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
                 DAOHelper daoHelper = new DAOHelper(dbSession);
                 MessageRecord record = daoHelper.getMessageRecordDAO().getLastedInsertedRecord();
                 AttackRecord attackRecord = daoHelper.getAttackRecordDAO().getMatchingAttackRecord(record);
-                if(attackRecord.getProtocol().equals("MQTT")) {//prevents to change packets content accidentally when two simultaneously attacks occur.
+                if(attackRecord.getProtocol().equals("MQTT")) {//prevents change of packets content when two attacks occur simultaneously.
                         record.setPacket(getPublishedTopics());
                         daoHelper.getMessageRecordDAO().updateRecord(record);
                     }
@@ -185,20 +188,44 @@ public class MQTTHandler {
 
     }
 
-    private static boolean isAnAttackerConnected(ArrayList<?> connectedMessages){
-        Collection<ClientDescriptor> clients = MQTT.listConnectedClients();
+    private synchronized static boolean isMessagePublished(){
+        return discoverPublishedMessages();
+    }
 
-        if(!clients.isEmpty() && !connectedMessages.isEmpty()) {
-            for (ClientDescriptor item : clients) {
+    private synchronized static boolean isAnAttackerConnected(){
+        return discoverOtherClients();
+    }
+
+    private synchronized static boolean discoverOtherClients(){
+        CopyOnWriteArrayList<InterceptConnectMessage> clients = new CopyOnWriteArrayList<> (getCurrentConnectedMessages());
+        if(!clients.isEmpty()) {
+            for (Iterator<InterceptConnectMessage> iterator = clients.iterator(); iterator.hasNext();) {
+                InterceptConnectMessage item = iterator.next();
                 if (item != null) {
-                    if(item.getClientID().equals(SensorProfile.getClientID()) && clients.size()==1)
-                        return false;
+                    if (!item.getClientID().equals(SensorProfile.getClientID())) {
+                        return true;
+                    }
                 }
             }
-            return true;
         }
-        return false;
 
+        return false;
+    }
+
+    private synchronized static boolean discoverPublishedMessages(){
+        CopyOnWriteArrayList<InterceptPublishMessage> clients = new CopyOnWriteArrayList<>(getCurrentPublishMessages());
+        if(!clients.isEmpty()) {
+                for (Iterator<InterceptPublishMessage> iterator = clients.iterator(); iterator.hasNext();) {
+                    InterceptPublishMessage item = iterator.next();
+                    if (item != null) {
+                        if (!item.getClientID().equals(SensorProfile.getClientID())) {
+                            return true;
+                        }
+                    }
+            }
+        }
+
+        return false;
 
     }
 
@@ -206,14 +233,15 @@ public class MQTTHandler {
      * Gets the IP address of the current connected client
      * @return
      */
-    private static String getIPCurrentClient() {
-        Collection<ClientDescriptor> clients = MQTT.listConnectedClients();
+    private synchronized static String getIPCurrentClient() {
+        Collection<ClientDescriptor> clients = Collections.synchronizedCollection(MQTT.listConnectedClients());
+        CopyOnWriteArrayList<InterceptConnectMessage> connectMessages = new CopyOnWriteArrayList<>(getInterceptConnectMessages());
+
         String  ipAddress = "localhost";
-        if(!clients.isEmpty() && !getCurrentConnectedMessages().isEmpty()) {
+        if(!clients.isEmpty() && !connectMessages.isEmpty()) {
             for (ClientDescriptor item : clients) {
-                if(item!=null){
-                    if (item.getClientID().equals(getCurrentConnectedMessages()
-                            .get(currentConnectedMessages.size()-1).getClientID())) { //ArrayList preserves order of inserted items.
+                if(item!=null && !item.getClientID().equals(SensorProfile.getClientID())){
+                    if (connectMessages.stream().anyMatch(o -> o.getClientID().equals(item.getClientID()))) { //ArrayList preserves order of inserted items.
                         ipAddress = item.getAddress();
                     }
                 }
@@ -222,11 +250,14 @@ public class MQTTHandler {
         return ipAddress;
     }
 
-    private static String getPublishedTopics(){
-        if(!currentPublishMessages.isEmpty()){
-           for(InterceptPublishMessage message:currentPublishMessages) {
-                if (message != null && !message.getClientID().equals(SensorProfile.getClientID())) {
-                    if (message.getClientID().equals(interceptConnectMessages.get(interceptConnectMessages.size() - 1).getClientID())) {
+    private synchronized static String getPublishedTopics(){
+        CopyOnWriteArrayList<InterceptPublishMessage> publishMessages = new CopyOnWriteArrayList<>(getCurrentPublishMessages());
+        CopyOnWriteArrayList<InterceptConnectMessage> connectMessages = new CopyOnWriteArrayList<>(getInterceptConnectMessages());
+
+        if(!publishMessages.isEmpty()){
+           for(InterceptPublishMessage message:publishMessages) {
+               if (message != null && !message.getClientID().equals(SensorProfile.getClientID())) {
+                   if (connectMessages.stream().anyMatch(o -> o.getClientID().equals(message.getClientID()))) {
                         packet += "TopicName: " + message.getTopicName() + " " +
                                 "Message Clientid: " + message.getClientID() +
                                 "/n";
@@ -243,15 +274,16 @@ public class MQTTHandler {
      * Gets the port number that the client client connected.
      * @return
      */
-
-    private static int getPortCurrentClient() {
-        Collection<ClientDescriptor> clients = MQTT.listConnectedClients();
+    private synchronized static int getPortCurrentClient() {
+        Collection<ClientDescriptor> clients = Collections.synchronizedCollection(MQTT.listConnectedClients());
+        CopyOnWriteArrayList<InterceptConnectMessage> connectMessages = new CopyOnWriteArrayList<>(getInterceptConnectMessages());
         int  port = 0;
-        if(!clients.isEmpty() && !getCurrentConnectedMessages().isEmpty()) {
-
+        if(!clients.isEmpty() && !connectMessages.isEmpty()) {
             for (ClientDescriptor item : clients) {
-                if (item.getClientID().equals(getCurrentConnectedMessages().get(currentConnectedMessages.size()-1).getClientID())) {
-                    port = item.getPort();
+                if (item != null && !item.getClientID().equals(SensorProfile.getClientID())) {
+                    if (connectMessages.stream().anyMatch(o -> o.getClientID().equals(item.getClientID()))) {
+                        port = item.getPort();
+                    }
                 }
             }
         }
@@ -279,7 +311,7 @@ public class MQTTHandler {
      * @throws UnknownHostException
      */
 
-    public static AttackRecord createAttackRecord(Long attack_id, String externalIP, Protocol protocol,int subnetMask,String BSSID,int internalIPAddress) throws UnknownHostException {
+    public synchronized static AttackRecord createAttackRecord(Long attack_id, String externalIP, Protocol protocol,int subnetMask,String BSSID,int internalIPAddress) throws UnknownHostException {
         AttackRecord record = new AttackRecord();
         String internalIp = HelperUtils.intToStringIp(internalIPAddress);
         String remoteIp = getIPCurrentClient();
@@ -304,7 +336,7 @@ public class MQTTHandler {
         return record;
     }
 
-    private static boolean checkIfIsInternalAttack(int remoteIPAddress,String internalIPAddress){
+    private synchronized static boolean checkIfIsInternalAttack(int remoteIPAddress,String internalIPAddress){
         int prefix = Hostage.prefix;
         SubnetUtils utils = new SubnetUtils(internalIPAddress+"/"+prefix);
         String remoteIP = HelperUtils.intToStringIp(remoteIPAddress);
@@ -318,8 +350,7 @@ public class MQTTHandler {
      * @param attack_id
      * @return
      */
-
-    public static MessageRecord createMessageRecord(MessageRecord.TYPE type, long attack_id) {
+    public synchronized static MessageRecord createMessageRecord(MessageRecord.TYPE type, long attack_id) {
         MessageRecord record = new MessageRecord(true);
         record.setAttack_id(attack_id);
         record.setType(type);
@@ -327,7 +358,5 @@ public class MQTTHandler {
         record.setPacket(getPublishedTopics());
         return record;
     }
-
-
 
 }

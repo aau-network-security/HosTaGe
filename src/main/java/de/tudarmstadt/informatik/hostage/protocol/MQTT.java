@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTConfig;
 import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 import io.moquette.broker.ClientDescriptor;
@@ -25,6 +26,8 @@ import static com.crashlytics.android.Crashlytics.TAG;
 public class MQTT implements Protocol {
 
     private int port = 1883;
+    private String defaultPort="1883";
+    private String defalutAddress="0.0.0.0";
     private static final int brokerPort = 1883;
     private static boolean brokerStarted = false; //prevents the server started multiple times from the threads
    // private static final String MQTT_URI = "broker.mqttdashboard.com";
@@ -108,8 +111,7 @@ public class MQTT implements Protocol {
 
     private void broker(){
         try {
-            MemoryConfig memoryConfig = new MemoryConfig(new Properties());
-            broker.startServer(memoryConfig);
+            broker.startServer(getConfig());
             broker.addInterceptHandler(handler.getHandler());
             Log.d(TAG,"Server Started");
             brokerStarted=true;
@@ -117,6 +119,15 @@ public class MQTT implements Protocol {
         catch (IOException e) { e.printStackTrace();
         brokerStarted= false;
         }
+    }
+
+    /**
+     * Initializes ipAddress and port for the broker.
+     * @return
+     */
+    private MemoryConfig getConfig(){
+        MQTTConfig config = new MQTTConfig(defaultPort,defalutAddress);
+        return config.configBroker();
     }
 
 

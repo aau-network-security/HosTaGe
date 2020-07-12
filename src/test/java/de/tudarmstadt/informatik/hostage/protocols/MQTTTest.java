@@ -40,12 +40,14 @@ public class MQTTTest {
     final int publishCount = 5000;
     static ArrayList<InterceptPublishMessage> messages = new ArrayList<>();
     MemoryConfig memoryConfig = new MemoryConfig(new Properties());
+
     io.moquette.broker.Server server = new io.moquette.broker.Server();
     Mqtt3BlockingClient client;
 
     @Before
     public void setUp() throws IOException {
-
+        memoryConfig.setProperty("host","localhost");
+        memoryConfig.setProperty("port","1884");
         server.startServer(memoryConfig);
 
         server.addInterceptHandler(handler());
@@ -53,7 +55,7 @@ public class MQTTTest {
         client= Mqtt3Client.builder()
                 .identifier(UUID.randomUUID().toString())
                 .serverHost("localhost")
-                .serverPort(1883)
+                .serverPort(1884)
                 .buildBlocking();
 
     }
@@ -94,7 +96,7 @@ public class MQTTTest {
         Mqtt3BlockingClient client = Mqtt3Client.builder()
                 .identifier(UUID.randomUUID().toString())
                 .serverHost("localhost")
-                .serverPort(1883)
+                .serverPort(1884)
                 .buildBlocking();
 
         //client.connectWith().keepAlive(20).send();

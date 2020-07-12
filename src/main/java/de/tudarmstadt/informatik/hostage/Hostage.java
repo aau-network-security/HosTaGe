@@ -39,12 +39,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
-import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
-
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
@@ -72,6 +69,9 @@ public class Hostage extends Service {
 	MultiStageAlarm alarm = new MultiStageAlarm();
 	private DaoSession dbSession;
 	public static int prefix;
+	boolean activeHandlers = false;
+	boolean bssidSeen = false;
+	boolean listening = false;
 
 	public class LocalBinder extends Binder {
 		public Hostage getService() {
@@ -310,12 +310,9 @@ public class Hostage extends Service {
 
 		createNotification();
 		registerNetReceiver();
-		updateConnectionInfo();
 		Device.checkCapabilities();
-
+		updateConnectionInfo();
 	}
-
-
 
 	@Override
 	public void onDestroy() {
@@ -324,8 +321,6 @@ public class Hostage extends Service {
 
 		super.onDestroy();
 	}
-
-
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -544,25 +539,9 @@ public class Hostage extends Service {
 			return; // prevent NullPointerException
 		}
 
-		dbSession = HostageApplication.getInstances().getDaoSession();
+		checkNetworkPreviousInfection();
 
-		AttackRecordDAO attackRecordDAO = new AttackRecordDAO(dbSession);
-		boolean activeHandlers = false;
-		boolean bssidSeen = false;
-		boolean listening = false;
-		for (Listener listener : listeners) {
-			if (listener.isRunning())
-				listening = true;
-			if (listener.getHandlerCount() > 0) {
-				activeHandlers = true;
-			}
-			if (attackRecordDAO.bssidSeen(listener.getProtocolName(), getBSSID(getApplicationContext()))) {
-				bssidSeen = true;
-			}
-		}
-
-
-	PendingIntent resultPendingIntent = intentNotificationGenerator();
+		PendingIntent resultPendingIntent = intentNotificationGenerator();
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			CharSequence name = "Under Attack";
@@ -574,11 +553,8 @@ public class Hostage extends Service {
 
 			mNotificationManager.createNotificationChannel(channel);
 			Notification.Builder notificationBuilder = new Notification.Builder(this,"42");
-
 			notificationBuilder.setContentTitle(getString(R.string.app_name)).setWhen(System.currentTimeMillis());
-
-            notificationIconBuilder( listening, activeHandlers, bssidSeen, notificationBuilder);
-
+            notificationIconBuilder(listening, activeHandlers, bssidSeen, notificationBuilder);
 			notificationBuilder.setContentIntent(resultPendingIntent);
 
 			Notification notification = notificationBuilder.setOngoing(true)
@@ -589,6 +565,23 @@ public class Hostage extends Service {
 		}
 	}
 
+	private void checkNetworkPreviousInfection(){
+		dbSession = HostageApplication.getInstances().getDaoSession();
+		AttackRecordDAO attackRecordDAO = new AttackRecordDAO(dbSession);
+
+		for (Listener listener : listeners) {
+			if (listener.isRunning())
+				listening = true;
+			if (listener.getHandlerCount() > 0) {
+				activeHandlers = true;
+			}
+			if (attackRecordDAO.bssidSeen(listener.getProtocolName(), getBSSID(getApplicationContext()))) {
+				bssidSeen = true;
+			}
+		}
+
+	}
+
 	/**
 	 * Selects the appropriate icon for the notification.
 	 * @param listening listener for protocols
@@ -596,7 +589,6 @@ public class Hostage extends Service {
 	 * @param bssidSeen checks if this bssid is already seen
 	 * @param notificationBuilder builds the notification
 	 */
-
 	private void notificationIconBuilder(boolean listening,boolean activeHandlers,boolean bssidSeen,Notification.Builder notificationBuilder){
 		if (!listening) {
 			notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
@@ -617,9 +609,7 @@ public class Hostage extends Service {
 	 * Generates the intent for the notification.
 	 * @return the pending Intent
 	 */
-
 	private PendingIntent intentNotificationGenerator(){
-
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 		stackBuilder.addParentStack(MainActivity.class);
 
@@ -788,7 +778,6 @@ public class Hostage extends Service {
 	 *
 	 * @see MainActivity #CONNECTION_INFO
 	 */
-
 	public void updateEditor(String ssid, String bssid, int ipAddress, int netmask){
 		SharedPreferences pref = context.getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 

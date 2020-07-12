@@ -216,8 +216,6 @@ public class Listener implements Runnable {
      * running in and notifies the background service.
      */
     public void stop() {
-        if(stopMqttBroker())
-            return;
         try {
             server.close();
             thread.interrupt();
@@ -226,16 +224,6 @@ public class Listener implements Runnable {
             e.printStackTrace();
         }
     }
-
-    public boolean stopMqttBroker(){
-        if(port == mqttport) {
-            MQTT.brokerStop();
-            notifyUI(false);
-            return true;
-        }
-        return false;
-    }
-
 
     /**
      * Waits for an incoming connection, accepts it and starts a {@link Handler}
@@ -253,7 +241,6 @@ public class Listener implements Runnable {
 
     private Thread socketsThread(Socket client){
         socketsThread = new Thread(new Runnable() {
-
             @Override
             public void run() {
                 try {
