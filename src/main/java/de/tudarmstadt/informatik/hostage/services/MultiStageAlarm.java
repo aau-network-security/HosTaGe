@@ -27,8 +27,7 @@ public class MultiStageAlarm extends BroadcastReceiver {
         }
     }
 
-    public void SetAlarm(Context context)
-    {
+    public void SetAlarm(Context context) {
         AlarmManager am =( AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, MultiStageAlarm.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
@@ -36,8 +35,7 @@ public class MultiStageAlarm extends BroadcastReceiver {
 
     }
 
-    public void CancelAlarm(Context context)
-    {
+    public void CancelAlarm(Context context) {
         Intent intent = new Intent(context, MultiStageAlarm.class);
         PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

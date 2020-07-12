@@ -326,24 +326,10 @@ public class Hostage extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
-		startMultiStage();
+		//startMultiStage(); The method moved in PreferenceHostageFragment class along with stopMultiStage().
 
 		return START_STICKY;
 	}
-
-	private void stopMultiStage() {
-		Context context =this;
-		alarm.CancelAlarm(context);
-	}
-
-	private void startMultiStage() {
-        Context context = this;
-        if (alarm != null) {
-            alarm.SetAlarm(context);
-        } else {
-            Toast.makeText(context, "Alarm is null", Toast.LENGTH_SHORT).show();
-        }
-    }
 
 	/**
 	 * Starts the listener for the specified protocol. Creates a new
