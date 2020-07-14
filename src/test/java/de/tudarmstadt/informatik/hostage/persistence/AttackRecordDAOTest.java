@@ -368,7 +368,7 @@ public class AttackRecordDAOTest {
         daoSession.insert(networkRecord);
         daoSession.insert(networkRecordSecond);
 
-        ArrayList<RecordAll> records = attackRecordDAO.getRecordsForFilter(filter,0);
+        ArrayList<RecordAll> records = attackRecordDAO.getRecordsForFilter(filter,0,50);
 
         assertNotNull(records);
         assertEquals(1,records.size());
@@ -383,12 +383,12 @@ public class AttackRecordDAOTest {
 
         LogFilter filter =  attackRecordFilter(smb, http,recordSecond);
 
-        ArrayList<AttackRecord> records = attackRecordDAO.selectionQueryFromFilter(filter,0);
+        ArrayList<AttackRecord> records = attackRecordDAO.selectionQueryFromFilter(filter,0,50);
 
         assertEquals(http,records.get(0).getProtocol());
         assertEquals(smb,records.get(1).getProtocol());
 
-        attackRecordDAO.deleteAttacksByFilter(filter,0);
+        attackRecordDAO.deleteAttacksByFilter(filter,0,50);
 
         assertNull(attackRecordDao.load(record.getAttack_id()));
         assertNull(attackRecordDao.load(recordSecond.getAttack_id()));

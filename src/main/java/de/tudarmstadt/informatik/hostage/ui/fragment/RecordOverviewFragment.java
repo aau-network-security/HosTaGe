@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import de.tudarmstadt.informatik.hostage.Handler;
 import de.tudarmstadt.informatik.hostage.HostageApplication;
@@ -76,8 +77,7 @@ import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 
 
 public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimeDialogFragment.DateTimeDialogFragmentListener {
-
-	static final String FILTER_MENU_TITLE_BSSID = MainActivity.getContext().getString(R.string.BSSID);
+    static final String FILTER_MENU_TITLE_BSSID = MainActivity.getContext().getString(R.string.BSSID);
 	static final String FILTER_MENU_TITLE_ESSID = MainActivity.getContext().getString(R.string.ESSID);
 	static final String FILTER_MENU_TITLE_PROTOCOLS = MainActivity.getContext().getString(R.string.rec_protocol);
 	static final String FILTER_MENU_TITLE_TIMESTAMP_BELOW = MainActivity.getContext().getString(
@@ -98,6 +98,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private LogFilter filter;
     private boolean showFilterButton;
     private View rootView;
+    private View footer;
 
     private int mListPosition = -1;
     private int mItemPosition = -1;
@@ -112,9 +113,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private DaoSession dbSession;
     private DAOHelper daoHelper;
 
-    private static int offset=0;
-    private int limit=50;
-
+    private int offset=0;
+    private int limit=20;
+    private final int realLimit=20;
     private String sectionToOpen = "";
     private ArrayList<Integer> openSections;
     private ProgressBar progressBar;
@@ -163,103 +164,129 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         setHasOptionsMenu(true);
 		getActivity().setTitle(getResources().getString(R.string.drawer_records));
-
-        dbSession = HostageApplication.getInstances().getDaoSession();
-        daoHelper = new DAOHelper(dbSession,getActivity());
-        pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-        if (this.filter == null){
-            Intent intent = this.getActivity().getIntent();
-            LogFilter filter = intent.getParcelableExtra(LogFilter.LOG_FILTER_INTENT_KEY);
-
-            if(filter == null){
-                this.clearFilter();
-            } else {
-                this.filter = filter;
-            }
-        }
-
-        if (this.groupingKey == null) this.groupingKey = this.groupingTitles().get(DEFAULT_GROUPING_KEY_INDEX);
-
-	    this.setShowFilterButton(!this.filter.isNotEditable());
-
-		View rootView = inflater.inflate(this.getLayoutId(), container, false);
-        this.rootView = rootView;
-        mylist = rootView.findViewById(R.id.loglistview);
-
-        this.spinner = rootView.findViewById(R.id.progressBar1);
-        this.spinner.setVisibility(View.GONE);
-
-		this.expListView = mylist;
-
-        this.initialiseListView();
-
-
-        ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                RecordOverviewFragment.this.openDeleteFilteredAttacksDialog();
-            }
-        });
-        deleteButton.setVisibility(this.showFilterButton? View.VISIBLE : View.INVISIBLE);
-
-        ImageButton filterButton = rootView.findViewById(R.id.FilterButton);
-        filterButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            	RecordOverviewFragment.this.openFilterPopupMenuOnView(v);
-            }
-        });
-        filterButton.setVisibility(this.showFilterButton? View.VISIBLE : View.INVISIBLE);
-
-
-        ImageButton sortButton = rootView.findViewById(R.id.SortButton);
-        sortButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Open SortMenu
-                RecordOverviewFragment.this.openSortingDialog();
-            }
-        });
-
-        ImageButton groupButton = rootView.findViewById(R.id.GroupButton);
-        groupButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Open SortMenu
-                RecordOverviewFragment.this.openGroupingDialog();
-            }
-        });
-
+        setUpDatabase();
+        getFilter();
+        initializeViews(inflater,container);
+        addButtons();
         this.registerBroadcastReceiver();
 
 		return rootView;
 	 }
 
 
+	 private void setUpDatabase(){
+         dbSession = HostageApplication.getInstances().getDaoSession();
+         daoHelper = new DAOHelper(dbSession,getActivity());
+         pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+     }
+
+     private void getFilter(){
+         if (this.filter == null){
+             Intent intent = this.getActivity().getIntent();
+             LogFilter filter = intent.getParcelableExtra(LogFilter.LOG_FILTER_INTENT_KEY);
+
+             if(filter == null){
+                 this.clearFilter();
+             } else {
+                 this.filter = filter;
+             }
+         }
+
+     }
+
+     private void addButtons(){
+        addDeleteButton();
+        addFilterButton();
+        addSortButton();
+        addGroupButton();
+     }
+
+     private void addDeleteButton(){
+         ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
+         deleteButton.setOnClickListener(v -> RecordOverviewFragment.this.openDeleteFilteredAttacksDialog());
+         deleteButton.setVisibility(this.showFilterButton? View.VISIBLE : View.INVISIBLE);
+     }
+
+     private void addFilterButton(){
+         ImageButton filterButton = rootView.findViewById(R.id.FilterButton);
+         filterButton.setOnClickListener(RecordOverviewFragment.this::openFilterPopupMenuOnView);
+         filterButton.setVisibility(this.showFilterButton? View.VISIBLE : View.INVISIBLE);
+     }
+
+     private void addSortButton(){
+         ImageButton sortButton = rootView.findViewById(R.id.SortButton);
+         sortButton.setOnClickListener(v -> {
+             // Open SortMenu
+             RecordOverviewFragment.this.openSortingDialog();
+         });
+     }
+
+     private void addGroupButton(){
+         ImageButton groupButton = rootView.findViewById(R.id.GroupButton);
+         groupButton.setOnClickListener(v -> {
+             // Open SortMenu
+             RecordOverviewFragment.this.openGroupingDialog();
+         });
+     }
+
+     private void initializeViews(LayoutInflater inflater, ViewGroup container){
+         if (this.groupingKey == null) this.groupingKey = this.groupingTitles().get(DEFAULT_GROUPING_KEY_INDEX);
+
+         this.setShowFilterButton(!this.filter.isNotEditable());
+
+         View rootView = inflater.inflate(this.getLayoutId(), container, false);
+         this.rootView = rootView;
+         mylist = rootView.findViewById(R.id.loglistview);
+         this.footer = LayoutInflater.from(getApplicationContext()).inflate(R.layout.footer_listview_progressbar, null);
+         this.progressBar = footer.findViewById(R.id.progressBar);
+         this.spinner = rootView.findViewById(R.id.progressBar1);
+         this.spinner.setVisibility(View.GONE);
+
+         this.expListView = mylist;
+         this.initialiseListView();
+         setListOnScrollListener();
+
+     }
+
+    /**
+     * Loads the data when the user scrolls the list.
+     */
     private void setListOnScrollListener(){
-
         expListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            boolean manualScroll;
-
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if(scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
-                        data.size())
+                        data.size()) {
                     populateListGradually();
-
+                    actualiseListViewInBackground();
+                    scrollOnTheBottom();
                 }
+            }
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) { }
 
-        }
-
-        );
+        });
     }
 
+    /**
+     * Goes to the bottom of the list when reloads.
+     */
+    private void scrollOnTheBottom(){
+        expListView.setStackFromBottom(true);
+        expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_NORMAL);
+    }
 
     private void setListViewFooter(){
-        View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.footer_listview_progressbar, null);
-        progressBar = view.findViewById(R.id.progressBar);
         expListView.addFooterView(progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void removeListViewFooter(){
+        progressBar.setVisibility(View.GONE);
+        expListView.removeFooterView(progressBar);
     }
 
     /**Initialises the expandable list view in a backgorund thread*/
@@ -268,7 +295,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if (this.openSections == null) this.openSections = new ArrayList<Integer>();
 
         this.spinner.setVisibility(View.VISIBLE);
-
         loader = new Thread(new Runnable(){
 
             private void updateUI(final RecordListAdapter currentAdapter)
@@ -280,45 +306,22 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 if (getActivity() != null){
                     Activity activity = RecordOverviewFragment.this.getActivity();
 
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            RecordOverviewFragment.this.expListView.setAdapter(currentAdapter);
-                            // Update view and remove loading spinner etc...
-                            RecordListAdapter adapter = (RecordListAdapter) RecordOverviewFragment.this.expListView.getExpandableListAdapter();
+                    activity.runOnUiThread(() -> {
+                        RecordOverviewFragment.this.expListView.setAdapter(currentAdapter);
+                        // Update view and remove loading spinner etc...
+                        getExpandableListGroups();
+                        expandGroupSection();
 
-                            if (adapter != null){
-                                adapter.notifyDataSetChanged();
 
-                                if (adapter.getGroupCount() >= 1){
-                                    RecordOverviewFragment.this.expListView.expandGroup(DEFAULT_GROUPING_KEY_INDEX);
-                                    if (!RecordOverviewFragment.this.openSections.contains(DEFAULT_GROUPING_KEY_INDEX)){
-                                        RecordOverviewFragment.this.openSections.add(DEFAULT_GROUPING_KEY_INDEX);
-                                    }
-                                } else {
-                                    RecordOverviewFragment.this.setSectionToOpen(RecordOverviewFragment.this.sectionToOpen);
-                                }
-                            }
+                        if (mListPosition != -1 && mItemPosition != -1)
+                            RecordOverviewFragment.this.expListView.setSelectedChild(mListPosition, mItemPosition, true);
 
-                            if (RecordOverviewFragment.this.openSections != null && RecordOverviewFragment.this.openSections.size() != 0){
-                                for (int i = 0; i < RecordOverviewFragment.this.openSections.size(); i++){
-                                    int index = RecordOverviewFragment.this.openSections.get(i);
-                                    RecordOverviewFragment.this.expListView.expandGroup(index);
-                                }
-                            } else {
-                                RecordOverviewFragment.this.openSections = new ArrayList<Integer>();
-                            }
-
-                            if (mListPosition != -1 && mItemPosition != -1)
-                                RecordOverviewFragment.this.expListView.setSelectedChild(mListPosition, mItemPosition, true);
-
-                            mListPosition = -1;
-                            mItemPosition = -1;
-                            registerListClickCallback(RecordOverviewFragment.this.expListView);
-                            RecordOverviewFragment.this.spinner.setVisibility(View.GONE);
-                            RecordOverviewFragment.this.actualiseFilterButton();
-                            RecordOverviewFragment.this.showEmptyDataNotification();
-                        }
+                        mListPosition = -1;
+                        mItemPosition = -1;
+                        registerListClickCallback(RecordOverviewFragment.this.expListView);
+                        RecordOverviewFragment.this.spinner.setVisibility(View.GONE);
+                        RecordOverviewFragment.this.actualiseFilterButton();
+                        RecordOverviewFragment.this.showEmptyDataNotification();
                     });
                 }
             }
@@ -341,6 +344,35 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         this.actualiseFilterButton();
     }
 
+    private void getExpandableListGroups(){
+        RecordListAdapter adapter = (RecordListAdapter) RecordOverviewFragment.this.expListView.getExpandableListAdapter();
+
+        if (adapter != null){
+            adapter.notifyDataSetChanged();
+
+            if (adapter.getGroupCount() >= 1){
+                RecordOverviewFragment.this.expListView.expandGroup(DEFAULT_GROUPING_KEY_INDEX);
+                if (!RecordOverviewFragment.this.openSections.contains(DEFAULT_GROUPING_KEY_INDEX)){
+                    RecordOverviewFragment.this.openSections.add(DEFAULT_GROUPING_KEY_INDEX);
+                }
+            } else {
+                RecordOverviewFragment.this.setSectionToOpen(RecordOverviewFragment.this.sectionToOpen);
+            }
+        }
+
+    }
+
+    private void expandGroupSection(){
+        if (RecordOverviewFragment.this.openSections != null && RecordOverviewFragment.this.openSections.size() != 0){
+            for (int i = 0; i < RecordOverviewFragment.this.openSections.size(); i++){
+                int index = RecordOverviewFragment.this.openSections.get(i);
+                RecordOverviewFragment.this.expListView.expandGroup(index);
+            }
+        } else {
+            RecordOverviewFragment.this.openSections = new ArrayList<Integer>();
+        }
+
+    }
 
     /**
     *  Returns the Fragment layout ID
@@ -574,15 +606,21 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         return adapter;
 	}
 
+    /**
+     * Offset(int): Sets the offset for query results in combination with limit(int).
+     * The first offset results are skipped and the total number of results will be limited by limit(int)
+     *
+     * limit(int): Limits the number of results returned by the query.
+     * The recordSize is the number of message records.
+     *
+     * In this method we increase the limit and the offset every time the user scrolls the list.
+     */
 	private void populateListGradually(){
         int recordsSize = daoHelper.getMessageRecordDAO().getRecordCount();
         if(offset+limit<recordsSize-1) {
-            offset+=limit;
-            data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter, offset);
-            progressBar.setVisibility(View.GONE);
+            limit+=realLimit;
+            offset+=realLimit;
         }
-
-        actualiseListViewInBackground(); //check
     }
 
     private HashMap<String, ArrayList<ExpandableListItem>> fetchDataForFilter(LogFilter filter, ArrayList<String> groupTitle){
@@ -590,7 +628,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         // Adding Items to ListView
         String[] keys = new String[] { RecordOverviewFragment.this.getString(R.string.RecordBSSID), RecordOverviewFragment.this.getString(R.string.RecordSSID), RecordOverviewFragment.this.getString(R.string.RecordProtocol), RecordOverviewFragment.this.getString(R.string.RecordTimestamp)};
         int[] ids = new int[] {R.id.RecordTextFieldBSSID, R.id.RecordTextFieldSSID, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp };
-        data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter);
+
+        data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter,offset,limit);
 
         HashMap<String, Integer> mapping = new HashMap<String, Integer>();
         int i = 0;
@@ -604,7 +643,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         } else {
             groupTitle.clear();
         }
-
 
         for (RecordAll val : data) {
             // DO GROUPING IN HERE
@@ -631,32 +669,26 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 groupTitle.add(groupID);
             }
 
-
             items.add(item);
         }
 
+
         if (this.groupingKey.equals(this.groupingTitles().get(DEFAULT_GROUPING_KEY_INDEX))){
-            Collections.sort(groupTitle,new DateStringComparator());
+            Collections.sort(groupTitle, Collections.reverseOrder(new DateStringComparator()));
         } else {
-            Collections.sort(groupTitle, new Comparator<String>() {
-                @Override
-                public int compare(String s1, String s2) {
-                    return s1.compareToIgnoreCase(s2);
-                }
-            });
+            Collections.sort(groupTitle, Collections.reverseOrder(String::compareToIgnoreCase));
         }
 
         return sectionData;
     }
 
+
     /**
      * The DateStringComparator compares formatted date strings by converting the into date.
      * This class  is mainly used for grouping the records by their timestamp.
      */
-    class DateStringComparator implements Comparator<String>
-    {
-        public int compare(String lhs, String rhs)
-        {
+    class DateStringComparator implements Comparator<String> {
+        public int compare(String lhs, String rhs) {
             Date date1 = RecordOverviewFragment.this.convertStringToDate(lhs);
             Date date2 = RecordOverviewFragment.this.convertStringToDate(rhs);
 
@@ -687,10 +719,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      */
     private void actualiseListViewInBackground(){
         if (loader != null && loader.isAlive()) loader.interrupt();
-
         loader = null;
-
-        this.spinner.setVisibility(View.VISIBLE);
+        setListViewFooter();
         this.actualiseFilterButton();
 
         loader = new Thread(new Runnable() {
@@ -716,13 +746,17 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                             if (adapter != null){
                                 self.expListView.setAdapter(adapter);
                                 adapter.notifyDataSetChanged();
-                                self.spinner.setVisibility(View.GONE);
+                                removeListViewFooter();
                             }
                             self.showEmptyDataNotification();
                             if (self.openSections != null && self.expListView != null){
                                 for (int i = 0; i < self.openSections.size(); i++){
                                     int index = self.openSections.get(i);
-                                    self.expListView.expandGroup(index);
+                                    try {
+                                        self.expListView.expandGroup(index);
+                                    }catch (IndexOutOfBoundsException e){
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
                         }
@@ -791,34 +825,29 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * @param mylist  {@link ExpandableListView ExpandableListView }
     * */
 	private void registerListClickCallback(ExpandableListView mylist) {
-        mylist.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i2, long l) {
-                RecordListAdapter adapter = (RecordListAdapter)expandableListView.getExpandableListAdapter();
+        mylist.setOnChildClickListener((expandableListView, view, i, i2, l) -> {
+            RecordListAdapter adapter = (RecordListAdapter)expandableListView.getExpandableListAdapter();
 
-                ExpandableListItem item = (ExpandableListItem)adapter.getChild(i,i2);
+            ExpandableListItem item = (ExpandableListItem)adapter.getChild(i,i2);
 
-                mListPosition = i;
-                mItemPosition = i2;
-                DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-                DAOHelper daoHelper = new DAOHelper(dbSession,getActivity());
-                RecordAll rec = daoHelper.getAttackRecordDAO().getRecordOfAttackId((int) item.getTag());
-                RecordOverviewFragment.this.pushRecordDetailViewForRecord(rec);
-                return true;
+            mListPosition = i;
+            mItemPosition = i2;
+            DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+            DAOHelper daoHelper = new DAOHelper(dbSession,getActivity());
+            RecordAll rec = daoHelper.getAttackRecordDAO().getRecordOfAttackId((int) item.getTag());
+            RecordOverviewFragment.this.pushRecordDetailViewForRecord(rec);
+            return true;
+        });
+        mylist.setOnGroupExpandListener(i -> {
+            if (!RecordOverviewFragment.this.openSections.contains(i)){
+                RecordOverviewFragment.this.openSections.add(i);
             }
         });
-        mylist.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-            @Override
-            public void onGroupExpand(int i) {
-                if (!RecordOverviewFragment.this.openSections.contains(i)){
-                    RecordOverviewFragment.this.openSections.add(i);
-                }
-            }
-        });
-        mylist.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-            @Override
-            public void onGroupCollapse(int i) {
+        mylist.setOnGroupCollapseListener(i -> {
+            try {
                 RecordOverviewFragment.this.openSections.remove(i);
+            }catch (IndexOutOfBoundsException e){
+                e.printStackTrace();
             }
         });
 	}
@@ -834,7 +863,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
     /**Returns the localised date format for the given timestamp
     * @param timeStamp long */
-	@SuppressLint("SimpleDateFormat")
 	private String getDateAsString(long timeStamp) {
         Date date = (new Date(timeStamp));
         try {
@@ -871,7 +899,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     /**Returns a date as a formated string
      * @param timestamp date
      * @return String date format is localised*/
-    @SuppressLint("SimpleDateFormat")
     private String getDateAsDayString(long timestamp) {
         try {
             Date netDate = (new Date(timestamp));
@@ -989,7 +1016,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     /**Returns a date as a formated string
      * @param timeStamp date
      * @return String date format is localised*/
-    @SuppressLint("SimpleDateFormat")
     private String getDateAsMonthString(long timeStamp) {
         try {
             Date netDate = (new Date(timeStamp));
@@ -1090,7 +1116,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      *
      * ***************************/
 
-    /**returns the group title for the given record. Uses the groupingKey to decied which value of the record should be used.
+    /**returns the group title for the given record. Uses the groupingKey to decided which value of the record should be used.
     * @param  rec {@link Record Record }
     * @return String grouptitle*/
     public String getGroupValue(RecordAll rec){
@@ -1102,8 +1128,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 return rec.getSsid();
             case 3:
                 return rec.getBssid();
-            case 0:
-                return this.getFormattedDateForGrouping(rec.getTimestamp());
             default:
                 return this.getFormattedDateForGrouping(rec.getTimestamp());
         }
@@ -1464,7 +1488,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      */
     public void deleteFilteredAttacks(){
         LogFilter filter = this.filter;
-        daoHelper.getAttackRecordDAO().deleteAttacksByFilter(filter,offset);
+        daoHelper.getAttackRecordDAO().deleteAttacksByFilter(filter);
         this.actualiseListViewInBackground();
     }
 
@@ -1475,134 +1499,16 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 	public void onDialogNegativeClick(ChecklistDialog dialog) {}
 
 
-	/*****************************
-	 *
-	 *          TEST
-	 *
-	 * ***************************/
-
-    /**
-    * This will clear the database at first and than add new attacks.
-    * @param createNetworks number of networks to create
-    * @param attacksPerNetwork maximal number of attack per network
-    * @param maxMessagePerAttack maximal number of messages per attack
-    * */
-	private void addRecordToDB( int createNetworks, int attacksPerNetwork, int maxMessagePerAttack) {
-        if ((daoHelper.getMessageRecordDAO().getRecordCount() > 0)) daoHelper.getAttackRecordDAO().clearData();
-
-		Calendar cal = Calendar.getInstance();
-
-		int maxProtocolsIndex = this.getResources().getStringArray(
-				R.array.protocols).length;
-
-		Random random = new Random();
-
-		LatLng tudarmstadtLoc = new LatLng(49.86923, 8.6632768);
-
-
-		final double ssidRadius = 0.1;
-		final double bssidRadius = 0.004;
-
-        int attackId = 0;
-
-
-        ArrayList<NetworkRecord> networkRecords = new ArrayList<NetworkRecord>();
-        ArrayList<AttackRecord> attackRecords = new ArrayList<AttackRecord>();
-        ArrayList<MessageRecord> messageRecords = new ArrayList<MessageRecord>();
-
-
-        for (int numOfNetworks = 0; numOfNetworks < createNetworks; numOfNetworks++){
-            String ssidName = "WiFi" + ((numOfNetworks) + 1);
-            String bssidName = "127.0.0." + ((numOfNetworks) + 1);
-
-            int protocolIndex = numOfNetworks % maxProtocolsIndex;
-            String protocolName = this.getResources().getStringArray(
-                    R.array.protocols)[protocolIndex];
-
-            int numOfAttackPerNetwork = (Math.abs(random.nextInt()) % Math.max(1, attacksPerNetwork + 1));
-
-            NetworkRecord network = new NetworkRecord();
-            network.setBssid(bssidName);
-            network.setSsid(ssidName);
-
-            LatLng ssidLocation = new LatLng(tudarmstadtLoc.latitude - ssidRadius + 2.0 * ssidRadius * Math.random(), tudarmstadtLoc.longitude - ssidRadius + 2.0 * ssidRadius * Math.random());
-            double latitude = ssidLocation.latitude - bssidRadius + 2.0 * bssidRadius * Math.random();
-            double longitude = ssidLocation.longitude - bssidRadius + 2.0 * bssidRadius * Math.random();
-
-            long timestamp = cal.getTimeInMillis();
-            network.setTimestampLocation(timestamp);
-            network.setLongitude(longitude);
-            network.setLatitude(latitude);
-            network.setAccuracy(0.f);
-
-            //dbh.updateNetworkInformation(network);
-            networkRecords.add(network);
-
-            // ATTACKS PER NETWORK
-            for (int attackNumber = 0; attackNumber < numOfAttackPerNetwork; attackNumber++) {
-
-                int numRecordsPerAttack = (Math.abs(random.nextInt()) % (Math.max( maxMessagePerAttack, 1))) + 1;
-
-                if (maxMessagePerAttack <= 0) numRecordsPerAttack = 0;
-
-                /* ADD A ATTACK*/
-                AttackRecord attack = new AttackRecord(true);
-
-                attack.setBssid(bssidName);
-
-                attack.setProtocol(protocolName);
-                attack.setLocalIP(bssidName);
-
-
-                //dbh.addAttackRecord(attack);
-                attackRecords.add(attack);
-
-                // MESSAGE PER ATTACK
-                for (int messageID = attackId; messageID < attackId + numRecordsPerAttack; messageID++) {
-                    MessageRecord message = new MessageRecord(true);
-                    //message.setId(messageID);
-                    message.setAttack_id(attack.getAttack_id());
-
-                    // GO BACK IN TIME
-                    message.setTimestamp(cal.getTimeInMillis()
-                            - ((messageID * 60 * 60 * 24) * 1000) + (1000 * ((messageID - attackId) + 1)));
-
-                    if ((messageID - attackId) % 2 == 0){
-                        message.setType(MessageRecord.TYPE.RECEIVE);
-                    } else {
-                        message.setType(MessageRecord.TYPE.SEND);
-                    }
-                    message.setPacket("");
-
-                    //dbh.addMessageRecord(message);
-                    messageRecords.add(message);
-                }
-
-                attackId+=numRecordsPerAttack;
-            }
-
-        }
-
-        daoHelper.getNetworkRecordDAO().updateNetworkInformation(networkRecords);
-        daoHelper.getAttackRecordDAO().insertAttackRecords(attackRecords);
-        daoHelper.getMessageRecordDAO().insertMessageRecords(messageRecords);
-
-    }
-
-
     /**Navigation. Shows the record detail view for the given record
     * @param  record  {@link Record Record } to show
     * */
     private void pushRecordDetailViewForRecord(RecordAll record){
-
         FragmentManager fm = this.getActivity().getFragmentManager();
 
         if (fm != null){
             RecordDetailFragment newFragment = new RecordDetailFragment();
             newFragment.setRecord(record);
-
             newFragment.setUpNavigatible(true);
-
             MainActivity.getInstance().injectFragment(newFragment);
 
         }

@@ -191,7 +191,7 @@ public class NetworkRecordDAOTest {
         daoSession.insert(record);
         daoSession.insert(networkRecord);
 
-        ArrayList<NetworkRecord> records = networkRecorDAO.selectionBSSIDFromFilter(filter,0);
+        ArrayList<NetworkRecord> records = networkRecorDAO.selectionBSSIDFromFilter(filter,0,50);
 
         assertEquals(filter1,records.get(0).getBssid());
         assertEquals(filter2,records.get(1).getBssid());
@@ -220,7 +220,7 @@ public class NetworkRecordDAOTest {
         daoSession.insert(record);
         daoSession.insert(networkRecord);
 
-        ArrayList<NetworkRecord> records = networkRecorDAO.selectionESSIDFromFilter(filter,0);
+        ArrayList<NetworkRecord> records = networkRecorDAO.selectionESSIDFromFilter(filter,0,50);
 
         assertEquals(filter1,records.get(0).getSsid());
         assertEquals(filter2,records.get(1).getSsid());
@@ -335,7 +335,6 @@ public class NetworkRecordDAOTest {
         attackRecord.setBssid(bssid);
         record.setBssid(bssid);
         record.setPacket(packet);
-        //attackRecord.setRecord(record); //not necessary
 
         daoSession.insert(attackRecord);
         daoSession.insert(record);

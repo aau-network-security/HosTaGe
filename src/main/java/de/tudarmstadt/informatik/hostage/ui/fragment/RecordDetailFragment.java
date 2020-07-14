@@ -59,8 +59,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	 */
 	private DaoSession dbSession;
 	private DAOHelper daoHelper;
-	//public HostageDBOpenHelper mDBOpenHelper;
-
 	/**
 	 * The layout inflater
 	 */
@@ -80,8 +78,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 	public SharedPreferences pref;
 	public int port;
-	public StringBuilder portArray;
-
 	/**
 	 * Sets the record of which the details should be displayed
 	 * @param rec the record to be used
@@ -127,7 +123,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		if(mRecord!=null)
 			getActivity().setTitle(mRecord.getSsid());
 
-		//this.mDBOpenHelper = new HostageDBOpenHelper(this.getActivity().getBaseContext());
 		dbSession = HostageApplication.getInstances().getDaoSession();
 		daoHelper = new DAOHelper(dbSession,getActivity());
 
@@ -333,8 +328,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	//Signature generation
 
 	private void getConversation() throws IOException {
-
-
 		ArrayList<RecordAll> conversation = this.daoHelper.getAttackRecordDAO().getConversationForAttackID(mRecord.getAttack_id());
 		for (RecordAll r : conversation) {
 

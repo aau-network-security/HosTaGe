@@ -6,19 +6,13 @@ package de.tudarmstadt.informatik.hostage.services;
  * Bean class to store objects of multistage attack
  */
 public class Stackbean {
-
-
     private String remoteip;
-
     private String localip;
     private String protocol;
     private int remoteport;
     private int localport;
-
     private String BSSID;
     private String SSID;
-
-
 
     public int getRemotePort() {
         return remoteport;

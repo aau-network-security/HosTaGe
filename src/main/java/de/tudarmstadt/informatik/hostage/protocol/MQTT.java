@@ -27,9 +27,9 @@ public class MQTT implements Protocol {
 
     private int port = 1883;
     private String defaultPort="1883";
-    private String defalutAddress="0.0.0.0";
+    private String defaultAddress="0.0.0.0";
     private static final int brokerPort = 1883;
-    private static boolean brokerStarted = false; //prevents the server started multiple times from the threads
+    private static boolean brokerStarted = false; //prevents the server from starting multiple times from the threads
    // private static final String MQTT_URI = "broker.mqttdashboard.com";
     private static final String MQTT_URI = "localhost";
     private static final io.moquette.broker.Server broker = new io.moquette.broker.Server();
@@ -38,7 +38,6 @@ public class MQTT implements Protocol {
     public MQTT() throws Exception {
         if(!brokerStarted)
             broker();
-        //publish(client(),"de.tudarmstadt.informatik.hostage.test/topic","payload");
     }
 
 
@@ -126,7 +125,7 @@ public class MQTT implements Protocol {
      * @return
      */
     private MemoryConfig getConfig(){
-        MQTTConfig config = new MQTTConfig(defaultPort,defalutAddress);
+        MQTTConfig config = new MQTTConfig(defaultPort,defaultAddress);
         return config.configBroker();
     }
 

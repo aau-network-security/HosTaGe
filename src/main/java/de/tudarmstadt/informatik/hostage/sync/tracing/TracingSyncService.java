@@ -110,7 +110,7 @@ public class TracingSyncService extends IntentService {
         LogFilter filter = new LogFilter();
         filter.setAboveTimestamp(lastSyncTime);
         //int recordsSize = daoHelper.getMessageRecordDAO().getRecordCount();
-        records = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter, offset);
+        records = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter, offset,limit);
 
         StringWriter writer = new StringWriter();
 
