@@ -1,6 +1,5 @@
 package de.tudarmstadt.informatik.hostage.ui.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -28,10 +27,6 @@ import android.widget.Toast;
 
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import com.google.android.gms.maps.model.LatLng;
-
-import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,21 +37,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 import de.tudarmstadt.informatik.hostage.Handler;
 import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
-import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.LogExport;
-import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
-import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.Record;
 import de.tudarmstadt.informatik.hostage.logging.RecordAll;
-import de.tudarmstadt.informatik.hostage.logging.SyncData;
-import de.tudarmstadt.informatik.hostage.logging.SyncInfo;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.sync.android.SyncUtils;
 import de.tudarmstadt.informatik.hostage.sync.bluetooth.BluetoothSyncActivity;
@@ -72,8 +60,6 @@ import de.tudarmstadt.informatik.hostage.ui.popup.AbstractPopupItem;
 import de.tudarmstadt.informatik.hostage.ui.popup.SimplePopupItem;
 import de.tudarmstadt.informatik.hostage.ui.popup.SimplePopupTable;
 import de.tudarmstadt.informatik.hostage.ui.popup.SplitPopupItem;
-
-import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 
 
 public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimeDialogFragment.DateTimeDialogFragmentListener {

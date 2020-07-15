@@ -1,8 +1,5 @@
 package de.tudarmstadt.informatik.hostage.persistence.DAO;
 
-import android.os.Build;
-
-
 import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.ArrayList;
@@ -289,7 +286,7 @@ public synchronized ArrayList<String> getUniqueESSIDRecords() {
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
 
         ArrayList<String> essids= new ArrayList<>();
-        networkRecords.stream().filter(o -> essids.add(o.getSsid()));
+        networkRecords.stream().filter(o -> essids.add(o.getSsid())).collect(Collectors.toList());
         ArrayList<String> distinctEssids = (ArrayList<String>) essids.stream().distinct().collect(Collectors.toList());
 
         return  distinctEssids;
@@ -305,7 +302,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecords() {
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
 
         ArrayList<String> bssids= new ArrayList<>();
-        networkRecords.stream().filter(o -> bssids.add(o.getBssid()));
+        networkRecords.stream().filter(o -> bssids.add(o.getBssid())).collect(Collectors.toList());
         ArrayList<String> distinctBssids = (ArrayList<String>) bssids.stream().distinct().collect(Collectors.toList());
 
         return  distinctBssids;
@@ -320,7 +317,7 @@ public synchronized ArrayList<String> getUniqueESSIDRecordsForProtocol(String pr
         filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord())).collect(Collectors.toList());
 
         ArrayList<String> essids= new ArrayList<>();
-        filterNetworkRecords.stream().filter(o -> essids.add(o.getSsid()));
+        filterNetworkRecords.stream().filter(o -> essids.add(o.getSsid())).collect(Collectors.toList());
         ArrayList<String> distinctEssids = (ArrayList<String>) essids.stream().distinct().collect(Collectors.toList());
 
 
@@ -331,12 +328,11 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);
         ArrayList<AttackRecord> filteredAttackRecords = attackRecordDAO.getAttacksPerProtocol(protocol);
 
-
         ArrayList<NetworkRecord> filterNetworkRecords=  new ArrayList<>();
         filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord())).collect(Collectors.toList());
 
         ArrayList<String> bssids = new ArrayList<>();
-        filterNetworkRecords.stream().filter(o -> bssids.add(o.getBssid()));
+        filterNetworkRecords.stream().filter(o -> bssids.add(o.getBssid())).collect(Collectors.toList());
         ArrayList<String> distinctBssids = (ArrayList<String>) bssids.stream().distinct().collect(Collectors.toList());
 
 
@@ -360,7 +356,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
         ArrayList<AttackRecord> filteredAttackRecords = attackRecordDAO.selectionQueryFromFilter(filter);
 
         ArrayList<NetworkRecord> filterNetworkRecords=  new ArrayList<>();
-        filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord()));
+        filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord())).collect(Collectors.toList());
 
 
         return  addPlotComparison(plots,filterNetworkRecords);
@@ -376,7 +372,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
         ArrayList<AttackRecord> filteredAttackRecords = attackRecordDAO.selectionQueryFromFilter(filter,offset,limit);
 
         ArrayList<NetworkRecord> filterNetworkRecords=  new ArrayList<>();
-        filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord()));
+        filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord())).collect(Collectors.toList());;
 
 
         return  addPlotComparison(plots,filterNetworkRecords);
@@ -398,7 +394,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
             return  addPlotComparison(plots,this.getNetworkRecords());
 
         ArrayList<NetworkRecord> filterNetworkRecords=  new ArrayList<>();
-        filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord()));
+        filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord())).collect(Collectors.toList());;
 
         return  addPlotComparisonEssid(plots,filterNetworkRecords);
     }
@@ -413,7 +409,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
             return  addPlotComparison(plots,this.getNetworkRecords());
 
         ArrayList<NetworkRecord> filterNetworkRecords=  new ArrayList<>();
-        filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord()));
+        filteredAttackRecords.stream().filter(o -> filterNetworkRecords.add(o.getRecord())).collect(Collectors.toList());;
 
         return  addPlotComparisonEssid(plots,filterNetworkRecords);
     }
@@ -461,13 +457,6 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
         return attacks;
 
     }
-
-//    public ArrayList<NetworkRecord> queryDeep(){
-//        NetworkRecordDao networkRecordDao = this.daoSession.getNetworkRecordDao();
-//
-//        QueryBuilder<NetworkRecord> qb = networkRecordDao.queryBuilder();
-////        ArrayList<NetworkRecord> attacks = networkRecordDao.queryRaw();
-//    }
 
     /** Returns the color for the given index
      * @return int color*/
