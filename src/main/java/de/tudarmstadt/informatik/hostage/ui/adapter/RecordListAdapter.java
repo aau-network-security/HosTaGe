@@ -52,10 +52,10 @@ public class RecordListAdapter extends ExpandableListAdapter {
         int valueLabelID = R.id.sectionHeaderValue;
         TextView tView = sectionHeader.findViewById(headerLabelID);
         TextView vView = sectionHeader.findViewById(valueLabelID);
-        //int value = this.getChildrenCount(section);
+        int nowValue = this.getChildrenCount(section);
         int value = daoHelper.getMessageRecordDAO().getRecordCount(); //shows the real number of records, not the ones that they are in section.
         tView.setText(this._sectionHeader.get(section));
-        vView.setText("" + value);
+        vView.setText(nowValue+"/" + value);
     }
 
     @Override
