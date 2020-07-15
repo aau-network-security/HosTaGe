@@ -58,9 +58,10 @@ public class TracingSyncService extends IntentService {
     private DaoSession dbSession;
     private DAOHelper daoHelper;
     private ArrayList<RecordAll> records = new ArrayList<>();
-    private static int offset=0;
+    private int offset=0;
     private int limit=50;
-
+    private int attackRecordOffset=0;
+    private int attackRecordLimit=50;
 	SharedPreferences pref;
 	Editor editor;
 
@@ -99,6 +100,7 @@ public class TracingSyncService extends IntentService {
 	/**
 	 * Uploads all new Records to a server, specified in the settings.
 	 */
+	//TODO Add limits when the Service is working again.
 	@Deprecated
     private void syncNewRecords() {
         long lastSyncTime = pref.getLong("LAST_SYNC_TIME", 0);
@@ -110,7 +112,7 @@ public class TracingSyncService extends IntentService {
         LogFilter filter = new LogFilter();
         filter.setAboveTimestamp(lastSyncTime);
         //int recordsSize = daoHelper.getMessageRecordDAO().getRecordCount();
-        records = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter, offset,limit);
+        records = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter);
 
         StringWriter writer = new StringWriter();
 

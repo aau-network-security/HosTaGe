@@ -451,9 +451,9 @@ public class AttackRecordDAO extends  DAO {
         return allRecords;
     }
 
-    public synchronized ArrayList<RecordAll> getRecordsForFilter(LogFilter filter,int offset,int limit) {
+    public synchronized ArrayList<RecordAll> getRecordsForFilter(LogFilter filter,int offset,int limit,int attackRecordOffset,int attackRecordLimit) {
         MessageRecordDAO messageRecordDAO = new MessageRecordDAO(this.daoSession);
-        ArrayList<AttackRecord> attackRecords = this.selectionQueryFromFilter(filter);
+        ArrayList<AttackRecord> attackRecords = this.selectionQueryFromFilter(filter,attackRecordOffset,attackRecordLimit);
         ArrayList<MessageRecord> records = messageRecordDAO.selectionQueryFromFilter(filter,offset,limit);
         ArrayList<MessageRecord> messageRecords =new ArrayList<>();
 

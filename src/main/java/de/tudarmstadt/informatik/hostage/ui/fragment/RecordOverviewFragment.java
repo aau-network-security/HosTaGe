@@ -115,6 +115,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
     private int offset=0;
     private int limit=20;
+    private int attackRecordOffset=0;
+    private int attackRecordLimit=999;//needs Different limit because the attackRecords are smaller than messageRecords.
     private final int realLimit=20;
     private String sectionToOpen = "";
     private ArrayList<Integer> openSections;
@@ -600,7 +602,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             adapter.setData(sectionData);
             adapter.setSectionHeader(groupTitle);
         } else {
-            adapter = new RecordListAdapter( RecordOverviewFragment.this.getApplicationContext(), groupTitle, sectionData);
+            adapter = new RecordListAdapter(RecordOverviewFragment.this.getApplicationContext(), groupTitle, sectionData);
         }
 
         return adapter;
@@ -617,11 +619,31 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      */
 	private void populateListGradually(){
         int recordsSize = daoHelper.getMessageRecordDAO().getRecordCount();
+        long attackRecordSize = daoHelper.getAttackRecordDAO().getRecordsCount();
+        setattackRecordLimits(attackRecordSize);
+        changeLimitOffset(recordsSize);
+    }
+
+    private void setattackRecordLimits(long attackRecordSize){
+        changeAttackLimitOffset(attackRecordSize);
+    }
+
+    private void changeLimitOffset(long recordsSize){
         if(offset+limit<recordsSize-1) {
             limit+=realLimit;
             offset+=realLimit;
         }
     }
+
+    private void changeAttackLimitOffset(long recordsSize){
+	    if(recordsSize>1000) {
+            if (attackRecordOffset + attackRecordLimit < recordsSize - 1) {
+                attackRecordLimit += realLimit;
+                attackRecordOffset += realLimit;
+            }
+        }
+    }
+
 
     private HashMap<String, ArrayList<ExpandableListItem>> fetchDataForFilter(LogFilter filter, ArrayList<String> groupTitle){
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = new HashMap<String, ArrayList<ExpandableListItem>>();
@@ -629,7 +651,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         String[] keys = new String[] { RecordOverviewFragment.this.getString(R.string.RecordBSSID), RecordOverviewFragment.this.getString(R.string.RecordSSID), RecordOverviewFragment.this.getString(R.string.RecordProtocol), RecordOverviewFragment.this.getString(R.string.RecordTimestamp)};
         int[] ids = new int[] {R.id.RecordTextFieldBSSID, R.id.RecordTextFieldSSID, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp };
 
-        data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter,offset,limit);
+        data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter,offset,limit,attackRecordOffset,attackRecordLimit);
 
         HashMap<String, Integer> mapping = new HashMap<String, Integer>();
         int i = 0;
@@ -674,9 +696,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
 
         if (this.groupingKey.equals(this.groupingTitles().get(DEFAULT_GROUPING_KEY_INDEX))){
-            Collections.sort(groupTitle, Collections.reverseOrder(new DateStringComparator()));
+            Collections.sort(groupTitle, new DateStringComparator());
         } else {
-            Collections.sort(groupTitle, Collections.reverseOrder(String::compareToIgnoreCase));
+            Collections.sort(groupTitle, String::compareToIgnoreCase);
         }
 
         return sectionData;
