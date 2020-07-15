@@ -291,7 +291,6 @@ public class MainActivity extends AppCompatActivity {
 		mDrawerItems.add(new DrawerListItem(R.string.drawer_services, R.drawable.ic_menu_set_as));
 		mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
 		mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_help, R.drawable.ic_menu_help));
 		mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
 
 		DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
@@ -558,14 +557,6 @@ public class MainActivity extends AppCompatActivity {
 			return;
 		}
 
-		// open help video list when pressing help navigation item
-		if(menuItemPosition == MainMenuItem.HELP){
-			Intent intent = new Intent(Intent.ACTION_VIEW);
-			intent.setData(Uri.parse("https://www.youtube.com/playlist?list=PLJyUmtMldh3s1XtRfE4YFaQ8ME7xjf7Gx"));
-			startActivity(intent);
-
-			return;
-		}
 
 		Fragment fragment = null;
 
@@ -788,8 +779,7 @@ public class MainActivity extends AppCompatActivity {
 		SERVICES(4, ServicesFragment.class),
 		PROFILE_MANAGER(5, ProfileManagerFragment.class),
 		SETTINGS(6, SettingsFragment.class),
-		HELP(7, Class.class),
-		APPLICATION_INFO(8, AboutFragment.class);
+		APPLICATION_INFO(7, AboutFragment.class);
 
 		private int value;
 		private Class<?> klass;
