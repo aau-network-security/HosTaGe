@@ -247,14 +247,14 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         expListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                int groupCount = expListView.getExpandableListAdapter().getGroupCount();
-                if(groupCount>1){
-                    if(scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
-                            getLastVisibleGroup()){
-                        addData();
-
-                    }
-                }
+//                int groupCount = expListView.getExpandableListAdapter().getGroupCount();
+//                if(groupCount>1){
+//                    if(scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
+//                            getLastVisibleGroup()){
+//                        addData();
+//
+//                    }
+//                }
                 if(scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
                         data.size()) {
                    addData();
@@ -1526,7 +1526,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         if(title.equals(FILTER_MENU_TITLE_IPS)){
             ArrayList<String> titles =dialog.getSelectedItemTitles();
-            if (titles.size() == this.essids().size()){
+            if (titles.size() == this.ips().size()){
                 this.filter.setIps(new ArrayList<String>());
             } else {
                 this.filter.setIps(titles);
