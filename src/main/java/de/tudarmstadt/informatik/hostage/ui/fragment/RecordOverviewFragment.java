@@ -65,7 +65,9 @@ import de.tudarmstadt.informatik.hostage.ui.popup.SplitPopupItem;
 public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimeDialogFragment.DateTimeDialogFragmentListener {
     static final String FILTER_MENU_TITLE_BSSID = MainActivity.getContext().getString(R.string.BSSID);
 	static final String FILTER_MENU_TITLE_ESSID = MainActivity.getContext().getString(R.string.ESSID);
-	static final String FILTER_MENU_TITLE_PROTOCOLS = MainActivity.getContext().getString(R.string.rec_protocol);
+    static final String FILTER_MENU_TITLE_IPS = MainActivity.getContext().getString(R.string.RecordIP);
+
+    static final String FILTER_MENU_TITLE_PROTOCOLS = MainActivity.getContext().getString(R.string.rec_protocol);
 	static final String FILTER_MENU_TITLE_TIMESTAMP_BELOW = MainActivity.getContext().getString(
 			R.string.rec_latest);
 	static final String FILTER_MENU_TITLE_TIMESTAMP_ABOVE = MainActivity.getContext().getString(
@@ -104,6 +106,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private int attackRecordOffset=0;
     private int attackRecordLimit=999;//needs Different limit because the attackRecords are smaller than messageRecords.
     private final int realLimit=20;
+    private int realLimitOffset=0;
     private String sectionToOpen = "";
     private ArrayList<Integer> openSections;
     private ProgressBar progressBar;
@@ -244,27 +247,52 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         expListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
+                int groupCount = expListView.getExpandableListAdapter().getGroupCount();
+                if(groupCount>1){
+                    if(scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
+                            getLastVisibleGroup()){
+                        addData();
+
+                    }
+                }
                 if(scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
                         data.size()) {
-                    populateListGradually();
-                    actualiseListViewInBackground();
-                    scrollOnTheBottom();
+                   addData();
                 }
             }
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) { }
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//                if (firstVisibleItem + visibleItemCount == totalItemCount) {
+//                }
+            }
 
         });
+
     }
+
+    private void addData(){
+        populateListGradually();
+        actualiseListViewInBackground();
+        scrollOnTheBottom();
+    }
+
+    private int getLastVisibleGroup() {
+        int lastVis = expListView.getLastVisiblePosition();
+        long packedPosition = expListView.getExpandableListPosition(lastVis);
+        int groupPosition = ExpandableListView.getPackedPositionGroup(packedPosition);
+        return groupPosition;
+    }
+
+
 
     /**
      * Goes to the bottom of the list when reloads.
      */
     private void scrollOnTheBottom(){
         expListView.setStackFromBottom(true);
-        expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_NORMAL);
+        //expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        //expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_NORMAL);
     }
 
     private void setListViewFooter(){
@@ -277,7 +305,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         expListView.removeFooterView(progressBar);
     }
 
-    /**Initialises the expandable list view in a backgorund thread*/
+    /**Initialises the expandable list view in a background thread*/
     private void initialiseListView(){
         if (loader != null) loader.interrupt();
         if (this.openSections == null) this.openSections = new ArrayList<Integer>();
@@ -394,6 +422,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             }
             if(title.equals(FILTER_MENU_TITLE_ESSID)){
                 this.openESSIDFilterDialog();
+            }
+            if(title.equals(FILTER_MENU_TITLE_IPS)){
+                this.openIpsFilterDialog();
             }
             if(title.equals(FILTER_MENU_TITLE_PROTOCOLS)){
                 this.openProtocolsFilterDialog();
@@ -617,8 +648,10 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private void changeLimitOffset(long recordsSize){
         if(offset+limit<recordsSize-1) {
             limit+=realLimit;
-            offset+=realLimit;
+            offset+=realLimitOffset;
+            realLimitOffset+=realLimit;
         }
+
     }
 
     private void changeAttackLimitOffset(long recordsSize){
@@ -634,8 +667,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private HashMap<String, ArrayList<ExpandableListItem>> fetchDataForFilter(LogFilter filter, ArrayList<String> groupTitle){
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = new HashMap<String, ArrayList<ExpandableListItem>>();
         // Adding Items to ListView
-        String[] keys = new String[] { RecordOverviewFragment.this.getString(R.string.RecordBSSID), RecordOverviewFragment.this.getString(R.string.RecordSSID), RecordOverviewFragment.this.getString(R.string.RecordProtocol), RecordOverviewFragment.this.getString(R.string.RecordTimestamp)};
-        int[] ids = new int[] {R.id.RecordTextFieldBSSID, R.id.RecordTextFieldSSID, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp };
+        String[] keys = new String[] { RecordOverviewFragment.this.getString(R.string.RecordIP), RecordOverviewFragment.this.getString(R.string.RecordSSID), RecordOverviewFragment.this.getString(R.string.RecordProtocol), RecordOverviewFragment.this.getString(R.string.RecordTimestamp)};
+        int[] ids = new int[] {R.id.RecordTextFieldBSSID, R.id.RecordTextFieldIP, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp };
 
         data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter,offset,limit,attackRecordOffset,attackRecordLimit);
 
@@ -656,7 +689,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             // DO GROUPING IN HERE
             HashMap<String, String> map = new HashMap<String, String>();
             map.put(RecordOverviewFragment.this.getString(R.string.RecordBSSID), val.getBssid());
-            map.put(RecordOverviewFragment.this.getString(R.string.RecordSSID), val.getSsid());
+            map.put(RecordOverviewFragment.this.getString(R.string.RecordIP), val.getRemoteIP());
             map.put(RecordOverviewFragment.this.getString(R.string.RecordProtocol), val.getProtocol());
             map.put(RecordOverviewFragment.this.getString(R.string.RecordTimestamp),
                     RecordOverviewFragment.this.getDateAsString(val.getTimestamp()));
@@ -1075,6 +1108,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     /**Opens the grouping dialog*/
     private void openGroupingDialog(){
         ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_GROUP, this.groupingTitles(), this.selectedGroup(), false , this);
+        expListView.setStackFromBottom(false);
         newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_GROUP);
     }
 
@@ -1089,6 +1123,12 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_ESSID,this.essids(), this.selectedESSIDs(), true , this);
 	    newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_ESSID);
 	}
+
+    /**opens the ips filter dialog*/
+    private void openIpsFilterDialog(){
+        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_IPS,this.ips(), this.selectedIps(), true , this);
+        newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_IPS);
+    }
 
     /**opens the protocol filter dialog*/
 	private void openProtocolsFilterDialog(){
@@ -1133,8 +1173,10 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             case 1:
                 return rec.getProtocol();
             case 2:
-                return rec.getSsid();
+                return rec.getRemoteIP();
             case 3:
+                return rec.getSsid();
+            case 4:
                 return rec.getBssid();
             default:
                 return this.getFormattedDateForGrouping(rec.getTimestamp());
@@ -1149,8 +1191,10 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             case 1:
                 return this.protocolTitles();
             case 2:
-                return this.essids();
+                return this.ips();
             case 3:
+                return this.essids();
+            case 4:
                 return this.bssids();
             case 0:
             default:
@@ -1224,6 +1268,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if (title.equals(FILTER_MENU_TITLE_ESSID)){
             return this.filter.hasESSIDs();
         }
+        if (title.equals(FILTER_MENU_TITLE_IPS)){
+            return this.filter.hasIps();
+        }
         if (title.equals(FILTER_MENU_TITLE_PROTOCOLS)){
             return this.filter.hasProtocols();
         }
@@ -1248,6 +1295,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         ArrayList<String> titles = new ArrayList<String>();
         titles.add(MainActivity.getContext().getString(R.string.date));
         titles.add(MainActivity.getContext().getString(R.string.rec_protocol));
+        titles.add(MainActivity.getContext().getString(R.string.IP));
         titles.add(MainActivity.getContext().getString(R.string.ESSID));
         titles.add(MainActivity.getContext().getString(R.string.BSSID));
         return titles;
@@ -1306,6 +1354,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		ArrayList<String> titles = new ArrayList<String>();
 		titles.add(MainActivity.getContext().getString(R.string.rec_time));
 		titles.add(MainActivity.getContext().getString(R.string.rec_protocol));
+        titles.add(MainActivity.getContext().getString(R.string.IP));
         titles.add(MainActivity.getContext().getString(R.string.ESSID));
         titles.add(MainActivity.getContext().getString(R.string.BSSID));
 		return titles;
@@ -1359,6 +1408,15 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		ArrayList<String> records = daoHelper.getNetworkRecordDAO().getUniqueESSIDRecords();
 		return records;
 	}
+
+    /**
+     * Returns all unique ips.
+     * @return ArrayList<String>
+     * */
+    public ArrayList<String> ips(){
+        ArrayList<String> records = daoHelper.getAttackRecordDAO().getUniqueIPRecords();
+        return records;
+    }
     /**
     * Returns an boolean array. The array is true at the indices of the selected essids.
     * The index of the selected essid is the same index in the essids() array.
@@ -1377,6 +1435,23 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 	}
 
     /**
+     * Returns an boolean array. The array is true at the indices of the selected ips.
+     * The index of the selected ip is the same index in the ipss() array.
+     * @return boolean array, length == ips().length
+     * */
+    public boolean[] selectedIps(){
+        ArrayList<String> ips = this.ips();
+        boolean[] selected = new boolean[ips.size()];
+
+        int i = 0;
+        for(String ip : ips){
+            selected[i] =(this.filter.IPs.contains(ip));
+            i++;
+        }
+        return selected;
+    }
+
+    /**
      * Returns all filter menu titles.
      * @return ArrayList<String>
      * */
@@ -1384,6 +1459,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		ArrayList<String> titles = new ArrayList<String>();
 		titles.add(FILTER_MENU_TITLE_BSSID);
 		titles.add(FILTER_MENU_TITLE_ESSID);
+		titles.add(FILTER_MENU_TITLE_IPS);
 		titles.add(FILTER_MENU_TITLE_PROTOCOLS);
 		titles.add(FILTER_MENU_TITLE_TIMESTAMP_ABOVE);
 		titles.add(FILTER_MENU_TITLE_TIMESTAMP_BELOW);
@@ -1447,6 +1523,15 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 this.filter.setESSIDs(titles);
             }
 		}
+
+        if(title.equals(FILTER_MENU_TITLE_IPS)){
+            ArrayList<String> titles =dialog.getSelectedItemTitles();
+            if (titles.size() == this.essids().size()){
+                this.filter.setIps(new ArrayList<String>());
+            } else {
+                this.filter.setIps(titles);
+            }
+        }
 		if(title.equals(FILTER_MENU_TITLE_PROTOCOLS)){
             ArrayList<String> protocols = dialog.getSelectedItemTitles();
             if (protocols.size() == this.protocolTitles().size()){

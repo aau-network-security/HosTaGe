@@ -679,7 +679,9 @@ public class AttackRecordDAO extends  DAO {
         ArrayList<AttackRecord> updatedAttackRecords = new ArrayList<>();
 
         QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
+        qb.orderDesc(AttackRecordDao.Properties.Attack_id);
         qb.where(AttackRecordDao.Properties.Attack_id.eq(attack_id));
+        qb.limit(1);
 
         ArrayList<AttackRecord> attackRecords =  ( ArrayList<AttackRecord>) qb.list();
 
@@ -690,6 +692,22 @@ public class AttackRecordDAO extends  DAO {
         AttackRecord attackRecord = updatedAttackRecords.get(0);
 
         return attackRecord ;
+    }
+
+    /**
+     * Gets all non duplicate Records For the key IP.
+     *
+     * @return A ArrayList with received Records.
+     */
+    public synchronized ArrayList<String> getUniqueIPRecords() {
+        ArrayList<AttackRecord> attackRecords = this.getAttackRecords();
+
+        ArrayList<String> ips= new ArrayList<>();
+        attackRecords.stream().filter(o -> ips.add(o.getRemoteIP())).collect(Collectors.toList());
+        ArrayList<String> distinctIps = (ArrayList<String>) ips.stream().distinct().collect(Collectors.toList());
+
+        return  distinctIps;
+
     }
 
     public ArrayList<MessageRecord> sortFilter(LogFilter filter,ArrayList<MessageRecord> list){

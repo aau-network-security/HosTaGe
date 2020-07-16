@@ -368,7 +368,7 @@ public class AttackRecordDAOTest {
         daoSession.insert(networkRecord);
         daoSession.insert(networkRecordSecond);
 
-        ArrayList<RecordAll> records = attackRecordDAO.getRecordsForFilter(filter,0,50);
+        ArrayList<RecordAll> records = attackRecordDAO.getRecordsForFilter(filter,0,50,0,50);
 
         assertNotNull(records);
         assertEquals(1,records.size());

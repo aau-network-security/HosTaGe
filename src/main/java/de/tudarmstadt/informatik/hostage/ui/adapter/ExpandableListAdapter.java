@@ -55,8 +55,13 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int section, int row) {
-        return this._sectionTitleToChildData.get(this._sectionHeader.get(section))
-                .get(row);
+        try {
+            return this._sectionTitleToChildData.get(this._sectionHeader.get(section))
+                    .get(row);
+        }catch (Exception e){
+            return this._sectionTitleToChildData.get(this._sectionHeader.get(0))
+                    .get(0);
+        }
     }
 
     @Override

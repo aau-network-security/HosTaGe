@@ -30,7 +30,6 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 		String ssid = "undefined";
 		String bssid = "undefined";
 		String internalIP = "undefined";
-		String subnetMask = "undefined";
 		String externalIP = "undefined";
 
 		// get infos about the current connection using SharedPreferences
@@ -41,7 +40,6 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 			bssid = sharedPreferences.getString(getString(R.string.connection_info_bssid), "");
 			internalIP = HelperUtils.inetAddressToString(
 					sharedPreferences.getInt(getString(R.string.connection_info_internal_ip), 0));
-			subnetMask = HelperUtils.inetAddressToString(sharedPreferences.getInt(getString(R.string.connection_info_subnet_mask), 0));
 			externalIP = sharedPreferences.getString(
 					getString(R.string.connection_info_external_ip), "");
 		}
@@ -56,7 +54,6 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 			((TextView)view.findViewById(R.id.connectioninfo_ssid_value)).setText(ssid);
 			((TextView)view.findViewById(R.id.connectioninfo_bssid_value)).setText(bssid);
 			((TextView)view.findViewById(R.id.connectioninfo_internalip_value)).setText(internalIP);
-			((TextView)view.findViewById(R.id.connectioninfo_subnetmask_value)).setText(subnetMask);
 			((TextView)view.findViewById(R.id.connectioninfo_externalip_value)).setText(externalIP);
 		}
 

@@ -92,6 +92,7 @@
 	<string name="RecordExternalAttack">External attack</string>
     <string name="RecordBSSID">BSSID</string>
     <string name="RecordSSID">SSID</string>
+    <string name="RecordIP" translatable="false">IP</string>
     <string name="RecordTimestamp">Timestamp</string>
     <string name="RecordProtocol">Protocol</string>
 
@@ -153,6 +154,7 @@
     <string name="date">Date</string>
     <string name="ESSID">ESSID</string>
     <string name="BSSID">BSSID</string>
+    <string name="IP" translatable="false">IP</string>
     <string name="rec_sortby">Sort by</string>
     <string name="rec_latest">Latest</string>
     <string name="rec_earliest">Earliest</string>

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -224,8 +225,6 @@ public class Hostage extends Service {
 		return false;
 	}
 
-
-
 	/**
 	 * Determines if a protocol with the given name is running on its default
 	 * port.
@@ -308,9 +307,14 @@ public class Hostage extends Service {
 		
 		mProtocolActiveAttacks = new HashMap<String, Boolean>();
 
+		Device.checkCapabilities();
 		createNotification();
 		registerNetReceiver();
-		Device.checkCapabilities();
+		try {
+			TimeUnit.MILLISECONDS.sleep(10);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		updateConnectionInfo();
 	}
 

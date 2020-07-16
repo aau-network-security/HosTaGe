@@ -282,7 +282,7 @@ public ArrayList<NetworkRecord> selectionBSSIDFromFilter(LogFilter filter,int of
      *
      * @return A ArrayList with received Records.
      */
-public synchronized ArrayList<String> getUniqueESSIDRecords() {
+    public synchronized ArrayList<String> getUniqueESSIDRecords() {
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
 
         ArrayList<String> essids= new ArrayList<>();
@@ -298,7 +298,7 @@ public synchronized ArrayList<String> getUniqueESSIDRecords() {
      *
      * @return A ArrayList with received Records.
      */
-public synchronized ArrayList<String> getUniqueBSSIDRecords() {
+    public synchronized ArrayList<String> getUniqueBSSIDRecords() {
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
 
         ArrayList<String> bssids= new ArrayList<>();

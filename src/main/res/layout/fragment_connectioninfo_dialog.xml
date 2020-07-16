@@ -70,24 +70,6 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:text="@string/subnet_mask"
-					android:id="@+id/textView8" android:layout_column="0"
-					android:layout_margin="4dp"
-					android:textStyle="bold"/>
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:id="@+id/connectioninfo_subnetmask_value" android:layout_column="1"
-					android:layout_margin="4dp" android:gravity="right"/>
-		</TableRow>
-		<TableRow
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent">
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
 					android:text="@string/external_ip"
 					android:id="@+id/record_details_text_bssid" android:layout_column="0"
 					android:layout_margin="4dp"
