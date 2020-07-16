@@ -148,7 +148,7 @@ public class MessageRecordDAO extends DAO {
         ArrayList<MessageRecord> list = new ArrayList<>();
 
         QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
-        qb.orderDesc(MessageRecordDao.Properties.Timestamp);
+        qb.orderDesc(MessageRecordDao.Properties.Id);
         qb.and(MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
                 MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp()));
         qb.offset(offset).limit(limit);
@@ -181,12 +181,12 @@ public class MessageRecordDAO extends DAO {
 
         qb.and(MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
                 MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp()));
-        qb.orderDesc(MessageRecordDao.Properties.Timestamp);
+        qb.orderDesc(MessageRecordDao.Properties.Id);
         try {
             list = (ArrayList<MessageRecord>) qb.list();
         } catch (Exception e) {
             QueryBuilder<MessageRecord> queryBuilder = recordDao.queryBuilder();
-            queryBuilder.orderDesc(MessageRecordDao.Properties.Timestamp);
+            queryBuilder.orderDesc(MessageRecordDao.Properties.Id);
             list =(ArrayList<MessageRecord>) queryBuilder.list();
 
             return list;

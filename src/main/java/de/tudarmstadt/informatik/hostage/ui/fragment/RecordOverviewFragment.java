@@ -106,7 +106,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private int attackRecordOffset=0;
     private int attackRecordLimit=999;//needs Different limit because the attackRecords are smaller than messageRecords.
     private final int realLimit=20;
-    private int realLimitOffset=0;
     private String sectionToOpen = "";
     private ArrayList<Integer> openSections;
     private ProgressBar progressBar;
@@ -247,24 +246,16 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         expListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-//                int groupCount = expListView.getExpandableListAdapter().getGroupCount();
-//                if(groupCount>1){
-//                    if(scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
-//                            getLastVisibleGroup()){
-//                        addData();
-//
-//                    }
-//                }
-                if(scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
-                        data.size()) {
+                //scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
+                //                        data.size()
+                if(!view.canScrollList(View.SCROLL_AXIS_VERTICAL) && scrollState == SCROLL_STATE_IDLE) {
                    addData();
                 }
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//                if (firstVisibleItem + visibleItemCount == totalItemCount) {
-//                }
+
             }
 
         });
@@ -277,22 +268,14 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         scrollOnTheBottom();
     }
 
-    private int getLastVisibleGroup() {
-        int lastVis = expListView.getLastVisiblePosition();
-        long packedPosition = expListView.getExpandableListPosition(lastVis);
-        int groupPosition = ExpandableListView.getPackedPositionGroup(packedPosition);
-        return groupPosition;
-    }
-
-
 
     /**
      * Goes to the bottom of the list when reloads.
      */
     private void scrollOnTheBottom(){
         expListView.setStackFromBottom(true);
-        //expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        //expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_NORMAL);
+        expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_NORMAL);
     }
 
     private void setListViewFooter(){
@@ -648,8 +631,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private void changeLimitOffset(long recordsSize){
         if(offset+limit<recordsSize-1) {
             limit+=realLimit;
-            offset+=realLimitOffset;
-            realLimitOffset+=realLimit;
+            //offset+=realLimit; //temporary removed because of missing records on group sidefect.
         }
 
     }
@@ -658,7 +640,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 	    if(recordsSize>1000) {
             if (attackRecordOffset + attackRecordLimit < recordsSize - 1) {
                 attackRecordLimit += realLimit;
-                attackRecordOffset += realLimit;
+                //attackRecordOffset += realLimit; //temporary removed because of missing records on group sidefect.
             }
         }
     }
