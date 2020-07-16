@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
@@ -144,12 +145,9 @@ public class Hostage extends Service {
 	}
 
 	private LinkedList<Protocol> implementedProtocols;
-	private ArrayList<Listener> listeners = new ArrayList<Listener>();
-
+	private CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 	private SharedPreferences connectionInfo;
-
 	private Editor connectionInfoEditor;
-
 	private final IBinder mBinder = new LocalBinder();
 
 	/**
@@ -770,7 +768,6 @@ public class Hostage extends Service {
 	 */
 	public void updateEditor(String ssid, String bssid, int ipAddress, int netmask){
 		SharedPreferences pref = context.getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
-
 		Editor editor = pref.edit();
 
 		editor.putString(getString(R.string.connection_info_ssid), ssid);
