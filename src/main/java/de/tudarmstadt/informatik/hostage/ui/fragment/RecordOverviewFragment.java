@@ -264,6 +264,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
     private void addData(){
         populateListGradually();
+        expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_NORMAL);
         actualiseListViewInBackground();
         scrollOnTheBottom();
     }
@@ -273,9 +274,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * Goes to the bottom of the list when reloads.
      */
     private void scrollOnTheBottom(){
-        expListView.setStackFromBottom(true);
         expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        expListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_NORMAL);
+        expListView.setStackFromBottom(true);
     }
 
     private void setListViewFooter(){
