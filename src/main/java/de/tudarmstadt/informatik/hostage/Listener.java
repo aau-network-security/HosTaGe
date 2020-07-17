@@ -17,20 +17,14 @@ import javax.net.ssl.SSLSocketFactory;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-
-import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.Logger;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.net.MyServerSocketFactory;
-import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.protocol.SMB;
 import de.tudarmstadt.informatik.hostage.protocol.SSLProtocol;
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
 import de.tudarmstadt.informatik.hostage.system.Device;
 
 
