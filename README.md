@@ -15,7 +15,9 @@ Emmanouil Vasilomanolakis -  idea, guidance and suggestions during development
 
 __Contributors__
 
-Shreyas Srinivasa, lead developer, Aalborg University and Technische Universität Darmstadt
+Shreyas Srinivasa, lead developer, Aalborg University and Technische Universität Darmstadt (Github - @sastry17)
+
+Eirini Lygerou, GSoC 2020 Developer (Github - @irinil)
 
 Mihai Plasoianu, student developer, Technische Universität Darmstadt
 
