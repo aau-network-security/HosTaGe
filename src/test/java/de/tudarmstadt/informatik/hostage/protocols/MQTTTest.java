@@ -38,6 +38,7 @@ public class MQTTTest {
     final String topic = "subjectdirectory.changed";
     final String message = "de.tudarmstadt.informatik.hostage.test payload";
     final int publishCount = 5000;
+    String ipaddress="localhost";
     static ArrayList<InterceptPublishMessage> messages = new ArrayList<>();
     MemoryConfig memoryConfig = new MemoryConfig(new Properties());
 
@@ -46,16 +47,16 @@ public class MQTTTest {
 
     @Before
     public void setUp() throws IOException {
-        memoryConfig.setProperty("host","localhost");
-        memoryConfig.setProperty("port","1884");
+        memoryConfig.setProperty("host",ipaddress);
+        memoryConfig.setProperty("port","1883");
         server.startServer(memoryConfig);
 
         server.addInterceptHandler(handler());
 
         client= Mqtt3Client.builder()
                 .identifier(UUID.randomUUID().toString())
-                .serverHost("localhost")
-                .serverPort(1884)
+                .serverHost(ipaddress)
+                .serverPort(1883)
                 .buildBlocking();
 
     }
@@ -95,8 +96,8 @@ public class MQTTTest {
     public void testInitialConnection(){
         Mqtt3BlockingClient client = Mqtt3Client.builder()
                 .identifier(UUID.randomUUID().toString())
-                .serverHost("localhost")
-                .serverPort(1884)
+                .serverHost(ipaddress)
+                .serverPort(1883)
                 .buildBlocking();
 
         //client.connectWith().keepAlive(20).send();

@@ -43,6 +43,19 @@
         android:autoLink="email"
         />
 
+	<TextView
+		android:id="@+id/textView3"
+		android:layout_width="wrap_content"
+		android:layout_height="52dp"
+		android:layout_gravity="center_horizontal"
+		android:layout_marginTop="4dp"
+		android:autoLink="web"
+		android:linksClickable="true"
+		android:singleLine="false"
+		android:text="@string/project_link"
+		android:textAlignment="center"
+		android:textAppearance="?android:attr/textAppearanceSmall" />
+
 
     <ScrollView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,68 +63,6 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginRight="15dp">
 
-	<RelativeLayout
-			android:orientation="horizontal"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent" android:layout_weight="0.7"
-			android:paddingTop="15dp">
-
-		<LinearLayout
-			android:id="@+id/linearLayout2"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignTop="@+id/linearLayout"
-			android:layout_alignParentStart="true"
-			android:layout_alignParentLeft="true"
-			android:layout_marginStart="6dp"
-			android:layout_marginLeft="6dp"
-			android:layout_weight="0.5"
-			android:orientation="vertical">
-
-			<TextView
-				android:id="@+id/record_details_text_bssid"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center_horizontal|left"
-				android:layout_marginTop="8dp"
-				android:autoText="false"
-				android:singleLine="false"
-				android:text="@string/ui_dev_by"
-				android:textAppearance="?android:attr/textAppearanceMedium"
-				android:textColor="@android:color/holo_blue_dark"
-				android:textStyle="bold" />
-
-			<TextView
-				android:id="@+id/txtP2PSubheader"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_gravity="center_horizontal|left"
-				android:layout_marginTop="4dp"
-				android:autoText="false"
-				android:singleLine="false"
-				android:text="Manolis "
-				android:textAlignment="center"
-				android:textAppearance="?android:attr/textAppearanceMedium"
-				android:visibility="gone"
-				tools:visibility="gone" />
-
-			<TextView
-				android:id="@+id/textView3"
-				android:layout_width="wrap_content"
-				android:layout_height="52dp"
-				android:layout_gravity="center_horizontal|left"
-				android:layout_marginTop="4dp"
-				android:autoLink="web"
-				android:autoText="false"
-				android:linksClickable="true"
-				android:singleLine="false"
-				android:text="@string/project_link"
-				android:textAlignment="center"
-				android:textAppearance="?android:attr/textAppearanceMedium" />
-
-		</LinearLayout>
-
-	</RelativeLayout>
     </ScrollView>
     <LinearLayout
         android:orientation="horizontal"
