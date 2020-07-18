@@ -43,6 +43,9 @@ Encryption for the SSH protocol were taken from Ganymed SSH-2
 and slightly modified.
 http://code.google.com/p/ganymed-ssh-2/
 
+__Contact__
+Slack channel: https://honeynetpublic.slack.com/archives/CUCJPUE3H
+
 __License__and__Distribution__
 
 ###### This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or  (at your option) any later version.
