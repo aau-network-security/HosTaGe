@@ -89,6 +89,7 @@ public class FileInject {
         MessageRecord record = new MessageRecord(true);
         record.setAttack_id(attack_id);
         record.setType(type);
+        record.setStringMessageType(type.name());
         record.setTimestamp(System.currentTimeMillis());
         record.setPacket(packet);
         return record;

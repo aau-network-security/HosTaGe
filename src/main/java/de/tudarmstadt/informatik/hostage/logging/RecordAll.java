@@ -7,6 +7,7 @@ public class RecordAll {
     private long attack_id;
     private long timestamp;
     private MessageRecord.TYPE type;
+    private String stringMessageType;
     private String packet;
     private String bssid;
     private String ssid;
@@ -25,11 +26,12 @@ public class RecordAll {
     private boolean wasInternalAttack= true;
 
     public RecordAll(long id, long attack_id, long timestamp,
-                     MessageRecord.TYPE type, String packet, String bssid, String ssid, long timestampLocation, double latitude, double longitude, float accuracy, long sync_id, String device, String protocol, String localIP, int localPort, String remoteIP, int remotePort, String externalIP, boolean wasInternalAttack) {
+                     MessageRecord.TYPE type, String stringMessageType, String packet, String bssid, String ssid, long timestampLocation, double latitude, double longitude, float accuracy, long sync_id, String device, String protocol, String localIP, int localPort, String remoteIP, int remotePort, String externalIP, boolean wasInternalAttack) {
         this.id = id;
         this.attack_id = attack_id;
         this.timestamp = timestamp;
         this.type = type;
+        this.stringMessageType = stringMessageType;
         this.packet = packet;
         this.bssid = bssid;
         this.ssid = ssid;
@@ -211,6 +213,14 @@ public class RecordAll {
 
     public void setWasInternalAttack(boolean wasInternalAttack) {
         this.wasInternalAttack = wasInternalAttack;
+    }
+
+    public String getStringMessageType() {
+        return stringMessageType;
+    }
+
+    public void setStringMessageType(String stringMessageType) {
+        this.stringMessageType = stringMessageType;
     }
 
     @Override

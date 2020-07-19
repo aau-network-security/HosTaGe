@@ -70,7 +70,8 @@ public class Packet {
 				|| protocol.equals("HTTP") 
 				|| protocol.equals("HTTPS")
 				|| protocol.equals("SIP")
-				|| protocol.equals("MODBUS")) {
+				|| protocol.equals("MODBUS")
+				|| protocol.equals("SMTP")) {
 			return new String(payload);
 		} else {
 			return HelperUtils.bytesToHexString(payload);

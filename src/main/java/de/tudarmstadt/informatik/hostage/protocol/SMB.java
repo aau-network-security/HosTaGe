@@ -11,6 +11,7 @@ import org.alfresco.jlan.app.XMLServerConfiguration;
 import org.alfresco.jlan.netbios.server.NetBIOSNameServer;
 import org.alfresco.jlan.server.config.InvalidConfigurationException;
 import org.alfresco.jlan.smb.server.SMBServer;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -70,11 +71,7 @@ public class SMB implements Protocol {
     public void initialize(Listener mListener) {
         this.mListener = mListener;
         FileInject fileInject = new FileInject();
-
         fileInject.startListner(mListener);
-
-
-
         Hostage service = mListener.getService();
         pref = PreferenceManager.getDefaultSharedPreferences(service);
 
@@ -119,14 +116,14 @@ public class SMB implements Protocol {
         SharedPreferences.Editor editor = pref.edit();
         attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
         editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
-        editor.commit();
+        editor.apply();
     }
 
     public MessageRecord createMessageRecord(MessageRecord.TYPE type, String packet) {
         MessageRecord record = new MessageRecord(true);
-        //record.setId(message_id++); // autoincrement
         record.setAttack_id(attack_id);
         record.setType(type);
+        record.setStringMessageType(type.name());
         record.setTimestamp(System.currentTimeMillis());
         record.setPacket(packet);
         return record;
@@ -137,9 +134,6 @@ public class SMB implements Protocol {
         record.setAttack_id(attack_id);
         record.setSync_id(attack_id);
         record.setDevice(SyncDevice.currentDevice().getDeviceID());
-
-
-
         record.setProtocol(this.toString());
         record.setExternalIP(externalIP);
         record.setLocalIP(CifsServer.intToInetAddress(getLocalIp()).getHostAddress());
@@ -207,6 +201,7 @@ public class SMB implements Protocol {
         return TALK_FIRST.CLIENT;
     }
 
+    @NotNull
     public String toString(){
         return "SMB";
     }

@@ -182,7 +182,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 			String from = r.getLocalIP() == null ? "-" : r.getLocalIP() + ":" + r.getLocalPort();
 			String to = r.getRemoteIP() == null ? "-" : r.getRemoteIP() + ":" + r.getRemotePort();
 
-			if (r.getType() == MessageRecord.TYPE.SEND) {
+			if (r.getStringMessageType()!=null && r.getStringMessageType().equals( MessageRecord.TYPE.SEND.name())) {
 				row = mInflater.inflate(R.layout.fragment_record_conversation_sent, null);
 			} else {
 				row = mInflater.inflate(R.layout.fragment_record_conversation_received, null);
@@ -278,15 +278,11 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 									public void onClick(DialogInterface dialog,
 														int which) {
 
-
 										try {
 											getConversation();
 										} catch (IOException e) {
 											e.printStackTrace();
 										}
-
-
-										//mDBOpenHelper.deleteByAttackID(mRecord.getAttack_id());
 
 										MainActivity.getInstance().navigateBack();
 									}

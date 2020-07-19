@@ -30,9 +30,7 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 public class HTTP implements Protocol {
 	
 	public HTTP() {
-
 		checkProfile();
-
 	}
 		/**
 	 * Get the current time in html header format.
@@ -124,10 +122,8 @@ public class HTTP implements Protocol {
 	 * @param htmlDocumentContent
 	 */
 	public static void setHtmlDocumentContent(String htmlDocumentContent,String htmlTitleContent) {
-
 			HTTP.htmlDocumentContent= htmlDocumentContent;
 			HTTP.htmlTitleContent = htmlTitleContent;
-
 	}
 
 	// html header pre and suffix
@@ -176,6 +172,7 @@ public class HTTP implements Protocol {
 		List<Packet> responsePackets = new ArrayList<Packet>();
 		this.request = request;
 
+		assert request != null;
 		if (request.startsWith("G")) {
 			//weird if clause but required for https
 			responsePackets.add(buildPacket(STATUS_CODE_200, GET));
@@ -214,7 +211,6 @@ public class HTTP implements Protocol {
 
 
 	private void checkProfile() {
-
 		String sharedPreferencePath = Hostage.getContext().getString(
 				R.string.shared_preference_path);
 		String profile = Hostage
@@ -327,11 +323,8 @@ public class HTTP implements Protocol {
 
 		@Override
 		protected void onPostExecute(String result) {
-
-
 			checkProfile();
 			if (result != null)
-
 				HTTP.setHtmlDocumentContent(result,result);
 			else
 				HTTP.setHtmlDocumentContent(HelperUtils.getRandomString(32, false),HelperUtils.getRandomString(32, false));

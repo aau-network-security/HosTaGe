@@ -247,6 +247,7 @@ public class Handler implements Runnable {
 		MessageRecord record = new MessageRecord(true);
 		record.setAttack_id(attack_id);
 		record.setType(type);
+		record.setStringMessageType(type.name());
 		record.setTimestamp(System.currentTimeMillis());
 		if(packet != null && !packet.isEmpty())
 			record.setPacket(packet);
@@ -321,7 +322,7 @@ public class Handler implements Runnable {
 			Logger.log(Hostage.getContext(), createAttackRecord());
 			logged = true;
 		}
-		if (packet != null && packet.length() > 0) { // prevent hostage.logging empty packets
+		if (packet != null && !packet.isEmpty()) { // prevent hostage.logging empty packets
 			Logger.log(Hostage.getContext(), createMessageRecord(type, packet));
 		}
 	}
@@ -373,7 +374,7 @@ public class Handler implements Runnable {
 		while (!thread.isInterrupted() && (inputLine = reader.read()) != null) {
 			outputLine = protocol.processMessage(inputLine);
 			log(MessageRecord.TYPE.RECEIVE, inputLine.toString());
-			if (outputLine != null) {
+			if (!outputLine.isEmpty()) {
 				writer.write(outputLine);
 				for (Packet o : outputLine) {
 					log(MessageRecord.TYPE.SEND, o.toString());
