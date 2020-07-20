@@ -28,20 +28,24 @@ public class MyServerSocketFactory extends ServerSocketFactory {
 			socket.setReuseAddress(true);
 			socket.bind(new InetSocketAddress(ipAddress,port));
 		} else if (Device.isRooted()) {
-			if (Device.isPorthackInstalled()) {
-				FileDescriptor fd = new PrivilegedPort(PrivilegedPort.TYPE.TCP, port).getFD();
-				socket = new ServerSocket();
-				try {
-					SocketImpl impl = getImpl(socket);
-					injectFD(fd, impl);
-					setBound(socket);
-				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-				}
-			} else if (Device.isPortRedirectionAvailable()) { // use ip tables
-				int redirectedPort = HelperUtils.getRedirectedPort(port);
-				socket = new ServerSocket();
-				socket.setReuseAddress(true);
-				socket.bind(new InetSocketAddress(ipAddress,redirectedPort));
+//			if (Device.isPorthackInstalled()) {
+//				FileDescriptor fd = new PrivilegedPort(PrivilegedPort.TYPE.TCP, port).getFD();
+//				socket = new ServerSocket();
+//				try {
+//					SocketImpl impl = getImpl(socket);
+//					injectFD(fd, impl);
+//					setBound(socket);
+//				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+//					e.printStackTrace();
+//				}
+//			}
+  				if (Device.isPortRedirectionAvailable()) { // use ip tables
+					//Device.executePortRedirectionScript();
+
+					int redirectedPort = HelperUtils.getRedirectedPort(port);
+					socket = new ServerSocket();
+					socket.setReuseAddress(true);
+					socket.bind(new InetSocketAddress(ipAddress,redirectedPort));
 			}
 		}
 		return socket;

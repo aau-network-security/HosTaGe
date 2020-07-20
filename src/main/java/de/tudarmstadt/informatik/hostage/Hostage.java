@@ -306,10 +306,11 @@ public class Hostage extends Service {
 		mProtocolActiveAttacks = new HashMap<String, Boolean>();
 
 		Device.checkCapabilities();
+		Device.executePortRedirectionScript();
 		createNotification();
 		registerNetReceiver();
 		try {
-			TimeUnit.MILLISECONDS.sleep(20);
+			TimeUnit.MILLISECONDS.sleep(60);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

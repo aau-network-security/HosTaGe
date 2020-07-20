@@ -133,8 +133,9 @@ public class Device {
 			try {
 				p = new ProcessBuilder("su", "-c", "sh "+scriptFilePath).start();
 				p.waitFor(); // stall the main thread
-				// TODO: check return value?
+				System.out.println("test error script"+ String.valueOf(p.waitFor()));
 			} catch (IOException | InterruptedException e) {
+				System.out.println("InsidePortRedirection");
 				e.printStackTrace();
 			}
 		}

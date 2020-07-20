@@ -255,13 +255,6 @@ public class MainActivity extends AppCompatActivity {
 			e.printStackTrace();
 		}
 
-		// check for the porthack and iptables
-		//Device.checkCapabilities();
-		if (Device.isPortRedirectionAvailable()) {
-			// redirect all the ports!!
-			Device.executePortRedirectionScript();
-		}
-
 		// init threat indicator animation
 		ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
 
