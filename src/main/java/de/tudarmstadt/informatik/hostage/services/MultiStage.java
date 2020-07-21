@@ -46,6 +46,8 @@ public class MultiStage extends Service {
     String stackbssid;
     private DaoSession dbSession;
     private DAOHelper daoHelper;
+    Notification notification;
+    NotificationManager manager;
     private static int offset=0;
     private int limit=50;
     private int size;
@@ -69,7 +71,6 @@ public class MultiStage extends Service {
             startCustomForeground();
             fetchData();
         }
-
         else {
             dbSession = HostageApplication.getInstances().getDaoSession();
             daoHelper = new DAOHelper(dbSession,this);
@@ -87,6 +88,12 @@ public class MultiStage extends Service {
         return START_NOT_STICKY;
     }
 
+    @Override
+    public void onDestroy(){
+        manager.cancel(1);
+        stopForeground(true);
+        stopSelf();
+    }
 
     //fetch data of records of last 10 mins
     public void fetchData() {
@@ -101,7 +108,7 @@ public class MultiStage extends Service {
         filter.setAboveTimestamp(filterTime);
         recordArray = daoHelper.getAttackRecordDAO().getRecordsForFilterMutliStage(filter);
         sortListIPs();
-        ArrayList<Stackbean> records = new ArrayList<Stackbean>(addRecordsToStackBean());
+        ArrayList<Stackbean> records = new ArrayList<>(addRecordsToStackBean());
         createMultistageRecord(records);
     }
 
@@ -165,7 +172,6 @@ public class MultiStage extends Service {
 
     }
 
-
     private ArrayList<Stackbean> addRecordsToStackBean(){
         ArrayList<Stackbean> b = new ArrayList<>();
         String prevRemoteIP = "";
@@ -190,7 +196,6 @@ public class MultiStage extends Service {
                     bssid = tmp.getBssid();
                     ssid = tmp.getSsid();
                     prevLocalIP = tmp.getLocalIP();
-
 
                 }
             }
@@ -229,7 +234,6 @@ public class MultiStage extends Service {
     /**
      * Custom foreground for background service
      */
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void startCustomForeground(){
         String NOTIFICATION_CHANNEL_ID = "Try";
@@ -237,7 +241,7 @@ public class MultiStage extends Service {
         NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
         chan.setLightColor(Color.BLUE);
         chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         assert manager != null;
         manager.createNotificationChannel(chan);
 
@@ -245,7 +249,7 @@ public class MultiStage extends Service {
         notificationBuilder.setContentTitle("MutiStage").setContentText("MutiStage running...")
                 .setSmallIcon(R.drawable.ic_launcher);
 
-        Notification notification = notificationBuilder.setOngoing(true)
+        notification = notificationBuilder.setOngoing(true)
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .build();
         startForeground(1, notification);

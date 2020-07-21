@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -66,7 +67,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     static final String FILTER_MENU_TITLE_BSSID = MainActivity.getContext().getString(R.string.BSSID);
 	static final String FILTER_MENU_TITLE_ESSID = MainActivity.getContext().getString(R.string.ESSID);
     static final String FILTER_MENU_TITLE_IPS = MainActivity.getContext().getString(R.string.RecordIP);
-
     static final String FILTER_MENU_TITLE_PROTOCOLS = MainActivity.getContext().getString(R.string.rec_protocol);
 	static final String FILTER_MENU_TITLE_TIMESTAMP_BELOW = MainActivity.getContext().getString(
 			R.string.rec_latest);
@@ -78,24 +78,18 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 			R.string.rec_group_by);
     static final String FILTER_MENU_POPUP_TITLE = MainActivity.getContext().getString(
 			R.string.rec_filter_by);
-
     static final int DEFAULT_GROUPING_KEY_INDEX = 0;
 
     private boolean wasBelowTimePicker;
-
     private LogFilter filter;
     private boolean showFilterButton;
     private View rootView;
     private View footer;
-
     private int mListPosition = -1;
     private int mItemPosition = -1;
-
     public String groupingKey;
-
     private ExpandableListView expListView;
     private ProgressBar spinner;
-
     private Toast noDataNotificationToast;
 
     private DaoSession dbSession;
@@ -109,37 +103,33 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private String sectionToOpen = "";
     private ArrayList<Integer> openSections;
     private ProgressBar progressBar;
-
 	private SharedPreferences pref;
-
     Thread loader;
-
     private boolean mReceiverRegistered = false;
     private BroadcastReceiver mReceiver;
     private ExpandableListView mylist;
     ArrayList<RecordAll> data= new ArrayList<>();
-
 
     /* DATE CONVERSION STUFF*/
     static final DateFormat localisedDateFormatter = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
     // DATE WHICH PATTERN
     static final String localDatePattern  = ((SimpleDateFormat)localisedDateFormatter).toLocalizedPattern();
     static final String groupingDatePattern  = "MMMM yyyy";
-
     // INSERT HERE YOUR DATE PATERN
     static final SimpleDateFormat groupingDateFormatter = new SimpleDateFormat(groupingDatePattern);
     static final Calendar calendar = Calendar.getInstance();
-
     // DATE STRINGS
     static final String TODAY = MainActivity.getInstance().getResources().getString( R.string.TODAY);
     static final String YESTERDAY = MainActivity.getInstance().getResources().getString( R.string.YESTERDAY);
 
+    private LayoutInflater inflater;
+    private ViewGroup container;
+    private Bundle savedInstanceState;
 
     /**
      * Constructor
      */
     public RecordOverviewFragment(){}
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -152,11 +142,15 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+        this.inflater = inflater;
+        this.container= container;
+        this.savedInstanceState = savedInstanceState;
+
         setHasOptionsMenu(true);
 		getActivity().setTitle(getResources().getString(R.string.drawer_records));
         setUpDatabase();
         getFilter();
-        initializeViews(inflater,container);
+        initializeViews(inflater,container,savedInstanceState);
         addButtons();
         this.registerBroadcastReceiver();
 
@@ -220,13 +214,13 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
          });
      }
 
-     private void initializeViews(LayoutInflater inflater, ViewGroup container){
+     private void initializeViews(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState){
          if (this.groupingKey == null) this.groupingKey = this.groupingTitles().get(DEFAULT_GROUPING_KEY_INDEX);
 
          this.setShowFilterButton(!this.filter.isNotEditable());
-
          View rootView = inflater.inflate(this.getLayoutId(), container, false);
          this.rootView = rootView;
+
          mylist = rootView.findViewById(R.id.loglistview);
          this.footer = LayoutInflater.from(getApplicationContext()).inflate(R.layout.footer_listview_progressbar, null);
          this.progressBar = footer.findViewById(R.id.progressBar);
@@ -236,7 +230,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
          this.expListView = mylist;
          this.initialiseListView();
          setListOnScrollListener();
-
      }
 
     /**
@@ -246,8 +239,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         expListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                //scrollState == SCROLL_STATE_IDLE && expListView.getLastVisiblePosition() ==
-                //                        data.size()
                 if(!view.canScrollList(View.SCROLL_AXIS_VERTICAL) && scrollState == SCROLL_STATE_IDLE) {
                    addData();
                 }
@@ -291,7 +282,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     /**Initialises the expandable list view in a background thread*/
     private void initialiseListView(){
         if (loader != null) loader.interrupt();
-        if (this.openSections == null) this.openSections = new ArrayList<Integer>();
+        if (this.openSections == null) this.openSections = new ArrayList<>();
 
         this.spinner.setVisibility(View.VISIBLE);
         loader = new Thread(new Runnable(){
@@ -368,7 +359,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 RecordOverviewFragment.this.expListView.expandGroup(index);
             }
         } else {
-            RecordOverviewFragment.this.openSections = new ArrayList<Integer>();
+            RecordOverviewFragment.this.openSections = new ArrayList<>();
         }
 
     }
@@ -439,14 +430,18 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 this.setSectionToOpen(this.sectionToOpen);
             }
         }
-
     }
+
 
     @Override
     public void onDestroy(){
-        if (mReceiver != null){
-        }
         super.onDestroy();
+        if(rootView!=null) {
+            unbindDrawables(rootView);
+            rootView=null;
+        }
+        if (mReceiver != null)
+            unregisterBroadcastReceiver();
     }
 
 
@@ -496,17 +491,14 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 			case R.id.records_action_export:
 				AlertDialog.Builder builderExport = new AlertDialog.Builder(getActivity());
 				builderExport.setTitle(MainActivity.getInstance().getString(R.string.rec_choose_export_format));
-				builderExport.setItems(R.array.format, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int position) {
-						//RecordOverviewFragment.this.exportDatabase(position);
-						Intent intent = new Intent(getActivity(), LogExport.class);
-						intent.setAction(LogExport.ACTION_EXPORT_DATABASE);
-						intent.putExtra(LogExport.FORMAT_EXPORT_DATABASE, position);
+				builderExport.setItems(R.array.format, (dialog, position) -> {
+                    //RecordOverviewFragment.this.exportDatabase(position);
+                    Intent intent = new Intent(getActivity(), LogExport.class);
+                    intent.setAction(LogExport.ACTION_EXPORT_DATABASE);
+                    intent.putExtra(LogExport.FORMAT_EXPORT_DATABASE, position);
 
-						RecordOverviewFragment.this.getActivity().startService(intent);
-					}
-				});
+                    RecordOverviewFragment.this.getActivity().startService(intent);
+                });
 				builderExport.create();
 				builderExport.show();
 
@@ -541,10 +533,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                         return this;
                     }
                 }.init(this))
-                .setNegativeButton(cancelTitle, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                    }
+                .setNegativeButton(cancelTitle, (dialog, id) -> {
+                    // User cancelled the dialog
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -572,11 +562,10 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 	 *
 	 * @param SSID the SSID
 	 */
-	public void showDetailsForSSID(Context context,  String SSID) {
+	public void showDetailsForSSID(String SSID) {
 		Log.e("RecordOverviewFragment", "Implement showDetailsForSSID!!");
         this.clearFilter();
         int ESSID_INDEX = 2;
-        ArrayList<String> ssids = new ArrayList<String>();
         this.sectionToOpen = SSID;
         this.groupingKey = this.groupingTitles().get(ESSID_INDEX);
   	}
@@ -593,7 +582,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     *  @param  mylist {@link ExpandableListView ExpandableListView}
     * */
     private RecordListAdapter populateListViewFromDB(ExpandableListView mylist) {
-        ArrayList<String> groupTitle = new ArrayList<String>();
+        ArrayList<String> groupTitle = new ArrayList<>();
 
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = this.fetchDataForFilter(this.filter, groupTitle);
         RecordListAdapter adapter = null;
@@ -633,7 +622,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             limit+=realLimit;
             //offset+=realLimit; //temporary removed because of missing records on group sidefect.
         }
-
     }
 
     private void changeAttackLimitOffset(long recordsSize){
@@ -645,7 +633,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         }
     }
 
-
     private HashMap<String, ArrayList<ExpandableListItem>> fetchDataForFilter(LogFilter filter, ArrayList<String> groupTitle){
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = new HashMap<String, ArrayList<ExpandableListItem>>();
         // Adding Items to ListView
@@ -654,7 +641,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter,offset,limit,attackRecordOffset,attackRecordLimit);
 
-        HashMap<String, Integer> mapping = new HashMap<String, Integer>();
+        HashMap<String, Integer> mapping = new HashMap<>();
         int i = 0;
         for(String key : keys){
             mapping.put(key, ids[i]);
@@ -662,14 +649,14 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         }
 
         if (groupTitle == null){
-            groupTitle = new ArrayList<String>();
+            groupTitle = new ArrayList<>();
         } else {
             groupTitle.clear();
         }
 
         for (RecordAll val : data) {
             // DO GROUPING IN HERE
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, String> map = new HashMap<>();
             map.put(RecordOverviewFragment.this.getString(R.string.RecordBSSID), val.getBssid());
             map.put(RecordOverviewFragment.this.getString(R.string.RecordIP), val.getRemoteIP());
             map.put(RecordOverviewFragment.this.getString(R.string.RecordProtocol), val.getProtocol());
@@ -687,7 +674,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
             ArrayList<ExpandableListItem> items = sectionData.get(groupID);
             if (items == null) {
-                items = new ArrayList<ExpandableListItem>();
+                items = new ArrayList<>();
                 sectionData.put(groupID, items);
                 groupTitle.add(groupID);
             }
@@ -734,6 +721,13 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
             LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, new IntentFilter(getString(R.string.broadcast)));
             this.mReceiverRegistered = true;
+        }
+    }
+
+    private void unregisterBroadcastReceiver() {
+        if (mReceiverRegistered) {
+            LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
+            this.mReceiverRegistered = false;
         }
     }
 
@@ -876,7 +870,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 	}
 
 
-
 	/*****************************
 	 *
 	 *          Date Transformation / Conversion
@@ -909,14 +902,12 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * @return formatted date String
      */
     public String getFormattedDateForGrouping(long timestamp) {
-
         // DECIDE WHICH KIND OF FORMAT SHOULD BE USED
         // MONTH FORMAT
-        String date = this.getDateAsMonthString(timestamp);
         // DAY FORMAT
         //String date = this.getDateAsDayString(timestamp);
 
-        return date;
+        return this.getDateAsMonthString(timestamp);
     }
 
     /**Returns a date as a formated string
@@ -1031,8 +1022,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         long milli = calendar.getTimeInMillis();
 
-        Date test = new Date(milli);
-
         return (milli / (long) 1000) * (long) 1000;
     }
 
@@ -1081,11 +1070,10 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     }
 
 
-	/*****************************
-	 *
-	 *          Open Dialog Methods
-	 *
-	 * ***************************/
+    /****************************
+
+     Open Dialog Methods
+     ***************************/
 
     /**Opens the grouping dialog*/
     private void openGroupingDialog(){
@@ -1147,7 +1135,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * ***************************/
 
     /**returns the group title for the given record. Uses the groupingKey to decided which value of the record should be used.
-    * @param  rec {@link Record Record }
+    * @param  rec {@link RecordAll Record }
     * @return String grouptitle*/
     public String getGroupValue(RecordAll rec){
         int index = this.groupingTitles().indexOf(this.groupingKey);
@@ -1205,12 +1193,10 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * @param  v View the anchorView*/
 	private void openFilterPopupMenuOnView(View v){
 
-        SimplePopupTable filterMenu = new SimplePopupTable(this.getActivity(), new AbstractPopup.OnPopupItemClickListener() {
-            public void onItemClick(Object ob) {
-                if (ob instanceof  AbstractPopupItem){
-                    AbstractPopupItem item = (AbstractPopupItem) ob;
-                    RecordOverviewFragment.this.onFilterMenuItemSelected(item);
-                }
+        SimplePopupTable filterMenu = new SimplePopupTable(this.getActivity(), ob -> {
+            if (ob instanceof  AbstractPopupItem){
+                AbstractPopupItem item = (AbstractPopupItem) ob;
+                RecordOverviewFragment.this.onFilterMenuItemSelected(item);
             }
         });
         filterMenu.setTitle(FILTER_MENU_POPUP_TITLE);
@@ -1301,7 +1287,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * @return ArrayList<String> protocolTitles
     * */
 	public ArrayList<String> protocolTitles(){
-		ArrayList<String> titles = new ArrayList<String>();
+		ArrayList<String> titles = new ArrayList<>();
 		for (String protocol : this.getResources().getStringArray(
 				R.array.protocols)) {
 			titles.add(protocol);
@@ -1333,7 +1319,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * @return ArayList<String> Sort type titles
     * */
 	public ArrayList<String> sortTypeTiles(){
-		ArrayList<String> titles = new ArrayList<String>();
+		ArrayList<String> titles = new ArrayList<>();
 		titles.add(MainActivity.getContext().getString(R.string.rec_time));
 		titles.add(MainActivity.getContext().getString(R.string.rec_protocol));
         titles.add(MainActivity.getContext().getString(R.string.IP));
@@ -1362,8 +1348,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * @return ArrayList<String>
     * */
     public ArrayList<String> bssids(){
-		ArrayList<String> records = daoHelper.getNetworkRecordDAO().getUniqueBSSIDRecords();
-		return records;
+        return daoHelper.getNetworkRecordDAO().getUniqueBSSIDRecords();
 	}
     /**
     * Returns an boolean array. The array is true at the indices of the selected bssids.
@@ -1387,8 +1372,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     * @return ArrayList<String>
     * */
     public ArrayList<String> essids(){
-		ArrayList<String> records = daoHelper.getNetworkRecordDAO().getUniqueESSIDRecords();
-		return records;
+        return daoHelper.getNetworkRecordDAO().getUniqueESSIDRecords();
 	}
 
     /**
@@ -1396,8 +1380,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * @return ArrayList<String>
      * */
     public ArrayList<String> ips(){
-        ArrayList<String> records = daoHelper.getAttackRecordDAO().getUniqueIPRecords();
-        return records;
+        return daoHelper.getAttackRecordDAO().getUniqueIPRecords();
     }
     /**
     * Returns an boolean array. The array is true at the indices of the selected essids.
@@ -1438,7 +1421,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * @return ArrayList<String>
      * */
 	private ArrayList<String> filterMenuTitles(){
-		ArrayList<String> titles = new ArrayList<String>();
+		ArrayList<String> titles = new ArrayList<>();
 		titles.add(FILTER_MENU_TITLE_BSSID);
 		titles.add(FILTER_MENU_TITLE_ESSID);
 		titles.add(FILTER_MENU_TITLE_IPS);
@@ -1448,7 +1431,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if (this.filter.isSet())titles.add(FILTER_MENU_TITLE_REMOVE);
 		return titles;
 	}
-
 
 	/*****************************
 	 *
@@ -1492,7 +1474,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		if(title.equals(FILTER_MENU_TITLE_BSSID)){
             ArrayList<String> titles =dialog.getSelectedItemTitles();
             if (titles.size() == this.bssids().size()){
-                this.filter.setBSSIDs(new ArrayList<String>());
+                this.filter.setBSSIDs(new ArrayList<>());
             } else {
                 this.filter.setBSSIDs(titles);
             }
@@ -1500,7 +1482,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		if(title.equals(FILTER_MENU_TITLE_ESSID)){
             ArrayList<String> titles =dialog.getSelectedItemTitles();
             if (titles.size() == this.essids().size()){
-                this.filter.setESSIDs(new ArrayList<String>());
+                this.filter.setESSIDs(new ArrayList<>());
             } else {
                 this.filter.setESSIDs(titles);
             }
@@ -1509,7 +1491,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if(title.equals(FILTER_MENU_TITLE_IPS)){
             ArrayList<String> titles =dialog.getSelectedItemTitles();
             if (titles.size() == this.ips().size()){
-                this.filter.setIps(new ArrayList<String>());
+                this.filter.setIps(new ArrayList<>());
             } else {
                 this.filter.setIps(titles);
             }
@@ -1517,7 +1499,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		if(title.equals(FILTER_MENU_TITLE_PROTOCOLS)){
             ArrayList<String> protocols = dialog.getSelectedItemTitles();
             if (protocols.size() == this.protocolTitles().size()){
-                this.filter.setProtocols(new ArrayList<String>());
+                this.filter.setProtocols(new ArrayList<>());
             } else {
 			    this.filter.setProtocols(dialog.getSelectedItemTitles());
             }
@@ -1575,7 +1557,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
 
     /**Navigation. Shows the record detail view for the given record
-    * @param  record  {@link Record Record } to show
+    * @param  record  {@link RecordAll Record } to show
     * */
     private void pushRecordDetailViewForRecord(RecordAll record){
         FragmentManager fm = this.getActivity().getFragmentManager();
@@ -1585,8 +1567,18 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             newFragment.setRecord(record);
             newFragment.setUpNavigatible(true);
             MainActivity.getInstance().injectFragment(newFragment);
-
         }
+    }
 
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }
     }
 }

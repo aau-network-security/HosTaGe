@@ -28,6 +28,7 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 
@@ -69,22 +70,16 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 	private GoogleMap sMap = null;
 	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-
 	private  MapView mapView = null;
-
 	private  Thread mLoader = null;
-
-	private  HashMap<String, String> sMarkerIDToSSID = new HashMap<String, String>();
-
+	private  HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
 	private LocationManager mLocationManager;
 	private String mLocationProvider;
-
 	private LayoutInflater inflater;
 
 	// needed for LIVE threat map
 	private boolean mReceiverRegistered = false;
 	private BroadcastReceiver mReceiver;
-	private int offset = 0;
 
 	/**
 	 * if google play services aren't available an error notification will be displayed
@@ -121,6 +116,13 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		}
 	}
 
+	private void unregisterBroadcastReceiver() {
+		if (mReceiverRegistered) {
+			LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
+			this.mReceiverRegistered = false;
+		}
+	}
+
 	/**
 	 * callback for when the info window of a marker gets clicked
 	 * open the RecordOverviewFragment and display all records belonging to an SSID
@@ -131,7 +133,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	public void onInfoWindowClick(Marker marker) {
 		String ssid = sMarkerIDToSSID.get(marker.getId());
 
-		ArrayList<String> ssids = new ArrayList<String>();
+		ArrayList<String> ssids = new ArrayList<>();
 		ssids.add(ssid);
 
 		LogFilter filter = new LogFilter();
@@ -265,39 +267,35 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 				AppCompatActivity activity = (AppCompatActivity) getActivity();
 				if (activity != null) {
-					activity.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							sMap.clear();
+					activity.runOnUiThread(() -> {
+						sMap.clear();
+						CircleOptions circleOptions = new CircleOptions().radius(200.0)
+								.fillColor(Color.argb(127, 240, 80, 60)).strokeWidth(0.0f);
+						BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory
+								.fromResource(R.drawable.wifi_marker);
+						for (Map.Entry<String, ArrayList<SSIDArea>> entry : threatAreas.entrySet()) {
+							String ssid = entry.getKey();
+							ArrayList<SSIDArea> areas = entry.getValue();
 
-							CircleOptions circleOptions = new CircleOptions().radius(200.0)
-									.fillColor(Color.argb(127, 240, 80, 60)).strokeWidth(0.0f);
-							BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory
-									.fromResource(R.drawable.wifi_marker);
-							for (Map.Entry<String, ArrayList<SSIDArea>> entry : threatAreas.entrySet()) {
-								String ssid = entry.getKey();
-								ArrayList<SSIDArea> areas = entry.getValue();
+							for (SSIDArea area : areas) {
+								int color = area.calculateColor();
+								LatLng center = area.calculateCenterLocation();
+								float radius = area.calculateRadius();
 
-								for (SSIDArea area : areas) {
-									int color = area.calculateColor();
-									LatLng center = area.calculateCenterLocation();
-									float radius = area.calculateRadius();
+								sMap.addCircle(circleOptions.center(center).radius(100.0 + radius)
+										.fillColor(color));
+								Marker marker = sMap.addMarker(new MarkerOptions()
+										.title(ssid + ": " + area.numPoints + (area.numPoints == 1
+												? getResources()
+												.getString(R.string.attack)
+												: getResources().getString(R.string.attacks))).position(
+												center));
+								marker.setIcon(bitmapDescriptor);
 
-									sMap.addCircle(circleOptions.center(center).radius(100.0 + radius)
-											.fillColor(color));
-									Marker marker = sMap.addMarker(new MarkerOptions()
-											.title(ssid + ": " + area.numPoints + (area.numPoints == 1
-													? getResources()
-													.getString(R.string.attack)
-													: getResources().getString(R.string.attacks))).position(
-													center));
-									marker.setIcon(bitmapDescriptor);
-
-									sMarkerIDToSSID.put(marker.getId(), ssid);
-								}
+								sMarkerIDToSSID.put(marker.getId(), ssid);
 							}
-
 						}
+
 					});
 				}
 			}
@@ -329,7 +327,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 							areas.add(new SSIDArea(location));
 						}
 					} else {
-						areas = new ArrayList<SSIDArea>();
+						areas = new ArrayList<>();
 						areas.add(new SSIDArea(location));
 						threatAreas.put(record.getSsid(), areas);
 					}
@@ -387,15 +385,12 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 						mapView.onCreate(savedInstanceState);
 						mapView.getMapAsync(this);
 						mapView.onResume();
-
 					}
 			} else {
 				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.getInstance());
 				builder.setMessage(Html.fromHtml(getString(R.string.google_play_services_unavailable)))
 						.setCancelable(false)
-						.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-							}
+						.setPositiveButton(getString(R.string.ok), (dialog, id) -> {
 						});
 				AlertDialog alert = builder.create();
 				alert.show();
@@ -416,12 +411,12 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
 				!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
 				Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
 			ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
 
 			return;
 		}
 		mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
+		sMap.setMyLocationEnabled(true);
 
 	}
 
@@ -445,11 +440,8 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 				return view;
 			}
 		});
-
 		locationChecker();
-
 	}
-
 
 	private void locationChecker(){
 		final AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -460,8 +452,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		mLocationProvider = mLocationManager.getBestProvider(criteria, false);
 
 		requestPermissionUpdates();
-
-		sMap.setMyLocationEnabled(true);
 
 		LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
 		sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tudarmstadt, 13));
@@ -482,6 +472,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	@Override
 	public void onResume() {
 		super.onResume();
+		registerBroadcastReceiver();
 		if (sMap != null) {
 			// repopulate
 			populateMap();
@@ -508,10 +499,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 					.setTitle(R.string.information)
 					.setMessage(R.string.no_network_connection_threatmap_msg)
 					.setPositiveButton(android.R.string.ok,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-													int which) {
-								}
+							(dialog, which) -> {
 							}
 					)
 					.setIcon(android.R.drawable.ic_dialog_info).show();
@@ -521,9 +509,9 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 	/**
 	 * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
-	 * @param requestCode
-	 * @param permissions
-	 * @param grantResults
+	 * @param requestCode the code of the Permission
+	 * @param permissions Get's the location Permission.
+	 * @param grantResults Takes any results.
 	 */
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -536,12 +524,8 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 					dialog.setTitle("Permission Required");
 					dialog.setCancelable(false);
 					dialog.setMessage("You have to Allow permission to access user location");
-					dialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package",
-									getContext().getPackageName(), null));
-						}
+					dialog.setPositiveButton("Settings", (dialog1, which) -> {
+
 					});
 					androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
 					alertDialog.show();
@@ -552,10 +536,48 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	}
 
 	@Override
-	public void onPause() {
-		super.onPause();
+	public void onStop() {
+		super.onStop();
+		if(mapView!=null)
+			unbindDrawables(mapView);
+		if (mReceiver != null)
+			unregisterBroadcastReceiver();
 		if (mLocationManager != null) {
 			mLocationManager.removeUpdates(this);
+		}
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		if(mapView!=null) {
+			unbindDrawables(mapView);
+			mapView=null;
+		}
+		if (mLocationManager != null) {
+			mLocationManager.removeUpdates(this);
+		}
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		unbindDrawables(mapView);
+		unregisterBroadcastReceiver();
+		if (mLocationManager != null) {
+			mLocationManager.removeUpdates(this);
+		}
+	}
+
+	private void unbindDrawables(View view) {
+		if (view.getBackground() != null) {
+			view.getBackground().setCallback(null);
+		}
+		if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+				unbindDrawables(((ViewGroup) view).getChildAt(i));
+			}
+			((ViewGroup) view).removeAllViews();
 		}
 	}
 }

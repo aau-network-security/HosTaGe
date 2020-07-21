@@ -1,7 +1,6 @@
 package de.tudarmstadt.informatik.hostage;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,10 +46,8 @@ import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
-import de.tudarmstadt.informatik.hostage.services.MultiStageAlarm;
 import de.tudarmstadt.informatik.hostage.system.Device;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
-
 
 import static de.tudarmstadt.informatik.hostage.commons.HelperUtils.getBSSID;
 
@@ -68,7 +65,6 @@ import static de.tudarmstadt.informatik.hostage.commons.HelperUtils.getBSSID;
 public class Hostage extends Service {
 
 	private HashMap<String, Boolean> mProtocolActiveAttacks;
-	MultiStageAlarm alarm = new MultiStageAlarm();
 	private DaoSession dbSession;
 	public static int prefix;
 	boolean activeHandlers = false;
@@ -303,7 +299,7 @@ public class Hostage extends Service {
 		connectionInfoEditor = connectionInfo.edit();
 		connectionInfoEditor.apply();
 		
-		mProtocolActiveAttacks = new HashMap<String, Boolean>();
+		mProtocolActiveAttacks = new HashMap<>();
 
 		Device.checkCapabilities();
 		Device.executePortRedirectionScript();
@@ -472,10 +468,8 @@ public class Hostage extends Service {
 			}
 			Notification notification = notificationBuilder.setOngoing(true)
 					.setPriority(Notification.PRIORITY_DEFAULT)
-
 					.build();
 			startForeground(2, notification);
-
 		}
 	}
 
@@ -651,7 +645,7 @@ public class Hostage extends Service {
 	private LinkedList<Protocol> getImplementedProtocols() {
 		String[] protocols = getResources().getStringArray(R.array.protocols);
 		String packageName = Protocol.class.getPackage().getName();
-		LinkedList<Protocol> implementedProtocols = new LinkedList<Protocol>();
+		LinkedList<Protocol> implementedProtocols = new LinkedList<>();
 
 		for (String protocol : protocols) {
 			try {
@@ -777,7 +771,6 @@ public class Hostage extends Service {
 		editor.putInt(getString(R.string.connection_info_subnet_mask), netmask);
 
 		editor.apply();
-
 	}
 
 

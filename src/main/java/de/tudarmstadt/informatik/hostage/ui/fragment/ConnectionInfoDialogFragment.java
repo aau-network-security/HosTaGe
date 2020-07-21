@@ -11,10 +11,10 @@ import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
-
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
@@ -25,6 +25,8 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
  * displays details about the current connection
  */
 public class ConnectionInfoDialogFragment extends DialogFragment {
+	private View view;
+
 	public Dialog onCreateDialog(Bundle savedInstance) {
 		// the data we want to display
 		String ssid = "undefined";
@@ -47,7 +49,7 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 		// inflate the layout with a dark theme
 		Context context = new ContextThemeWrapper(getActivity(), android.R.style.Theme_Holo);
 		LayoutInflater localInflater = getActivity().getLayoutInflater().cloneInContext(context);
-		View view = localInflater.inflate(R.layout.fragment_connectioninfo_dialog, null);
+		view = localInflater.inflate(R.layout.fragment_connectioninfo_dialog, null);
 
 		// assign values in layout
 		if (view != null) {
@@ -65,24 +67,51 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 		builder.setView(view);
 		builder.setTitle(R.string.title_connection_info);
 		builder.setIcon(android.R.drawable.ic_dialog_info);
-		builder.setPositiveButton(R.string.show_records, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				ArrayList<String> ssids = new ArrayList<String>();
-				ssids.add(filterSSID);
+		builder.setPositiveButton(R.string.show_records, (dialog, which) -> {
+			ArrayList<String> ssids = new ArrayList<>();
+			ssids.add(filterSSID);
 
-				LogFilter filter = new LogFilter();
-				filter.setESSIDs(ssids);
+			LogFilter filter = new LogFilter();
+			filter.setESSIDs(ssids);
 
-				RecordOverviewFragment recordOverviewFragment = new RecordOverviewFragment();
-				recordOverviewFragment.setFilter(filter);
-				recordOverviewFragment.setGroupKey("ESSID");
+			RecordOverviewFragment recordOverviewFragment = new RecordOverviewFragment();
+			recordOverviewFragment.setFilter(filter);
+			recordOverviewFragment.setGroupKey("ESSID");
 
-				MainActivity.getInstance().injectFragment(recordOverviewFragment);
-			}
+			MainActivity.getInstance().injectFragment(recordOverviewFragment);
 		});
 		builder.setNegativeButton(R.string.close, null);
 
 		return builder.create();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if(view!=null) {
+			unbindDrawables(view);
+			view=null;
+		}
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		if(view!=null) {
+			unbindDrawables(view);
+			view=null;
+		}
+	}
+
+	private void unbindDrawables(View view) {
+		if (view.getBackground() != null) {
+			view.getBackground().setCallback(null);
+		}
+		if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+				unbindDrawables(((ViewGroup) view).getChildAt(i));
+			}
+			((ViewGroup) view).removeAllViews();
+		}
 	}
 }

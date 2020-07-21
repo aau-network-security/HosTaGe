@@ -18,13 +18,9 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-
-
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -34,20 +30,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.legacy.app.ActionBarDrawerToggle;
-
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.model.Profile;
 import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 import de.tudarmstadt.informatik.hostage.sync.android.SyncUtils;
-import de.tudarmstadt.informatik.hostage.system.Device;
 import de.tudarmstadt.informatik.hostage.ui.adapter.DrawerListAdapter;
 import de.tudarmstadt.informatik.hostage.ui.fragment.AboutFragment;
 import de.tudarmstadt.informatik.hostage.ui.fragment.HomeFragment;
@@ -181,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
 	/**
 	 * Retrieve the singleton latest instance of the activity
-	 *
+	 *M
 	 * @return MainActivity - the singleton instance
 	 */
 	public static MainActivity getInstance() {
@@ -203,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-
         // Register syncing with android
         SyncUtils.CreateSyncAccount(this);
 
@@ -215,7 +206,8 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		locationManager.stopUpdates();
+		if(locationManager!=null)
+			locationManager.stopUpdates();
 	}
 
 	@Override
@@ -230,10 +222,28 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	@Override
 	public void onStop() {
-		this.unbindService();
-		locationManager.stopUpdates();
 		super.onStop();
+		this.unbindService();
+		if(locationManager!=null)
+			locationManager.stopUpdates();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if(locationManager!=null) {
+			locationManager.stopUpdates();
+			locationManager=null;
+		}
+		// Unbind running service
+		if (!mHoneyService.hasRunningListeners()) {
+			stopAndUnbind();
+		}
+	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -276,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
 		mDrawerList = findViewById(R.id.left_drawer);
 
 		// propagates the navigation drawer with items
-		mDrawerItems = new ArrayList<DrawerListItem>();
+		mDrawerItems = new ArrayList<>();
 		mDrawerItems.add(new DrawerListItem(R.string.drawer_overview, R.drawable.ic_menu_home));
 		mDrawerItems.add(new DrawerListItem(R.string.drawer_threat_map, R.drawable.ic_menu_mapmode));
 		mDrawerItems.add(new DrawerListItem(R.string.drawer_records, R.drawable.ic_menu_records));
@@ -315,22 +325,15 @@ public class MainActivity extends AppCompatActivity {
 		};
 
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-
 		// start the hostage service
 		startAndBind();
 
 		mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
 
-
 		if(mSharedPreferences.getBoolean("isFirstRun", true)){
 
 			// opens navigation drawer if first run
-			mDrawerLayout.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					mDrawerLayout.openDrawer(Gravity.LEFT);
-				}
-			}, 1000);
+			mDrawerLayout.postDelayed(() -> mDrawerLayout.openDrawer(Gravity.LEFT), 1000);
 
 			onFirstRun();
 		}
@@ -352,7 +355,6 @@ public class MainActivity extends AppCompatActivity {
 
             injectFragment(mDisplayedFragment);
         }
-
 	}
 
     @Override
@@ -379,20 +381,18 @@ public class MainActivity extends AppCompatActivity {
 						SharedPreferences.Editor editor = mSharedPreferences.edit();
 						editor.putBoolean("isFirstRun", false);
 						// Commit the edits!
-						editor.commit();
+						editor.apply();
 
                         // Enabled shared preferences for 'first' time non-portbinder activation
                         SharedPreferences.Editor editor1= mSharedPreferences.edit();
                         editor1.putBoolean("isFirstEmulation", true);
-                        editor1.commit();
+                        editor1.apply();
 					}
 				})
-				.setNegativeButton(getString(R.string.disagree), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						getHostageService().stopListeners();
-						stopAndUnbind();
-						finish();
-					}
+				.setNegativeButton(getString(R.string.disagree), (dialog, id) -> {
+					getHostageService().stopListeners();
+					stopAndUnbind();
+					finish();
 				});
 		AlertDialog alert = builder.create();
 		alert.show();
@@ -440,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			unbindService(mConnection);
 		} catch (IllegalArgumentException ex) {
-			// somehow already unbound.
+			ex.printStackTrace();
 		}
 	}
 
@@ -450,19 +450,6 @@ public class MainActivity extends AppCompatActivity {
 	public void bindService() {
 		bindService(getServiceIntent(), mConnection, BIND_AUTO_CREATE);
 		// mServiceBound = true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		// Unbind running service
-		if (!mHoneyService.hasRunningListeners()) {
-			stopAndUnbind();
-		}
 	}
 
 	/**
@@ -550,14 +537,11 @@ public class MainActivity extends AppCompatActivity {
 			return;
 		}
 
-
 		Fragment fragment = null;
 
 		try {
 			fragment = (Fragment) menuItemPosition.getKlass().newInstance();
-		} catch (InstantiationException e) {
-			Log.i(menuItemPosition.getKlass().toString(), "Could not create new instance of fragment");
-		} catch (IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			Log.i(menuItemPosition.getKlass().toString(), "Could not create new instance of fragment");
 		}
 
@@ -644,17 +628,16 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		if (mDisplayedFragment instanceof HomeFragment) {
-
 			if (this.mCloseWarning) {
 				MainActivity.getInstance().getHostageService().stopListeners();
 				MainActivity.getInstance().stopAndUnbind();
 				this.mCloseWarning = false;
 				finish();
+				System.exit(0);
 			} else {
 				Toast.makeText(this, "Press the back button again to close HosTaGe", Toast.LENGTH_SHORT).show();
 				this.mCloseWarning = true;
 			}
-			//}
 		} else {
 			super.onBackPressed();
 			this.mDisplayedFragment = getFragmentManager().findFragmentById(R.id.content_frame);
@@ -673,8 +656,7 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	@Override
 	public boolean onKeyDown(int keycode, KeyEvent e) {
-		switch (keycode) {
-		case KeyEvent.KEYCODE_MENU:
+		if (keycode == KeyEvent.KEYCODE_MENU) {
 			if (this.mDrawerToggle.isDrawerIndicatorEnabled()) {
 				if (this.mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
 					this.mDrawerLayout.closeDrawer(Gravity.LEFT);
@@ -813,8 +795,6 @@ public class MainActivity extends AppCompatActivity {
 			displayView(position);
 		}
 	}
-
-
 
 
 }

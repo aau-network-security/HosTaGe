@@ -9,9 +9,7 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.widget.Toast;
-
 import java.util.HashSet;
-
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.services.MultiStageAlarm;
@@ -50,7 +48,7 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 				"pref_portscan_timeout"
 		};
 
-		mPrefValuePreviewSet = new HashSet<String>();
+		mPrefValuePreviewSet = new HashSet<>();
 		mPrefValuePreviewSet.add("pref_external_location");
 		mPrefValuePreviewSet.add("pref_upload_server");
 
@@ -90,10 +88,21 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 	 */
 	@Override
 	public void onPause() {
-		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 		super.onPause();
+		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 	}
 
+	@Override
+	public void onStop() {
+		super.onStop();
+		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -101,7 +110,6 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		updatePreferenceSummary(key);
-
 		CheckBoxPreference checkboxPref = (CheckBoxPreference)getPreferenceManager().findPreference("pref_multistage");
 
 		assert checkboxPref != null;

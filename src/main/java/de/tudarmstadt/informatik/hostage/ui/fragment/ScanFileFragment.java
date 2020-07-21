@@ -7,6 +7,7 @@ import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import virustotalapi.VirusTotal;
 public class ScanFileFragment extends Fragment {
     public static String filePath;
     public String result;
+    private View rootView;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -30,7 +32,7 @@ public class ScanFileFragment extends Fragment {
             activity.setTitle("Scan File");
         }
 
-        View rootView = inflater.inflate(R.layout.fragment_scan_file, container, false);
+        rootView = inflater.inflate(R.layout.fragment_scan_file, container, false);
        // PackageManager manager = Hostage.getContext().getPackageManager();
         //PackageInfo info = null;
         /*try {
@@ -38,7 +40,6 @@ public class ScanFileFragment extends Fragment {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }*/
-
 
         TextView scanResult = rootView.findViewById(R.id.scanResult);
 
@@ -51,13 +52,8 @@ public class ScanFileFragment extends Fragment {
             e.printStackTrace();
         }
 
-
         //  scanfile(HelperUtils.filePath);
       //  result=getFileScanReport();
-
-
-
-
 
 //        TextView version = (TextView) rootView.findViewById(R.id.hostageVersion);
 
@@ -68,14 +64,8 @@ public class ScanFileFragment extends Fragment {
         return rootView;
     }
 
-
-
-
   //  public String scanner;
   //  public String path= HelperUtils.getFilePath();
-
-
-
 
     public String scanFile() throws IOException {
 
@@ -86,15 +76,41 @@ public class ScanFileFragment extends Fragment {
         Set<ReportScan> Report = VT.ReportScan(HelperUtils.fileSHA256); //The SHA256 file
 
         for (ReportScan report : Report) {
-
-            if (report.getDetected().contentEquals("true"))
-
-            {
-                sb.append("\nAV: " + report.getVendor() + " Detected: " + report.getDetected() + " Update: " + report.getUpdate() + " Malware Name: " + report.getMalwarename());
+            if (report.getDetected().contentEquals("true")) {
+                sb.append("\nAV: ").append(report.getVendor()).append(" Detected: ").append(report.getDetected()).append(" Update: ").append(report.getUpdate()).append(" Malware Name: ").append(report.getMalwarename());
             }
-
         }
         return sb.toString();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(rootView!=null) {
+            unbindDrawables(rootView);
+            rootView=null;
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(rootView!=null) {
+            unbindDrawables(rootView);
+            rootView=null;
+        }
+    }
+
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }
     }
 
 }

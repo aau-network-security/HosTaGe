@@ -72,86 +72,74 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
 		View cancelButton = actionBarButtons.findViewById(R.id.action_cancel);
 
 		// add click listener for the save button
-		doneButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity());
-				ProfileManager pmanager = null;
-				try {
-					pmanager = ProfileManager.getInstance();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		doneButton.setOnClickListener(v -> {
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity());
+			ProfileManager pmanager = null;
+			try {
+				pmanager = ProfileManager.getInstance();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-				Profile profile = null;
-				try {
-					profile = getProfile();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			Profile profile = null;
+			try {
+				profile = getProfile();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-				boolean createNew = false;
+			boolean createNew = false;
 
-				// no profile was given to the fragment, which means this is a new profile
-				if(profile == null){
-					profile = new Profile();
+			// no profile was given to the fragment, which means this is a new profile
+			if(profile == null){
+				profile = new Profile();
+				createNew = true;
+			} else {
+				// profile was given, if profile is not editable, clone the profile and make it editable
+				if(!profile.isEditable()){
+					profile = profile.cloneProfile();
+					profile.mEditable = true;
 					createNew = true;
-				} else {
-					// profile was given, if profile is not editable, clone the profile and make it editable
-					if(!profile.isEditable()){
-						profile = profile.cloneProfile();
-						profile.mEditable = true;
-						createNew = true;
-					}
 				}
-
-				// update the profile object data with data from the preferences
-				profile.mLabel = prefs.getString("pref_profile_general_name", profile.mLabel);
-				profile.mIconPath = prefs.getString("pref_profile_general_image", profile.mIconPath);
-				profile.mText = prefs.getString("pref_profile_general_description", profile.mText);
-				profile.mGhostActive = prefs.getBoolean("pref_profile_protocols_ghost_active", profile.mGhostActive);
-				profile.mGhostPorts = prefs.getString("pref_profile_protocols_ghost_text", "");
-
-				if(profile.mLabel == null || profile.mLabel.isEmpty()){
-					new AlertDialog.Builder(getActivity()).setTitle(R.string.information).setMessage(R.string.profile_needs_name)
-							.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int which) {
-
-								}
-							}).setIcon(android.R.drawable.ic_dialog_info).show();
-					return;
-				}
-
-				if(profile.mGhostPorts.isEmpty()){
-					profile.mGhostActive = false;
-				}
-
-				profile.mActiveProtocols = new HashMap<String, Boolean>(mProfileProtocols);
-
-				// persist the changes of the profile
-				if(createNew){
-					profile.mId = -1;
-					profile.mIconId = 0;
-					profile.mIconName = "";
-					profile.mIsRandom = false;
-					profile.mIcon = null;
-					pmanager.addProfile(profile);
-				} else {
-					pmanager.persistProfile(profile);
-				}
-
-				getActivity().finish();
 			}
+
+			// update the profile object data with data from the preferences
+			profile.mLabel = prefs.getString("pref_profile_general_name", profile.mLabel);
+			profile.mIconPath = prefs.getString("pref_profile_general_image", profile.mIconPath);
+			profile.mText = prefs.getString("pref_profile_general_description", profile.mText);
+			profile.mGhostActive = prefs.getBoolean("pref_profile_protocols_ghost_active", profile.mGhostActive);
+			profile.mGhostPorts = prefs.getString("pref_profile_protocols_ghost_text", "");
+
+			if(profile.mLabel == null || profile.mLabel.isEmpty()){
+				new AlertDialog.Builder(getActivity()).setTitle(R.string.information).setMessage(R.string.profile_needs_name)
+						.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+
+						}).setIcon(android.R.drawable.ic_dialog_info).show();
+				return;
+			}
+
+			if(profile.mGhostPorts.isEmpty()){
+				profile.mGhostActive = false;
+			}
+
+			profile.mActiveProtocols = new HashMap<String, Boolean>(mProfileProtocols);
+
+			// persist the changes of the profile
+			if(createNew){
+				profile.mId = -1;
+				profile.mIconId = 0;
+				profile.mIconName = "";
+				profile.mIsRandom = false;
+				profile.mIcon = null;
+				pmanager.addProfile(profile);
+			} else {
+				pmanager.persistProfile(profile);
+			}
+
+			getActivity().finish();
 		});
 
-		cancelButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getActivity().finish();
-			}
-		});
-
-
+		cancelButton.setOnClickListener(v -> getActivity().finish());
 	}
 
     /**
@@ -196,7 +184,7 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
         mPrefs.putString("pref_profile_protocols_ghost_text", pghost);
         mPrefs.putBoolean("pref_profile_protocols_ghost_active", pbghost);
 
-        mPrefs.commit();
+        mPrefs.apply();
 
         // create the preference view
         addPreferencesFromResource(R.xml.profile_preferences);
@@ -207,25 +195,22 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
 
         if(profile != null){
             pref.setIcon(profile.getIconDrawable());
-            mProfileProtocols = new HashMap<String, Boolean>(profile.mActiveProtocols);
+            mProfileProtocols = new HashMap<>(profile.mActiveProtocols);
         } else {
-            mProfileProtocols = new HashMap<String, Boolean>();
+            mProfileProtocols = new HashMap<>();
         }
 
         // show an image chooser dialog when pressing the image preference
         pref.setOnPreferenceClickListener(
-                new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        Intent intent = new Intent();
-                        intent.setType("image/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-                        int PICK_IMAGE = 1;
-                        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_icon)), PICK_IMAGE);
-                        return true;
-                    }
-                }
-        );
+				preference -> {
+					Intent intent = new Intent();
+					intent.setType("image/*");
+					intent.setAction(Intent.ACTION_GET_CONTENT);
+					int PICK_IMAGE = 1;
+					startActivityForResult(Intent.createChooser(intent, getString(R.string.select_icon)), PICK_IMAGE);
+					return true;
+				}
+		);
 
         if(profile != null){
             findPreference("pref_profile_general_name").setSummary(profile.mLabel);
@@ -290,8 +275,23 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
 	 */
 	@Override
 	public void onPause() {
-		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 		super.onPause();
+		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	/**
@@ -312,7 +312,6 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
 			p.setSummary(sharedPreferences.getString(key, ""));
 		} else if(p instanceof CheckBoxPreference && !p.getKey().equals("pref_profile_protocols_ghost_active")){
 			mProfileProtocols.put(p.getTitle().toString(), ((CheckBoxPreference) p).isChecked());
-			//System.out.println("------------------------------- P: " + ((CheckBoxPreference) p).isChecked());
 		}
 	}
 

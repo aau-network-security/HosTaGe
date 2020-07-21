@@ -58,6 +58,7 @@
             android:value="AIzaSyD5vUfuTVKbAmw2jMX9KTTbKGJ9LOhrPdU" />
 
         <activity
+            android:excludeFromRecents="true"
             android:name="de.tudarmstadt.informatik.hostage.ui.activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleInstance"
