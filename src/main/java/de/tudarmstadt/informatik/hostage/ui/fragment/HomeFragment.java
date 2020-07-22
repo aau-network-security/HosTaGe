@@ -431,8 +431,8 @@ public class HomeFragment extends Fragment {
 		super.onResume();
 		if(inflater!=null || container!=null || savedInstanceState!=null) {
 			onCreateView(inflater, container, savedInstanceState);
-			updateUI();
 			registerBroadcastReceiver();
+			updateUI();
 		}
 	}
 

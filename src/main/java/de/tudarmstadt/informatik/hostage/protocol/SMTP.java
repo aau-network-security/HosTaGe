@@ -1,16 +1,9 @@
 package de.tudarmstadt.informatik.hostage.protocol;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import de.tudarmstadt.informatik.hostage.protocol.smptUtils.SmtpActionType;
-import de.tudarmstadt.informatik.hostage.protocol.smptUtils.SmtpMessage;
 import de.tudarmstadt.informatik.hostage.protocol.smptUtils.SmtpRequest;
 import de.tudarmstadt.informatik.hostage.protocol.smptUtils.SmtpResponse;
 import de.tudarmstadt.informatik.hostage.protocol.smptUtils.SmtpState;
@@ -57,7 +50,6 @@ public class SMTP implements  Protocol {
         return TALK_FIRST.CLIENT;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return "SMTP";

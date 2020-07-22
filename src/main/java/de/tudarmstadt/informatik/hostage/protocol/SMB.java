@@ -11,8 +11,6 @@ import org.alfresco.jlan.app.XMLServerConfiguration;
 import org.alfresco.jlan.netbios.server.NetBIOSNameServer;
 import org.alfresco.jlan.server.config.InvalidConfigurationException;
 import org.alfresco.jlan.smb.server.SMBServer;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -201,7 +199,6 @@ public class SMB implements Protocol {
         return TALK_FIRST.CLIENT;
     }
 
-    @NotNull
     public String toString(){
         return "SMB";
     }

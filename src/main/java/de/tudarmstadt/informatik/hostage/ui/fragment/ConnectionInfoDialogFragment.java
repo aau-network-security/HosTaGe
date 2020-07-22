@@ -7,13 +7,19 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.ArrayList;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
@@ -63,10 +69,11 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 		final String filterSSID = ssid;
 
 		// build the actual dialog
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), AlertDialog.THEME_HOLO_DARK);
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+
 		builder.setView(view);
-		builder.setTitle(R.string.title_connection_info);
-		builder.setIcon(android.R.drawable.ic_dialog_info);
+		builder.setCustomTitle(dialogTileCustom(context));
+		builder.setIcon(getResources().getDrawable(android.R.drawable.ic_dialog_info));
 		builder.setPositiveButton(R.string.show_records, (dialog, which) -> {
 			ArrayList<String> ssids = new ArrayList<>();
 			ssids.add(filterSSID);
@@ -83,6 +90,18 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 		builder.setNegativeButton(R.string.close, null);
 
 		return builder.create();
+	}
+
+	private TextView dialogTileCustom(Context context){
+		TextView titleOfDialog = new TextView(context);
+		titleOfDialog.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+		titleOfDialog.setText(R.string.title_connection_info);
+		titleOfDialog.setTextColor(getResources().getColor(R.color.green));
+		titleOfDialog.setTypeface(Typeface.DEFAULT_BOLD);
+		titleOfDialog.setGravity(Gravity.CENTER);
+		titleOfDialog.setPadding(0,20,0,0);
+
+		return  titleOfDialog;
 	}
 
 	@Override
