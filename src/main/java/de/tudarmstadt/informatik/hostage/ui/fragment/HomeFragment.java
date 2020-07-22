@@ -414,27 +414,27 @@ public class HomeFragment extends Fragment {
 		return mRootView;
 	}
 
-	@Override
-	public void onStop() {
-		super.onStop();
-		if(mRootView!=null) {
-			unbindDrawables(mRootView);
-			mRootView=null;
-		}
-		if (mReceiver != null){
-			unregisterBroadcastReceiver();
-		}
-	}
-
-	@Override
-	public void onResume(){
-		super.onResume();
-		if(inflater!=null || container!=null || savedInstanceState!=null) {
-			onCreateView(inflater, container, savedInstanceState);
-			registerBroadcastReceiver();
-			updateUI();
-		}
-	}
+//	@Override
+//	public void onStop() {
+//		super.onStop();
+//		if(mRootView!=null) {
+//			unbindDrawables(mRootView);
+//			mRootView=null;
+//		}
+//		if (mReceiver != null){
+//			unregisterBroadcastReceiver();
+//		}
+//	}
+//
+//	@Override
+//	public void onResume(){
+//		super.onResume();
+//		if(inflater!=null || container!=null || savedInstanceState!=null) {
+//			onCreateView(inflater, container, savedInstanceState);
+//			registerBroadcastReceiver();
+//			updateUI();
+//		}
+//	}
 
 	@Override
 	public void onStart() {
