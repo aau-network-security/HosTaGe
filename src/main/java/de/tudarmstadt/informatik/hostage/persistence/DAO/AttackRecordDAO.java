@@ -33,6 +33,7 @@ import static de.tudarmstadt.informatik.hostage.persistence.DAO.SyncDeviceDAO.th
 public class AttackRecordDAO extends  DAO {
     private DaoSession daoSession;
     private Context context;
+    private int limit =20; //limit for the details Conversation
 
 
     public AttackRecordDAO(DaoSession daoSession){
@@ -610,25 +611,21 @@ public class AttackRecordDAO extends  DAO {
 
 
     /**
-     * Returns the Conversation of a specific attack id
+     * Returns the Conversation of a specific attack id with a limit of 10 in case of too many packets.
      *
      * @param attack_id Tha attack id to match the query against.
      *
-     * @return A arraylist with all {@link Record Records}s for an attack id.
+     * @return A arraylist with all {@link RecordAll Records}s for an attack id.
      */
     public synchronized ArrayList<RecordAll> getConversationForAttackID(long attack_id) {
-        ArrayList<RecordAll> recordList = new ArrayList<RecordAll>();
         MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
 
         QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
+        qb.limit(limit);
         qb.where(MessageRecordDao.Properties.Attack_id.eq(attack_id));
+        ArrayList<MessageRecord> attackRecords =  (ArrayList<MessageRecord>) qb.list();
 
-        ArrayList<MessageRecord> attackRecords =  ( ArrayList<MessageRecord>) qb.list();
-
-        recordList.addAll(attackRecords);
-
-        return recordList;
-
+        return new ArrayList<>(attackRecords);
     }
     /**
      * Gets all {@link RecordAll Records} saved in the database.
@@ -666,11 +663,11 @@ public class AttackRecordDAO extends  DAO {
     }
 
     /**
-     * Gets a single {@link Record} with the given attack id from the database.
+     * Gets a single {@link RecordAll} with the given attack id from the database.
      *
      * @param attack_id
-     *            The attack id of the {@link Record};
-     * @return The {@link Record}.
+     *            The attack id of the {@link RecordAll};
+     * @return The {@link RecordAll}.
      */
     public synchronized RecordAll getRecordOfAttackId(long attack_id) {
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
