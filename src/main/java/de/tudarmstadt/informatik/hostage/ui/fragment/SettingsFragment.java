@@ -131,6 +131,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
 	public void onResume() {
 		super.onResume();
 		onCreateView(inflater,container,savedInstanceState);
+		manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
 	}
 
 	@Override

@@ -432,10 +432,33 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(expListView!=null){
+            expListView=null;
+        }
+        if(rootView!=null) {
+            unbindDrawables(rootView);
+            rootView=null;
+        }
+        if (mReceiver != null)
+            unregisterBroadcastReceiver();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(mReceiver == null)
+            registerBroadcastReceiver();
+    }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
+        if(expListView!=null){
+            expListView=null;
+        }
         if(rootView!=null) {
             unbindDrawables(rootView);
             rootView=null;
@@ -1192,7 +1215,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     /**Opens the filter menu on a anchor view. The filter menu will always be on top of the anchor.
     * @param  v View the anchorView*/
 	private void openFilterPopupMenuOnView(View v){
-
         SimplePopupTable filterMenu = new SimplePopupTable(this.getActivity(), ob -> {
             if (ob instanceof  AbstractPopupItem){
                 AbstractPopupItem item = (AbstractPopupItem) ob;

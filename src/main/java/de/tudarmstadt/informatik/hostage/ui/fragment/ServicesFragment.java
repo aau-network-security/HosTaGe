@@ -304,24 +304,27 @@ public class ServicesFragment extends TrackerFragment {
      * overrides onStop
      * unloads the ChangeListener
      */
+    //TODO ask about removing the leak
     @Override
     public void onStop() {
         super.onStop();
         if(rootView!=null) {
             mServicesSwitchService.setOnCheckedChangeListener(null);
-            unbindDrawables(rootView);
-            rootView=null;
+//            unbindDrawables(rootView);
+//            rootView=null;
         }
+
         if (mReceiver != null)
             unregisterBroadcastReceiver();
+
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        onCreateView(inflater,container,savedInstanceState);
-        registerBroadcastReceiver();
-    }
+//    @Override
+//    public void onResume(){
+//        super.onResume();
+//        onCreateView(inflater,container,savedInstanceState);
+//        registerBroadcastReceiver();
+//    }
 
     /**
      * overrides onDestroy

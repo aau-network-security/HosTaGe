@@ -1733,6 +1733,15 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         }
     }
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(rootView!=null) {
+            rootView=null;
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
