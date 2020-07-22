@@ -89,7 +89,7 @@ public class SMB implements Protocol {
         XMLServerConfiguration smbConfig = new XMLServerConfiguration();
 
         try {
-            smbConfig.loadConfiguration(new InputStreamReader(MainActivity.context.getResources().openRawResource(R.raw.jlan_config)));
+            smbConfig.loadConfiguration(new InputStreamReader(MainActivity.getContext().getResources().openRawResource(R.raw.jlan_config)));
             mCifsServer = new CifsServer(smbConfig, this, fileInject);
             mCifsServer.run();
         } catch (IOException e) {
@@ -106,7 +106,7 @@ public class SMB implements Protocol {
     }
 
     public int getLocalIp(){
-        WifiManager wifi = (WifiManager) MainActivity.context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifi = (WifiManager) MainActivity.getContext().getSystemService(Context.WIFI_SERVICE);
         DhcpInfo dhcp = wifi.getDhcpInfo();
 
         return dhcp.ipAddress;

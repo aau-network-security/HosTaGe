@@ -1,5 +1,6 @@
 package de.tudarmstadt.informatik.hostage.ui.activity;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,12 +63,13 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
  * @created 12.01.14 23:24
  */
 public class MainActivity extends AppCompatActivity {
-	public static volatile Context context;
+	private static WeakReference<Context> context;
 
-	MyLocationManager locationManager;
+	private MyLocationManager locationManager;
 
-	/** singleton instance of the MainActivity **/
-	private static MainActivity sInstance = null;
+	/** singleton instance of the MainActivity with WeakReference to avoid Memory leaks **/
+
+	private static WeakReference<MainActivity> mActivityRef;
 
 	/**
 	 * The currently displayed fragment
@@ -177,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
 	 * @return MainActivity - the singleton instance
 	 */
 	public static MainActivity getInstance() {
-		return sInstance;
+		return mActivityRef.get();
 	}
 
 	/**
@@ -186,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
 	 * @return the context
 	 */
 	public static Context getContext() {
-		return MainActivity.context;
+		return context.get();
 	}
 
 	/**
@@ -213,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		locationManager.getUpdates(60 * 1000, 3,context);
+		locationManager.getUpdates(60 * 1000, 3,getContext());
 
 	}
 
@@ -252,10 +254,10 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         // make the main activity an singleton
-		sInstance = this;
+		mActivityRef  = new WeakReference<>( this);
 
 		// sets the static context reference to the application context
-		MainActivity.context = getApplicationContext();
+		context = new WeakReference<>(getApplicationContext());
 		setContentView(R.layout.activity_drawer_main);
 		getLocationData();
 
@@ -404,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	private void getLocationData() {
 		locationManager = new MyLocationManager(this);
-		locationManager.getUpdates(60 * 1000, 3,context);
+		locationManager.getUpdates(60 * 1000, 3,getContext());
 	}
 
 	/**
@@ -413,7 +415,7 @@ public class MainActivity extends AppCompatActivity {
 	public void startAndBind() {
 		if (!isServiceRunning()) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-				context.startForegroundService(getServiceIntent());
+				getContext().startForegroundService(getServiceIntent());
 			else
 				startService(getServiceIntent());
 

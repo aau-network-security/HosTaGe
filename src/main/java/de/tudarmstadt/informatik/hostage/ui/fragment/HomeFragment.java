@@ -421,6 +421,9 @@ public class HomeFragment extends Fragment {
 			unbindDrawables(mRootView);
 			mRootView=null;
 		}
+		if (mReceiver != null){
+			unregisterBroadcastReceiver();
+		}
 	}
 
 	@Override

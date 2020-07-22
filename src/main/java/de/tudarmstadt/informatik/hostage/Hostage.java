@@ -1,5 +1,6 @@
 package de.tudarmstadt.informatik.hostage;
 
+import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -129,7 +130,7 @@ public class Hostage extends Service {
 		}
 	}
 
-	private static Context context;
+	private static WeakReference<Context> context;
 
 	/**
 	 * Returns the application context.
@@ -137,7 +138,7 @@ public class Hostage extends Service {
 	 * @return context.
 	 */
 	public static Context getContext() {
-		return Hostage.context;
+		return context.get();
 	}
 
 	private LinkedList<Protocol> implementedProtocols;
@@ -293,7 +294,7 @@ public class Hostage extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		Hostage.context = getApplicationContext();
+		context = new WeakReference<>(getApplicationContext());
 		implementedProtocols = getImplementedProtocols();
 		connectionInfo = getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 		connectionInfoEditor = connectionInfo.edit();
@@ -603,7 +604,7 @@ public class Hostage extends Service {
 		intent.setAction("SHOW_HOME");
 		stackBuilder.addNextIntent(intent);
 
-		PendingIntent resultPendingIntent = PendingIntent.getActivity(MainActivity.context, 0, intent, 0); //stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent resultPendingIntent = PendingIntent.getActivity(MainActivity.getContext(), 0, intent, 0); //stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		return resultPendingIntent;
 
@@ -698,15 +699,15 @@ public class Hostage extends Service {
 	 * @see MainActivity #CONNECTION_INFO
 	 */
 	private void updateConnectionInfo() {
-		if (!HelperUtils.isNetworkAvailable(context) ){
+		if (!HelperUtils.isNetworkAvailable(getContext()) ){
 			return; // no connection
 		}
 
-		if (HelperUtils.isCellurarConnected(context)) {
-			addCellularInfo(context);
+		if (HelperUtils.isCellurarConnected(getContext())) {
+			addCellularInfo(getContext());
 
 		}else {
-			final WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+			final WifiManager wifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 			final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
 
 			if (connectionInfo == null) {
@@ -762,7 +763,7 @@ public class Hostage extends Service {
 	 * @see MainActivity #CONNECTION_INFO
 	 */
 	public void updateEditor(String ssid, String bssid, int ipAddress, int netmask){
-		SharedPreferences pref = context.getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
+		SharedPreferences pref = getContext().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 		Editor editor = pref.edit();
 
 		editor.putString(getString(R.string.connection_info_ssid), ssid);

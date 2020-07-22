@@ -70,7 +70,7 @@ public class FileInject {
     }
 
     public int getLocalIp() {
-        WifiManager wifi = (WifiManager) MainActivity.context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifi = (WifiManager) MainActivity.getContext().getSystemService(Context.WIFI_SERVICE);
         DhcpInfo dhcp = wifi.getDhcpInfo();
 
         return dhcp.ipAddress;

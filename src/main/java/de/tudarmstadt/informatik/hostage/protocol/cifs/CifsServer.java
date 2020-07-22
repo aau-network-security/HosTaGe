@@ -82,7 +82,7 @@ public class CifsServer extends JLANCifsServer {
         FilesystemsConfigSection filesysConfig = (FilesystemsConfigSection) serverConfiguration.getConfigSection(FilesystemsConfigSection.SectionName);
 
         //creating a file which references to the apps cache folder
-        File cacheFolder = MainActivity.context.getExternalCacheDir();
+        File cacheFolder = MainActivity.getContext().getExternalCacheDir();
         File jlanFolder = new File(cacheFolder.getAbsolutePath() + "/jlan");
         deleteRecursive(jlanFolder);
 
@@ -194,7 +194,7 @@ public class CifsServer extends JLANCifsServer {
      * helper method to obtain the broadcast address
      */
     private String getBroadcastAddress() throws IOException {
-        WifiManager wifi = (WifiManager) MainActivity.context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifi = (WifiManager) MainActivity.getContext().getSystemService(Context.WIFI_SERVICE);
         DhcpInfo dhcp = wifi.getDhcpInfo();
         // handle null somehow
         int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;

@@ -756,7 +756,7 @@ public class  ProfileManager {
 				false
 		);
 
-		for(String protocol: MainActivity.context.getResources().getStringArray(R.array.protocols)){
+		for(String protocol: MainActivity.getContext().getResources().getStringArray(R.array.protocols)){
 			if(protocol.equals("GHOST")) continue;
 			paranoidProfile.mActiveProtocols.put(protocol, true);
 		}

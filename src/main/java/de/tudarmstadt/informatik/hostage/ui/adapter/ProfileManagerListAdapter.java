@@ -141,7 +141,7 @@ public class ProfileManagerListAdapter extends ArrayAdapter<Profile> {
 			    //Bitmap bitmap = Bitmap.createScaledBitmap(item.getIconBitmap(), 32, 32, true);
 			    holder.mItemIcon.setImageBitmap(item.getIconBitmap());
 		    } else {
-			    holder.mItemIcon.setImageBitmap(BitmapFactory.decodeResource(MainActivity.context.getResources(), R.drawable.ic_launcher));
+			    holder.mItemIcon.setImageBitmap(BitmapFactory.decodeResource(MainActivity.getContext().getResources(), R.drawable.ic_launcher));
 		    }
 
 		    // open the profile edit activity, if the edit button was pressed
