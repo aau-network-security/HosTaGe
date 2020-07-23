@@ -39,8 +39,6 @@
 
     <uses-feature android:name="android.hardware.wifi.direct" android:required="true"/>
 
-
-
     <application
         android:name="de.tudarmstadt.informatik.hostage.HostageApplication"
         android:allowBackup="true"
