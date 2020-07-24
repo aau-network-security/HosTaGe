@@ -70,9 +70,10 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 	private GoogleMap sMap = null;
 	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-	private  MapView mapView = null;
-	private  Thread mLoader = null;
-	private  HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
+	private MapView mapView = null;
+	private View rootView=null;
+	private Thread mLoader = null;
+	private HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
 	private LocationManager mLocationManager;
 	private String mLocationProvider;
 	private LayoutInflater inflater;
@@ -307,7 +308,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 				ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter);
 
 				HashMap<String, ArrayList<SSIDArea>> threatAreas
-						= new HashMap<String, ArrayList<SSIDArea>>();
+						= new HashMap<>();
 
 				for (RecordAll record : records) {
 					LatLng location = new LatLng(record.getLatitude(), record.getLongitude());
@@ -366,7 +367,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 			activity.setTitle(getResources().getString(R.string.drawer_threat_map));
 		}
 
-		View rootView = inflater.inflate(R.layout.fragment_threatmap, container, false);
+		rootView = inflater.inflate(R.layout.fragment_threatmap, container, false);
 		this.inflater =inflater;
 
 		if (rootView != null) {
@@ -418,6 +419,8 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
 		sMap.setMyLocationEnabled(true);
 
+		Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		moveCameraToCurrentLocation(currentLocation);
 	}
 
 	private void setInfoWindowAdapter(){
@@ -445,20 +448,19 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 	private void locationChecker(){
 		final AppCompatActivity activity = (AppCompatActivity) getActivity();
-
 		mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 		Criteria criteria = new Criteria();
 		criteria.setAccuracy(Criteria.ACCURACY_FINE);
 		mLocationProvider = mLocationManager.getBestProvider(criteria, false);
-
 		requestPermissionUpdates();
-
-		LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
-		sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tudarmstadt, 13));
-
 		populateMap();
-
 		registerBroadcastReceiver();
+	}
+
+	private void moveCameraToCurrentLocation(Location currentLocation){
+		//LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
+		LatLng newLocation = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+		sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 13));
 	}
 
 	@Override
@@ -538,8 +540,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	@Override
 	public void onStop() {
 		super.onStop();
-		if(mapView!=null)
-			unbindDrawables(mapView);
 		if (mReceiver != null)
 			unregisterBroadcastReceiver();
 		if (mLocationManager != null) {
@@ -550,10 +550,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	@Override
 	public void onPause() {
 		super.onPause();
-		if(mapView!=null) {
-			unbindDrawables(mapView);
-			mapView=null;
-		}
 		if (mLocationManager != null) {
 			mLocationManager.removeUpdates(this);
 		}
