@@ -246,7 +246,7 @@ public class MultiStage extends Service {
         manager.createNotificationChannel(chan);
 
         Notification.Builder notificationBuilder = new Notification.Builder(this,NOTIFICATION_CHANNEL_ID);
-        notificationBuilder.setContentTitle("MutiStage").setContentText("MutiStage running...")
+        notificationBuilder.setContentTitle("MultiStage").setContentText("MultiStage running...")
                 .setSmallIcon(R.drawable.ic_launcher);
 
         notification = notificationBuilder.setOngoing(true)

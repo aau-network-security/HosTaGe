@@ -28,6 +28,7 @@ import de.tudarmstadt.informatik.hostage.nio.Writer;
 import de.tudarmstadt.informatik.hostage.protocol.GHOST;
 import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
+import de.tudarmstadt.informatik.hostage.protocol.coapUtils.COAPHandler;
 import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
 import de.tudarmstadt.informatik.hostage.sync.tracing.TracingSyncService;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
@@ -186,6 +187,16 @@ public class Handler implements Runnable {
 			return;
 		}
 
+		if(protocol.toString().equals("COAP")){
+			handleCOAPPackets();
+			kill();
+			return;
+		}
+
+		regularProtocolsIOStream();
+	}
+
+	private void regularProtocolsIOStream(){
 		InputStream in;
 		OutputStream out;
 		try {
@@ -203,6 +214,11 @@ public class Handler implements Runnable {
 	private void handleMQTTPackets() throws UnknownHostException {
 		logMQTTPackets();
 	}
+
+	private void handleCOAPPackets(){
+		logCOAPPackets();
+	}
+
 
 	/**
 	 * Gets attack ID for the attack. Also increases the attack ID counter by
@@ -327,11 +343,20 @@ public class Handler implements Runnable {
 		}
 	}
 
-	public void log(MessageRecord.TYPE type) throws UnknownHostException {
+	public void logMQTT(MessageRecord.TYPE type) throws UnknownHostException {
     	if(!logged){
 			Logger.log(Hostage.getContext(), createNetworkRecord());
 			Logger.log(Hostage.getContext(), MQTTHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
 			Logger.log(Hostage.getContext(),MQTTHandler.createMessageRecord(type,attack_id));
+			logged = true;
+		}
+	}
+
+	public void logCOAP(MessageRecord.TYPE type){
+		if(!logged){
+			Logger.log(Hostage.getContext(), createNetworkRecord());
+			Logger.log(Hostage.getContext(), COAPHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
+			Logger.log(Hostage.getContext(),COAPHandler.createMessageRecord(type,attack_id));
 			logged = true;
 		}
 	}
@@ -387,6 +412,10 @@ public class Handler implements Runnable {
 	}
 
 	protected void logMQTTPackets() throws UnknownHostException {
-		log(MessageRecord.TYPE.RECEIVE);
+		logMQTT(MessageRecord.TYPE.RECEIVE);
+	}
+
+	protected void logCOAPPackets() {
+		logCOAP(MessageRecord.TYPE.RECEIVE);
 	}
 }

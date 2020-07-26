@@ -2,6 +2,7 @@
 <resources>
 
     <string-array name="protocols">
+        <item>COAP</item>
         <item>ECHO</item>
         <item>FTP</item>
         <item>GHOST</item>
@@ -20,6 +21,7 @@
     </string-array>
 
     <string-array name="protocols_description">
+        <item>Constrained Application Protocol (CoAP) is a specialized Internet Application Protocol for constrained devices, as defined in RFC 7252</item>
         <item>A service for testing and measurement of round-trip times in IP networks</item>
         <item>A protocol used to transfer files from one host to another host</item>
         <item>A protocol mirrors an incoming connection back to the attacker on the same port, that it is running on</item>
@@ -33,11 +35,12 @@
         <item>A protocol for VoIP (Voice over IP) services</item>
         <item>A protocol used for providing shared access to files, printers, serial ports, and miscellaneous communications between nodes on a network</item>
         <item>A network protocol that provides file access, file transfer, and file management functionalities over any reliable data stream</item>
-        <item> Mail Transfer Protocol used to send and receive emails</item>
+        <item>Mail Transfer Protocol used to send and receive emails</item>
         <item>A network protocol used on the Internet or local area networks to provide a bidirectional interactive text-oriented communication facility using a virtual terminal connection</item>
     </string-array>
 
     <integer-array name="ports">
+        <item>5683</item>
         <item>7</item>
         <item>21</item>
         <item>1433</item>

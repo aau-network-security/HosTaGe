@@ -500,6 +500,9 @@ public class Hostage extends Service {
 				if(protocolName.equals("MQTT")) {
 					return addMQTTListener(protocol, port);
 				}
+				if(protocolName.equals("COAP")){
+					return addCOAPListener(protocol,port);
+				}
 				Listener listener = new Listener(this, protocol, port);
 				listeners.add(listener);
 				return listener;
@@ -509,9 +512,14 @@ public class Hostage extends Service {
 	}
 
 	private MQTTListener addMQTTListener(Protocol protocolName, int port){
-			MQTTListener listener = new MQTTListener(this, protocolName, port);
-			listeners.add(listener);
+		MQTTListener listener = new MQTTListener(this, protocolName, port);
+		listeners.add(listener);
+		return listener;
+	}
 
+	private COAPListener addCOAPListener(Protocol protocolName, int port){
+		COAPListener listener = new COAPListener(this, protocolName, port);
+		listeners.add(listener);
 		return listener;
 	}
 
