@@ -13,8 +13,6 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
  * Modbus serial communications protocol on industraial PLCs
  */
 public class MODBUS implements Protocol {
-
-
     private int port = 502;
 
     @Override
