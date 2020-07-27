@@ -150,7 +150,7 @@ public class Handler implements Runnable {
 			if(client != null)
 				client.close();
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 		//uploadTracing();
 		listener.refreshHandlers();
@@ -178,16 +178,12 @@ public class Handler implements Runnable {
 		service.notifyUI(this.getClass().getName(),
 				new String[] { service.getString(R.string.broadcast_started), protocol.toString(), Integer.toString(listener.getPort()) });
 		if(protocol.toString().equals("MQTT")){
-			try {
-				handleMQTTPackets();
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
+			handleMQTTPackets();
 			kill();
 			return;
 		}
 
-		if(protocol.toString().equals("COAP")){
+		if(protocol.toString().equals("COAP") && COAPHandler.isAnAttackOngoing()){
 			handleCOAPPackets();
 			kill();
 			return;
@@ -211,7 +207,7 @@ public class Handler implements Runnable {
 		kill();
 	}
 
-	private void handleMQTTPackets() throws UnknownHostException {
+	private void handleMQTTPackets() {
 		logMQTTPackets();
 	}
 
@@ -343,11 +339,12 @@ public class Handler implements Runnable {
 		}
 	}
 
-	public void logMQTT(MessageRecord.TYPE type) throws UnknownHostException {
+	public void logMQTT(MessageRecord.TYPE type){
     	if(!logged){
 			Logger.log(Hostage.getContext(), createNetworkRecord());
 			Logger.log(Hostage.getContext(), MQTTHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
 			Logger.log(Hostage.getContext(),MQTTHandler.createMessageRecord(type,attack_id));
+			MQTTHandler.removeCurrentConnected();
 			logged = true;
 		}
 	}
@@ -357,21 +354,10 @@ public class Handler implements Runnable {
 			Logger.log(Hostage.getContext(), createNetworkRecord());
 			Logger.log(Hostage.getContext(), COAPHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
 			Logger.log(Hostage.getContext(),COAPHandler.createMessageRecord(type,attack_id));
+			COAPHandler.removeCurrentConnected();
 			logged = true;
 		}
 	}
-
-    //just for debugging purpose
-    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
 
 	/**
 	 * Communicates with a client using the corresponding protocol
@@ -411,7 +397,7 @@ public class Handler implements Runnable {
 		}
 	}
 
-	protected void logMQTTPackets() throws UnknownHostException {
+	protected void logMQTTPackets() {
 		logMQTT(MessageRecord.TYPE.RECEIVE);
 	}
 

@@ -98,9 +98,9 @@ public class COAPListener extends Listener {
     }
 
     @Override
-    public void stop() { stopMqttBroker();}
+    public void stop() { stopServer();}
 
-    public void stopMqttBroker(){
+    public void stopServer(){
         if(super.getPort() == defaultPort) {
             COAP.serverStop();
             if(serverThread!=null)

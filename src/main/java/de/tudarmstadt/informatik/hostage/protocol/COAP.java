@@ -14,7 +14,7 @@ import de.tudarmstadt.informatik.hostage.protocol.coapUtils.COAPHandler;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 public class COAP implements Protocol {
-    private final static String defaultAddress="0.0.0.0";
+    private final static String defaultAddress="192.168.1.5";
     private static InetAddress address=null;
     static {
         try {

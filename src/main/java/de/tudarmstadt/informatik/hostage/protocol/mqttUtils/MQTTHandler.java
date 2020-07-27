@@ -170,7 +170,6 @@ public class MQTTHandler {
      * Checks if a topic is published from an Attacker and updates the record.
      */
     public synchronized static void isTopicPublished(){
-       // boolean isAnAttackerConnected = discoverAttack();
         boolean isMessagePublished = isMessagePublished();
         if(isMessagePublished){
             if(!currentPublishMessages.isEmpty()) {
@@ -311,7 +310,7 @@ public class MQTTHandler {
      * @throws UnknownHostException
      */
 
-    public synchronized static AttackRecord createAttackRecord(Long attack_id, String externalIP, Protocol protocol,int subnetMask,String BSSID,int internalIPAddress) throws UnknownHostException {
+    public synchronized static AttackRecord createAttackRecord(Long attack_id, String externalIP, Protocol protocol,int subnetMask,String BSSID,int internalIPAddress){
         AttackRecord record = new AttackRecord();
         String internalIp = HelperUtils.intToStringIp(internalIPAddress);
         String remoteIp = getIPCurrentClient();
@@ -326,13 +325,17 @@ public class MQTTHandler {
         record.setExternalIP(externalIP);
         record.setLocalIP(internalIp);
         record.setLocalPort(brokerPort);
-        int remoteIPAddress = HelperUtils.getInetAddress(InetAddress.getByName(remoteIp));
+        int remoteIPAddress = 0;
+        try {
+            remoteIPAddress = HelperUtils.getInetAddress(InetAddress.getByName(remoteIp));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         record.setWasInternalAttack(checkIfIsInternalAttack(remoteIPAddress,internalIp));
         record.setRemoteIP(remoteIp);
         record.setRemotePort(getPortCurrentClient());
         record.setBssid(BSSID);
 
-        removeCurrentConnected(); //removes the current client in order to be able to log the next attack
         return record;
     }
 

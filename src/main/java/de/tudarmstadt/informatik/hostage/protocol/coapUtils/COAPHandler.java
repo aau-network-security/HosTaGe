@@ -7,6 +7,7 @@ import com.mbed.coap.server.CoapExchange;
 import com.mbed.coap.utils.CoapResource;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -22,10 +23,13 @@ import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 
 public class COAPHandler extends CoapResource {
     private static ArrayList<CoapPacket> requests = new ArrayList<>();
+    private static final ArrayList<CoapPacket> fullRequests = new ArrayList<>();
+
 
     @Override
     public void get(CoapExchange exchange) {
         requests.add(exchange.getRequest());
+        fullRequests.add(exchange.getRequest());
         exchange.setResponseCode(Code.C205_CONTENT);
         exchange.setResponseBody("Response");
         exchange.sendResponse();
@@ -34,6 +38,7 @@ public class COAPHandler extends CoapResource {
     @Override
     public void put(CoapExchange exchange) {
         requests.add(exchange.getRequest());
+        fullRequests.add(exchange.getRequest());
         exchange.setResponseCode(Code.C204_CHANGED);
         exchange.setResponseBody(Integer.valueOf(exchange.getRequestBody().length).toString());
         exchange.sendResponse();
@@ -42,12 +47,14 @@ public class COAPHandler extends CoapResource {
     @Override
     public void post(CoapExchange exchange) throws CoapCodeException {
         requests.add(exchange.getRequest());
+        fullRequests.add(exchange.getRequest());
         throw new CoapCodeException(Code.C400_BAD_REQUEST);
     }
 
     @Override
     public void delete(CoapExchange exchange){
         requests.add(exchange.getRequest());
+        fullRequests.add(exchange.getRequest());
         exchange.setResponseCode(Code.C202_DELETED);
         exchange.sendResponse();
     }
@@ -57,10 +64,15 @@ public class COAPHandler extends CoapResource {
     }
 
     private static CoapPacket getCurrentPacket(){
-        return requests.get(0);
+        InetSocketAddress socketAddress = new InetSocketAddress(5683);
+        CoapPacket coapPacket = new CoapPacket(socketAddress);
+        if(!requests.isEmpty())
+            return requests.get(0);
+        else
+            return coapPacket;
     }
 
-    private static void removeCurrentConnected(){
+    public static void removeCurrentConnected(){
         if(!requests.isEmpty())
             requests.clear();
     }
@@ -81,6 +93,7 @@ public class COAPHandler extends CoapResource {
         AttackRecord record = new AttackRecord();
         String internalIp = HelperUtils.intToStringIp(internalIPAddress);
         String remoteIp = getCurrentPacket().getRemoteAddress().getAddress().toString();
+        remoteIp = remoteIp.startsWith("/") ? remoteIp.substring(1) : remoteIp;
 
         record.setAttack_id(attack_id);
         record.setSync_id(attack_id);
@@ -96,6 +109,7 @@ public class COAPHandler extends CoapResource {
         try {
             remoteIPAddress = HelperUtils.getInetAddress(InetAddress.getByName(remoteIp));
         } catch (UnknownHostException e) {
+            remoteIPAddress=0;
             e.printStackTrace();
         }
         record.setWasInternalAttack(checkIfIsInternalAttack(remoteIPAddress,internalIp));
@@ -103,7 +117,6 @@ public class COAPHandler extends CoapResource {
         record.setRemotePort(getCurrentPacket().getRemoteAddress().getPort());
         record.setBssid(BSSID);
 
-        removeCurrentConnected(); //removes the current client in order to be able to log the next attack
         return record;
     }
 
@@ -127,7 +140,7 @@ public class COAPHandler extends CoapResource {
         record.setType(type);
         record.setStringMessageType(type.name());
         record.setTimestamp(System.currentTimeMillis());
-        record.setPacket(getCurrentPacket().getPayloadString());
+        record.setPacket(getCurrentPacket().getPayloadString()+" "+"Message Id: "+getCurrentPacket().getMessageId());
         return record;
     }
 

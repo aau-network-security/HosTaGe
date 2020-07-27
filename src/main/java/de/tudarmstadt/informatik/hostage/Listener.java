@@ -43,7 +43,7 @@ public class Listener implements Runnable {
         return this;
     }
 
-    private ArrayList<Handler> handlers = new ArrayList<Handler>();
+    private ArrayList<Handler> handlers = new ArrayList<>();
 
     private Protocol protocol;
 

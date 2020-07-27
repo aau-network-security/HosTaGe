@@ -6,6 +6,7 @@ import com.mbed.coap.client.CoapClientBuilder;
 import com.mbed.coap.exception.CoapException;
 import com.mbed.coap.packet.CoapPacket;
 import com.mbed.coap.packet.Code;
+import com.mbed.coap.packet.MediaTypes;
 import com.mbed.coap.packet.MessageType;
 import com.mbed.coap.packet.Method;
 import com.mbed.coap.server.CoapExchange;
@@ -150,6 +151,21 @@ public class COAPConfigureTest {
 
             Future<CoapPacket> coapResp = client.resource("/test/1").get();
             assertEquals("Dziala", coapResp.get().getPayloadString());
+        }
+    }
+
+    @Test
+    public void simpleRequestClient() throws Exception {
+        InetAddress address = InetAddress.getByName("192.168.1.5");
+
+        SERVER_PORT = server.getLocalSocketAddress().getPort();
+        serverAddress = new InetSocketAddress(address, SERVER_PORT);
+        try (CoapClient client = CoapClientBuilder.newBuilder().target(SERVER_PORT).build()) {
+            CoapPacket coapResp = client.resource("/s/temp").sync().get();
+
+            coapResp = client.resource("/a/relay").payload("1", MediaTypes.CT_TEXT_PLAIN).sync().put();
+            //Future<CoapPacket> coapResp = client.resource("/test/1").get();
+            //assertEquals("Dziala", coapResp.get().getPayloadString());
         }
     }
 
