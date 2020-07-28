@@ -525,6 +525,7 @@ public class  ProfileManager {
 		addParanoidProfile();
         addMQTTBrokerProfile();
         addMQTTSensorProfile();
+		addSmokeSensorProfile();
 
 		persistData();
 	}
@@ -794,6 +795,19 @@ public class  ProfileManager {
 
         mqttSensor.mActiveProtocols.put("MQTT",true);
 		this.addProfile(mqttSensor,false);
+	}
+
+	private void addSmokeSensorProfile(){
+		Profile smokeSensor = new Profile(
+				15,
+				"ESP8266 Smoke Sensor",
+				"This profile simulates an ESP8266 smoke detector",
+				R.drawable.ic_profile_smoke_detector,
+				false
+		);
+
+		smokeSensor.mActiveProtocols.put("COAP",true);
+		this.addProfile(smokeSensor,false);
 	}
 
 }

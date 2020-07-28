@@ -1,6 +1,7 @@
 package de.tudarmstadt.informatik.hostage.protocol;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.DhcpInfo;
@@ -66,6 +67,7 @@ public class SMB implements Protocol {
         return mListener;
     }
 
+    @SuppressLint("ResourceType")
     public void initialize(Listener mListener) {
         this.mListener = mListener;
         FileInject fileInject = new FileInject();
@@ -87,7 +89,7 @@ public class SMB implements Protocol {
         XMLServerConfiguration smbConfig = new XMLServerConfiguration();
 
         try {
-            smbConfig.loadConfiguration(new InputStreamReader(MainActivity.getContext().getResources().openRawResource(R.raw.jlan_config)));
+            smbConfig.loadConfiguration(new InputStreamReader(MainActivity.getContext().getResources().openRawResource(R.xml.jlan_config)));
             mCifsServer = new CifsServer(smbConfig, this, fileInject);
             mCifsServer.run();
         } catch (IOException e) {

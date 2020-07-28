@@ -10,11 +10,16 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 import de.tudarmstadt.informatik.hostage.protocol.coapUtils.COAPHandler;
+import de.tudarmstadt.informatik.hostage.protocol.coapUtils.smokeSensor.SmokeSensorProfile;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 public class COAP implements Protocol {
-    private final static String defaultAddress="192.168.1.5";
+    private final static String defaultAddress="192.168.1.5";//change accordingly.
+    private final static int defaultPort = 5683;
+    private int port=5683;
+    private static boolean serverStarted = false; //prevents the server from starting multiple times from the threads
     private static InetAddress address=null;
     static {
         try {
@@ -23,15 +28,22 @@ public class COAP implements Protocol {
             e.printStackTrace();
         }
     }
-
-    private final static int defaultPort = 5683;
-    private int port=5683;
-    private static boolean serverStarted = false; //prevents the server from starting multiple times from the threads
     private final static CoapServer server = CoapServer.builder().transport(address,defaultPort).build();
 
-
-    public COAP() throws IOException {
+    public COAP() throws Exception {
         if(!serverStarted)
+            startServerMode();
+    }
+
+    private boolean enabledProfile() throws Exception {
+        return ProfileManager.getInstance().getCurrentActivatedProfile().mId == 15;
+    }
+
+    private void startServerMode() throws Exception {
+        SmokeSensorProfile profile = new SmokeSensorProfile();
+        if(enabledProfile())
+            startServerProfile(profile.getTemperature(),profile.getAbnormality());
+        else
             startServer();
     }
 
@@ -75,7 +87,6 @@ public class COAP implements Protocol {
     public boolean isSecure() {
         return false;
     }
-
     /**
      * Determines the next response.
      *
@@ -121,6 +132,19 @@ public class COAP implements Protocol {
     }
 
     /**
+     * Starts the CoAP server for a Profile.
+     * @throws IOException
+     */
+    public CoapServer startServerProfile(String temperature,String abnormality) throws IOException {
+        server.addRequestHandler("/temp",new COAPHandler(temperature));
+        server.addRequestHandler("/abnormality",new COAPHandler(abnormality));
+        server.start();
+        serverStarted=true;
+
+        return server;
+    }
+
+    /**
      * Returns a simple CoAP client.
      * @param serverAddress the server address with the port.
      * @param server the server instance.
@@ -132,9 +156,8 @@ public class COAP implements Protocol {
     }
 
     /**
-     * Stops the broker and closes the port
+     * Stops the server and closes the port
      */
-
     public static void serverStop(){
         server.stop();
     }

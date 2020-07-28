@@ -78,8 +78,11 @@
 	<string name="close">Close</string>
 	<string name="show_records">Show records</string>
 	<string name="dialog_clear_database">Clear all data?</string>	
-	<string name="export_dialog_title">Choose Export Format</string>		
-	<string name="delete_dialog_title">Delete data sets by:</string>	
+	<string name="export_dialog_title">Choose Export Format</string>
+    <string name="error_su" translatable="false">Could not acquire root access.\nYour device must be rooted to use default prots.</string>
+    <string name="applying_rules" translatable="false">Applying iptables rules</string>
+    <string name="toast_bin_installed" translatable="false">Binary Iptables files installed!</string>
+    <string name="delete_dialog_title">Delete data sets by:</string>
 	<string name="dialog_clear_database_date">Delete all data before:</string>
 
     <string name="deleteFILTEREDAttacksTitle">Delete the filtered attack data?</string>

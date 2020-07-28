@@ -24,6 +24,16 @@ import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 public class COAPHandler extends CoapResource {
     private static ArrayList<CoapPacket> requests = new ArrayList<>();
     private static final ArrayList<CoapPacket> fullRequests = new ArrayList<>();
+    private String value="Response";
+
+
+    public COAPHandler(){
+
+    }
+
+    public COAPHandler(String value){
+        this.value=value;
+    }
 
 
     @Override
@@ -31,7 +41,7 @@ public class COAPHandler extends CoapResource {
         requests.add(exchange.getRequest());
         fullRequests.add(exchange.getRequest());
         exchange.setResponseCode(Code.C205_CONTENT);
-        exchange.setResponseBody("Response");
+        exchange.setResponseBody(value);
         exchange.sendResponse();
     }
 

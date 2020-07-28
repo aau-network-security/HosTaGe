@@ -279,7 +279,6 @@ public class COAPConfigureTest {
                 exchange.sendResponse();
             }
         });
-
         cnn.start();
 
         CoapPacket request = new CoapPacket(InMemoryCoapTransport.createAddress(5683));
@@ -293,6 +292,45 @@ public class COAPConfigureTest {
         assertEquals("Dziala", callback.get().getPayloadString());
         assertEquals(1, requests.size());
         assertEquals("testing",requests.get(0).getPayloadString());
+        cnn.stop();
+    }
+
+    @Test
+    public void testRequestHandlers() throws Exception {
+        CoapServer cnn = CoapServerBuilder.newBuilder()
+                .transport(new InMemoryCoapTransport(5683)).build();
+        cnn.addRequestHandler("/*", new CoapResource() {
+            @Override
+            public void get(CoapExchange exchange) {
+                requests.add(exchange.getRequest());
+                exchange.setResponseCode(Code.C405_METHOD_NOT_ALLOWED);
+                exchange.setResponseBody("Dziala");
+                exchange.sendResponse();
+            }
+
+            @Override
+            public void put(CoapExchange exchange) {
+                exchange.setResponseCode(Code.C204_CHANGED);
+                exchange.setResponseBody(Integer.valueOf(exchange.getRequestBody().length).toString());
+                exchange.sendResponse();
+            }
+        });
+        cnn.addRequestHandler("/temp", new ReadOnlyCoapResource("50"));
+
+
+        cnn.start();
+
+        CoapPacket request = new CoapPacket(InMemoryCoapTransport.createAddress(5683));
+        request.setMethod(Method.GET);
+        request.headers().setUriPath("/temp");
+        request.setPayload("testing");
+        request.setMessageId(1647);
+
+        FutureCallbackAdapter<CoapPacket> callback = new FutureCallbackAdapter<>();
+        cnn.makeRequest(request, callback);
+        assertEquals("50", callback.get().getPayloadString());
+        //assertEquals(1, requests.size());
+        //assertEquals("testing",requests.get(0).getPayloadString());
         cnn.stop();
     }
 
