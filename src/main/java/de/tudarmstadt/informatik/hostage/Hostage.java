@@ -303,19 +303,29 @@ public class Hostage extends Service {
 		connectionInfoEditor.apply();
 		
 		mProtocolActiveAttacks = new HashMap<>();
-		if(Shell.SU.available()) {
-			Device.checkCapabilities();
-			if(Api.assertBinaries(getContext(),true))
-				Device.executePortRedirectionScript();
-		}
+		checkForRoot();
 		createNotification();
 		registerNetReceiver();
 		try {
-			TimeUnit.MILLISECONDS.sleep(60);
+			TimeUnit.MILLISECONDS.sleep(30);
+			updateConnectionInfo();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		updateConnectionInfo();
+	}
+
+	private void checkForRoot(){
+		if(Shell.SU.available()) {
+			Device.checkCapabilities();
+			if(Api.assertBinaries(getContext(),true)) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(30);
+					Device.executePortRedirectionScript();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	@Override

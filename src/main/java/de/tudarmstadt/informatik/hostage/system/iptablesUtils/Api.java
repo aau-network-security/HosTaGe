@@ -75,6 +75,7 @@ import static de.tudarmstadt.informatik.hostage.system.iptablesUtils.G.ipv6Input
 /**
  * Contains shared programming interfaces.
  * All iptables "communication" is handled by this class.
+ * Main methods from the original repo kept , refer to https://github.com/ukanth/afwall.
  */
 public final class Api {
     /**
@@ -138,22 +139,6 @@ public final class Api {
         Api.rulesUpToDate = rulesUpToDate;
     }
 
-    private static boolean installBinary(Context ctx, int resId, String filename) {
-        try {
-            File f = new File(ctx.getDir("bin", 0), filename);
-            Log.e(TAG, "Dir installBinary: " + ctx.getDir("bin", 0));
-
-            if (f.exists()) {
-                f.delete();
-            }
-            copyRawFile(ctx, resId, f, "0755");
-            return true;
-        } catch (Exception e) {
-            Log.e(TAG, "installBinary failed: " + e.getLocalizedMessage());
-            return false;
-        }
-    }
-
     /**
      * Asserts that the binary files are installed in the cache directory.
      *
@@ -191,18 +176,31 @@ public final class Api {
             Log.d(TAG, "binary installation for " + abi + (ret ? " succeeded" : " failed"));
         }
 
-        // arch-independent scripts
-        // ret &= installBinary(ctx, R.raw.afwallstart, "afwallstart");
-
         if (showErrors) {
             if (ret) {
                 toast(ctx, ctx.getString(R.string.toast_bin_installed));
             } else {
-                toast(ctx, ctx.getString(R.string.error_su));
+                toast(ctx, ctx.getString(R.string.error_binaries));
             }
         }
 
         return ret;
+    }
+
+    private static boolean installBinary(Context ctx, int resId, String filename) {
+        try {
+            File f = new File(ctx.getDir("bin", 0), filename);
+            Log.e(TAG, "Dir installBinary: " + ctx.getDir("bin", 0));
+
+            if (f.exists()) {
+                f.delete();
+            }
+            copyRawFile(ctx, resId, f, "0755");
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "installBinary failed: " + e.getLocalizedMessage());
+            return false;
+        }
     }
 
     /**
@@ -246,8 +244,10 @@ public final class Api {
         RootTools.remount(systemPath, "RW");
         Process process = null;
         try {
-            process = Runtime.getRuntime().exec(" su cp "+file.getAbsolutePath() + systemPath+"/"+ file.getName());
+            process = Runtime.getRuntime().exec("su -c cp "+file.getAbsolutePath() +" "+systemPath+ file.getName());
             process.waitFor();
+
+           // Log.e(TAG, "File copied in: " + file.getAbsolutePath()+" "+systemPath+ file.getName());
 
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "ErrorInCopy System Bin: " + e.getMessage());
@@ -332,8 +332,6 @@ public final class Api {
         String dir = ctx.getDir("bin", 0).getAbsolutePath();
         return dir;
     }
-
-
 
     /**
      * Look up uid for each user by name, and if he exists, append an iptables rule.

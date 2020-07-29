@@ -16,7 +16,7 @@ import de.tudarmstadt.informatik.hostage.protocol.coapUtils.smokeSensor.SmokeSen
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 public class COAP implements Protocol {
-    private final static String defaultAddress="192.168.1.5";//change accordingly.
+    private final static String defaultAddress="0.0.0.0";//change to your IP.
     private final static int defaultPort = 5683;
     private int port=5683;
     private static boolean serverStarted = false; //prevents the server from starting multiple times from the threads
