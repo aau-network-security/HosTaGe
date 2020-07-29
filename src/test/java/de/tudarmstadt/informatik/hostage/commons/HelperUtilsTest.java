@@ -10,10 +10,8 @@ public class HelperUtilsTest {
 
     @Test
     public void ipTest() throws UnknownHostException {
-        String ip = "127.0.0.1";
-        String internal = "192.168.2.1";
-
-        String cidrRange = "192.168.2.1/24";
+        String ip = "109.242.187.121";
+        String cidrRange = "192.168.1.5/24";
         SubnetUtils utils = new SubnetUtils(cidrRange);
         boolean isInRange = utils.getInfo().isInRange(ip);
 
@@ -21,12 +19,8 @@ public class HelperUtilsTest {
 
         InetAddress netmask = InetAddress.getByName("255.255.255.0");
 
-        int remoteIPAddress = HelperUtils.getInetAddress(InetAddress.getByName(ip));
-        int internalIPAddress = HelperUtils.getInetAddress(InetAddress.getByName(internal));
-
-
-        boolean test = (remoteIPAddress & 255) == (internalIPAddress & 255);
-        System.out.println(test);
+//        int remoteIPAddress = HelperUtils.getInetAddress(InetAddress.getByName(ip));
+//        int internalIPAddress = HelperUtils.getInetAddress(InetAddress.getByName(internal));
 
 
     }

@@ -283,7 +283,6 @@ public class Handler implements Runnable {
 		record.setExternalIP(externalIP);
 		record.setLocalIP(client.getLocalAddress().getHostAddress());
 		record.setLocalPort(client.getLocalPort());
-
 		record.setWasInternalAttack(checkIfIsInternalAttack());
 		record.setRemoteIP(client.getInetAddress().getHostAddress());
 		record.setRemotePort(client.getPort());
@@ -293,16 +292,14 @@ public class Handler implements Runnable {
 
 	private boolean checkIfIsInternalAttack(){
 		int prefix = Hostage.prefix;
-
 		String internalIp = HelperUtils.intToStringIp(internalIPAddress);
 
-		int remoteIPAddress = HelperUtils.packInetAddress(client.getInetAddress().getAddress());
 		SubnetUtils utils = new SubnetUtils(internalIp+"/"+prefix);
-		String remoteIP = HelperUtils.intToStringIp(remoteIPAddress);
+		String remoteIP =client.getRemoteSocketAddress().toString();
+		remoteIP= remoteIP.substring(0, remoteIP.indexOf(":")-1);
+		remoteIP= remoteIP.substring(1);
 
-		boolean isInRange = utils.getInfo().isInRange(remoteIP);
-
-		return isInRange;
+		return utils.getInfo().isInRange(remoteIP);
 	}
 
 	/**

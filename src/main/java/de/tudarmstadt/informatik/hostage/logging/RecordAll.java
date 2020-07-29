@@ -23,7 +23,7 @@ public class RecordAll {
     private String remoteIP;
     private int remotePort;
     private String externalIP;
-    private boolean wasInternalAttack= true;
+    private boolean wasInternalAttack;
 
     public RecordAll(long id, long attack_id, long timestamp,
                      MessageRecord.TYPE type, String stringMessageType, String packet, String bssid, String ssid, long timestampLocation, double latitude, double longitude, float accuracy, long sync_id, String device, String protocol, String localIP, int localPort, String remoteIP, int remotePort, String externalIP, boolean wasInternalAttack) {

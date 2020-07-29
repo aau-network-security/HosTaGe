@@ -37,7 +37,7 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 	private String remoteIP;
 	private int remotePort;
 	private String externalIP;
-	private boolean wasInternalAttack= true;
+	private boolean wasInternalAttack;
     @ToOne(joinProperty = "bssid")
 	private NetworkRecord record;
 
@@ -96,7 +96,7 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
             SharedPreferences.Editor editor = pref.edit();
             Long attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
             editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
-            editor.commit();
+            editor.apply();
             this.attack_id = attack_id;
             this.sync_id = attack_id;
 
