@@ -50,6 +50,12 @@ dependencies {
     //SU Library for root
     implementation 'eu.chainfire:libsuperuser:1.0.0.201704021214'
 
+    //RootTools Library
+    implementation 'com.github.Stericson:RootShell:1.6' //RootTolls depends on RootShell and it's not correctly setUped for the jitpack
+    implementation ('com.github.Stericson:RootTools:5.0') {//Refer to https://github.com/Stericson/RootTools/issues/65
+        exclude group: 'com.github.Stericson'
+    }
+
     //androidX legacy support
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.preference:preference:1.1.1'

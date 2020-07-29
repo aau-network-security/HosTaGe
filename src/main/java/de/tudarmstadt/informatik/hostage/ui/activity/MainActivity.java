@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -17,6 +18,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Build;
@@ -33,6 +35,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.legacy.app.ActionBarDrawerToggle;
 import de.tudarmstadt.informatik.hostage.Hostage;
@@ -41,6 +44,7 @@ import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.model.Profile;
 import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 import de.tudarmstadt.informatik.hostage.sync.android.SyncUtils;
+import de.tudarmstadt.informatik.hostage.system.iptablesUtils.Api;
 import de.tudarmstadt.informatik.hostage.ui.adapter.DrawerListAdapter;
 import de.tudarmstadt.informatik.hostage.ui.fragment.AboutFragment;
 import de.tudarmstadt.informatik.hostage.ui.fragment.HomeFragment;
@@ -120,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
 	 * Hold the state of the Hostage service
 	 */
 	private boolean mServiceBound = false;
+	private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 3;
+
 
 	/**
 	 * Connection to bind the background service
@@ -329,6 +335,10 @@ public class MainActivity extends AppCompatActivity {
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 		// start the hostage service
 		startAndBind();
+
+		ActivityCompat.requestPermissions(MainActivity.this,
+				new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+				MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
 
 		mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
 
@@ -795,6 +805,28 @@ public class MainActivity extends AppCompatActivity {
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			displayView(position);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+										   String[] permissions, int[] grantResults) {
+		if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
+			if (grantResults.length > 0
+					&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Api.assertBinaries(this, true);
+			} else {
+				androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
+				dialog.setTitle("Permission Required");
+				dialog.setCancelable(false);
+				dialog.setMessage("You have to Allow permission to access External Storage");
+				dialog.setPositiveButton("Settings", (dialog1, which) -> {
+
+				});
+				androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
+				alertDialog.show();
+
+			}
 		}
 	}
 

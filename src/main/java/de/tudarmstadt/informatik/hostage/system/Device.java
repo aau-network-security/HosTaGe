@@ -206,8 +206,7 @@ public class Device {
 			logError(p.getErrorStream());
 		}
 		logOutput(p.getInputStream());
-	} catch (IOException e) {
-	} catch (InterruptedException e) {
+	} catch (IOException | InterruptedException e) {
 	}
 	}
 

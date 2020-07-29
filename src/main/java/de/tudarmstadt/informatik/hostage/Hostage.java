@@ -48,7 +48,9 @@ import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.system.Device;
+import de.tudarmstadt.informatik.hostage.system.iptablesUtils.Api;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
+import eu.chainfire.libsuperuser.Shell;
 
 import static de.tudarmstadt.informatik.hostage.commons.HelperUtils.getBSSID;
 
@@ -301,9 +303,11 @@ public class Hostage extends Service {
 		connectionInfoEditor.apply();
 		
 		mProtocolActiveAttacks = new HashMap<>();
-
-		Device.checkCapabilities();
-		Device.executePortRedirectionScript();
+		if(Shell.SU.available()) {
+			Device.checkCapabilities();
+			if(Api.assertBinaries(getContext(),true))
+				Device.executePortRedirectionScript();
+		}
 		createNotification();
 		registerNetReceiver();
 		try {
