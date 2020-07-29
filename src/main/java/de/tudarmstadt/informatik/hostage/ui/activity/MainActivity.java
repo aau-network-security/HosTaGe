@@ -336,9 +336,9 @@ public class MainActivity extends AppCompatActivity {
 		// start the hostage service
 		startAndBind();
 
-		ActivityCompat.requestPermissions(MainActivity.this,
-				new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-				MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+//		ActivityCompat.requestPermissions(MainActivity.this,
+//				new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//				MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
 
 		mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
 
