@@ -296,7 +296,8 @@ public class Handler implements Runnable {
 
 		SubnetUtils utils = new SubnetUtils(internalIp+"/"+prefix);
 		String remoteIP =client.getRemoteSocketAddress().toString();
-		remoteIP= remoteIP.substring(0, remoteIP.indexOf(":")-1);
+		remoteIP= remoteIP.substring(0, remoteIP.indexOf(":"));
+		if(remoteIP.startsWith("/"))
 		remoteIP= remoteIP.substring(1);
 
 		return utils.getInfo().isInRange(remoteIP);
