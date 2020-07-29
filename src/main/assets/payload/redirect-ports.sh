@@ -15,27 +15,27 @@
 #Delete previous rules to avoid duplicates
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 7 -j DNAT \
       --to 0.0.0.0:28144
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 7 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 7 -j DNAT \
       --to 0.0.0.0:28144
 
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 21 -j DNAT \
       --to 0.0.0.0:28169
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 21 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 21 -j DNAT \
       --to 0.0.0.0:28169
 
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 80 -j DNAT \
       --to 0.0.0.0:28217
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 80 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 80 -j DNAT \
       --to 0.0.0.0:28217
 
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 443 -j DNAT \
       --to 0.0.0.0:28580
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 443 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 443 -j DNAT \
       --to 0.0.0.0:28580
 
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 102 -j DNAT \
       --to 0.0.0.0:28239
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 102 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 102 -j DNAT \
       --to 0.0.0.0:28239
 
   iptables -t nat -D PREROUTING -i wlan0 -p udp --dport 161 -j DNAT \
@@ -45,112 +45,112 @@
 
   iptables -t nat -D PREROUTING -i wlan0 -p udp --dport 137 -j DNAT \
       --to 0.0.0.0:28274
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p udp --dport 137 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p udp --dport 137 -j DNAT \
       --to 0.0.0.0:28274
 
   iptables -t nat -D PREROUTING -i wlan0 -p udp --dport 138 -j DNAT \
       --to 0.0.0.0:28275
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p udp --dport 138 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p udp --dport 138 -j DNAT \
       --to 0.0.0.0:28275
 
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 139 -j DNAT \
       --to 0.0.0.0:28276
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 139 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 139 -j DNAT \
       --to 0.0.0.0:28276
 
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 22 -j DNAT \
       --to 0.0.0.0:28159
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 22 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 22 -j DNAT \
       --to 0.0.0.0:28159
 
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 23 -j DNAT \
       --to 0.0.0.0:28160
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 23 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 23 -j DNAT \
       --to 0.0.0.0:28160
 
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 445 -j DNAT \
       --to 0.0.0.0:28582
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 445 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 445 -j DNAT \
       --to 0.0.0.0:28582
 
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 25 -j DNAT \
       --to 0.0.0.0:28162
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 25 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 25 -j DNAT \
       --to 0.0.0.0:28162
 
   iptables -t nat -D PREROUTING -i wlan0 -p tcp --dport 502 -j DNAT \
       --to 0.0.0.0:28639
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p tcp --dport 502 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p tcp --dport 502 -j DNAT \
       --to 0.0.0.0:28639
 
 #Create new iptables rules.
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 7 -j DNAT \
       --to 0.0.0.0:28144
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 7 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 7 -j DNAT \
       --to 0.0.0.0:28144
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 21 -j DNAT \
       --to 0.0.0.0:28169
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 21 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 21 -j DNAT \
       --to 0.0.0.0:28169
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 80 -j DNAT \
       --to 0.0.0.0:28217
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 80 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 80 -j DNAT \
       --to 0.0.0.0:28217
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 443 -j DNAT \
       --to 0.0.0.0:28580
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 443 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 443 -j DNAT \
       --to 0.0.0.0:28580
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 102 -j DNAT \
       --to 0.0.0.0:28239
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 102 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 102 -j DNAT \
       --to 0.0.0.0:28239
 
   iptables -t nat -A PREROUTING -i wlan0 -p udp --dport 161 -j DNAT \
       --to 0.0.0.0:28298
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p udp --dport 161 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p udp --dport 161 -j DNAT \
       --to 0.0.0.0:28298
 
   iptables -t nat -A PREROUTING -i wlan0 -p udp --dport 137 -j DNAT \
       --to 0.0.0.0:28274
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p udp --dport 137 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p udp --dport 137 -j DNAT \
       --to 0.0.0.0:28274
 
   iptables -t nat -A PREROUTING -i wlan0 -p udp --dport 138 -j DNAT \
       --to 0.0.0.0:28275
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p udp --dport 138 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p udp --dport 138 -j DNAT \
       --to 0.0.0.0:28275
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 139 -j DNAT \
       --to 0.0.0.0:28276
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 139 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 139 -j DNAT \
       --to 0.0.0.0:28276
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 22 -j DNAT \
       --to 0.0.0.0:28159
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 22 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 22 -j DNAT \
       --to 0.0.0.0:28159
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 23 -j DNAT \
       --to 0.0.0.0:28160
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 23 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 23 -j DNAT \
       --to 0.0.0.0:28160
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 445 -j DNAT \
       --to 0.0.0.0:28582
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 445 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 445 -j DNAT \
       --to 0.0.0.0:28582
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 25 -j DNAT \
       --to 0.0.0.0:28162
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 25 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 25 -j DNAT \
       --to 0.0.0.0:28162
 
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 502 -j DNAT \
       --to 0.0.0.0:28639
-  iptables -t nat -A OUTPUT -d 127.0.0.1 -p tcp --dport 502 -j DNAT \
+  iptables -t nat -A OUTPUT -o lo -p tcp --dport 502 -j DNAT \
       --to 0.0.0.0:28639
