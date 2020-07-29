@@ -527,6 +527,11 @@ public class AttackRecordDAO extends  DAO {
                 record.setBssid(current.getBssid());
                 record.setSsid(current.getSsid());
                 record.setRemoteIP(current.getRemoteIP());
+                record.setLocalIP(current.getLocalIP());
+                record.setLocalPort(current.getLocalPort());
+                record.setRemotePort(current.getRemotePort());
+                record.setExternalIP(current.getExternalIP());
+                record.setWasInternalAttack(current.getWasInternalAttack());
                 record.setTimestampLocation(current.getTimestampLocation());
                 record.setLatitude(current.getLatitude());
                 record.setLongitude(current.getLongitude());

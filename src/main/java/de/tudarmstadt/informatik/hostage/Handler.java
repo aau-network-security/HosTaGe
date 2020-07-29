@@ -350,7 +350,7 @@ public class Handler implements Runnable {
 	public void logCOAP(MessageRecord.TYPE type){
 		if(!logged){
 			Logger.log(Hostage.getContext(), createNetworkRecord());
-			Logger.log(Hostage.getContext(), COAPHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
+			Logger.log(Hostage.getContext(),COAPHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
 			Logger.log(Hostage.getContext(),COAPHandler.createMessageRecord(type,attack_id));
 			COAPHandler.removeCurrentConnected();
 			logged = true;

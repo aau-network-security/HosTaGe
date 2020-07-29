@@ -115,14 +115,7 @@ public class COAPHandler extends CoapResource {
         record.setExternalIP(externalIP);
         record.setLocalIP(internalIp);
         record.setLocalPort(5683);
-        int remoteIPAddress = 0;
-        try {
-            remoteIPAddress = HelperUtils.getInetAddress(InetAddress.getByName(remoteIp));
-        } catch (UnknownHostException e) {
-            remoteIPAddress=0;
-            e.printStackTrace();
-        }
-        record.setWasInternalAttack(checkIfIsInternalAttack(remoteIPAddress,internalIp));
+        record.setWasInternalAttack(checkIfIsInternalAttack(remoteIp,internalIp));
         record.setRemoteIP(remoteIp);
         record.setRemotePort(getCurrentPacket().getRemoteAddress().getPort());
         record.setBssid(BSSID);
@@ -130,12 +123,12 @@ public class COAPHandler extends CoapResource {
         return record;
     }
 
-    private synchronized static boolean checkIfIsInternalAttack(int remoteIPAddress,String internalIPAddress){
+    private synchronized static boolean checkIfIsInternalAttack(String remoteIPAddress,String internalIPAddress){
         int prefix = Hostage.prefix;
         SubnetUtils utils = new SubnetUtils(internalIPAddress+"/"+prefix);
-        String remoteIP = HelperUtils.intToStringIp(remoteIPAddress);
-
-        return utils.getInfo().isInRange(remoteIP);
+        System.out.println("RemoteIp: "+remoteIPAddress+" "+"InternalIp: "+internalIPAddress
+                +"/"+prefix +" "+"Check: "+utils.getInfo().isInRange(remoteIPAddress));
+        return utils.getInfo().isInRange(remoteIPAddress);
     }
 
     /**

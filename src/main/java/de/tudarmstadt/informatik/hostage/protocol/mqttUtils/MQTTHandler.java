@@ -325,13 +325,7 @@ public class MQTTHandler {
         record.setExternalIP(externalIP);
         record.setLocalIP(internalIp);
         record.setLocalPort(brokerPort);
-        int remoteIPAddress = 0;
-        try {
-            remoteIPAddress = HelperUtils.getInetAddress(InetAddress.getByName(remoteIp));
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        record.setWasInternalAttack(checkIfIsInternalAttack(remoteIPAddress,internalIp));
+        record.setWasInternalAttack(checkIfIsInternalAttack(remoteIp,internalIp));
         record.setRemoteIP(remoteIp);
         record.setRemotePort(getPortCurrentClient());
         record.setBssid(BSSID);
@@ -339,12 +333,11 @@ public class MQTTHandler {
         return record;
     }
 
-    private synchronized static boolean checkIfIsInternalAttack(int remoteIPAddress,String internalIPAddress){
+    private synchronized static boolean checkIfIsInternalAttack(String remoteIPAddress,String internalIPAddress){
         int prefix = Hostage.prefix;
         SubnetUtils utils = new SubnetUtils(internalIPAddress+"/"+prefix);
-        String remoteIP = HelperUtils.intToStringIp(remoteIPAddress);
 
-        return utils.getInfo().isInRange(remoteIP);
+        return utils.getInfo().isInRange(remoteIPAddress);
     }
 
     /**

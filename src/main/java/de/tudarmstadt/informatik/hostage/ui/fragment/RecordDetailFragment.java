@@ -171,7 +171,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	 */
 	@SuppressLint("ClickableViewAccessibility")
 	private void configurateRootView(View rootView) {
-		mRecordDetailsTextAttackType.setText(mRecord.isWasInternalAttack() ? R.string.RecordInternalAttack : R.string.RecordExternalAttack);
+		mRecordDetailsTextAttackType.setText(mRecord.getWasInternalAttack() ? R.string.RecordInternalAttack : R.string.RecordExternalAttack);
 		mRecordDetailsTextBssid.setText(mRecord.getBssid());
 		mRecordDetailsTextSsid.setText(mRecord.getSsid());
 		if (mRecord.getRemoteIP() != null)

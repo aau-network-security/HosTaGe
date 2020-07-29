@@ -207,13 +207,12 @@ public class RecordAll {
         this.externalIP = externalIP;
     }
 
-    public boolean isWasInternalAttack() {
-        return wasInternalAttack;
-    }
+    public boolean getWasInternalAttack() {return wasInternalAttack;}
 
     public void setWasInternalAttack(boolean wasInternalAttack) {
         this.wasInternalAttack = wasInternalAttack;
     }
+
 
     public String getStringMessageType() {
         return stringMessageType;
