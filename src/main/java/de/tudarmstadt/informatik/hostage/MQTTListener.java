@@ -1,6 +1,8 @@
 package de.tudarmstadt.informatik.hostage;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Timer;
@@ -121,12 +123,13 @@ public class MQTTListener extends Listener {
 
     private void fullHandler() throws Exception {
         if (conReg.isConnectionFree()) {
-            ExecutorService threadPool = Executors.newFixedThreadPool(1);
+            ExecutorService threadPool = Executors.newCachedThreadPool();
 
             Thread brokerThread = brokerThread();
             threadPool.submit(brokerThread);
             startsMonitoringProfile();
             threadPool.shutdown();
+            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         }
     }
 

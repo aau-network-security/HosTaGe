@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import de.tudarmstadt.informatik.hostage.protocol.COAP;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
@@ -111,13 +112,14 @@ public class COAPListener extends Listener {
         }
     }
 
-    private void fullHandler() {
+    private void fullHandler() throws InterruptedException {
         if (conReg.isConnectionFree()) {
-            ExecutorService threadPool = Executors.newFixedThreadPool(1);
+            ExecutorService threadPool = Executors.newCachedThreadPool();
 
             Thread serverThread = serverThread();
             threadPool.submit(serverThread);
             threadPool.shutdown();
+            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         }
     }
 
