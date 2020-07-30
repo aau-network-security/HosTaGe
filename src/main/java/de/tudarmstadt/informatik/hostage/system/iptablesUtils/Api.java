@@ -216,6 +216,7 @@ public final class Api {
     private static void copyRawFile(Context ctx, int resid, File file, String mode) throws IOException, InterruptedException {
         final String abspath = file.getAbsolutePath();
         Log.e(TAG, "FilesPath: " + abspath);
+        RootTools.remount(abspath, "RW");
 
         // Write the iptables binary
         final FileOutputStream out = new FileOutputStream(file);
