@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 	/**
 	 * Holds the toggler for the navigation drawer in the action bar
 	 */
-	private ActionBarDrawerToggle mDrawerToggle;
+	private androidx.appcompat.app.ActionBarDrawerToggle mDrawerToggle;
 
 	/**
 	 * The text that should be displayed in the drawer toggle
@@ -310,12 +310,8 @@ public class MainActivity extends AppCompatActivity {
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
 		// configures the navigation drawer
-		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
+		mDrawerToggle = new androidx.appcompat.app.ActionBarDrawerToggle(this, /* host Activity */
 			mDrawerLayout, /* DrawerLayout object */
-			R.drawable.ic_navigation_drawer, /*
-											 * nav drawer image to replace 'Up'
-											 * caret
-											 */
 			R.string.drawer_open, /* "open drawer" description for accessibility */
 			R.string.drawer_close /* "close drawer" description for accessibility */
 		) {
