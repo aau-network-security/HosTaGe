@@ -216,7 +216,6 @@ public final class Api {
     private static void copyRawFile(Context ctx, int resid, File file, String mode) throws IOException, InterruptedException {
         final String abspath = file.getAbsolutePath();
         Log.e(TAG, "FilesPath: " + abspath);
-        RootTools.remount(abspath, "RW");
 
         // Write the iptables binary
         final FileOutputStream out = new FileOutputStream(file);
@@ -242,16 +241,28 @@ public final class Api {
      */
     private static void copySystemBin(File file){
         String systemPath= "/system/bin/";
-        RootTools.remount(systemPath, "RW");
+        //RootTools.remount("/", "RW"); //problem with remount in some devices
+        remountSystem();
         Process process = null;
         try {
             process = Runtime.getRuntime().exec("su -c cp "+file.getAbsolutePath() +" "+systemPath+ file.getName());
             process.waitFor();
 
-           // Log.e(TAG, "File copied in: " + file.getAbsolutePath()+" "+systemPath+ file.getName());
-
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "ErrorInCopy System Bin: " + e.getMessage());
+
+        }
+
+    }
+
+    private static void remountSystem(){
+        Process process = null;
+        try {
+            process = Runtime.getRuntime().exec("su -c mount -o rw,remount /");
+            process.waitFor();
+
+        } catch (IOException | InterruptedException e) {
+            Log.e(TAG, "ErrorInCopy Mount: " + e.getMessage());
 
         }
 
