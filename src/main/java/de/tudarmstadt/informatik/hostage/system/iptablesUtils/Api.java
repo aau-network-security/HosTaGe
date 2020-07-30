@@ -255,7 +255,7 @@ public final class Api {
 
     }
 
-    private static void remountSystem(){
+    public static void remountSystem(){
         Process process = null;
         try {
             process = Runtime.getRuntime().exec("su -c mount -o rw,remount /");

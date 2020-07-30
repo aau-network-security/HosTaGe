@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.os.Build;
 import android.util.Log;
 
+import de.tudarmstadt.informatik.hostage.system.iptablesUtils.Api;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 
@@ -121,19 +122,21 @@ public class Device {
 			return false;
 		}
 
-		//Log.i("FILEPATH", file.getAbsolutePath());
 		return true; // SUCCESS!
 	}
 
 	public static void executePortRedirectionScript() {
-		assert(iptables); // we need iptables for our next trick
+		Api.remountSystem();
+
 		if (deployAsset("payload/redirect-ports.sh", "redirect-ports.sh")) {
 			String scriptFilePath = new File(MainActivity.getInstance().getFilesDir(), "redirect-ports.sh").getAbsolutePath();
 			Process p = null;
 			try {
 				p = new ProcessBuilder("su", "-c", "sh "+scriptFilePath).start();
 				p.waitFor(); // stall the main thread
-				System.out.println("test error script"+ String.valueOf(p.waitFor()));
+
+				System.out.println("Test script "+ String.valueOf(p.waitFor()));
+				System.out.println("Filepath of payload: "+scriptFilePath);
 			} catch (IOException | InterruptedException e) {
 				System.out.println("InsidePortRedirection");
 				e.printStackTrace();
@@ -207,6 +210,7 @@ public class Device {
 		}
 		logOutput(p.getInputStream());
 	} catch (IOException | InterruptedException e) {
+		e.printStackTrace();
 	}
 	}
 

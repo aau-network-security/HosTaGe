@@ -40,7 +40,7 @@
 
   iptables -t nat -D PREROUTING -i wlan0 -p udp --dport 161 -j DNAT \
       --to 0.0.0.0:28298
-  iptables -t nat -D OUTPUT -d 127.0.0.1 -p udp --dport 161 -j DNAT \
+  iptables -t nat -D OUTPUT -o lo -p udp --dport 161 -j DNAT \
       --to 0.0.0.0:28298
 
   iptables -t nat -D PREROUTING -i wlan0 -p udp --dport 137 -j DNAT \
