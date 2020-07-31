@@ -172,14 +172,7 @@ public class Listener implements Runnable {
 				 */
                 return false;
             }
-            if (Device.isPorthackInstalled()) {
-				/*
-				Currently the port binder is the preferred method for creating sockets.
-				If it installed, we can't use iptables to create UDP sockets.
-				@see MyServerSocketFactory
-				 */
-                return false;
-            }
+
             ((SMB) protocol).initialize(this);
         }
 

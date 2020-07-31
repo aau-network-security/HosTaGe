@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import android.net.LocalServerSocket;
 import android.net.LocalSocket;
 import android.util.Log;
-
+@Deprecated
 public class PrivilegedPort implements Runnable {
 
 	public enum TYPE {
@@ -52,19 +52,18 @@ public class PrivilegedPort implements Runnable {
 
 	@Override
 	public void run() {
-		String porthack = Device.getPorthackFilepath();
-		Log.i("privileged port", porthack);
-        String command = String.format(porthack+" %s %d", type.toString(), port);
-
-		try {
-			Process p = new ProcessBuilder("su", "-c", command).start();
-			if (p.waitFor() != 0) {
-				logError(p.getErrorStream());
-			}
-			logOutput(p.getInputStream());
-		} catch (IOException e) {
-		} catch (InterruptedException e) {
-		}
+//		String porthack = Device.getPorthackFilepath();
+//		Log.i("privileged port", porthack);
+//        String command = String.format(porthack+" %s %d", type.toString(), port);
+//
+//		try {
+//			Process p = new ProcessBuilder("su", "-c", command).start();
+//			if (p.waitFor() != 0) {
+//				logError(p.getErrorStream());
+//			}
+//			logOutput(p.getInputStream());
+//		} catch (IOException | InterruptedException e) {
+//		}
 	}
 
 	private void logOutput(InputStream stdout) throws IOException {

@@ -18,21 +18,15 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 
 public class Device {
-	private static String porthackFilepath = "/data/local/bind";
 	private static boolean initialized = false;
 	private static boolean root = false; // device is rooted
-	private static boolean porthack = false; // porthack installed
 	private static boolean iptables = false; // iptables redirection confirmed working
 
-	// TODO: do asynchronous
     public static void checkCapabilities() {
 		// assume worst case
 		initialized = false;
 		root = false;
-		porthack = false;
 		iptables = false;
-
-		portHackCheck();
 
 		final String ipTablesList = "iptables -L -n -t nat"; // list all rules in NAT table
 
@@ -59,35 +53,8 @@ public class Device {
 	}
 
 
-	private static void portHackCheck(){
-		porthackFilepath = getPorthackFilepath();
-		String porthackExists = "[ -e "+porthackFilepath+" ]"; // checks existence of porthack
-
-		try {
-			Process p = new ProcessBuilder("su", "-c", porthackExists).start();
-			switch (p.waitFor()) {
-				case 0: porthack = true;
-					// fall through and don't break
-				case 1: root = true; // 0 and 1 are valid return values of the porthack
-					break;
-
-				case 127: // command not found or executable
-					root = false;
-					porthack = false;
-					break;
-			}
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-		}
-
-	}
-
 	public static boolean isRooted() {
 		return root;
-	}
-
-	public static boolean isPorthackInstalled() {
-		return porthack;
 	}
 
 	public static boolean isPortRedirectionAvailable() { // using iptables
@@ -144,87 +111,4 @@ public class Device {
 		}
 	}
 
-	/**
-	 * @return name of porthack binary for device architecture
-	 */
-	private static String getPorthackName() {
-		String porthack = "bind";
-
-		// determine system architecture to return the correct binary
-		String arch = System.getProperty("os.arch");
-		// TODO: handle more architectures
-		if (arch.equals("i686")) { // this is what genymotion reports
-			porthack += ".x86";
-		} else if (arch.startsWith("arm")) {
-			/*
-			possible values:
-			armv4
-			armv4t
-			armv5t
-			armv5te
-			armv5tej
-			armv6
-			armv7
-			 */
-			porthack += ".arm";
-		} else if (arch.equals("mips")) {
-			porthack += ".mips";
-		}
-
-		return porthack;
-	}
-
-	/**
-	 * @return filepath to deployed porthack binary
-	 */
-	public static String getPorthackFilepath() {
-		File file = new File(MainActivity.getInstance().getFilesDir(), getPorthackName());
-		return file.getAbsolutePath();
-	}
-
-	public static boolean deployPorthack() {
-		String porthack = getPorthackName();
-		if (!deployAsset("payload/"+porthack, porthack)) {
-			return false;
-		}
-
-		// make port hack executable
-		try {
-			Process p = new ProcessBuilder("su", "-c", "chmod 700 "+getPorthackFilepath()).start();
-			if (p.waitFor() != 0) {
-				logError(p.getErrorStream());
-				return false;
-			}
-			logOutput(p.getInputStream());
-		} catch (IOException | InterruptedException e) {
-			return false;
-		}
-
-		return true; // SUCCESS!
-	}
-
-	public static void uninstallPorthack() {try {
-		Process p = new ProcessBuilder("su", "-c", "rm "+getPorthackFilepath()).start();
-		if (p.waitFor() != 0) {
-			logError(p.getErrorStream());
-		}
-		logOutput(p.getInputStream());
-	} catch (IOException | InterruptedException e) {
-		e.printStackTrace();
-	}
-	}
-
-	// copied from PrivilegedPort.java
-	private static void logOutput(InputStream stdout) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
-		String line;
-		while ((line = reader.readLine()) != null) {
-			Log.i("HelperUtils", line);
-		}
-	}
-
-	private static void logError(InputStream stderr) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stderr));
-		Log.e("HelperUtils", reader.readLine());
-	}
 }
