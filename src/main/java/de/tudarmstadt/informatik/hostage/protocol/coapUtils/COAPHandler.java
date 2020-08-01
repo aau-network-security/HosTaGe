@@ -6,7 +6,6 @@ import com.mbed.coap.packet.Code;
 import com.mbed.coap.server.CoapExchange;
 import com.mbed.coap.utils.CoapResource;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -89,12 +88,12 @@ public class COAPHandler extends CoapResource {
 
     /**
      * Helper method for Handler, creates an attackRecord with the logs from the InterceptHandler.
-     * @param attack_id
-     * @param externalIP
-     * @param protocol
-     * @param subnetMask
-     * @param BSSID
-     * @param internalIPAddress
+     * @param attack_id the attack_id
+     * @param externalIP the externalIp
+     * @param protocol the protocol
+     * @param subnetMask the subnet mask
+     * @param BSSID the BSSID
+     * @param internalIPAddress the internal IpAddress
      * @return
      * @throws UnknownHostException
      */
@@ -124,10 +123,11 @@ public class COAPHandler extends CoapResource {
     }
 
     private synchronized static boolean checkIfIsInternalAttack(String remoteIPAddress,String internalIPAddress){
+        if(remoteIPAddress.equals("127.0.0.1"))
+            return true;
         int prefix = Hostage.prefix;
         SubnetUtils utils = new SubnetUtils(internalIPAddress+"/"+prefix);
-        System.out.println("RemoteIp: "+remoteIPAddress+" "+"InternalIp: "+internalIPAddress
-                +"/"+prefix +" "+"Check: "+utils.getInfo().isInRange(remoteIPAddress));
+
         return utils.getInfo().isInRange(remoteIPAddress);
     }
 

@@ -334,6 +334,8 @@ public class MQTTHandler {
     }
 
     private synchronized static boolean checkIfIsInternalAttack(String remoteIPAddress,String internalIPAddress){
+        if(remoteIPAddress.equals("127.0.0.1"))
+            return true;
         int prefix = Hostage.prefix;
         SubnetUtils utils = new SubnetUtils(internalIPAddress+"/"+prefix);
 

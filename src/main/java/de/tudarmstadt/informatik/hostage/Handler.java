@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,7 +13,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
-import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.commons.SubnetUtils;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
@@ -26,7 +24,6 @@ import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
 import de.tudarmstadt.informatik.hostage.nio.Reader;
 import de.tudarmstadt.informatik.hostage.nio.Writer;
 import de.tudarmstadt.informatik.hostage.protocol.GHOST;
-import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.protocol.coapUtils.COAPHandler;
 import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
@@ -293,14 +290,23 @@ public class Handler implements Runnable {
 	private boolean checkIfIsInternalAttack(){
 		int prefix = Hostage.prefix;
 		String internalIp = HelperUtils.intToStringIp(internalIPAddress);
+		String remoteIP = formatRemoteIP();
+
+		if(remoteIP.equals("127.0.0.1"))
+			return true;
 
 		SubnetUtils utils = new SubnetUtils(internalIp+"/"+prefix);
+
+		return utils.getInfo().isInRange(remoteIP);
+	}
+
+	private String formatRemoteIP(){
 		String remoteIP =client.getRemoteSocketAddress().toString();
 		remoteIP= remoteIP.substring(0, remoteIP.indexOf(":"));
 		if(remoteIP.startsWith("/"))
-		remoteIP= remoteIP.substring(1);
+			remoteIP= remoteIP.substring(1);
 
-		return utils.getInfo().isInRange(remoteIP);
+		return remoteIP;
 	}
 
 	/**
@@ -365,7 +371,7 @@ public class Handler implements Runnable {
 	 *            InputStream of the socket.
 	 * @param out
 	 *            OutputStream of the socket.
-	 * @throws IOException
+	 * @throws IOException if the Input or Output stream fails.
 	 */
 
 	protected void talkToClient(InputStream in, OutputStream out) throws IOException {
