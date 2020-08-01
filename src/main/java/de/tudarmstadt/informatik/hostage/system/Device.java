@@ -94,11 +94,14 @@ public class Device {
 
 	public static void executePortRedirectionScript() {
 		Api.remountSystem();
+		String mode="0777";
 
 		if (deployAsset("payload/redirect-ports.sh", "redirect-ports.sh")) {
 			String scriptFilePath = new File(MainActivity.getInstance().getFilesDir(), "redirect-ports.sh").getAbsolutePath();
 			Process p = null;
 			try {
+				Runtime.getRuntime().exec("chmod " + mode + " " + scriptFilePath).waitFor();
+
 				p = new ProcessBuilder("su", "-c", "sh "+scriptFilePath).start();
 				p.waitFor(); // stall the main thread
 

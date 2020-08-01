@@ -24,11 +24,8 @@ package de.tudarmstadt.informatik.hostage.system.iptablesUtils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -52,20 +49,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
-
 import de.tudarmstadt.informatik.hostage.R;
-import eu.chainfire.libsuperuser.Shell;
-import eu.chainfire.libsuperuser.Shell.SU;
 
 import static de.tudarmstadt.informatik.hostage.system.iptablesUtils.G.ipv4Fwd;
 import static de.tudarmstadt.informatik.hostage.system.iptablesUtils.G.ipv4Input;
@@ -82,31 +71,9 @@ public final class Api {
      * application logcat tag
      */
     public static final String TAG = "Iptables";
-    /**
-     * special application UID used to indicate "any application"
-     */
-    public static final int SPECIAL_UID_ANY = -10;
-    /**
-     * special application UID used to indicate the Linux Kernel
-     */
-    public static final int SPECIAL_UID_KERNEL = -11;
-    /**
-     * special application UID used for dnsmasq DHCP/DNS
-     */
-    public static final int SPECIAL_UID_TETHER = -12;
-    /** special application UID used for netd DNS proxy */
-    /**
-     * special application UID used for NTP
-     */
-    public static final int SPECIAL_UID_NTP = -14;
 
     public static final String DEFAULT_PREFS_NAME = "AFWallPrefs";
-    //for import/export rules
-    public static final String PREF_CUSTOMSCRIPT = "CustomScript";
-    public static final String PREF_CUSTOMSCRIPT2 = "CustomScript2"; // Executed on shutdown
-    public static final String PREF_MODE = "BlockMode";
-    // Modes
-    public static final String MODE_WHITELIST = "whitelist";
+
     private static final String[] ITFS_WIFI = {"eth+", "wlan+", "tiwlan+", "ra+", "bnep+"};
 
     private static final String[] ITFS_3G = {"rmnet+", "pdp+", "uwbr+", "wimax+", "vsnet+",
@@ -114,33 +81,24 @@ public final class Api {
             "wwan+", "cdma_rmnet+", "clat4+", "cc2mni+", "bond1+", "rmnet_smux+", "ccinet+",
             "v4-rmnet+", "seth_w+", "v4-rmnet_data+", "rmnet_ipa+", "rmnet_data+", "r_rmnet_data+"};
 
-    private static final String[] ITFS_VPN = {"tun+", "ppp+", "tap+"};
-
-    private static final String[] ITFS_TETHER = {"bt-pan", "usb+", "rndis+", "rmnet_usb+"};
     // iptables can exit with status 4 if two processes tried to update the same table
     private static final int IPTABLES_TRY_AGAIN = 4;
-    private static final String[] dynChains = {"-3g-postcustom", "-3g-fork", "-wifi-postcustom", "-wifi-fork"};
-    private static final String[] natChains = {"", "-tor-check", "-tor-filter"};
     private static final String[] staticChains = {"", "-input", "-3g", "-wifi", "-reject", "-vpn", "-3g-tether", "-3g-home", "-3g-roam", "-wifi-tether", "-wifi-wan", "-wifi-lan", "-tor", "-tor-reject", "-tether"};
-    private static final Pattern p = Pattern.compile("UserHandle\\{(.*)\\}");
     // Preferences
     public static String PREFS_NAME = "AFWallPrefs";
-    // Cached applications
-    public static Set<String> recentlyInstalled = new HashSet<>();
+
     //for custom scripts
-    public static String bbPath = null;
     private static String charsetName = "UTF8";
     private static String algorithm = "DES";
     private static int base64Mode = Base64.DEFAULT;
     private static String CHAIN_NAME = "customRules";
-    private static boolean rulesUpToDate = false;
 
-    public static void setRulesUpToDate(boolean rulesUpToDate) {
-        Api.rulesUpToDate = rulesUpToDate;
-    }
 
     /**
      * Asserts that the binary files are installed in the cache directory.
+     *
+     * BusyBox, nflog and run_pie removed, they are still in the raw directory but we don't need them
+     * for our build.
      *
      * @param ctx        context
      * @param showErrors indicates if errors should be alerted
@@ -154,24 +112,15 @@ public final class Api {
 
         for (String abi : abis) {
             if (abi.startsWith("x86")) {
-                ret = installBinary(ctx, R.raw.busybox_x86, "busybox") &&
-                        installBinary(ctx, R.raw.iptables_x86, "iptables") &&
-                        installBinary(ctx, R.raw.ip6tables_x86, "ip6tables") &&
-                        installBinary(ctx, R.raw.nflog_x86, "nflog") &&
-                        installBinary(ctx, R.raw.run_pie_x86, "run_pie");
+                ret = installBinary(ctx, R.raw.iptables_x86, "iptables") &&
+                        installBinary(ctx, R.raw.ip6tables_x86, "ip6tables");
             } else if (abi.startsWith("mips")) {
-                ret =  installBinary(ctx, R.raw.busybox_mips, "busybox") &&
-                        installBinary(ctx, R.raw.iptables_mips, "iptables") &&
-                        installBinary(ctx, R.raw.ip6tables_mips, "ip6tables") &&
-                        installBinary(ctx, R.raw.nflog_mips, "nflog") &&
-                        installBinary(ctx, R.raw.run_pie_mips, "run_pie");
+                ret = installBinary(ctx, R.raw.iptables_mips, "iptables") &&
+                        installBinary(ctx, R.raw.ip6tables_mips, "ip6tables");
             } else {
                 // default to ARM
-                ret = installBinary(ctx, R.raw.busybox_arm, "busybox") &&
-                        installBinary(ctx, R.raw.iptables_arm, "iptables") &&
-                        installBinary(ctx, R.raw.ip6tables_arm, "ip6tables") &&
-                        installBinary(ctx, R.raw.nflog_arm, "nflog") &&
-                        installBinary(ctx, R.raw.run_pie_arm, "run_pie");
+                ret = installBinary(ctx, R.raw.iptables_arm, "iptables") &&
+                        installBinary(ctx, R.raw.ip6tables_arm, "ip6tables");
             }
             Log.d(TAG, "binary installation for " + abi + (ret ? " succeeded" : " failed"));
         }
@@ -193,9 +142,13 @@ public final class Api {
             Log.e(TAG, "Dir installBinary: " + ctx.getDir("bin", 0));
 
             if (f.exists()) {
-                f.delete();
+                if (f.delete()) {
+                    Log.e(TAG, "File deleted.");
+                }else {
+                    Log.e(TAG, "Failed to delete file!");
+                }
             }
-            copyRawFile(ctx, resId, f, "0755");
+            copyRawFile(ctx, resId, f);
             return true;
         } catch (Exception e) {
             Log.e(TAG, "installBinary failed: " + e.getLocalizedMessage());
@@ -209,11 +162,10 @@ public final class Api {
      * @param ctx   context
      * @param resid resource id
      * @param file  destination file
-     * @param mode  file permissions (E.g.: "755")
      * @throws IOException          on error
      * @throws InterruptedException when interrupted
      */
-    private static void copyRawFile(Context ctx, int resid, File file, String mode) throws IOException, InterruptedException {
+    private static void copyRawFile(Context ctx, int resid, File file) throws IOException, InterruptedException {
         final String abspath = file.getAbsolutePath();
         Log.e(TAG, "FilesPath: " + abspath);
 
@@ -229,7 +181,7 @@ public final class Api {
         is.close();
         // Change the permissions
 
-        Runtime.getRuntime().exec("chmod " + mode + " " + abspath).waitFor();
+        Runtime.getRuntime().exec("chmod " + "0755" + " " + abspath).waitFor();
 
         copySystemBin(file);
     }
@@ -241,9 +193,8 @@ public final class Api {
      */
     private static void copySystemBin(File file){
         String systemPath= "/system/bin/";
-        //RootTools.remount("/", "RW"); //problem with remount in some devices
         remountSystem();
-        Process process = null;
+        Process process;
         try {
             process = Runtime.getRuntime().exec("su -c cp "+file.getAbsolutePath() +" "+systemPath+ file.getName());
             process.waitFor();
@@ -256,7 +207,7 @@ public final class Api {
     }
 
     public static void remountSystem(){
-        Process process = null;
+        Process process;
         try {
             process = Runtime.getRuntime().exec("su -c mount -o rw,remount /");
             process.waitFor();
@@ -267,6 +218,24 @@ public final class Api {
         }
 
     }
+
+    public static void checkAndCopyMissingScript(final Context context, final String fileName) {
+            final String srcPath = new File(context.getDir("bin", 0), fileName)
+                    .getAbsolutePath();
+            new Thread(() -> {
+                String path = G.initPath();
+                if (path != null) {
+                    File f = new File(path);
+                    Api.remountSystem();
+                        //make sure it's executable
+                    new RootCommand().setReopenShell(true).setLogging(true).run(context, "chmod 755 " + f.getAbsolutePath());
+                        RootTools.copyFile(srcPath, (f.getAbsolutePath() + "/" + fileName),
+                                true, false);
+
+                }
+            }).start();
+        }
+
 
     public static boolean isNetfilterSupported() {
         return new File("/proc/net/netfilter").exists()
@@ -293,175 +262,16 @@ public final class Api {
         }
     }
 
-    public static String getBinaryPath(Context ctx, boolean setv6) {
-        boolean builtin = true;
-        String pref = G.ip_path();
-
-        if (pref.equals("system") || !setv6) {
-            builtin = false;
-        }
-
-        String dir = "";
-        if (builtin) {
-            dir = ctx.getDir("bin", 0).getAbsolutePath() + "/";
-        }
-        String ipPath = dir + (setv6 ? "ip6tables" : "iptables");
-
-        if (Api.bbPath == null) {
-            Api.bbPath = getBusyBoxPath(ctx, true);
-        }
-        return ipPath;
-    }
-
-    /**
-     * Determine toybox/busybox or built in
-     *
-     * @param ctx
-     * @param considerSystem
-     * @return
-     */
-    public static String getBusyBoxPath(Context ctx, boolean considerSystem) {
-        if (G.bb_path().equals("system") && considerSystem) {
-            return "busybox ";
-        } else {
-            String dir = ctx.getDir("bin", 0).getAbsolutePath();
-            return dir + "/busybox ";
-        }
-    }
-
-    /**
-     * Get NFLog Path
-     *
-     * @param ctx
-     * @returnC
-     */
-    public static String getNflogPath(Context ctx) {
-        String dir = ctx.getDir("bin", 0).getAbsolutePath();
-        return dir + "/nflog ";
-    }
-
-    public static String getShellPath(Context ctx) {
-        String dir = ctx.getDir("bin", 0).getAbsolutePath();
-        return dir;
-    }
-
-    /**
-     * Look up uid for each user by name, and if he exists, append an iptables rule.
-     *
-     * @param listCommands current list of iptables commands to execute
-     * @param users        list of users to whom the rule applies
-     * @param prefix       "iptables" command and the portion of the rule preceding "-m owner --uid-owner X"
-     * @param suffix       the remainder of the iptables rule, following "-m owner --uid-owner X"
-     */
-    private static void addRuleForUsers(List<String> listCommands, String[] users, String prefix, String suffix) {
-        for (String user : users) {
-            int uid = android.os.Process.getUidForName(user);
-            if (uid != -1)
-                listCommands.add(prefix + " -m owner --uid-owner " + uid + " " + suffix);
-        }
-    }
-
-    private static void addRulesForUidlist(List<String> cmds, List<Integer> uids, String chain, boolean whitelist) {
-        String action = whitelist ? " -j RETURN" : " -j " + CHAIN_NAME + "-reject";
-
-        if (uids.indexOf(SPECIAL_UID_ANY) >= 0) {
-            if (!whitelist) {
-                cmds.add("-A " + chain + action);
-            }
-            // FIXME: in whitelist mode this blocks everything
-        } else {
-            for (Integer uid : uids) {
-                if (uid != null && uid >= 0) {
-                    cmds.add("-A " + chain + " -m owner --uid-owner " + uid + action);
-                }
-            }
-
-            String pref = G.dns_proxy();
-
-            if (whitelist) {
-                if (pref.equals("disable")) {
-                    addRuleForUsers(cmds, new String[]{"root"}, "-A " + chain + " -p udp --dport 53", " -j " + CHAIN_NAME + "-reject");
-                } else {
-                    addRuleForUsers(cmds, new String[]{"root"}, "-A " + chain + " -p udp --dport 53", " -j RETURN");
-                }
-            } else {
-                if (pref.equals("disable")) {
-                    addRuleForUsers(cmds, new String[]{"root"}, "-A " + chain + " -p udp --dport 53", " -j " + CHAIN_NAME + "-reject");
-                } else if (pref.equals("enable")) {
-                    addRuleForUsers(cmds, new String[]{"root"}, "-A " + chain + " -p udp --dport 53", " -j RETURN");
-                }
-            }
-
-
-            // NTP service runs as "system" user
-            if (uids.indexOf(SPECIAL_UID_NTP) >= 0) {
-                addRuleForUsers(cmds, new String[]{"system"}, "-A " + chain + " -p udp --dport 123", action);
-            }
-
-            boolean kernel_checked = uids.indexOf(SPECIAL_UID_KERNEL) >= 0;
-            if (whitelist) {
-                if (kernel_checked) {
-                    // reject any other UIDs, but allow the kernel through
-                    cmds.add("-A " + chain + " -m owner --uid-owner 0:999999999 -j " + CHAIN_NAME + "-reject");
-                } else {
-                    // kernel is blocked so reject everything
-                    cmds.add("-A " + chain + " -j " + CHAIN_NAME + "-reject");
-                }
-            } else {
-                if (kernel_checked) {
-                    // allow any other UIDs, but block the kernel
-                    cmds.add("-A " + chain + " -m owner --uid-owner 0:999999999 -j RETURN");
-                    cmds.add("-A " + chain + " -j " + CHAIN_NAME + "-reject");
-                }
-            }
-        }
-    }
-
-    private static void addRejectRules(List<String> cmds) {
-        // set up reject chain to log or not log
-        // this can be changed dynamically through the Firewall Logs activity
-
-        if (G.enableLogService() && G.logTarget() != null) {
-            if (G.logTarget().trim().equals("LOG")) {
-                cmds.add("-A " + CHAIN_NAME + "-reject" + " -m limit --limit 1000/min -j LOG --log-prefix \"{AFL}\" --log-level 4 --log-uid");
-            } else if (G.logTarget().trim().equals("NFLOG")) {
-                cmds.add("-A " + CHAIN_NAME + "-reject" + " -j NFLOG --nflog-prefix \"{AFL}\" --nflog-group 40");
-            }
-        }
-        cmds.add("-A " + CHAIN_NAME + "-reject" + " -j REJECT");
-    }
-
-    private static void addCustomRules(String prefName, List<String> cmds) {
-        String[] customRules = G.pPrefs.getString(prefName, "").split("[\\r\\n]+");
-        for (String s : customRules) {
-            if (s.matches(".*\\S.*")) {
-                cmds.add("#LITERAL# " + s);
-            }
-        }
-    }
 
     /**
      * Purge and re-add all rules (internal implementation).
      *
      * @param ctx        application context (mandatory)
-     * @param showErrors indicates if errors should be alerted
      */
-    private static boolean applyIptablesRulesImpl(final Context ctx, RuleDataSet ruleDataSet, final boolean showErrors,
+    private static boolean applyIptablesRulesImpl(final Context ctx,
                                                   List<String> out, boolean ipv6) {
-        if (ctx == null) {
-            return false;
-        }
-
-        assertBinaries(ctx, showErrors);
-        if (G.isMultiUser()) {
-            //FIXME: after setting this, we need to flush the iptables ?
-            if (G.getMultiUserId() > 0) {
-                CHAIN_NAME = "afwall" + G.getMultiUserId();
-            }
-        }
-        final boolean whitelist = G.pPrefs.getString(PREF_MODE, MODE_WHITELIST).equals(MODE_WHITELIST);
-
-        List<String> cmds = new ArrayList<String>();
+        if (ctx == null) { return false; }
+        List<String> cmds = new ArrayList<>();
 
         //check before make them ACCEPT state
         if (ipv4Input() || (ipv6 && ipv6Input())) {
@@ -481,59 +291,8 @@ public final class Api {
                 cmds.add("#NOCHK# -N " + CHAIN_NAME + s);
                 cmds.add("-F " + CHAIN_NAME + s);
             }
-            for (String s : dynChains) {
-                cmds.add("#NOCHK# -N " + CHAIN_NAME + s);
-            }
-
             cmds.add("#NOCHK# -D OUTPUT -j " + CHAIN_NAME);
             cmds.add("-I OUTPUT 1 -j " + CHAIN_NAME);
-
-            if (G.enableInbound()) {
-                cmds.add("#NOCHK# -D INPUT -j " + CHAIN_NAME + "-input");
-                cmds.add("-I INPUT 1 -j " + CHAIN_NAME + "-input");
-            }
-
-            if (G.enableTor()) {
-                if (!ipv6) {
-                    for (String s : natChains) {
-                        cmds.add("#NOCHK# -t nat -N " + CHAIN_NAME + s);
-                        cmds.add("-t nat -F " + CHAIN_NAME + s);
-                    }
-                    cmds.add("#NOCHK# -t nat -D OUTPUT -j " + CHAIN_NAME);
-                    cmds.add("-t nat -I OUTPUT 1 -j " + CHAIN_NAME);
-                }
-            }
-
-            // custom rules in afwall-{3g,wifi,reject} supersede everything else
-            addCustomRules(Api.PREF_CUSTOMSCRIPT, cmds);
-            cmds.add("-A " + CHAIN_NAME + "-3g -j " + CHAIN_NAME + "-3g-postcustom");
-            cmds.add("-A " + CHAIN_NAME + "-wifi -j " + CHAIN_NAME + "-wifi-postcustom");
-            addRejectRules(cmds);
-
-            if (G.enableInbound()) {
-                // we don't have any rules in the INPUT chain prohibiting inbound traffic, but
-                // local processes can't reply to half-open connections without this rule
-                cmds.add("-A afwall -m state --state ESTABLISHED -j RETURN");
-                cmds.add("-A afwall-input -m state --state ESTABLISHED -j RETURN");
-            }
-
-
-            // send wifi, 3G, VPN packets to the appropriate dynamic chain based on interface
-            if (G.enableVPN()) {
-                // if !enableVPN then we ignore those interfaces (pass all traffic)
-                for (final String itf : ITFS_VPN) {
-                    cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-vpn");
-                }
-
-                cmds.add("-A " + CHAIN_NAME + " -m mark --mark 0x3c/0xfffc -g " + CHAIN_NAME + "-vpn");
-                cmds.add("-A " + CHAIN_NAME + " -m mark --mark 0x40/0xfff8 -g " + CHAIN_NAME + "-vpn");
-            }
-
-            if (G.enableTether()) {
-                for (final String itf : ITFS_TETHER) {
-                    cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-tether");
-                }
-            }
 
             for (final String itf : ITFS_WIFI) {
                 cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-wifi");
@@ -542,59 +301,6 @@ public final class Api {
             for (final String itf : ITFS_3G) {
                 cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-3g");
             }
-
-            final boolean any_wifi = ruleDataSet.wifiList.indexOf(SPECIAL_UID_ANY) >= 0;
-            final boolean any_3g = ruleDataSet.dataList.indexOf(SPECIAL_UID_ANY) >= 0;
-
-            // special rules to allow 3G<->wifi tethering
-            // note that this can only blacklist DNS/DHCP services, not all tethered traffic
-            if (((!whitelist && (any_wifi || any_3g)) ||
-                    (ruleDataSet.dataList.indexOf(SPECIAL_UID_TETHER) >= 0) || (ruleDataSet.wifiList.indexOf(SPECIAL_UID_TETHER) >= 0))) {
-
-                String[] users = {"root", "nobody"};
-                String action = " -j " + (whitelist ? "RETURN" : CHAIN_NAME + "-reject");
-
-                // DHCP replies to client
-                addRuleForUsers(cmds, users, "-A " + CHAIN_NAME + "-wifi-tether", "-p udp --sport=67 --dport=68" + action);
-
-                // DNS replies to client
-                addRuleForUsers(cmds, users, "-A " + CHAIN_NAME + "-wifi-tether", "-p udp --sport=53" + action);
-                addRuleForUsers(cmds, users, "-A " + CHAIN_NAME + "-wifi-tether", "-p tcp --sport=53" + action);
-
-                // DNS requests to upstream servers
-                addRuleForUsers(cmds, users, "-A " + CHAIN_NAME + "-3g-tether", "-p udp --dport=53" + action);
-                addRuleForUsers(cmds, users, "-A " + CHAIN_NAME + "-3g-tether", "-p tcp --dport=53" + action);
-            }
-
-            // if tethered, try to match the above rules (if enabled).  no match -> fall through to the
-            // normal 3G/wifi rules
-            cmds.add("-A " + CHAIN_NAME + "-wifi-tether -j " + CHAIN_NAME + "-wifi-fork");
-            cmds.add("-A " + CHAIN_NAME + "-3g-tether -j " + CHAIN_NAME + "-3g-fork");
-
-            // NOTE: we still need to open a hole to let WAN-only UIDs talk to a DNS server
-            // on the LAN
-            if (whitelist && !G.dns_proxy().equals("disable")) {
-                cmds.add("-A " + CHAIN_NAME + "-wifi-lan -p udp --dport 53 -j RETURN");
-                //bug fix allow dns to be open on Pie for all connection type
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    cmds.add("-A " + CHAIN_NAME + "-wifi-wan" + " -p udp --dport 53" + " -j RETURN");
-                    cmds.add("-A " + CHAIN_NAME + "-3g-home" + " -p udp --dport 53" + " -j RETURN");
-                    cmds.add("-A " + CHAIN_NAME + "-3g-roam" + " -p udp --dport 53" + " -j RETURN");
-                    cmds.add("-A " + CHAIN_NAME + "-vpn" + " -p udp --dport 53" + " -j RETURN");
-                    cmds.add("-A " + CHAIN_NAME + "-tether" + " -p udp --dport 53" + " -j RETURN");
-                }
-            }
-
-            // now add the per-uid rules for 3G home, 3G roam, wifi WAN, wifi LAN, VPN
-            // in whitelist mode the last rule in the list routes everything else to afwall-reject
-            addRulesForUidlist(cmds, ruleDataSet.dataList, CHAIN_NAME + "-3g-home", whitelist);
-            addRulesForUidlist(cmds, ruleDataSet.roamList, CHAIN_NAME + "-3g-roam", whitelist);
-            addRulesForUidlist(cmds, ruleDataSet.wifiList, CHAIN_NAME + "-wifi-wan", whitelist);
-            addRulesForUidlist(cmds, ruleDataSet.lanList, CHAIN_NAME + "-wifi-lan", whitelist);
-            addRulesForUidlist(cmds, ruleDataSet.vpnList, CHAIN_NAME + "-vpn", whitelist);
-            addRulesForUidlist(cmds, ruleDataSet.tetherList, CHAIN_NAME + "-tether", whitelist);
-
-
 
             Log.i(TAG, "Setting OUTPUT to Accept State");
             cmds.add("-P OUTPUT ACCEPT");
@@ -614,7 +320,7 @@ public final class Api {
      * @param out A list of UNIX commands to execute
      */
     private static void iptablesCommands(List<String> in, List<String> out, boolean ipv6) {
-        String ipPath = getBinaryPath(G.ctx, ipv6);
+        String ipPath = "/system/bin/iptables";
 
         boolean firstLit = true;
         for (String s : in) {
@@ -624,7 +330,6 @@ public final class Api {
                     // "true" is a dummy command which needs to return success
                     firstLit = false;
                     out.add("export IPTABLES=\"" + ipPath + "\"; "
-                            + "export BUSYBOX=\"" + bbPath + "\"; "
                             + "export IPV6=" + (ipv6 ? "1" : "0") + "; "
                             + "true");
                 }
@@ -691,45 +396,27 @@ public final class Api {
      * Purge all iptables rules.
      *
      * @param ctx        mandatory context
-     * @param showErrors indicates if errors should be alerted
      * @param callback   If non-null, use a callback instead of blocking the current thread
      * @return true if the rules were purged
      */
-    public static boolean purgeIptables(Context ctx, boolean showErrors, RootCommand callback) {
-        List<String> cmds = new ArrayList<String>();
-        List<String> cmdsv4 = new ArrayList<String>();
-        List<String> out = new ArrayList<String>();
+    public static boolean purgeIptables(Context ctx, RootCommand callback) {
+        List<String> cmds = new ArrayList<>();
+        List<String> cmdsv4 = new ArrayList<>();
+        List<String> out = new ArrayList<>();
 
         for (String s : staticChains) {
             cmds.add("-F " + CHAIN_NAME + s);
-        }
-        for (String s : dynChains) {
-            cmds.add("-F " + CHAIN_NAME + s);
-        }
-        if (G.enableTor()) {
-            for (String s : natChains) {
-                cmdsv4.add("-t nat -F " + CHAIN_NAME + s);
-            }
-            cmdsv4.add("#NOCHK# -t nat -D OUTPUT -j " + CHAIN_NAME);
-        } else {
-            cmdsv4.add("#NOCHK# -D OUTPUT -j " + CHAIN_NAME);
         }
 
         //make sure reset the OUTPUT chain to accept state.
         cmds.add("-P OUTPUT ACCEPT");
 
-        //Delete only when the afwall chain exist !
-        //cmds.add("-D OUTPUT -j " + AFWALL_CHAIN_NAME);
 
         if (G.enableInbound()) {
             cmds.add("-D INPUT -j " + CHAIN_NAME + "-input");
         }
 
-        addCustomRules(Api.PREF_CUSTOMSCRIPT2, cmds);
-
         try {
-            assertBinaries(ctx, showErrors);
-
             // IPv4
             iptablesCommands(cmds, out, false);
             iptablesCommands(cmdsv4, out, false);
@@ -741,9 +428,6 @@ public final class Api {
 
             if (callback != null) {
                 callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, out);
-            } else {
-                fixupLegacyCmds(out);
-                return runScriptAsRoot(ctx, out, new StringBuilder()) != -1;
             }
 
             return true;
@@ -762,8 +446,8 @@ public final class Api {
      * @param useIPV6  true to list IPv6 rules, false to list IPv4 rules
      */
     public static void fetchIptablesRules(Context ctx, boolean useIPV6, RootCommand callback) {
-        List<String> cmds = new ArrayList<String>();
-        List<String> out = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
+        List<String> out = new ArrayList<>();
         cmds.add("-n -v -L");
         iptablesCommands(cmds, out, false);
         if (useIPV6) {
@@ -780,7 +464,7 @@ public final class Api {
      * @param callback callback for completion
      */
     public static void apply46(Context ctx, List<String> cmds, RootCommand callback) {
-        List<String> out = new ArrayList<String>();
+        List<String> out = new ArrayList<>();
         iptablesCommands(cmds, out, false);
 
         if (G.enableIPv6()) {
@@ -814,104 +498,26 @@ public final class Api {
      * @param callback callback for completion
      */
     public static void flushAllRules(Context ctx, RootCommand callback) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         cmds.add("-F");
         cmds.add("-X");
         apply46(ctx, cmds, callback);
     }
 
     /**
-     * Clear firewall logs by purging dmesg
-     *
-     * @param ctx      application context
-     * @param callback Callback for completion status
-     */
-    public static void clearLog(Context ctx, RootCommand callback) {
-        callback.run(ctx, getBusyBoxPath(ctx, true) + " dmesg -c");
-    }
-
-    /**
-     * List all interfaces via "ifconfig -a"
-     *
-     * @param ctx      application context
-     * @param callback Callback for completion status
-     */
-    public static void runIfconfig(Context ctx, RootCommand callback) {
-        callback.run(ctx, getBusyBoxPath(ctx, true) + " ifconfig -a");
-    }
-
-    public static void runNetworkInterface(Context ctx, RootCommand callback) {
-        callback.run(ctx, getBusyBoxPath(ctx, true) + " ls /sys/class/net");
-    }
-
-    /**
-     * Get Default Chain status
-     *
-     * @param ctx
-     * @param callback
-     */
-    public static void getChainStatus(Context ctx, RootCommand callback) {
-        List<String> cmds = new ArrayList<>();
-        cmds.add("-S INPUT");
-        cmds.add("-S OUTPUT");
-        cmds.add("-S FORWARD");
-        List<String> out = new ArrayList<>();
-
-        iptablesCommands(cmds, out, false);
-
-        ArrayList base = new ArrayList<String>();
-        base.add("-S INPUT");
-        base.add("-S OUTPUT");
-        cmds.add("-S FORWARD");
-        iptablesCommands(base, out, true);
-
-        callback.run(ctx, out);
-    }
-
-    /**
      * Apply single rule
      *
-     * @param ctx
-     * @param rule
-     * @param isIpv6
-     * @param callback
+     * @param ctx context
+     * @param rule Rule
+     * @param isIpv6 Ipv6 protocol
+     * @param callback callback
      */
     public static void applyRule(Context ctx, String rule, boolean isIpv6, RootCommand callback) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         cmds.add(rule);
         List<String> out = new ArrayList<>();
         iptablesCommands(cmds, out, isIpv6);
         callback.run(ctx, out);
-    }
-
-    /**
-     * Runs a script as root (multiple commands separated by "\n")
-     *
-     * @param ctx    mandatory context
-     * @param script the script to be executed
-     * @param res    the script output response (stdout + stderr)
-     * @return the script exit code
-     * @throws IOException on any error executing the script, or writing it to disk
-     */
-    public static int runScriptAsRoot(Context ctx, List<String> script, StringBuilder res) throws IOException {
-        int returnCode = -1;
-
-        if ((Looper.myLooper() != null) && (Looper.myLooper() == Looper.getMainLooper())) {
-            Log.e(TAG, "runScriptAsRoot should not be called from the main thread\nCall Trace:\n");
-            for (StackTraceElement e : new Throwable().getStackTrace()) {
-                Log.e(TAG, e.toString());
-            }
-        }
-
-        try {
-            returnCode = new RunCommand().execute(script, res, ctx).get();
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Caught InterruptedException");
-        } catch (Exception r) {
-            Log.e(TAG, "runScript failed: " + r.getLocalizedMessage());
-        }
-
-        return returnCode;
     }
 
     private static String calculateMD5(File updateFile) {
@@ -952,56 +558,6 @@ public final class Api {
                 Log.e(TAG, "Exception on closing MD5 input stream", e);
             }
         }
-    }
-
-    public static LinkedList<String> getKernelFeatures(String location) {
-        LinkedList<String> list = new LinkedList<>();
-
-        if (hasKernelConfig()) {
-            try {
-                File cfg = new File(location);
-                FileInputStream fis = new FileInputStream(cfg);
-                GZIPInputStream gzip = new GZIPInputStream(fis);
-                BufferedReader in = null;
-                String line = "";
-
-                in = new BufferedReader(new InputStreamReader(gzip));
-                while ((line = in.readLine()) != null) {
-                    if (!line.startsWith("#")) {
-                        list.add(line);
-                    }
-                }
-                in.close();
-                gzip.close();
-                fis.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return list;
-    }
-
-    public static boolean hasKernelFeature(String[] features,
-                                           LinkedList<String> location) {
-        if (location.isEmpty()) {
-            return false;
-        }
-        boolean[] results = new boolean[features.length];
-        for (int i = 0; i < features.length; i++) {
-            for (String test : location) {
-                if (test.startsWith(features[i])) {
-                    results[i] = true;
-                }
-            }
-        }
-        for (boolean b : results) if (!b) return false;
-        return true;
-    }
-
-
-    public static boolean hasKernelConfig() {
-        return new File("/proc/config.gz").exists();
     }
 
     public static String loadData(final Context context,
@@ -1071,7 +627,7 @@ public final class Api {
      *
      * @param key the key
      * @param data the data
-     * @return
+     * @return decrypted string
      */
     public static String unhideCrypt(String key, String data) {
         if (key == null || data == null)
@@ -1091,31 +647,6 @@ public final class Api {
             Log.e(TAG, e.getLocalizedMessage());
         }
         return decryptStr;
-    }
-
-    public static boolean isMobileNetworkSupported(final Context ctx) {
-        boolean hasMobileData = true;
-        try {
-            ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (cm != null) {
-                if (cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) == null) {
-                    hasMobileData = false;
-                }
-            }
-        } catch (SecurityException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-        return hasMobileData;
-    }
-
-    public static String getCurrentPackage(Context ctx) {
-        PackageInfo pInfo = null;
-        try {
-            pInfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0);
-        } catch (NameNotFoundException e) {
-            Log.e(Api.TAG, "Package not found", e);
-        }
-        return pInfo.packageName;
     }
 
     public static int getConnectivityStatus(Context context) {
@@ -1143,10 +674,10 @@ public final class Api {
     /**
      * Apply default chains based on preference
      *
-     * @param ctx
+     * @param ctx Context
      */
     public static void applyDefaultChains(Context ctx, RootCommand callback) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         if (ipv4Input()) {
             cmds.add("-P INPUT ACCEPT");
         } else {
@@ -1168,7 +699,7 @@ public final class Api {
 
     public static void applyDefaultChainsv6(Context ctx, RootCommand callback) {
         if (G.controlIPv6()) {
-            List<String> cmds = new ArrayList<String>();
+            List<String> cmds = new ArrayList<>();
             if (ipv6Input()) {
                 cmds.add("-P INPUT ACCEPT");
             } else {
@@ -1195,27 +726,10 @@ public final class Api {
      * @param callback callback for completion
      */
     public static void flushOtherRules(Context ctx, RootCommand callback) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         cmds.add("-F firewall");
         cmds.add("-X firewall");
         apply46(ctx, cmds, callback);
-    }
-
-    public static boolean hasRoot() {
-        final boolean[] hasRoot = new boolean[1];
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                hasRoot[0] = Shell.SU.available();
-            }
-        };
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return hasRoot[0];
     }
 
     public static void sendToastBroadcast(Context ctx, String message) {
@@ -1223,98 +737,6 @@ public final class Api {
         broadcastIntent.setAction("TOAST");
         broadcastIntent.putExtra("MSG", message);
         ctx.sendBroadcast(broadcastIntent);
-    }
-
-    public static String getFixLeakPath(String fileName) {
-        if (G.initPath() != null) {
-            return G.initPath() + "/" + fileName;
-        }
-        return null;
-    }
-
-    public static boolean isFixPathFileExist(String fileName) {
-        String path = getFixLeakPath(fileName);
-        if (path != null) {
-            File file = new File(path);
-            return file.exists();
-        }
-        return false;
-    }
-
-    static class RuleDataSet {
-        List<Integer> wifiList;
-        List<Integer> dataList;
-        List<Integer> lanList;
-        List<Integer> roamList;
-        List<Integer> vpnList;
-        List<Integer> tetherList;
-        List<Integer> torList;
-
-        RuleDataSet(List<Integer> uidsWifi, List<Integer> uids3g,
-                    List<Integer> uidsRoam, List<Integer> uidsVPN, List<Integer> uidsTether,
-                    List<Integer> uidsLAN, List<Integer> uidsTor) {
-            this.wifiList = uidsWifi;
-            this.dataList = uids3g;
-            this.roamList = uidsRoam;
-            this.vpnList = uidsVPN;
-            this.tetherList = uidsTether;
-            this.lanList = uidsLAN;
-            this.torList = uidsTor;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder builder = new StringBuilder();
-            builder.append(wifiList != null ? android.text.TextUtils.join(",", wifiList) : "");
-            builder.append(dataList != null ? android.text.TextUtils.join(",", dataList) : "");
-            builder.append(lanList != null ? android.text.TextUtils.join(",", lanList) : "");
-            builder.append(roamList != null ? android.text.TextUtils.join(",", roamList) : "");
-            builder.append(vpnList != null ? android.text.TextUtils.join(",", vpnList) : "");
-            builder.append(tetherList != null ? android.text.TextUtils.join(",", tetherList) : "");
-            builder.append(torList != null ? android.text.TextUtils.join(",", torList) : "");
-            return builder.toString().trim();
-        }
-    }
-
-    private static class RunCommand extends AsyncTask<Object, List<String>, Integer> {
-
-        private int exitCode = -1;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Integer doInBackground(Object... params) {
-            @SuppressWarnings("unchecked")
-            List<String> commands = (List<String>) params[0];
-            StringBuilder res = (StringBuilder) params[1];
-            try {
-                if (!SU.available())
-                    return exitCode;
-                if (commands != null && commands.size() > 0) {
-                    List<String> output = SU.run(commands);
-                    if (output != null) {
-                        exitCode = 0;
-                        if (output.size() > 0) {
-                            for (String str : output) {
-                                res.append(str);
-                                res.append("\n");
-                            }
-                        }
-                    } else {
-                        exitCode = 1;
-                    }
-                }
-            } catch (Exception ex) {
-                if (res != null)
-                    res.append("\n" + ex);
-            }
-            return exitCode;
-        }
-
-
     }
 
 }
