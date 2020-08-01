@@ -108,6 +108,13 @@ public final class Api {
         final String[] abis;
         abis = Build.SUPPORTED_ABIS;
 
+        boolean iptablesBinariesExist = new File("/system/bin/iptables").exists()
+                && new File("/system/bin/ip6tables").exists();
+        if(iptablesBinariesExist) {
+            toast(ctx, ctx.getString(R.string.toast_bin_already_installed));
+            return true;
+        }
+
         boolean ret = false;
 
         for (String abi : abis) {
