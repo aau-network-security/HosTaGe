@@ -208,9 +208,7 @@ public final class Api {
 
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "ErrorInCopy System Bin: " + e.getMessage());
-
         }
-
     }
 
     public static void remountSystem(){
@@ -268,7 +266,6 @@ public final class Api {
             mHandler.post(() -> Toast.makeText(ctx, msgText, toastlen).show());
         }
     }
-
 
     /**
      * Purge and re-add all rules (internal implementation).
@@ -657,7 +654,6 @@ public final class Api {
     }
 
     public static int getConnectivityStatus(Context context) {
-
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
