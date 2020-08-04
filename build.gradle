@@ -24,8 +24,8 @@ allprojects {
 }
 dependencies {
     //firebase
-    implementation 'com.google.firebase:firebase-crashlytics:17.0.1'
-    implementation 'com.google.firebase:firebase-analytics:17.4.3'
+    implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
+    implementation 'com.google.firebase:firebase-analytics:17.4.4'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     //google api
     implementation 'com.google.android.gms:play-services-base:17.3.0'
@@ -50,16 +50,28 @@ dependencies {
 
     // https://mvnrepository.com/artifact/javax.naming/jndi
     implementation files('libs/jndi-1.2.1.jar');
-    // https://mvnrepository.com/artifact/org.apache.qpid/qpid-jms-client
-    implementation group: 'org.apache.qpid', name: 'qpid-jms-client', version: '0.53.0'
 
-    implementation group: 'org.apache.qpid', name: 'qpid-broker-core', version: '8.0.0'
+    implementation files('libs/qpid-broker-core-9.0.0-SNAPSHOT.jar');
+    //implementation group: 'org.apache.qpid', name: 'qpid-broker-core', version: '8.0.0' //default package dosn't support android.
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-amqp-0-8-protocol
     implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-amqp-0-8-protocol', version: '8.0.0'
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-amqp-1-0-protocol
     implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-amqp-1-0-protocol', version: '8.0.0'
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-memory-store
     implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-memory-store', version: '8.0.0'
+
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation group: 'com.google.guava', name: 'guava', version: '29.0-android'
+
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
+
+    //logback
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    //implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    implementation 'com.github.tony19:logback-android:2.0.0'
 
     //moquette
     implementation 'io.moquette:moquette-broker:0.12.1'
@@ -122,6 +134,7 @@ greendao{
 //this is for the conflict of common apache libraries between moquette and VirusTotalApi
 configurations {
     all*.exclude group: 'commons-codec', module: 'commons-codec'
+    all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
 android {
@@ -140,6 +153,7 @@ android {
             }
         }
 
+
         //   signingConfig signingConfigs.config
 
     }
@@ -150,6 +164,8 @@ android {
     }
 
     dexOptions {
+        incremental true
+        preDexLibraries = false
         javaMaxHeapSize "4g"
     }
     sourceSets {

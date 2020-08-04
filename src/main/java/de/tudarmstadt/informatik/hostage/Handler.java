@@ -25,6 +25,7 @@ import de.tudarmstadt.informatik.hostage.nio.Reader;
 import de.tudarmstadt.informatik.hostage.nio.Writer;
 import de.tudarmstadt.informatik.hostage.protocol.GHOST;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
+import de.tudarmstadt.informatik.hostage.protocol.amqpUtils.AMQPHandler;
 import de.tudarmstadt.informatik.hostage.protocol.coapUtils.COAPHandler;
 import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
 import de.tudarmstadt.informatik.hostage.sync.tracing.TracingSyncService;
@@ -179,9 +180,14 @@ public class Handler implements Runnable {
 			kill();
 			return;
 		}
-
 		if(protocol.toString().equals("COAP") && COAPHandler.isAnAttackOngoing()){
 			handleCOAPPackets();
+			kill();
+			return;
+		}
+
+		if(protocol.toString().equals("AMQP")){
+			handleAMQPPackets();
 			kill();
 			return;
 		}
@@ -212,6 +218,7 @@ public class Handler implements Runnable {
 		logCOAPPackets();
 	}
 
+	private void handleAMQPPackets(){ logAMQPPackets(); }
 
 	/**
 	 * Gets attack ID for the attack. Also increases the attack ID counter by
@@ -345,8 +352,8 @@ public class Handler implements Runnable {
 
 	public void logMQTT(MessageRecord.TYPE type){
     	if(!logged){
-			Logger.log(Hostage.getContext(), createNetworkRecord());
-			Logger.log(Hostage.getContext(), MQTTHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
+			Logger.log(Hostage.getContext(),createNetworkRecord());
+			Logger.log(Hostage.getContext(),MQTTHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
 			Logger.log(Hostage.getContext(),MQTTHandler.createMessageRecord(type,attack_id));
 			MQTTHandler.removeCurrentConnected();
 			logged = true;
@@ -355,10 +362,20 @@ public class Handler implements Runnable {
 
 	public void logCOAP(MessageRecord.TYPE type){
 		if(!logged){
-			Logger.log(Hostage.getContext(), createNetworkRecord());
+			Logger.log(Hostage.getContext(),createNetworkRecord());
 			Logger.log(Hostage.getContext(),COAPHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
 			Logger.log(Hostage.getContext(),COAPHandler.createMessageRecord(type,attack_id));
 			COAPHandler.removeCurrentConnected();
+			logged = true;
+		}
+	}
+
+	public void logAMQP(MessageRecord.TYPE type){
+		if(!logged){
+			Logger.log(Hostage.getContext(),createNetworkRecord());
+			Logger.log(Hostage.getContext(),AMQPHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
+			Logger.log(Hostage.getContext(),AMQPHandler.createMessageRecord(type,attack_id));
+			AMQPHandler.removeCurrentConnected();
 			logged = true;
 		}
 	}
@@ -408,4 +425,9 @@ public class Handler implements Runnable {
 	protected void logCOAPPackets() {
 		logCOAP(MessageRecord.TYPE.RECEIVE);
 	}
+
+	protected void logAMQPPackets() {
+		logAMQP(MessageRecord.TYPE.RECEIVE);
+	}
+
 }

@@ -54,7 +54,6 @@ import eu.chainfire.libsuperuser.Shell;
 
 import static de.tudarmstadt.informatik.hostage.commons.HelperUtils.getBSSID;
 
-
 /**
  * Background service running as long as at least one protocol is active.
  * Service controls start and stop of protocol listener. Notifies GUI about
@@ -514,8 +513,11 @@ public class Hostage extends Service {
 				if(protocolName.equals("MQTT")) {
 					return addMQTTListener(protocol, port);
 				}
-				if(protocolName.equals("COAP")){
-					return addCOAPListener(protocol,port);
+				if(protocolName.equals("COAP")) {
+					return addCOAPListener(protocol, port);
+				}
+				if(protocolName.equals("AMQP")){
+					return addAMQPListener(protocol,port);
 				}
 				Listener listener = new Listener(this, protocol, port);
 				listeners.add(listener);
@@ -533,6 +535,12 @@ public class Hostage extends Service {
 
 	private COAPListener addCOAPListener(Protocol protocolName, int port){
 		COAPListener listener = new COAPListener(this, protocolName, port);
+		listeners.add(listener);
+		return listener;
+	}
+
+	private AMQPListener addAMQPListener(Protocol protocolName, int port){
+		AMQPListener listener = new AMQPListener(this, protocolName, port);
 		listeners.add(listener);
 		return listener;
 	}

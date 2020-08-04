@@ -126,9 +126,13 @@ public class COAPHandler extends CoapResource {
         if(remoteIPAddress.equals("127.0.0.1"))
             return true;
         int prefix = Hostage.prefix;
-        SubnetUtils utils = new SubnetUtils(internalIPAddress+"/"+prefix);
+        try {
+            SubnetUtils utils = new SubnetUtils(internalIPAddress + "/" + prefix);
+            return utils.getInfo().isInRange(remoteIPAddress);
+        }catch (IllegalArgumentException e){
+            return true;
+        }
 
-        return utils.getInfo().isInRange(remoteIPAddress);
     }
 
     /**

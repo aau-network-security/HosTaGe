@@ -4,6 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
+import java.nio.ByteBuffer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,23 +19,29 @@ import static org.junit.Assert.assertEquals;
 
 public class AMQPTest {
     private final static String QUEUE_NAME = "hello";
+    LogbackSpy logSpy = new LogbackSpy();
 
 
     @Before
-    public void testBroker() throws IOException, TimeoutException {
-//        EmbeddedBroker broker = new EmbeddedBroker();
-//        try {
-//            broker.start();
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
+    public void testBroker() {
+        EmbeddedBroker broker = new EmbeddedBroker();
+        try {
+            logSpy.register();
+
+            broker.start();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void testClientSendConnection(){
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
+        factory.setUsername("guest");
+        factory.setPassword("guest");
+
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
                 channel.queueDeclare(QUEUE_NAME, false, false, false, null);
@@ -45,6 +52,8 @@ public class AMQPTest {
 
                 assertEquals(channel.getChannelNumber(),1);
                 assertEquals(connection.getAddress().toString(),"/127.0.0.1");
+                System.out.println("Test "+logSpy.getList().get(0));
+
         } catch (TimeoutException | IOException e) {
             e.printStackTrace();
         }
@@ -55,6 +64,8 @@ public class AMQPTest {
     public void testClientReceiveConnection() throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
+        factory.setUsername("guest");
+        factory.setPassword("guest");
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 

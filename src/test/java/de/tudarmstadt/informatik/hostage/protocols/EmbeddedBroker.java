@@ -18,15 +18,16 @@ public class EmbeddedBroker {
     private static final String INITIAL_CONFIGURATION = "qpid_embedded_inmemory_configuration.json";
 
     public void start () throws Exception {
-
         final SystemLauncher systemLauncher = new SystemLauncher();
+
         systemLauncher.startup(createSystemConfig());
+
     }
 
     private Map<String, Object> createSystemConfig () {
         Map<String, Object> attributes = new HashMap<>();
         URL initialConfig = EmbeddedBroker.class.getClassLoader().getResource(INITIAL_CONFIGURATION);
-        System.out.println(initialConfig.toExternalForm());
+        //System.out.println(initialConfig.toExternalForm());
         attributes.put("type", "Memory");
         attributes.put(SystemConfig.INITIAL_CONFIGURATION_LOCATION, initialConfig.toExternalForm());
         attributes.put(SystemConfig.INITIAL_SYSTEM_PROPERTIES_LOCATION, createSystemPropertyFile());
