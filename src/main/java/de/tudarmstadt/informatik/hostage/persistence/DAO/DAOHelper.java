@@ -48,47 +48,24 @@ public class DAOHelper {
         return messageRecordDAO;
     }
 
-    public void setMessageRecordDAO(MessageRecordDAO messageRecordDAO) {
-        this.messageRecordDAO = messageRecordDAO;
-    }
-
     public NetworkRecordDAO getNetworkRecordDAO() {
         return networkRecordDAO;
-    }
-
-    public void setNetworkRecordDAO(NetworkRecordDAO networkRecordDAO) {
-        this.networkRecordDAO = networkRecordDAO;
     }
 
     public ProfileDAO getProfileDAO() {
         return profileDAO;
     }
 
-    public void setProfileDAO(ProfileDAO profileDAO) {
-        this.profileDAO = profileDAO;
-    }
-
     public SyncInfoRecordDAO getSyncInfoRecordDAO() {
         return syncInfoRecordDAO;
-    }
-
-    public void setSyncInfoRecordDAO(SyncInfoRecordDAO syncInfoRecordDAO) {
-        this.syncInfoRecordDAO = syncInfoRecordDAO;
     }
 
     public AttackRecordDAO getAttackRecordDAO() {
         return attackRecordDAO;
     }
 
-    public void setAttackRecordDAO(AttackRecordDAO attackRecordDAO) {
-        this.attackRecordDAO = attackRecordDAO;
-    }
-
     public SyncDeviceDAO getSyncDeviceDAO() {
         return syncDeviceDAO;
     }
 
-    public void setSyncDeviceDAO(SyncDeviceDAO syncDeviceDAO) {
-        this.syncDeviceDAO = syncDeviceDAO;
-    }
 }

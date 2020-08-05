@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.protocols;
+package de.tudarmstadt.informatik.hostage.protocols.AMQP;
 
 import org.apache.qpid.server.SystemLauncher;
 import org.apache.qpid.server.configuration.IllegalConfigurationException;
@@ -16,12 +16,11 @@ import java.util.Map;
 
 public class EmbeddedBroker {
     private static final String INITIAL_CONFIGURATION = "qpid_embedded_inmemory_configuration.json";
+    final SystemLauncher systemLauncher = new SystemLauncher();
+
 
     public void start () throws Exception {
-        final SystemLauncher systemLauncher = new SystemLauncher();
-
         systemLauncher.startup(createSystemConfig());
-
     }
 
     private Map<String, Object> createSystemConfig () {
@@ -33,6 +32,10 @@ public class EmbeddedBroker {
         attributes.put(SystemConfig.INITIAL_SYSTEM_PROPERTIES_LOCATION, createSystemPropertyFile());
         attributes.put("startupLoggedToSystemOut", true);
         return attributes;
+    }
+
+    public void stopBroker(){
+        systemLauncher.shutdown();
     }
 
 

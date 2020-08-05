@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.test;
+package de.tudarmstadt.informatik.hostage.fragment;
 
 import org.junit.Test;
 

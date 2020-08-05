@@ -1,11 +1,11 @@
-package de.tudarmstadt.informatik.hostage.protocols;
+package de.tudarmstadt.informatik.hostage.protocols.AMQP;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
-import java.nio.ByteBuffer;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,11 +20,11 @@ import static org.junit.Assert.assertEquals;
 public class AMQPTest {
     private final static String QUEUE_NAME = "hello";
     LogbackSpy logSpy = new LogbackSpy();
+    EmbeddedBroker broker = new EmbeddedBroker();
 
 
     @Before
     public void testBroker() {
-        EmbeddedBroker broker = new EmbeddedBroker();
         try {
             logSpy.register();
 
@@ -77,6 +77,12 @@ public class AMQPTest {
             System.out.println(" [x] Received '" + message + "'");
         };
         channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> { });
+        }
+
+        @After
+        public void tearDown(){
+        logSpy.unregister();
+        broker.stopBroker();
         }
 }
 

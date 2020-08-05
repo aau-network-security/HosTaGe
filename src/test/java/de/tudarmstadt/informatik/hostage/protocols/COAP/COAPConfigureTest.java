@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.protocols;
+package de.tudarmstadt.informatik.hostage.protocols.COAP;
 
 import com.mbed.coap.CoapConstants;
 import com.mbed.coap.client.CoapClient;

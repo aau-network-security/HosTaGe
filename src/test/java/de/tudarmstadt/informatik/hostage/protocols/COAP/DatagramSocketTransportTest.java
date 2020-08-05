@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.tudarmstadt.informatik.hostage.protocols;
+package de.tudarmstadt.informatik.hostage.protocols.COAP;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -28,9 +28,8 @@ import com.mbed.coap.transport.udp.DatagramSocketTransport;
 
 import java.net.DatagramSocket;
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executor;
+
 import org.junit.Test;
 
 /**

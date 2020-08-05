@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.protocols;
+package de.tudarmstadt.informatik.hostage.protocols.MQTT;
 
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -110,7 +110,7 @@ public class MQTTTest {
     public void testMoquette() throws Exception{
 
         assertEquals("SUCCESS",client.connect().getReturnCode().name());
-        client.publishWith().topic(topic).qos(MqttQos.AT_LEAST_ONCE).payload("de/tudarmstadt/informatik/hostage/test".getBytes()).send();
+        client.publishWith().topic(topic).qos(MqttQos.AT_LEAST_ONCE).payload("de/tudarmstadt/informatik/hostage/fragment".getBytes()).send();
 
 
         assertEquals(1,messages.size());

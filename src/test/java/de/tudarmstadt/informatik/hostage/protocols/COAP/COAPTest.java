@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.protocols;
+package de.tudarmstadt.informatik.hostage.protocols.COAP;
 
 import com.mbed.coap.exception.ObservationNotEstablishedException;
 import com.mbed.coap.packet.CoapPacket;
@@ -15,8 +15,8 @@ import org.mockito.ArgumentCaptor;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import static de.tudarmstadt.informatik.hostage.protocols.CoapPacketBuilder.LOCAL_5683;
-import static de.tudarmstadt.informatik.hostage.protocols.CoapPacketBuilder.newCoapPacket;
+import static de.tudarmstadt.informatik.hostage.protocols.COAP.CoapPacketBuilder.LOCAL_5683;
+import static de.tudarmstadt.informatik.hostage.protocols.COAP.CoapPacketBuilder.newCoapPacket;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

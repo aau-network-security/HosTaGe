@@ -91,7 +91,7 @@ public class NetworkRecordDAOTest {
     public void testGetUniqueESSIDRecords(){
         NetworkRecord recordSecond = new NetworkRecord();
         NetworkRecord recordThird = new NetworkRecord();
-        String essid = "de/tudarmstadt/informatik/hostage/test";
+        String essid = "de/tudarmstadt/informatik/hostage/fragment";
         String essidSecond = "ssid";
         record.setBssid("1");
         record.setSsid(essid);
@@ -138,7 +138,7 @@ public class NetworkRecordDAOTest {
 
     @Test
     public void testUpdateNetworkInformation(){
-        String before = "de/tudarmstadt/informatik/hostage/test";
+        String before = "de/tudarmstadt/informatik/hostage/fragment";
         String after = "newTest";
         record.setBssid("1");
         record.setSsid(before);
@@ -156,7 +156,7 @@ public class NetworkRecordDAOTest {
     @Test
     public void testGetMissingNetworkRecords(){
         ArrayList<String> otherBSSIDs = new ArrayList<>();
-        String other = "de/tudarmstadt/informatik/hostage/test";
+        String other = "de/tudarmstadt/informatik/hostage/fragment";
         String secondOther = "other";
         String normal = "normal";
         otherBSSIDs.add(other);
@@ -231,7 +231,7 @@ public class NetworkRecordDAOTest {
     @Test
     public void testGetUniqueESSIDRecordsForProtocol(){
         String protocol= "http";
-        String essid = "de/tudarmstadt/informatik/hostage/test";
+        String essid = "de/tudarmstadt/informatik/hostage/fragment";
 
         AttackRecord attackRecord = new AttackRecord();
         attackRecord.setAttack_id(2);
@@ -266,7 +266,7 @@ public class NetworkRecordDAOTest {
     @Test
     public void testGetUniqueBSSIDRecordsForProtocol(){
         String protocol= "http";
-        String bssid = "de/tudarmstadt/informatik/hostage/test";
+        String bssid = "de/tudarmstadt/informatik/hostage/fragment";
 
         AttackRecord attackRecord = new AttackRecord();
         attackRecord.setAttack_id(2);
@@ -301,7 +301,7 @@ public class NetworkRecordDAOTest {
     @Test
     public void  attacksPerESSID(){
         String protocol= "http";
-        String essid = "de/tudarmstadt/informatik/hostage/test";
+        String essid = "de/tudarmstadt/informatik/hostage/fragment";
 
         LogFilter filter = new LogFilter();
         ArrayList<String> protocols = new ArrayList<>();
@@ -326,7 +326,7 @@ public class NetworkRecordDAOTest {
     public void testJoins(){
         AttackRecord attackRecord = new AttackRecord();
 
-        String bssid = "de/tudarmstadt/informatik/hostage/test";
+        String bssid = "de/tudarmstadt/informatik/hostage/fragment";
         String protocol = "protocol";
         String packet = "packet";
 

@@ -138,7 +138,7 @@ public class AttackRecordDAOTest {
     public void testGetAttackPerProtocolCountThreeArguments(){
         String protocol = "Http";
         String protocol2 = "smb";
-        String bssid = "de/tudarmstadt/informatik/hostage/test";
+        String bssid = "de/tudarmstadt/informatik/hostage/fragment";
 
         AttackRecord secondRecord = new AttackRecord();
 
@@ -219,7 +219,7 @@ public class AttackRecordDAOTest {
     @Test
     public void testBssidSeen(){
         String protocol = "http";
-        String bssid = "de/tudarmstadt/informatik/hostage/test";
+        String bssid = "de/tudarmstadt/informatik/hostage/fragment";
         record.setProtocol(protocol);
         record.setBssid(bssid);
 
@@ -232,7 +232,7 @@ public class AttackRecordDAOTest {
 
     @Test
     public void testGetNumAttacksSeenByBSSID(){
-        String bssid = "de/tudarmstadt/informatik/hostage/test";
+        String bssid = "de/tudarmstadt/informatik/hostage/fragment";
         record.setBssid(bssid);
 
         daoSession.insert(record);
@@ -246,7 +246,7 @@ public class AttackRecordDAOTest {
 
     @Test
     public void testGetNumAttacksSeenByBSSIDProtocol(){
-        String bssid = "de/tudarmstadt/informatik/hostage/test";
+        String bssid = "de/tudarmstadt/informatik/hostage/fragment";
         String protocol = "http";
         String protocol2 = "smb";
         AttackRecord secondRecord = new AttackRecord();
@@ -329,10 +329,10 @@ public class AttackRecordDAOTest {
         String http = "http";
         String smb = "smb";
 
-        String firstBssid = "de/tudarmstadt/informatik/hostage/test";
+        String firstBssid = "de/tudarmstadt/informatik/hostage/fragment";
         String secondBssid = "test1";
 
-        String firstEssid = "de/tudarmstadt/informatik/hostage/test";
+        String firstEssid = "de/tudarmstadt/informatik/hostage/fragment";
         String secondEssid = "test1";
 
 
@@ -441,10 +441,10 @@ public class AttackRecordDAOTest {
         String http = "http";
         String smb = "smb";
 
-        String firstBssid = "de/tudarmstadt/informatik/hostage/test";
+        String firstBssid = "de/tudarmstadt/informatik/hostage/fragment";
         String secondBssid = "test1";
 
-        String firstEssid = "de/tudarmstadt/informatik/hostage/test";
+        String firstEssid = "de/tudarmstadt/informatik/hostage/fragment";
         String secondEssid = "test1";
 
 

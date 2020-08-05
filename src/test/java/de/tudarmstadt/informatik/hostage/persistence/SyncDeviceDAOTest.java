@@ -104,7 +104,7 @@ public class SyncDeviceDAOTest {
 
     @Test
     public void  testUpdateSyncDevices(){
-        String deviceId = "de/tudarmstadt/informatik/hostage/test";
+        String deviceId = "de/tudarmstadt/informatik/hostage/fragment";
         HashMap<String, Long> devices =  new HashMap<>();
         devices.put(deviceId,1L);
 

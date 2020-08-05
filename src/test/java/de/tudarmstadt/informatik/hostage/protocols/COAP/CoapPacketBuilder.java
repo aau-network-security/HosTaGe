@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.tudarmstadt.informatik.hostage.protocols;
+package de.tudarmstadt.informatik.hostage.protocols.COAP;
 
 import com.mbed.coap.packet.BlockOption;
 import com.mbed.coap.packet.BlockSize;

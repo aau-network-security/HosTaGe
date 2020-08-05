@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.protocols;
+package de.tudarmstadt.informatik.hostage.protocols.AMQP;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;

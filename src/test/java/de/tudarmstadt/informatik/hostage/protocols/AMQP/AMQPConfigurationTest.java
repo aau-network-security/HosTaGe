@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.protocols;
+package de.tudarmstadt.informatik.hostage.protocols.AMQP;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -17,7 +17,6 @@ import org.apache.qpid.server.plugin.SystemConfigFactory;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.HashMap;
