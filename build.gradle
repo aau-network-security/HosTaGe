@@ -95,8 +95,11 @@ dependencies {
     implementation files('libs/sshlib-v1.1.jar')
     implementation files('libs/alfresco-jlan.jar')
     implementation files('libs/cryptix-jce-provider.jar')
-    implementation 'org.snmp4j:snmp4j:1.10.1'
-    implementation files('libs/snmp4j-agent-2.3.3.jar')
+    //implementation 'org.snmp4j:snmp4j:1.10.1'
+   // implementation files('libs/snmp4j-agent-2.3.3.jar')
+    implementation group: 'org.snmp4j', name: 'snmp4j', version: '3.4.2'
+    // https://mvnrepository.com/artifact/org.snmp4j/snmp4j-agent
+    implementation group: 'org.snmp4j', name: 'snmp4j-agent', version: '3.3.4'
     implementation files('libs/VirusTotalAPI.jar')
 
     //materialDesign
