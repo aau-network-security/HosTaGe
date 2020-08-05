@@ -59,15 +59,15 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-memory-store
     implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-memory-store', version: '8.0.0'
 
+    //dependencies of AMQP broker
     // https://mvnrepository.com/artifact/com.google.guava/guava
     implementation group: 'com.google.guava', name: 'guava', version: '29.0-android'
-
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
-
+    // https://mvnrepository.com/artifact/joda-time/joda-time
+    implementation group: 'joda-time', name: 'joda-time', version: '2.10.6' //for min <26 sdk
     //logback
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-    //implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     implementation 'com.github.tony19:logback-android:2.0.0'
 
     //MQTT

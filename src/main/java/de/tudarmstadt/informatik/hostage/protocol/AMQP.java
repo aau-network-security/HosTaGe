@@ -13,6 +13,8 @@ import org.apache.qpid.server.plugin.SystemConfigFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.Duration;
+
 
 import de.tudarmstadt.informatik.hostage.protocol.amqpUtils.LogBackWatcher;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
@@ -24,11 +26,10 @@ public class AMQP implements Protocol {
     private static final SystemLauncher systemLauncher = new SystemLauncher();
     private static final LogBackWatcher watcher = new LogBackWatcher();
 
-    public AMQP() throws Exception {
+    public AMQP(){
         if(!brokerStarted){
             watcher.register();//starts to watch the Logs of the broker.
             start();
-
         }
     }
 
