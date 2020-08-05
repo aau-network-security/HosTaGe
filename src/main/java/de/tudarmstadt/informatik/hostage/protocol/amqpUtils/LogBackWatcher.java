@@ -35,7 +35,7 @@ public class LogBackWatcher {
         listAppender.start();
         getRootLogger().addAppender(listAppender);
 
-        final Pattern pattern = Pattern.compile("CON-1001 : Open : Destination :*");
+        final Pattern pattern = Pattern.compile(".+?CON-1001 : Open : Destination :*");
 
         listAppender.addFilter(new Filter<ILoggingEvent>() {
             @Override

@@ -108,7 +108,7 @@ public class AMQP implements Protocol {
     /**
      * Starts the broker
      * This method has issues with com.sun.management.OperatingSystemMXBean that is currently not
-     * support for Android!
+     * supported for Android!
      * @param systemConfig default custom configuration.
      */
     private static void startAlternative(final SystemConfig<?> systemConfig){
@@ -126,7 +126,7 @@ public class AMQP implements Protocol {
     /**
      * Starts the broker
      */
-    public void start() throws Exception {
+    public void start(){
         try {
             systemLauncher.startup(getBrokerAttributes());
         }catch (Exception e){
@@ -164,8 +164,6 @@ public class AMQP implements Protocol {
      */
     private static Map<String,Object> getBrokerAttributes(){
         String initialConfigurationUrl =  AMQP.class.getClassLoader().getResource(INITIAL_CONFIGURATION).toExternalForm();
-        System.out.println(initialConfigurationUrl);
-
         Map<String, Object> attributes = new HashMap<>();
         attributes.put(SystemConfig.INITIAL_CONFIGURATION_LOCATION, initialConfigurationUrl);
 

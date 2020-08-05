@@ -39,12 +39,23 @@ public class AMQPHandler {
     public static MyLinkedMap<Integer,String> getsAllIpsPorts() {
         MyLinkedMap<Integer,String> allIpsPorts = new MyLinkedMap<>(); //keeps the insertion order.
         final Pattern pattern = Pattern.compile("(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):(\\d{1,5})");
-        String caturePacket = packets.get(0);
-        Matcher matcher = pattern.matcher(caturePacket);
+        String capturePacket = findFullInfoPacket();
+        Matcher matcher = pattern.matcher(capturePacket);
         while (matcher.find()) {
             allIpsPorts.put(Integer.valueOf(matcher.group(2)),matcher.group(1));//group 2 port, group 1 IP.
         }
         return allIpsPorts;
+    }
+
+    /**
+     * The first matched packet usually contains less information than the following one.
+     * @return packet
+     */
+    private static String findFullInfoPacket(){
+        if(packets.size()>1)
+           return packets.get(1);
+        else
+            return packets.get(0);
     }
 
     /**
@@ -53,13 +64,6 @@ public class AMQPHandler {
      */
     private static String getRemoteIp(){
         return getsAllIpsPorts().getValue(0);
-    }
-    /**
-     * Second inserted ip is the local one.
-     * @return Local ip of the honeypot.
-     */
-    private String getLocalIp(){
-        return getsAllIpsPorts().getValue(1);
     }
 
     /**
@@ -71,15 +75,7 @@ public class AMQPHandler {
             return getsAllIpsPorts().getEntry(0).getKey();
         return 0;
     }
-    /**
-     * Second inserted port is the local one.
-     * @return Local port of the honeypot.
-     */
-    private static int getLocalPort(){
-        if(!getsAllIpsPorts().isEmpty() && getsAllIpsPorts().size()>1)
-            return getsAllIpsPorts().getEntry(1).getKey();
-        return 5672;
-    }
+
     /**
      * Helper method for Handler, creates an attackRecord with the logs from the InterceptHandler.
      * @param attack_id the attack_id
@@ -104,7 +100,7 @@ public class AMQPHandler {
         record.setProtocol("AMQP");
         record.setExternalIP(externalIP);
         record.setLocalIP(internalIp);
-        record.setLocalPort(getLocalPort());
+        record.setLocalPort(5672);
         record.setWasInternalAttack(checkIfIsInternalAttack(remoteIp,internalIp));
         record.setRemoteIP(remoteIp);
         record.setRemotePort(getRemotePort());
