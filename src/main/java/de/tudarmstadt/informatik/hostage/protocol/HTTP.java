@@ -262,7 +262,6 @@ public class HTTP implements Protocol {
 				.getContext()
 				.getSharedPreferences(sharedPreferencePath,
 						Context.MODE_PRIVATE).getString("os", "");
-		System.out.println("CheckProfile: "+profile);
 		return profile;
 	}
 
