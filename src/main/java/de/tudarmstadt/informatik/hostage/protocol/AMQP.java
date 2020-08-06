@@ -13,8 +13,6 @@ import org.apache.qpid.server.plugin.SystemConfigFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.time.Duration;
-
 
 import de.tudarmstadt.informatik.hostage.protocol.amqpUtils.LogBackWatcher;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;

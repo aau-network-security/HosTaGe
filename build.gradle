@@ -47,9 +47,6 @@ dependencies {
     // https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
     implementation group: 'com.rabbitmq', name: 'amqp-client', version: '5.9.0'
 
-    // https://mvnrepository.com/artifact/javax.naming/jndi
-    implementation files('libs/jndi-1.2.1.jar')
-
     implementation files('libs/qpid-broker-core-9.0.0-SNAPSHOT.jar') //forked repo https://github.com/irinil/qpid-broker-j
     //implementation group: 'org.apache.qpid', name: 'qpid-broker-core', version: '8.0.0' //default package doesn't support android.
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-amqp-0-8-protocol
@@ -90,13 +87,10 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.1'
 
     //other libraries
-    implementation files('libs/nineoldandroids-2.4.0.jar')
     implementation files('libs/swipelistview-1.0.jar')
     implementation files('libs/sshlib-v1.1.jar')
     implementation files('libs/alfresco-jlan.jar')
     implementation files('libs/cryptix-jce-provider.jar')
-    //implementation 'org.snmp4j:snmp4j:1.10.1'
-   // implementation files('libs/snmp4j-agent-2.3.3.jar')
     implementation group: 'org.snmp4j', name: 'snmp4j', version: '3.4.2'
     // https://mvnrepository.com/artifact/org.snmp4j/snmp4j-agent
     implementation group: 'org.snmp4j', name: 'snmp4j-agent', version: '3.3.4'
@@ -115,8 +109,8 @@ dependencies {
     // Optional -- Mockito framework
     testImplementation "org.mockito:mockito-core:3.4.4"
     implementation 'com.android.support:support-annotations:28.0.0'
-    androidTestImplementation 'androidx.test:rules:1.3.0-rc02'
-    androidTestImplementation 'androidx.test:runner:1.3.0-rc02'
+    androidTestImplementation 'androidx.test:rules:1.3.0-rc03'
+    androidTestImplementation 'androidx.test:runner:1.3.0-rc03'
     // Optional -- UI testing with Espresso
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 //    implementation 'org.powermock:powermock:1.6.5'
