@@ -526,8 +526,8 @@ public class  ProfileManager {
 	private void addWindowsSevenProfile(){
 		Profile windowsSeven = new Profile(
 				0,
-				MainActivity.getInstance().getString(R.string.profile_seven_desc),
 				"Windows 7",
+				MainActivity.getInstance().getString(R.string.profile_seven_desc),
 				R.drawable.ic_profile_vista,
 				false
 		);
@@ -548,8 +548,8 @@ public class  ProfileManager {
 	private void addWindowsXPProfile(){
 		Profile windowsXP = new Profile(
 				1,
-				MainActivity.getInstance().getString(R.string.profile_xp_desc),
 				"Windows XP",
+				MainActivity.getInstance().getString(R.string.profile_xp_desc),
 				R.drawable.ic_profile_xp,
 				false
 		);
@@ -571,8 +571,8 @@ public class  ProfileManager {
 	private void addServerHTTPProfile(){
 		Profile serverHTTP = new Profile(
 				2,
-				MainActivity.getInstance().getString(R.string.profile_webserv_apache_desc),
 				"Web Server Apache",
+				MainActivity.getInstance().getString(R.string.profile_webserv_apache_desc),
 				R.drawable.ic_profile_apache,
 				false
 		);
@@ -588,8 +588,8 @@ public class  ProfileManager {
 	private void addServerWebProfile(){
 		Profile serverWeb = new Profile(
 				3,
-				MainActivity.getInstance().getString(R.string.profile_webserv_iis_desc),
 				"Web Server IIS",
+				MainActivity.getInstance().getString(R.string.profile_webserv_iis_desc),
 				R.drawable.ic_profile_apache,
 				false
 		);
@@ -605,8 +605,8 @@ public class  ProfileManager {
 	private void addUnixMachineProfile(){
 		Profile unixMachine = new Profile(
 				4,
-				MainActivity.getInstance().getString(R.string.profile_linux_hard_desc),
 				"\"Hardened\" Linux system ",
+				MainActivity.getInstance().getString(R.string.profile_linux_hard_desc),
 				R.drawable.ic_profile_unix,
 				false
 		);
@@ -620,8 +620,8 @@ public class  ProfileManager {
 	private void addLinuxMachineProfile(){
 		Profile linuxMachine = new Profile(
 				5,
-				MainActivity.getInstance().getString(R.string.profile_linux_desc),
 				"Linux system",
+				MainActivity.getInstance().getString(R.string.profile_linux_desc),
 				R.drawable.ic_profile_linux,
 				false
 		);
@@ -639,8 +639,8 @@ public class  ProfileManager {
 	private void addVoipServer(){
 		Profile voipServer = new Profile(
 				6,
-				MainActivity.getInstance().getString(R.string.profile_voip_desc),
 				"VOIP Server",
+				MainActivity.getInstance().getString(R.string.profile_voip_desc),
 				R.drawable.ic_profile_asterisks,
 				false
 		);
@@ -654,8 +654,8 @@ public class  ProfileManager {
 	private void addRandomProfile(){
 		Profile randomProfile = new Profile(
 				7,
-				MainActivity.getInstance().getString(R.string.profile_random_desc),
 				"Random",
+				MainActivity.getInstance().getString(R.string.profile_random_desc),
 				R.drawable.ic_launcher,
 				false
 		);
@@ -669,8 +669,8 @@ public class  ProfileManager {
 	private void addNuclearPlantProfile(){
 		Profile nuclearPlant = new Profile(
 				8,
-				MainActivity.getInstance().getString(R.string.profile_nuclearPower_desc),
 				"Nuclear Power Plant",
+				MainActivity.getInstance().getString(R.string.profile_nuclearPower_desc),
 				R.drawable.ic_nuclearpp,
 				false
 		);
@@ -688,8 +688,8 @@ public class  ProfileManager {
 	private void addWaterPlantProfile(){
 		Profile waterPlant = new Profile(
 				9,
-				MainActivity.getInstance().getString(R.string.profile_waterPlant_desc),
 				"Water Distribution & Treatment Plant",
+				MainActivity.getInstance().getString(R.string.profile_waterPlant_desc),
 				R.drawable.ic_profile_water_dist,
 				false
 		);
@@ -705,8 +705,8 @@ public class  ProfileManager {
 	private void addModbusMasterProfile(){
 		Profile modbusMaster = new Profile(
 				10,
-				MainActivity.getInstance().getString(R.string.profile_modbusMater_desc),
 				"Modbus Master",
+				MainActivity.getInstance().getString(R.string.profile_modbusMater_desc),
 				R.drawable.ic_modbus_master,
 				false
 		);
@@ -730,8 +730,8 @@ public class  ProfileManager {
 	private void addSNMPProfile(){
 		Profile SNMPProfile = new Profile(
 				11,
-				"This profile provides SNMP service",
 				"SNMP",
+				"This profile provides SNMP service",
 				R.drawable.ic_profile_snmp,
 				false
 
@@ -744,8 +744,8 @@ public class  ProfileManager {
 	private void addParanoidProfile() throws Exception {
 		Profile paranoidProfile = new Profile(
 				12,
-				MainActivity.getInstance().getString(R.string.profile_paranoid_desc),
 				"Paranoid",
+				MainActivity.getInstance().getString(R.string.profile_paranoid_desc),
 				R.drawable.ic_profile_paranoid,
 				false
 		);
@@ -765,8 +765,8 @@ public class  ProfileManager {
 	private void addMQTTBrokerProfile(){
 	    Profile mqttBroker = new Profile(
 	            13,
-                "This profile simulates an MQTT Broker",
-                "MQTT Broker",
+				"MQTT Broker",
+				"This profile simulates an MQTT Broker",
                 R.drawable.ic_profile_broker,
                 false
         );
@@ -779,8 +779,8 @@ public class  ProfileManager {
     private void addMQTTSensorProfile(){
         Profile mqttSensor = new Profile(
                 14,
+				"MQTT Sensor",
                 "This profile simulates a Humidity/Temperature Sensor",
-                "MQTT Sensor",
                 R.drawable.ic_profile_sensor,
                 false
         );
@@ -792,8 +792,8 @@ public class  ProfileManager {
 	private void addSmokeSensorProfile(){
 		Profile smokeSensor = new Profile(
 				15,
-				"This profile simulates an ESP8266 smoke detector",
 				"ESP8266 Smoke Sensor",
+				"This profile simulates an ESP8266 smoke detector",
 				R.drawable.ic_profile_smoke_detector,
 				false
 		);
@@ -805,8 +805,8 @@ public class  ProfileManager {
 	private void addArduinoProfile(){
 		Profile arduino = new Profile(
 				16,
-				"This profile simulates an Arduino device",
 				"Arduino",
+				"This profile simulates an Arduino device",
 				R.drawable.ic_profile_arduino,
 				false
 		);

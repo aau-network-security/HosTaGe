@@ -74,7 +74,7 @@ public class Profile implements JSONSerializable<Profile> {
 	}
 
 	public Profile(int id, String label, String text, int icon, boolean editable){
-		this(id, text, label, BitmapFactory.decodeResource(MainActivity.getContext().getResources(), icon), editable);
+		this(id, label, text, BitmapFactory.decodeResource(MainActivity.getContext().getResources(), icon), editable);
 		mIconId = icon;
 		mIconName = MainActivity.getContext().getResources().getResourceName(icon);
 	}
@@ -98,8 +98,6 @@ public class Profile implements JSONSerializable<Profile> {
 		mIconPath = in.readString();
 		mEditable = in.readInt() == 1;
 		mActiveProtocols = (HashMap<String,Boolean>) in.readSerializable();
-
-
 	}
 
 	@Generated(hash = 721292028)
