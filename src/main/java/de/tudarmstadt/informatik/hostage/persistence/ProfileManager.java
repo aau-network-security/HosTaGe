@@ -794,7 +794,7 @@ public class  ProfileManager {
 		arduino.mActiveProtocols.put("MQTT",true);
 		arduino.mActiveProtocols.put("AMQP",true);
 		arduino.mActiveProtocols.put("COAP",true);
-		arduino.mActiveProtocols.put("TELENET",true);
+		arduino.mActiveProtocols.put("TELNET",true);
 
 		this.addProfile(arduino,false);
 	}
