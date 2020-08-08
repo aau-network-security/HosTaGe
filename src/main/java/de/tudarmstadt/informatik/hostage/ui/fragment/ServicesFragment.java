@@ -169,11 +169,8 @@ public class ServicesFragment extends TrackerFragment {
         protocols = getResources().getStringArray(R.array.protocols);
         int[] originalPorts = getResources().getIntArray(R.array.ports);
         mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
-
         updateUI();
-
         ListView list = rootView.findViewById(R.id.services_list_view);
-
         protocolList = new ArrayList<>();
         int i = 0;
         for (String protocol : protocols) {
@@ -182,7 +179,6 @@ public class ServicesFragment extends TrackerFragment {
                     mConnectionInfo.getString(getString(R.string.connection_info_bssid), null));
             i++;
         }
-
         mServicesSwitchService = rootView.findViewById(R.id.service_switch_connection);
 
         if (switchChangeListener == null) {
@@ -192,9 +188,6 @@ public class ServicesFragment extends TrackerFragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                //SK: Temp bugfix
-                    //if (!HelperUtils.isNetworkAvailable(getActivity())) {
-                //replaced with if (!HelperUtils.isWifiConnected(getActivity())) {
 
                 if (isChecked) { // switch activated
                     // we need a network connection, checks both types
@@ -203,9 +196,7 @@ public class ServicesFragment extends TrackerFragment {
                                 .setTitle(R.string.information)
                                 .setMessage(R.string.wifi_not_connected_msg)
                                 .setPositiveButton(android.R.string.ok,
-                                        (dialog, which) -> {
-
-                                        }
+                                        (dialog, which) -> { }
                                 )
                                 .setIcon(android.R.drawable.ic_dialog_info)
                                 .show();
@@ -214,22 +205,10 @@ public class ServicesFragment extends TrackerFragment {
                     } else { // we have a connection
                         // activate all protocols
                         for (String protocol : protocols) {
-                            if (protocol.equals("GHOST") && mProfile.mGhostActive) {
-                                mGhostPorts = mProfile.getGhostPorts();
-                                if (mGhostPorts.length != 0) {
-                                    for (Integer port : mGhostPorts) {
-                                        if (MainActivity.getInstance().getHostageService() != null
-                                                && !MainActivity.getInstance().getHostageService().isRunning("GHOST", port)) {
-                                            MainActivity.getInstance().getHostageService().startListener("GHOST", port);
-                                        }
-                                    }
-                                }
-                            } else {
                                 if (MainActivity.getInstance().getHostageService() != null
                                         && !MainActivity.getInstance().getHostageService().isRunning(protocol)) {
                                     MainActivity.getInstance().getHostageService().startListener(protocol);
                                 }
-                            }
                         }
                         setStateActive();
                     }
@@ -253,6 +232,21 @@ public class ServicesFragment extends TrackerFragment {
 
         return rootView;
 
+    }
+
+    @Deprecated
+    private void checkGhost(String protocol){
+        if (protocol.equals("GHOST") && mProfile.mGhostActive) {
+            mGhostPorts = mProfile.getGhostPorts();
+            if (mGhostPorts.length != 0) {
+                for (Integer port : mGhostPorts) {
+                    if (MainActivity.getInstance().getHostageService() != null
+                            && !MainActivity.getInstance().getHostageService().isRunning("GHOST", port)) {
+                        MainActivity.getInstance().getHostageService().startListener("GHOST", port);
+                    }
+                }
+            }
+        }
     }
 
 

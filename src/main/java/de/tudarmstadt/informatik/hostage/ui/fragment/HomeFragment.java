@@ -323,8 +323,6 @@ public class HomeFragment extends Fragment {
 		if (mSwitchChangeListener == null) {
 			mSwitchChangeListener = (buttonView, isChecked) -> {
 				if (isChecked) { // switch activated
-					// we need a network connection
-					// 2.5.2015 Fabio: for now we only check for wifi connections
 					if (!HelperUtils.isNetworkAvailable(getActivity())) {
 						new AlertDialog.Builder(getActivity()).setTitle(R.string.information).setMessage(R.string.network_not_connected_msg)
 								.setPositiveButton(android.R.string.ok, (dialog, which) -> {
@@ -350,8 +348,7 @@ public class HomeFragment extends Fragment {
 								Profile currentProfile = profileManager
 										.getCurrentActivatedProfile();
 								List<String> protocols = currentProfile.getActiveProtocols();
-								if (protocols.size() > 0 || currentProfile.mGhostActive) {
-									protocols.add("GHOST");
+								if (protocols.size() > 0) {
 									MainActivity.getInstance().startMonitorServices(protocols);
 									protocolActivated = true;
 								}

@@ -253,8 +253,6 @@ public class  ProfileManager {
 	 */
 	public void randomizeProtocols(Profile profile){
 		LinkedList<String> protocols = new LinkedList<String>(Arrays.asList(MainActivity.getContext().getResources().getStringArray(R.array.protocols)));
-		protocols.remove("GHOST");
-
 		profile.mActiveProtocols.clear();
 
 		Random rand = new Random();
@@ -417,17 +415,11 @@ public class  ProfileManager {
 		if(MainActivity.getInstance().getHostageService() != null){
 			if(MainActivity.getInstance().getHostageService().hasRunningListeners()){
 				List<String> protocolsToStart = profile.getActiveProtocols();
-				if(profile.mGhostActive){
-					protocolsToStart.add("GHOST");
-				}
 
 				for(Listener listener: MainActivity.getInstance().getHostageService().getListeners()){
 					if(listener.isRunning()){
-						if(protocolsToStart.contains(listener.getProtocolName()) && !listener.getProtocolName().equals("GHOST")){
-							protocolsToStart.remove(listener.getProtocolName());
-						} else {
-							MainActivity.getInstance().getHostageService().stopListenerAllPorts(listener.getProtocolName());
-						}
+						MainActivity.getInstance().getHostageService().stopListenerAllPorts(listener.getProtocolName());
+
 					}
 				}
 				MainActivity.getInstance().startMonitorServices(protocolsToStart);
@@ -759,7 +751,6 @@ public class  ProfileManager {
 		);
 
 		for(String protocol: MainActivity.getContext().getResources().getStringArray(R.array.protocols)){
-			if(protocol.equals("GHOST")) continue;
 			paranoidProfile.mActiveProtocols.put(protocol, true);
 		}
 

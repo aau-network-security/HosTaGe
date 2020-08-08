@@ -735,20 +735,8 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	public void startMonitorServices(List<String> protocols){
 		for(String protocol: protocols){
-			// if the given protocol is ghost start a listener for every defined port for ghost
-			if(protocol.equals("GHOST")){
-				if(mProfileManager.getCurrentActivatedProfile() != null){
-					Profile profile = mProfileManager.getCurrentActivatedProfile();
-					if(profile.mGhostActive){
-						for(int port: profile.getGhostPorts()){
-							if(!getHostageService().isRunning(protocol, port)) getHostageService().startListener(protocol, port);
-						}
-					}
-				}
-			} else {
 				if(!getHostageService().isRunning(protocol)) getHostageService().startListener(protocol);
 			}
-		}
 	}
 
 	/**

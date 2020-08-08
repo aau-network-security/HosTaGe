@@ -229,8 +229,6 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
 
         // add all available protocols to the preference screen with an checkbox
         for(int i = 0; i<protocols.length; i++){
-            if(protocols[i].equals("GHOST")) continue;
-
             mPrefs.putBoolean("pref_profile_protocol_" + protocols[i], profile != null && profile.isProtocolActive(protocols[i]));
             mPrefs.commit();
 

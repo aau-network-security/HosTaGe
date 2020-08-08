@@ -80,11 +80,6 @@ public class Handler implements Runnable {
 		this.service = service;
 		this.listener = listener;
 		this.protocol = protocol;
-		if (protocol.toString().equals("GHOST")) {
-			((GHOST) protocol).setAttackerIP(client.getInetAddress());
-			((GHOST) protocol).setCurrentPort(listener.getPort());
-		}
-
 		this.client = client;
 		this.thread = new Thread(this);
 		pref = PreferenceManager.getDefaultSharedPreferences(service);
@@ -125,6 +120,14 @@ public class Handler implements Runnable {
         logged = false;
 		thread.start();
 
+	}
+
+	@Deprecated
+	private void checkGhost(){
+		if (protocol.toString().equals("GHOST")) {
+			((GHOST) protocol).setAttackerIP(client.getInetAddress());
+			((GHOST) protocol).setCurrentPort(listener.getPort());
+		}
 	}
 
 	/**
