@@ -533,13 +533,6 @@ public class  ProfileManager {
 		);
 
 		windowsSeven.mActiveProtocols.put("SMB", true);
-		windowsSeven.mGhostActive = true;
-		windowsSeven.mGhostPorts = "135,5357";
-
-		for(int i: pickRandom(3, 49152, 65535)){
-			windowsSeven.mGhostPorts += "," + i;
-		}
-
 		windowsSeven.mActiveProtocols.put("ECHO", true);
 
 		this.addProfile(windowsSeven, false);
@@ -555,13 +548,6 @@ public class  ProfileManager {
 		);
 
 		windowsXP.mActiveProtocols.put("SMB", true);
-		windowsXP.mGhostActive = true;
-		windowsXP.mGhostPorts = "135";
-
-		for(int i: pickRandom(3, 49152, 60000)){
-			windowsXP.mGhostPorts += "," + i;
-		}
-
 		windowsXP.mActiveProtocols.put("ECHO", true);
 
 		this.addProfile(windowsXP, false);
@@ -714,13 +700,6 @@ public class  ProfileManager {
 		modbusMaster.mActiveProtocols.put("MODBUS",true);
 		modbusMaster.mActiveProtocols.put("SMB",true);
 		modbusMaster.mActiveProtocols.put("S7COMM",true);
-		modbusMaster.mGhostActive = true;
-		modbusMaster.mGhostPorts = "135";
-
-		for(int i: pickRandom(3, 49152, 60000)){
-			modbusMaster.mGhostPorts += "," + i;
-		}
-
 		modbusMaster.mActiveProtocols.put("ECHO", true);
 
 		this.addProfile(modbusMaster, false);
