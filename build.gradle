@@ -98,7 +98,7 @@ dependencies {
     implementation files('libs/VirusTotalAPI.jar')
 
     // https://mvnrepository.com/artifact/com.hierynomus/smbj
-    implementation group: 'com.hierynomus', name: 'smbj', version: '0.10.0'
+    testImplementation group: 'com.hierynomus', name: 'smbj', version: '0.10.0'
 
     // https://mvnrepository.com/artifact/commons-io/commons-io
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
