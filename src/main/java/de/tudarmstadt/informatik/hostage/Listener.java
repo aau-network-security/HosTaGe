@@ -222,6 +222,8 @@ public class Listener implements Runnable {
     private void fullHandler() throws IOException {
         if (conReg.isConnectionFree()) {
             ExecutorService threadPool = Executors.newFixedThreadPool(1);
+            if(server==null)
+                return;
             Socket client = server.accept();
             Thread socketsThread = socketsThread(client);
             threadPool.submit(socketsThread);
