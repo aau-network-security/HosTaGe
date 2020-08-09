@@ -14,22 +14,21 @@ import de.tudarmstadt.informatik.hostage.system.PrivilegedPort;
 @Deprecated
 public class MyDatagramSocketFactory {
 
-	//TODO Check validity of this method
 	public DatagramSocket createDatagramSocket(int port) throws IOException {
 		DatagramSocket socket = null;
 		//port = 1024;
 		if (port > 1023) {
 			socket = new DatagramSocket(port);
-		} else if (false) {
-			FileDescriptor fd = new PrivilegedPort(PrivilegedPort.TYPE.UDP, port).getFD();
-			socket = new DatagramSocket();
-			try {
-				DatagramSocketImpl impl = getImpl(socket);
-				injectFD(fd, impl);
-				injectLocalPort(port, impl);
-				setBound(socket);
-			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-			}
+//		} else if (false) {
+//			FileDescriptor fd = new PrivilegedPort(PrivilegedPort.TYPE.UDP, port).getFD();
+//			socket = new DatagramSocket();
+//			try {
+//				DatagramSocketImpl impl = getImpl(socket);
+//				injectFD(fd, impl);
+//				injectLocalPort(port, impl);
+//				setBound(socket);
+//			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+//			}
 		}
 		return socket;
 	}

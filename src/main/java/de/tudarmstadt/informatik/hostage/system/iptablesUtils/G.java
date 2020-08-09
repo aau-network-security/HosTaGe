@@ -129,7 +129,6 @@ public class G extends Application implements Application.ActivityLifecycleCallb
     private static final String FASTER_RULES = "fasterApplyRules";
     //private static final String QUICK_RULES = "quickApply";
     /**
-     * FIXME
      **/
     private static final String AFWALL_STATUS = "AFWallStaus";
     private static final String BLOCKED_NOTIFICATION = "block_filter_app";

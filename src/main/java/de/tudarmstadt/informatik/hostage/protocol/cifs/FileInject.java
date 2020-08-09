@@ -26,8 +26,6 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
  * Class to detect file injection
  */
 public class FileInject {
-
-
     private Listener fListener;
     SharedPreferences fpref;
     private long attack_id;
@@ -48,8 +46,6 @@ public class FileInject {
     }
 
     public void startListner(Listener fListener) {
-
-
         this.fListener = fListener;
         Hostage service = fListener.getService();
         fpref = PreferenceManager.getDefaultSharedPreferences(service);
@@ -81,7 +77,7 @@ public class FileInject {
         SharedPreferences.Editor editor = pref.edit();
         attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
         editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
-        editor.commit();
+        editor.apply();
     }
 
 

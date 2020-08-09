@@ -25,7 +25,6 @@ import de.tudarmstadt.informatik.hostage.net.MyServerSocketFactory;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.protocol.SMB;
 import de.tudarmstadt.informatik.hostage.protocol.SSLProtocol;
-import de.tudarmstadt.informatik.hostage.system.Device;
 
 
 /**
@@ -54,7 +53,6 @@ public class Listener implements Runnable {
     private Hostage service;
     private ConnectionRegister conReg;
     private boolean running = false;
-    private int mqttport =1883;
 
     private static Semaphore mutex = new Semaphore(1); // to enable atomic section in portscan detection
 
@@ -164,16 +162,10 @@ public class Listener implements Runnable {
      * and notifies the background service.
      */
     public boolean start() {
-        if (protocol.toString().equals("")) {
-            if (!Device.isPortRedirectionAvailable()) {
-				/*
-				We can only use SMB with iptables since we can't transfer UDP sockets using domain sockets (port binder).
-				TODO: somehow communicate this limitation to the user. Right now SMB will simply just fail.
-				 */
-                return false;
-            }
-
+        if (protocol.toString().equals("SMB")) {
             ((SMB) protocol).initialize(this);
+            (this.thread = new Thread(this)).start();
+            return notifyUI(true);
         }
 
         try {

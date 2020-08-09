@@ -1,24 +1,14 @@
 package de.tudarmstadt.informatik.hostage.protocol;
 
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
-
-import org.alfresco.jlan.app.XMLServerConfiguration;
-import org.alfresco.jlan.netbios.server.NetBIOSNameServer;
-import org.alfresco.jlan.server.config.InvalidConfigurationException;
-import org.alfresco.jlan.smb.server.SMBServer;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.List;
 
-
-import de.tudarmstadt.informatik.hostage.Handler;
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.Listener;
 import de.tudarmstadt.informatik.hostage.R;
@@ -43,9 +33,6 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
  */
 public class SMB implements Protocol {
     private Listener mListener;
-    private Handler mHandler;
-    private SMBServer mSmbServer;
-    private NetBIOSNameServer mNbNameServer;
     private CifsServer mCifsServer;
 
     SharedPreferences pref;
@@ -60,14 +47,10 @@ public class SMB implements Protocol {
 
     private boolean logged;
 
-
-    public boolean fileInjected = HelperUtils.isFileInjected;
-
     public Listener getListener(){
         return mListener;
     }
 
-    @SuppressLint("ResourceType")
     public void initialize(Listener mListener) {
         this.mListener = mListener;
         FileInject fileInject = new FileInject();
@@ -86,16 +69,11 @@ public class SMB implements Protocol {
         internalIPAddress = connInfo.getInt(service.getString(R.string.connection_info_internal_ip), 0);
         logged = false;
 
-        XMLServerConfiguration smbConfig = new XMLServerConfiguration();
 
         try {
-            smbConfig.loadConfiguration(new InputStreamReader(MainActivity.getContext().getResources().openRawResource(R.xml.jlan_config)));
-            mCifsServer = new CifsServer(smbConfig, this, fileInject);
+            mCifsServer = new CifsServer(this, fileInject);
+            System.out.println("InsideInitialize SMB");
             mCifsServer.run();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

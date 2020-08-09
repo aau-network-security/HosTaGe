@@ -298,7 +298,6 @@ public class ServicesFragment extends TrackerFragment {
      * overrides onStop
      * unloads the ChangeListener
      */
-    //TODO ask about removing the leak
     @Override
     public void onStop() {
         super.onStop();

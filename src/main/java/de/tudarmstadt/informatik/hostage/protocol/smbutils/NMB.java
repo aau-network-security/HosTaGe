@@ -233,13 +233,11 @@ public class NMB extends Thread {
 			nbnsSocket = factory.createDatagramSocket(nbnsPort);
 			nbdsSocket = factory.createDatagramSocket(nbdsPort);
 
-		} catch (SocketException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-        registrate();
+		registrate();
 		announceHost();
 		queryName();
 		checkForAnswers();
@@ -328,6 +326,7 @@ public class NMB extends Thread {
 	/**
 	 * Handling requests after initial registration
 	 */
+	@SuppressWarnings("InfiniteLoopStatement")
 	private void talk() {
 		try {
 			nbnsSocket.setSoTimeout(0);
