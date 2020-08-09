@@ -19,7 +19,7 @@
     {
       "name": "AMQP",
       "port": "${qpid.amqp_port}",
-      "bindingAddress" : "127.0.0.1",
+      "bindingAddress" : "0.0.0.0",
       "protocols": [
         "AMQP_0_9", "AMQP_0_9_1", "AMQP_1_0"
       ],
