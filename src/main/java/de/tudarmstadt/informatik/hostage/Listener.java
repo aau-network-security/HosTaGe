@@ -195,6 +195,8 @@ public class Listener implements Runnable {
      * running in and notifies the background service.
      */
     public void stop() {
+        if(stopSMB())
+            return;
         try {
             server.close();
             thread.interrupt();
@@ -202,6 +204,16 @@ public class Listener implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean stopSMB(){
+        if (protocol.toString().equals("SMB")) {
+            ((SMB) protocol).stop();
+            thread.interrupt();
+            notifyUI(false);
+            return true;
+        }
+        return false;
     }
 
     /**
