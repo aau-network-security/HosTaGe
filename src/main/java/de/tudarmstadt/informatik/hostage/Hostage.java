@@ -1,5 +1,6 @@
 package de.tudarmstadt.informatik.hostage;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -318,9 +319,9 @@ public class Hostage extends Service {
 			Device.checkCapabilities();
 			if(Api.assertBinaries(getContext(),true)) {
 				try {
-					TimeUnit.MILLISECONDS.sleep(30);
-					Device.executePortRedirectionScript();
-				} catch (InterruptedException e) {
+					Api.executeCommands();
+					//Device.executePortRedirectionScript();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}

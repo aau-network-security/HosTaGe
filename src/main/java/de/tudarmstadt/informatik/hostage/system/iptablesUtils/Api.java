@@ -55,6 +55,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import de.tudarmstadt.informatik.hostage.R;
+import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 /**
  * Contains shared programming interfaces.
@@ -66,9 +67,6 @@ public final class Api {
      * application logcat tag
      */
     public static final String TAG = "Iptables";
-
-    public static final String DEFAULT_PREFS_NAME = "AFWallPrefs";
-
     private static final String[] ITFS_WIFI = {"eth+", "wlan+", "tiwlan+", "ra+", "bnep+"};
 
     private static final String[] ITFS_3G = {"rmnet+", "pdp+", "uwbr+", "wimax+", "vsnet+",
@@ -79,8 +77,6 @@ public final class Api {
     // iptables can exit with status 4 if two processes tried to update the same table
     private static final int IPTABLES_TRY_AGAIN = 4;
     private static final String[] staticChains = {"", "-input", "-3g", "-wifi", "-reject", "-vpn", "-3g-tether", "-3g-home", "-3g-roam", "-wifi-tether", "-wifi-wan", "-wifi-lan", "-tor", "-tor-reject", "-tether"};
-    // Preferences
-    public static String PREFS_NAME = "AFWallPrefs";
 
     //for custom scripts
     private static String charsetName = "UTF8";
@@ -217,6 +213,29 @@ public final class Api {
 
         }
 
+    }
+
+    public static void executeCommands() throws IOException {
+        InputStream is = MainActivity.getInstance().getAssets().open("payload/commands.txt");
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        String line;
+        while ((line = br.readLine()) != null) {
+            if(line.length() > 0) {
+                runCommands(line);
+            }
+        }
+    }
+
+    private static void runCommands(String command) {
+        remountSystem();
+        Process process;
+        try {
+            process = Runtime.getRuntime().exec("su -c "+command);
+            process.waitFor();
+
+        } catch (IOException | InterruptedException e) {
+            Log.e(TAG, "Error running iptables commands: " + e.getMessage());
+        }
     }
 
     public static void checkAndCopyMissingScript(final Context context, final String fileName) {
