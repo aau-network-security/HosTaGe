@@ -166,7 +166,7 @@ public class NetworkRecord extends RecordAll implements Parcelable, Serializable
 		this.accuracy = accuracy;
 	}
 
-	public String toJSON() {
+	public String toJSONString() {
 		return String.format("{\"bssid\":\"%s\",\"ssid\":%s,\"latitude\":%s,\"longitude\":%s,\"timestamp\":%s,\"attacks\":%d,\"portscans\":%d}", bssid, ssid,
 				latitude, longitude, timestampLocation, -1, -1);
 	}

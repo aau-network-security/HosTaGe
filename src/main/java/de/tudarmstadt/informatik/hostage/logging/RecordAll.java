@@ -1,8 +1,14 @@
 package de.tudarmstadt.informatik.hostage.logging;
 
-import de.tudarmstadt.informatik.hostage.logging.formatter.Formatter;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class RecordAll {
+import java.lang.reflect.Field;
+
+import de.tudarmstadt.informatik.hostage.logging.formatter.Formatter;
+import de.tudarmstadt.informatik.hostage.model.JSONSerializable;
+
+public class RecordAll implements JSONSerializable<RecordAll> {
     private long id;
     private long attack_id;
     private long timestamp;
@@ -232,6 +238,25 @@ public class RecordAll {
             return Formatter.getDefault().format(this);
         }
         return formatter.format(this);
+    }
+
+    @Override
+    public RecordAll fromJSON(JSONObject json) {
+        return null;
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        JSONObject jsonObj = new JSONObject();
+
+        for (Field f : RecordAll.class.getDeclaredFields()) {
+            try {
+                jsonObj.put(f.getName(),f.get(this));
+            } catch (JSONException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return jsonObj;
     }
 
 }
