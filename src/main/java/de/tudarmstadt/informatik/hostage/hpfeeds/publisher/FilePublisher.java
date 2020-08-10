@@ -17,7 +17,7 @@ public class FilePublisher {
 
 private final static int MAX_FILE_SIZE = 10 * 1024*1024;
 	
-	private static Logger log = LoggerFactory.getLogger(FilePublisher.class);
+private static Logger log = LoggerFactory.getLogger(FilePublisher.class);
 	
 	
 	public static void printUsage() {
