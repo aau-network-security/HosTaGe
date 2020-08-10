@@ -63,7 +63,7 @@ public class Publisher {
      * @param filePath the json filepath
      */
     public void setCommand(String host,int port, String ident, String secret, String channel, String filePath){
-        this.command= "-h"+" "+host+" "+"-p"+" "+port+" "+"-i"+" "+ident+" "+"-s"+" "+secret+" "+"c"+" "+channel+" "+"-f"
+        this.command= "-h"+" "+host+" "+"-p"+" "+port+" "+"-i"+" "+ident+" "+"-s"+" "+secret+" "+"-c"+" "+channel+" "+"-f"
                 +" "+filePath;
     }
 
