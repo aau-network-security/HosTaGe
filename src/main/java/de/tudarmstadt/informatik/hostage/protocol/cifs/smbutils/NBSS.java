@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.protocol.smbutils;
+package de.tudarmstadt.informatik.hostage.protocol.cifs.smbutils;
 
 import java.io.IOException;
 import java.io.InputStream;

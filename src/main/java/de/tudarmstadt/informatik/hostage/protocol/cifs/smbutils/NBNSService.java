@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.protocol.smbutils;
+package de.tudarmstadt.informatik.hostage.protocol.cifs.smbutils;
 
 /**
  * NetBios Name Service services.

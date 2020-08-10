@@ -125,9 +125,6 @@ public class RootShellService extends Service implements Cloneable {
                     continue;
                 } else if (rootState == ShellState.READY) {
                     rootState = ShellState.BUSY;
-                    if (G.isRun()) {
-                        createNotification(mContext);
-                    }
                     processCommands(state);
                 }
             }
@@ -212,57 +209,7 @@ public class RootShellService extends Service implements Cloneable {
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(broadcastIntent);
         }).start();
     }
-
-    private static void createNotification(Context context) {
-        String CHANNEL_ID = "firewall.apply";
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        builder = new NotificationCompat.Builder(context, CHANNEL_ID);
-
-        Intent appIntent = new Intent(context, MainActivity.class);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            /* Create or update. */
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Notfication",
-                    NotificationManager.IMPORTANCE_LOW);
-            channel.setDescription("");
-            channel.setShowBadge(false);
-            channel.setSound(null, null);
-            channel.enableLights(false);
-            channel.enableVibration(false);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(MainActivity.class);
-        stackBuilder.addNextIntent(appIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(resultPendingIntent);
-
-
-        int notifyType = G.getNotificationPriority();
-
-        Notification notification = builder
-                .setAutoCancel(false)
-                .setContentTitle(context.getString(R.string.applying_rules))
-                .setTicker(context.getString(R.string.app_name))
-                .setChannelId(CHANNEL_ID)
-                .setCategory(Notification.CATEGORY_SERVICE)
-                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
-                .setOnlyAlertOnce(true)
-                .setPriority(NotificationManager.IMPORTANCE_LOW)
-                .setContentText("").build();
-        switch (notifyType) {
-            case 0:
-                notification.priority = NotificationCompat.PRIORITY_LOW;
-                break;
-            case 1:
-                notification.priority = NotificationCompat.PRIORITY_MIN;
-                break;
-        }
-        builder.setProgress(0, 0, true);
-        notificationManager.notify(NOTIFICATION_ID, notification);
-    }
-
+    
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) { // if crash restart...

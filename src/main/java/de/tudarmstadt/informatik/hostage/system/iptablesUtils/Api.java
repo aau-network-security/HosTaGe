@@ -56,11 +56,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import de.tudarmstadt.informatik.hostage.R;
 
-import static de.tudarmstadt.informatik.hostage.system.iptablesUtils.G.ipv4Fwd;
-import static de.tudarmstadt.informatik.hostage.system.iptablesUtils.G.ipv4Input;
-import static de.tudarmstadt.informatik.hostage.system.iptablesUtils.G.ipv6Fwd;
-import static de.tudarmstadt.informatik.hostage.system.iptablesUtils.G.ipv6Input;
-
 /**
  * Contains shared programming interfaces.
  * All iptables "communication" is handled by this class.
@@ -228,7 +223,8 @@ public final class Api {
             final String srcPath = new File(context.getDir("bin", 0), fileName)
                     .getAbsolutePath();
             new Thread(() -> {
-                String path = G.initPath();
+                //String path = G.initPath();
+                String path = srcPath;
                 if (path != null) {
                     File f = new File(path);
                     Api.remountSystem();
@@ -276,15 +272,6 @@ public final class Api {
                                                   List<String> out, boolean ipv6) {
         if (ctx == null) { return false; }
         List<String> cmds = new ArrayList<>();
-
-        //check before make them ACCEPT state
-        if (ipv4Input() || (ipv6 && ipv6Input())) {
-            cmds.add("-P INPUT ACCEPT");
-        }
-
-        if (ipv4Fwd() || (ipv6 && ipv6Fwd())) {
-            cmds.add("-P FORWARD ACCEPT");
-        }
 
         try {
             // prevent data leaks due to incomplete rules
@@ -416,19 +403,13 @@ public final class Api {
         cmds.add("-P OUTPUT ACCEPT");
 
 
-        if (G.enableInbound()) {
-            cmds.add("-D INPUT -j " + CHAIN_NAME + "-input");
-        }
+        cmds.add("-D INPUT -j " + CHAIN_NAME + "-input");
+
 
         try {
             // IPv4
             iptablesCommands(cmds, out, false);
             iptablesCommands(cmdsv4, out, false);
-
-            // IPv6
-            if (G.enableIPv6()) {
-                iptablesCommands(cmds, out, true);
-            }
 
             if (callback != null) {
                 callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, out);
@@ -470,10 +451,6 @@ public final class Api {
     public static void apply46(Context ctx, List<String> cmds, RootCommand callback) {
         List<String> out = new ArrayList<>();
         iptablesCommands(cmds, out, false);
-
-        if (G.enableIPv6()) {
-            iptablesCommands(cmds, out, true);
-        }
         callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, out);
     }
 
@@ -488,10 +465,6 @@ public final class Api {
 
         iptablesCommands(cmds, out, false);
 
-        //related to #511, disable ipv6 but use startup leak.
-        if (G.enableIPv6() || G.fixLeak()) {
-            iptablesCommands(cmds, out, true);
-        }
         callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, out);
     }
 
@@ -681,45 +654,22 @@ public final class Api {
      */
     public static void applyDefaultChains(Context ctx, RootCommand callback) {
         List<String> cmds = new ArrayList<>();
-        if (ipv4Input()) {
-            cmds.add("-P INPUT ACCEPT");
-        } else {
-            cmds.add("-P INPUT DROP");
-        }
-        if (ipv4Fwd()) {
-            cmds.add("-P FORWARD ACCEPT");
-        } else {
-            cmds.add("-P FORWARD DROP");
-        }
-        if (G.ipv4Output()) {
-            cmds.add("-P OUTPUT ACCEPT");
-        } else {
-            cmds.add("-P OUTPUT DROP");
-        }
+        cmds.add("-P INPUT ACCEPT");
+        cmds.add("-P FORWARD ACCEPT");
+        cmds.add("-P OUTPUT ACCEPT");
+
         applyQuick(ctx, cmds, callback);
         applyDefaultChainsv6(ctx, callback);
     }
 
     public static void applyDefaultChainsv6(Context ctx, RootCommand callback) {
-        if (G.controlIPv6()) {
             List<String> cmds = new ArrayList<>();
-            if (ipv6Input()) {
-                cmds.add("-P INPUT ACCEPT");
-            } else {
-                cmds.add("-P INPUT DROP");
-            }
-            if (ipv6Fwd()) {
-                cmds.add("-P FORWARD ACCEPT");
-            } else {
-                cmds.add("-P FORWARD DROP");
-            }
-            if (G.ipv6Output()) {
-                cmds.add("-P OUTPUT ACCEPT");
-            } else {
-                cmds.add("-P OUTPUT DROP");
-            }
+            cmds.add("-P INPUT ACCEPT");
+            cmds.add("-P FORWARD ACCEPT");
+            cmds.add("-P OUTPUT ACCEPT");
+
             applyIPv6Quick(ctx, cmds, callback);
-        }
+
     }
 
     /**

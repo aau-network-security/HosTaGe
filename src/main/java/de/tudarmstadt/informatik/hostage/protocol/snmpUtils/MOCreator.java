@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.protocol.SNMPUtils;
+package de.tudarmstadt.informatik.hostage.protocol.snmpUtils;
 
 
 import org.snmp4j.agent.mo.MOAccessImpl;

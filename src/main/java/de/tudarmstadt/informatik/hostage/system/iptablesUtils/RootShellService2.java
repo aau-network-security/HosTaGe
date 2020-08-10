@@ -22,20 +22,14 @@
 
 package de.tudarmstadt.informatik.hostage.system.iptablesUtils;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+
 import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
@@ -48,7 +42,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import de.tudarmstadt.informatik.hostage.R;
-import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import eu.chainfire.libsuperuser.Debug;
 import eu.chainfire.libsuperuser.Shell;
 
@@ -64,10 +57,8 @@ public class RootShellService2 extends Service {
     private final static int MAX_RETRIES = 10;
     private static Shell.Interactive rootSession;
     private static Context mContext;
-    private static NotificationManager notificationManager;
     private static ShellState rootState = ShellState.INIT;
     private static LinkedList<RootCommand> waitQueue = new LinkedList<>();
-    private static NotificationCompat.Builder builder;
 
     private static void complete(final RootCommand state, int exitCode) {
         if (enableProfiling) {
@@ -86,9 +77,6 @@ public class RootShellService2 extends Service {
             Api.sendToastBroadcast(mContext, mContext.getString(state.failureToast));
         }
 
-        if (notificationManager != null) {
-            notificationManager.cancel(NOTIFICATION_ID);
-        }
     }
 
     private static void runNextSubmission() {
@@ -116,9 +104,6 @@ public class RootShellService2 extends Service {
                     continue;
                 } else if (rootState == ShellState.READY) {
                     rootState = ShellState.BUSY;
-                    if (G.isRun()) {
-                        createNotification(mContext);
-                    }
                     processCommands(state);
                 }
             }
@@ -203,57 +188,6 @@ public class RootShellService2 extends Service {
         }).start();
     }
 
-    private static void createNotification(Context context) {
-
-        String CHANNEL_ID = "firewall.apply";
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        builder = new NotificationCompat.Builder(context, CHANNEL_ID);
-
-        Intent appIntent = new Intent(context, MainActivity.class);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            /* Create or update. */
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "run",
-                    NotificationManager.IMPORTANCE_LOW);
-            channel.setDescription("");
-            channel.setShowBadge(false);
-            channel.setSound(null, null);
-            channel.enableLights(false);
-            channel.enableVibration(false);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(MainActivity.class);
-        stackBuilder.addNextIntent(appIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(resultPendingIntent);
-
-
-        int notifyType = G.getNotificationPriority();
-
-        Notification notification = builder
-                .setAutoCancel(false)
-                .setContentTitle(context.getString(R.string.applying_rules))
-                .setTicker(context.getString(R.string.app_name))
-                .setChannelId(CHANNEL_ID)
-                .setCategory(Notification.CATEGORY_SERVICE)
-                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
-                .setOnlyAlertOnce(true)
-                .setPriority(NotificationManager.IMPORTANCE_LOW)
-                .setContentText("").build();
-        switch (notifyType) {
-            case 0:
-                notification.priority = NotificationCompat.PRIORITY_LOW;
-                break;
-            case 1:
-                notification.priority = NotificationCompat.PRIORITY_MIN;
-                break;
-        }
-        builder.setProgress(0, 0, true);
-        notificationManager.notify(NOTIFICATION_ID, notification);
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) { // if crash restart...
@@ -300,9 +234,6 @@ public class RootShellService2 extends Service {
 
     private void reOpenShell(Context context) {
         if (rootState == null || rootState != ShellState.READY || rootState == ShellState.FAIL) {
-            if (notificationManager != null) {
-                notificationManager.cancel(NOTIFICATION_ID);
-            }
             rootState = ShellState.BUSY;
             startShellInBackground();
             Intent intent = new Intent(context, RootShellService2.class);

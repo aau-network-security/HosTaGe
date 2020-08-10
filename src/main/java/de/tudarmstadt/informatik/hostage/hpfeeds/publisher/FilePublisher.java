@@ -82,15 +82,12 @@ private final static int MAX_FILE_SIZE = 10 * 1024*1024;
 		final Hpfeeds h = new Hpfeeds(host, port, ident, secret);
 		h.connect();
 		
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					h.run(new DummyMessageHandler(), new ExampleErrorHandler());
-				}
-				catch (IOException | Hpfeeds.EOSException | Hpfeeds.ReadTimeOutException | Hpfeeds.LargeMessageException | Hpfeeds.InvalidStateException e) {
-					throw new RuntimeException(e);
-				}
+		Thread t = new Thread(() -> {
+			try {
+				h.run(new DummyMessageHandler(), new ExampleErrorHandler());
+			}
+			catch (IOException | Hpfeeds.EOSException | Hpfeeds.ReadTimeOutException | Hpfeeds.LargeMessageException | Hpfeeds.InvalidStateException e) {
+				throw new RuntimeException(e);
 			}
 		});
 		t.setDaemon(true);

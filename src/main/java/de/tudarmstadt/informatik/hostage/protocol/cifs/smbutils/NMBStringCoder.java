@@ -1,4 +1,4 @@
-package de.tudarmstadt.informatik.hostage.protocol.smbutils;
+package de.tudarmstadt.informatik.hostage.protocol.cifs.smbutils;
 
 
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;

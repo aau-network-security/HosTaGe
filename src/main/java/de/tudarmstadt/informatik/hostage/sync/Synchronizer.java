@@ -23,8 +23,6 @@ import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 
 
 public class Synchronizer {
-
-    //private HostageDBOpenHelper dbh;
     private DaoSession dbSession;
     private DAOHelper daoHelper;
 
@@ -33,7 +31,6 @@ public class Synchronizer {
         this.dbSession = daoSession;
         this.daoHelper= new DAOHelper(daoSession,context);
     }
-
 
     /**
      * Returns own state of all registered devices.
@@ -70,7 +67,7 @@ public class Synchronizer {
             this.updateNewDevices(deviceIds);
         }
 
-        ArrayList<NetworkRecord> nets= new ArrayList<NetworkRecord>();
+        ArrayList<NetworkRecord> nets= new ArrayList<>();
         if (bssids != null){
             nets = this.getMissingNetworkInformation(bssids);
         }
@@ -89,7 +86,7 @@ public class Synchronizer {
      * @return array list
      */
     private ArrayList<String> stringSetToArrayList(Set<String> s){
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
 
         for (String string : s){
             list.add(string);
@@ -122,7 +119,7 @@ public class Synchronizer {
     public void updateNewDevices(ArrayList<String> otherDeviceIds){
 
         if (otherDeviceIds != null){
-            ArrayList<SyncDevice> otherDevices = new ArrayList<SyncDevice>();
+            ArrayList<SyncDevice> otherDevices = new ArrayList<>();
             ArrayList<String> ownDevicesds = this.daoHelper.getSyncDeviceDAO().getAllDevicesIds();
 
             if (otherDeviceIds.size() > 0)
@@ -191,7 +188,7 @@ public class Synchronizer {
             Log.i("DEBUG_Sync", "Sending Attack Objects: " + records.size());
             return records;
         }
-        return new ArrayList<SyncRecord>();
+        return new ArrayList<>();
     }
 
     /**
@@ -207,7 +204,7 @@ private ArrayList<NetworkRecord> getMissingNetworkInformation(ArrayList<String> 
             return records;
 
         }
-        return new ArrayList<NetworkRecord>();
+        return new ArrayList<>();
     }
 
 }

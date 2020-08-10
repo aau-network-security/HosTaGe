@@ -17,17 +17,21 @@ public class MyServerSocketFactory extends ServerSocketFactory {
 	public ServerSocket createServerSocket(int port) throws IOException {
 		ServerSocket socket = null;
 		if (port > 1023 || port == 0) {
-			socket = new ServerSocket();
-			socket.setReuseAddress(true);
-			socket.bind(new InetSocketAddress(ipAddress,port));
+			return bindSocket(port);
 		} else if (Device.isRooted()) {
   				if (Device.isPortRedirectionAvailable()) { // use ip tables
 					int redirectedPort = HelperUtils.getRedirectedPort(port);
-					socket = new ServerSocket();
-					socket.setReuseAddress(true);
-					socket.bind(new InetSocketAddress(ipAddress,redirectedPort));
+					return bindSocket(redirectedPort);
 			}
 		}
+		return socket;
+	}
+
+	private ServerSocket bindSocket(int port) throws IOException {
+		ServerSocket socket = new ServerSocket();
+		socket.setReuseAddress(true);
+		socket.bind(new InetSocketAddress(ipAddress,port));
+
 		return socket;
 	}
 
