@@ -267,12 +267,6 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_drawer_main);
 		getLocationData();
 
-		try {
-			mProfileManager = ProfileManager.getInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		// init threat indicator animation
 		ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
 
@@ -345,7 +339,6 @@ public class MainActivity extends AppCompatActivity {
 
 			onFirstRun();
 		}
-
 
         if (savedInstanceState == null) {
             // on first time display view for first nav item
@@ -793,8 +786,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode,
-										   String[] permissions, int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 		if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
 			if (grantResults.length > 0
 					&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {

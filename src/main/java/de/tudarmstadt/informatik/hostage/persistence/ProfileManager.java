@@ -160,8 +160,11 @@ public class  ProfileManager {
             }
 			loadProfiles(sb,fbr);
 
+
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
+		} finally {
+			fillWithDefaultData();
 		}
 	}
 
@@ -240,7 +243,7 @@ public class  ProfileManager {
 	 * @return a list that holds all the profiles
 	 */
 	public List<Profile> getProfilesList() throws Exception {
-		return new ArrayList<Profile>(getProfilesCollection());
+		return new ArrayList<>(getProfilesCollection());
 	}
 
 	/**
@@ -269,7 +272,7 @@ public class  ProfileManager {
 	 * @param profile the profile to randomize the protocols for
 	 */
 	public void randomizeProtocols(Profile profile){
-		LinkedList<String> protocols = new LinkedList<String>(Arrays.asList(MainActivity.getContext().getResources().getStringArray(R.array.protocols)));
+		LinkedList<String> protocols = new LinkedList<>(Arrays.asList(MainActivity.getContext().getResources().getStringArray(R.array.protocols)));
 		profile.mActiveProtocols.clear();
 
 		Random rand = new Random();

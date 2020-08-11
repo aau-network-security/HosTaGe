@@ -124,7 +124,7 @@ public class Hostage extends Service {
 
 		@Override
 		protected void onPostExecute(Integer result) {
-			prefix=result;
+			prefix = result;
 		}
 	}
 
@@ -329,7 +329,7 @@ public class Hostage extends Service {
 
 	private void loadConnectionInfo(){
 		try {
-			TimeUnit.MILLISECONDS.sleep(30);
+			TimeUnit.MILLISECONDS.sleep(70);
 			updateConnectionInfo();
 		} catch (InterruptedException e) {
 			e.printStackTrace();

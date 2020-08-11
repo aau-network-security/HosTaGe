@@ -49,7 +49,7 @@ public class Profile implements JSONSerializable<Profile> {
 	@Transient
 	public boolean mIsRandom = false;
 	@Transient
-	public HashMap<String, Boolean> mActiveProtocols = new HashMap<String, Boolean>();
+	public HashMap<String, Boolean> mActiveProtocols = new HashMap<>();
 
 	@Transient
 	public String mGhostPorts = "";
@@ -150,7 +150,7 @@ public class Profile implements JSONSerializable<Profile> {
 	}
 
 	public List<String> getActiveProtocols(){
-		List<String> list = new LinkedList<String>();
+		List<String> list = new LinkedList<>();
 		for(Map.Entry<String, Boolean> entry: this.mActiveProtocols.entrySet()){
 			if(entry.getValue()){
 				list.add(entry.getKey());

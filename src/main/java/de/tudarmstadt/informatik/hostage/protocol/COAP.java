@@ -159,7 +159,10 @@ public class COAP implements Protocol {
      * Stops the server and closes the port
      */
     public static void serverStop(){
-        server.stop();
+        if(serverStarted) {
+            server.stop();
+            serverStarted = false;
+        }
     }
 
 }

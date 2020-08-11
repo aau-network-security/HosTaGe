@@ -3,6 +3,7 @@ package de.tudarmstadt.informatik.hostage.ui.fragment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -176,25 +177,11 @@ public class HomeFragment extends Fragment {
 	}
 
 	public void updateUI() {
-		Profile profile = mProfileManager.getCurrentActivatedProfile();
-		if (profile != null) {
-			mHomeTextProfile.setText(profile.mLabel);
-			mHomeProfileImage.setImageBitmap(profile.getIconBitmap());
-		}
-
-		//new FileAlertTask().execute();
-
-		if (HelperUtils.isNetworkAvailable(getActivity())) {
-			setStateConnected();
-			String ssid = mConnectionInfo.getString(getString(R.string.connection_info_ssid), "");
-			mHomeTextName.setText(ssid);
-		} else {
-			setStateNotConnected();
-		}
+		loadCurrentProfile();
+		loadConnectionInfo();
 
 		boolean hasActiveListeners = false;
-		int totalAttacks = daoHelper.getAttackRecordDAO().getNumAttacksSeenByBSSID(
-				mConnectionInfo.getString(getString(R.string.connection_info_bssid), null));
+		int totalAttacks = daoHelper.getAttackRecordDAO().getNumAttacksSeenByBSSID(mConnectionInfo.getString(getString(R.string.connection_info_bssid), null));
 
 		if (MainActivity.getInstance().getHostageService() != null) {
 			if (MainActivity.getInstance().getHostageService().hasRunningListeners()) {
@@ -210,20 +197,7 @@ public class HomeFragment extends Fragment {
 			}
 		}
 
-		if (isConnected) {
-			if (totalAttacks == 0) {
-				mHomeTextAttacks.setText(R.string.zero_attacks);
-				mHomeTextSecurity.setText(R.string.secure);
-			} else {
-				mHomeTextAttacks.setText(totalAttacks
-						+ (totalAttacks == 1 ? getResources().getString(R.string.attack) : getResources().getString(R.string.attacks))
-						+ getResources().getString(R.string.recorded));
-				mHomeTextSecurity.setText(R.string.insecure);
-			}
-		} else {
-			mHomeTextAttacks.setText("");
-			mHomeTextSecurity.setText("");
-		}
+		updateTextConnection(totalAttacks);
 
 		if (hasActiveListeners) {
 			setStateActive(true);
@@ -255,6 +229,42 @@ public class HomeFragment extends Fragment {
 
 	}
 
+	private void updateTextConnection(int totalAttacks){
+		if (isConnected) {
+			if (totalAttacks == 0) {
+				mHomeTextAttacks.setText(R.string.zero_attacks);
+				mHomeTextSecurity.setText(R.string.secure);
+			} else {
+				mHomeTextAttacks.setText(totalAttacks
+						+ (totalAttacks == 1 ? getResources().getString(R.string.attack) : getResources().getString(R.string.attacks))
+						+ getResources().getString(R.string.recorded));
+				mHomeTextSecurity.setText(R.string.insecure);
+			}
+		} else {
+			mHomeTextAttacks.setText("");
+			mHomeTextSecurity.setText("");
+		}
+
+	}
+
+	private void loadConnectionInfo(){
+		if (HelperUtils.isNetworkAvailable(getActivity())) {
+			setStateConnected();
+			String ssid = mConnectionInfo.getString(getString(R.string.connection_info_ssid), "");
+			mHomeTextName.setText(ssid);
+		} else {
+			setStateNotConnected();
+		}
+	}
+
+	private void loadCurrentProfile(){
+		Profile profile = mProfileManager.getCurrentActivatedProfile();
+		if (profile != null) {
+			mHomeTextProfile.setText(profile.mLabel);
+			mHomeProfileImage.setImageBitmap(profile.getIconBitmap());
+		}
+	}
+
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -268,13 +278,13 @@ public class HomeFragment extends Fragment {
 		dbSession = HostageApplication.getInstances().getDaoSession();
 		daoHelper = new DAOHelper(dbSession, getActivity());
 
+
+		mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 		try {
 			mProfileManager = ProfileManager.getInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
-
 		this.inflater = inflater;
 		this.container= container;
 		this.savedInstanceState = savedInstanceState;
@@ -292,30 +302,14 @@ public class HomeFragment extends Fragment {
 			return false;
 		});
 
-		// hook up the connection info button
-		mHomeConnectionInfoButton.setOnClickListener(v -> {
-			final FragmentManager fragmentManager = getFragmentManager();
-			if (fragmentManager != null) {
-				ConnectionInfoDialogFragment connectionInfoDialogFragment = new ConnectionInfoDialogFragment();
-				connectionInfoDialogFragment.show(fragmentManager.beginTransaction(), connectionInfoDialogFragment.getTag());
-			}
-		});
+		addConnectionInfoButton();
 
 		mDefaultTextColor = mHomeTextName.getCurrentTextColor();
 
 		setStateNotActive(true);
 		setStateNotConnected();
 
-		mReceiver = new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				if (getUserVisibleHint())
-					updateUI();
-			}
-		};
-		registerBroadcastReceiver();
-
-		updateUI();
+		addBroadcastReceiver();
 
 		mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
 		mHomeSwitchConnection.setSaveEnabled(false);
@@ -324,13 +318,7 @@ public class HomeFragment extends Fragment {
 			mSwitchChangeListener = (buttonView, isChecked) -> {
 				if (isChecked) { // switch activated
 					if (!HelperUtils.isNetworkAvailable(getActivity())) {
-						new AlertDialog.Builder(getActivity()).setTitle(R.string.information).setMessage(R.string.network_not_connected_msg)
-								.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-
-								}).setIcon(android.R.drawable.ic_dialog_info).show();
-
-						setStateNotActive();
-						setStateNotConnected();
+						noConnectionAlertDialog();
 					} else { // network available
 						boolean protocolActivated = false;
 						try {
@@ -341,12 +329,9 @@ public class HomeFragment extends Fragment {
 								ProfileManager profileManager = ProfileManager.getInstance();
 
 								if (profileManager.isRandomActive()) {
-									profileManager
-											.randomizeProtocols(profileManager.getRandomProfile());
+									profileManager.randomizeProtocols(profileManager.getRandomProfile());
 								}
-
-								Profile currentProfile = profileManager
-										.getCurrentActivatedProfile();
+								Profile currentProfile = profileManager.getCurrentActivatedProfile();
 								List<String> protocols = currentProfile.getActiveProtocols();
 								if (protocols.size() > 0) {
 									MainActivity.getInstance().startMonitorServices(protocols);
@@ -360,16 +345,7 @@ public class HomeFragment extends Fragment {
 						if (protocolActivated) {
 							setStateActive();
 						} else {
-							new AlertDialog.Builder(getActivity())
-									.setTitle(R.string.information)
-									.setMessage(R.string.profile_no_services_msg)
-									.setPositiveButton(android.R.string.ok,
-											(dialog, which) -> {
-
-											}).setIcon(android.R.drawable.ic_dialog_info)
-									.show();
-
-							setStateNotActive();
+							noServicesAlertDialog();
 						}
 					}
 				} else { // switch deactivated
@@ -389,20 +365,7 @@ public class HomeFragment extends Fragment {
 		});
 
 		View.OnClickListener attackClickListener = v -> {
-			String ssid = mConnectionInfo.getString(getString(R.string.connection_info_ssid), "");
-			if (!ssid.isEmpty()) {
-				ArrayList<String> ssids = new ArrayList<String>();
-				ssids.add(ssid);
-
-				LogFilter filter = new LogFilter();
-				filter.setESSIDs(ssids);
-
-				RecordOverviewFragment recordOverviewFragment = new RecordOverviewFragment();
-				recordOverviewFragment.setFilter(filter);
-				recordOverviewFragment.setGroupKey("ESSID");
-
-				MainActivity.getInstance().injectFragment(recordOverviewFragment);
-			}
+			loadAttackListener();
 		};
 
 		mHomeTextAttacks.setOnClickListener(attackClickListener);
@@ -411,27 +374,70 @@ public class HomeFragment extends Fragment {
 		return mRootView;
 	}
 
-//	@Override
-//	public void onStop() {
-//		super.onStop();
-//		if(mRootView!=null) {
-//			unbindDrawables(mRootView);
-//			mRootView=null;
-//		}
-//		if (mReceiver != null){
-//			unregisterBroadcastReceiver();
-//		}
-//	}
-//
-//	@Override
-//	public void onResume(){
-//		super.onResume();
-//		if(inflater!=null || container!=null || savedInstanceState!=null) {
-//			onCreateView(inflater, container, savedInstanceState);
-//			registerBroadcastReceiver();
-//			updateUI();
-//		}
-//	}
+	private void loadAttackListener(){
+		String ssid = mConnectionInfo.getString(getString(R.string.connection_info_ssid), "");
+		if (!ssid.isEmpty()) {
+			ArrayList<String> ssids = new ArrayList<>();
+			ssids.add(ssid);
+
+			LogFilter filter = new LogFilter();
+			filter.setESSIDs(ssids);
+
+			RecordOverviewFragment recordOverviewFragment = new RecordOverviewFragment();
+			recordOverviewFragment.setFilter(filter);
+			recordOverviewFragment.setGroupKey("ESSID");
+
+			MainActivity.getInstance().injectFragment(recordOverviewFragment);
+		}
+	}
+
+	private void addConnectionInfoButton(){
+		// hook up the connection info button
+		mHomeConnectionInfoButton.setOnClickListener(v -> {
+			final FragmentManager fragmentManager = getFragmentManager();
+			if (fragmentManager != null) {
+				ConnectionInfoDialogFragment connectionInfoDialogFragment = new ConnectionInfoDialogFragment();
+				connectionInfoDialogFragment.show(fragmentManager.beginTransaction(), connectionInfoDialogFragment.getTag());
+			}
+		});
+	}
+
+	private void addBroadcastReceiver(){
+		mReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if (getUserVisibleHint())
+					updateUI();
+			}
+		};
+		registerBroadcastReceiver();
+
+		updateUI();
+	}
+
+	private void noServicesAlertDialog(){
+		new AlertDialog.Builder(getActivity())
+				.setTitle(R.string.information)
+				.setMessage(R.string.profile_no_services_msg)
+				.setPositiveButton(android.R.string.ok,
+						(dialog, which) -> {
+
+						}).setIcon(android.R.drawable.ic_dialog_info)
+				.show();
+
+		setStateNotActive();
+	}
+
+	private void noConnectionAlertDialog(){
+		new AlertDialog.Builder(getActivity()).setTitle(R.string.information).setMessage(R.string.network_not_connected_msg)
+				.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+
+				}).setIcon(android.R.drawable.ic_dialog_info).show();
+
+		setStateNotActive();
+		setStateNotConnected();
+
+	}
 
 	@Override
 	public void onStart() {
