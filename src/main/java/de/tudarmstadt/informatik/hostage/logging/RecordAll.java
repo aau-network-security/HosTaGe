@@ -7,6 +7,8 @@ import java.lang.reflect.Field;
 
 import de.tudarmstadt.informatik.hostage.logging.formatter.Formatter;
 import de.tudarmstadt.informatik.hostage.model.JSONSerializable;
+import de.tudarmstadt.informatik.hostage.model.Profile;
+import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 
 public class RecordAll implements JSONSerializable<RecordAll> {
     private long id;
@@ -247,6 +249,28 @@ public class RecordAll implements JSONSerializable<RecordAll> {
 
     @Override
     public JSONObject toJSON() {
+        return convertSelectedFieldsToJSON();
+    }
+
+    private JSONObject convertSelectedFieldsToJSON(){
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("attackId",this.attack_id);
+            jsonObj.put("attackerIP",this.remoteIP);
+            jsonObj.put("remotePort",this.remotePort);
+            jsonObj.put("localPort",this.localPort);
+            jsonObj.put("attackTime",this.timestampLocation);
+            jsonObj.put("protocol",this.protocol);
+            jsonObj.put("packet",this.packet);
+            jsonObj.put("attackType",this.type);
+            jsonObj.put("profile", ProfileManager.getProfile());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObj;
+    }
+
+    private JSONObject convertAllFieldsToJSON(){
         JSONObject jsonObj = new JSONObject();
 
         for (Field f : RecordAll.class.getDeclaredFields()) {
@@ -257,6 +281,7 @@ public class RecordAll implements JSONSerializable<RecordAll> {
             }
         }
         return jsonObj;
+
     }
 
 }

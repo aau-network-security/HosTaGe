@@ -31,9 +31,8 @@ public class LogbackSpy
             public FilterReply decide(final ILoggingEvent event)
             {
                 Matcher matcher = pattern.matcher(event.getMessage());
-                if (matcher.find())
-                {
-                     packets.add(event.getMessage());
+                if (matcher.find()) {
+                    packets.add(event.getMessage());
                     return FilterReply.ACCEPT;
                 }
                 return FilterReply.DENY;

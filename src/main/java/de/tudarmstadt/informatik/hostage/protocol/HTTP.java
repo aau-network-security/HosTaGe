@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
+import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
@@ -72,7 +73,7 @@ public class HTTP implements Protocol {
 		int majorVersion = rndm.nextInt(possibleHttpVersions.length);
 		checkProfile();
 		String version;
-		String profile = getProfile();
+		String profile = ProfileManager.getProfile();
 		switch (profile) {
 			case "Windows 7":
 			case "Windows Server 2008":
@@ -214,7 +215,7 @@ public class HTTP implements Protocol {
 
 
 	private void checkProfile() {
-		String profile = getProfile();
+		String profile = ProfileManager.getProfile();
 		if (profile.equals("Nuclear Power Plant")) {
 			addNuclearProfile();
 		}
@@ -253,16 +254,6 @@ public class HTTP implements Protocol {
 	private void addArduinoProfile() throws IOException {
 		htmlTitleContent = "Arduino Home Controller";
 		HTTP.setHtmlDocumentContent(getArduinoPageContent(),htmlTitleContent);
-	}
-
-	private String getProfile(){
-		String sharedPreferencePath = Hostage.getContext().getString(
-				R.string.shared_preference_path);
-		String profile = Hostage
-				.getContext()
-				.getSharedPreferences(sharedPreferencePath,
-						Context.MODE_PRIVATE).getString("os", "");
-		return profile;
 	}
 
 	private String getArduinoPageContent() throws IOException {

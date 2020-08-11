@@ -187,7 +187,6 @@ public class Profile implements JSONSerializable<Profile> {
 
 	public JSONObject toJSON(){
 		JSONObject jsonObj = new JSONObject();
-
 		try {
 			jsonObj.put("text", mText);
 			jsonObj.put("label", mLabel);

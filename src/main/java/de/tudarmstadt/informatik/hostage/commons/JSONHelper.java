@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 import de.tudarmstadt.informatik.hostage.logging.RecordAll;
-import de.tudarmstadt.informatik.hostage.model.Profile;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 public class JSONHelper {
@@ -27,9 +26,7 @@ public class JSONHelper {
 
             JSONArray arr = new JSONArray();
             arr.put(record.toJSON());
-
             fnw.write(arr.toString());
-
             fnw.close();
             fout.close();
         } catch (IOException e) {

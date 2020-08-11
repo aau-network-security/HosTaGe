@@ -799,4 +799,14 @@ public class  ProfileManager {
 		this.addProfile(arduino,false);
 	}
 
+	public static String getProfile(){
+		String sharedPreferencePath = Hostage.getContext().getString(
+				R.string.shared_preference_path);
+		String profile = Hostage
+				.getContext()
+				.getSharedPreferences(sharedPreferencePath,
+						Context.MODE_PRIVATE).getString("os", "");
+		return profile;
+	}
+
 }
