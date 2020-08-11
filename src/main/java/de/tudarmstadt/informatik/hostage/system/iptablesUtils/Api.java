@@ -192,27 +192,13 @@ public final class Api {
     private static void copySystemBin(File file){
         String systemPath= "/system/bin/";
         remountSystem();
-        Process process;
-        try {
-            process = Runtime.getRuntime().exec("su -c cp "+file.getAbsolutePath() +" "+systemPath+ file.getName());
-            process.waitFor();
-
-        } catch (IOException | InterruptedException e) {
-            Log.e(TAG, "ErrorInCopy System Bin: " + e.getMessage());
-        }
+        String command = "su -c cp "+file.getAbsolutePath() +" "+systemPath+ file.getName();
+        runCommands(command);
     }
 
     public static void remountSystem(){
-        Process process;
-        try {
-            process = Runtime.getRuntime().exec("su -c mount -o rw,remount /");
-            process.waitFor();
-
-        } catch (IOException | InterruptedException e) {
-            Log.e(TAG, "ErrorInCopy Mount: " + e.getMessage());
-
-        }
-
+        String command = "su -c mount -o rw,remount /";
+        runCommands(command);
     }
 
     public static void executeCommands() throws IOException {
@@ -221,20 +207,20 @@ public final class Api {
         String line;
         while ((line = br.readLine()) != null) {
             if(line.length() > 0) {
-                runCommands(line);
+                remountSystem();
+                runCommands("su -c "+line);
             }
         }
     }
 
     private static void runCommands(String command) {
-        remountSystem();
         Process process;
         try {
-            process = Runtime.getRuntime().exec("su -c "+command);
+            process = Runtime.getRuntime().exec(command);
             process.waitFor();
 
         } catch (IOException | InterruptedException e) {
-            Log.e(TAG, "Error running iptables commands: " + e.getMessage());
+            Log.e(TAG, "Error running commands: " + e.getMessage());
         }
     }
 

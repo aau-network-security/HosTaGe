@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -104,7 +105,7 @@ public class  ProfileManager {
 	 * A private constructor, that can/should only be called by getInstance, since we want to enforce the usage of the singleton.
 	 */
 	private ProfileManager(){
-		mProfiles = new HashMap<Integer, Profile>();
+		mProfiles = new HashMap<>();
 
 		String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
 		mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
@@ -145,6 +146,9 @@ public class  ProfileManager {
 	 */
 	public void loadData() throws Exception {
 		try {
+			if(loadDefaulData())
+				return;
+
             String UTF8 = "utf8";
             int BUFFER_SIZE = 8192;
             BufferedReader fbr = new BufferedReader(new InputStreamReader(MainActivity.getContext().openFileInput(PERSIST_FILENAME), UTF8), BUFFER_SIZE);
@@ -154,34 +158,43 @@ public class  ProfileManager {
             while((line = fbr.readLine()) != null) {
                 sb.append(line);
             }
-
-            JSONArray arr = new JSONArray(sb.toString());
-			fbr.close();
-
-			for(int i=0; i<arr.length(); i++){
-				JSONObject obj = arr.getJSONObject(i);
-
-				Profile p = new Profile();
-				p.fromJSON(obj);
-
-				mProfiles.put(p.mId, p);
-
-				if(p.mId > mIncrementValue){
-					mIncrementValue = p.mId;
-				}
-
-				if(p.mActivated){
-					activateProfile(p, false);
-				}
-
-				if(p.mIsRandom){
-					this.mRandomProfile = p;
-				}
-			}
+			loadProfiles(sb,fbr);
 
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
-		} finally {
+		}
+	}
+
+	private void loadProfiles(StringBuilder sb, BufferedReader fbr) throws Exception {
+		JSONArray arr = new JSONArray(sb.toString());
+		fbr.close();
+
+		for(int i=0; i<arr.length(); i++){
+			JSONObject obj = arr.getJSONObject(i);
+
+			Profile p = new Profile();
+			p.fromJSON(obj);
+
+			mProfiles.put(p.mId, p);
+
+			if(p.mId > mIncrementValue){
+				mIncrementValue = p.mId;
+			}
+
+			if(p.mActivated){
+				activateProfile(p, false);
+			}
+
+			if(p.mIsRandom){
+				this.mRandomProfile = p;
+			}
+		}
+
+	}
+
+	private boolean loadDefaulData() throws Exception {
+		boolean profileExist = new File(PERSIST_FILENAME).exists();
+		if(!profileExist){
 			if(mProfiles.size() == 0){
 				this.fillWithDefaultData();
 			}
@@ -189,6 +202,10 @@ public class  ProfileManager {
 			if(this.mRandomProfile != null){
 				randomizeProtocols(mRandomProfile);
 			}
+
+			return true;
+		}else{
+			return false;
 		}
 	}
 
@@ -360,8 +377,6 @@ public class  ProfileManager {
 			}
 
 			this.persistData();
-			//this.dbh.deleteProfile(profile.mId);
-
 			if(this.mProfileListAdapter != null){
 				this.mProfileListAdapter.remove(profile);
 				this.mProfileListAdapter.notifyDataSetChanged();

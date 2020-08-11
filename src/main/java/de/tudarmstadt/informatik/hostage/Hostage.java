@@ -1,14 +1,11 @@
 package de.tudarmstadt.informatik.hostage;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -80,7 +77,6 @@ public class Hostage extends Service {
 		}
 	}
 
-
 	/**
 	 * Task to find out the external IP.
 	 * 
@@ -93,9 +89,7 @@ public class Hostage extends Service {
 				HttpClient httpclient = new DefaultHttpClient();
 				HttpGet httpget = new HttpGet(url[0]);
 				HttpResponse response;
-
 				response = httpclient.execute(httpget);
-
 				HttpEntity entity = response.getEntity();
 				entity.getContentLength();
 				String str = EntityUtils.toString(entity);
@@ -129,6 +123,15 @@ public class Hostage extends Service {
 		@Override
 		protected void onPostExecute(Integer result) {
 			prefix=result;
+		}
+	}
+
+	private static class CheckRoot extends AsyncTask<Void,Void,Void>{
+
+		@Override
+		protected Void doInBackground(Void... voids) {
+			checkForRoot();
+			return null;
 		}
 	}
 
@@ -279,6 +282,10 @@ public class Hostage extends Service {
 			this.mProtocolActiveAttacks.put(values[1], true);
 			attackNotification();
 		}
+		informUI(sender,values);
+	}
+
+	private void informUI(String sender, String[] values){
 		// Inform UI of Preference Change
 		Intent intent = new Intent(getString(R.string.broadcast));
 		intent.putExtra("SENDER", sender);
@@ -295,35 +302,33 @@ public class Hostage extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
 		context = new WeakReference<>(getApplicationContext());
 		implementedProtocols = getImplementedProtocols();
+		loadConnectionInfoEditor();
+		mProtocolActiveAttacks = new HashMap<>();
+		createNotification();
+		registerNetReceiver();
+		updateConnectionInfo();
+		executeRoot();
+	}
+
+	private void loadConnectionInfoEditor(){
 		connectionInfo = getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 		connectionInfoEditor = connectionInfo.edit();
 		connectionInfoEditor.apply();
-		
-		mProtocolActiveAttacks = new HashMap<>();
-		checkForRoot();
-		createNotification();
-		registerNetReceiver();
-		try {
-			TimeUnit.MILLISECONDS.sleep(30);
-			updateConnectionInfo();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
-	private void checkForRoot(){
+	private void executeRoot(){
+		CheckRoot checkRoot = new CheckRoot();
+		checkRoot.execute();
+	}
+
+	private static void checkForRoot(){
 		if(Shell.SU.available()) {
 			Device.checkCapabilities();
 			if(Api.assertBinaries(getContext(),true)) {
-				try {
-					Api.executeCommands();
-					//Device.executePortRedirectionScript();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				//Api.executeCommands();
+				Device.executePortRedirectionScript();
 			}
 		}
 	}
@@ -332,7 +337,6 @@ public class Hostage extends Service {
 	public void onDestroy() {
 		cancelNotification();
 		unregisterNetReceiver();
-
 		super.onDestroy();
 	}
 
@@ -341,7 +345,6 @@ public class Hostage extends Service {
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
 		//startMultiStage(); The method moved in PreferenceHostageFragment class along with stopMultiStage().
-
 		return START_STICKY;
 	}
 
