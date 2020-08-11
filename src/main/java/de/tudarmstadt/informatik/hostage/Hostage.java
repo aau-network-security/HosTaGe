@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -135,6 +137,19 @@ public class Hostage extends Service {
 		}
 	}
 
+	private static class ImplementProtocols extends AsyncTask<Void,Void,LinkedList<Protocol>>{
+
+		@Override
+		protected LinkedList<Protocol> doInBackground(Void... voids) {
+			return getImplementedProtocols();
+		}
+
+		@Override
+		protected void onPostExecute(LinkedList<Protocol> result) {
+			implementedProtocols = result;
+		}
+	}
+
 	private static WeakReference<Context> context;
 
 	/**
@@ -146,7 +161,7 @@ public class Hostage extends Service {
 		return context.get();
 	}
 
-	private LinkedList<Protocol> implementedProtocols;
+	private static LinkedList<Protocol> implementedProtocols;
 	private CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 	private SharedPreferences connectionInfo;
 	private Editor connectionInfoEditor;
@@ -303,19 +318,34 @@ public class Hostage extends Service {
 	public void onCreate() {
 		super.onCreate();
 		context = new WeakReference<>(getApplicationContext());
-		implementedProtocols = getImplementedProtocols();
+		loadProtocols();
 		loadConnectionInfoEditor();
 		mProtocolActiveAttacks = new HashMap<>();
 		createNotification();
 		registerNetReceiver();
-		updateConnectionInfo();
+		loadConnectionInfo();
 		executeRoot();
+	}
+
+	private void loadConnectionInfo(){
+		try {
+			TimeUnit.MILLISECONDS.sleep(30);
+			updateConnectionInfo();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void loadConnectionInfoEditor(){
 		connectionInfo = getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 		connectionInfoEditor = connectionInfo.edit();
 		connectionInfoEditor.apply();
+
+	}
+
+	private void loadProtocols(){
+		ImplementProtocols implementProtocols = new ImplementProtocols();
+		implementProtocols.execute();
 	}
 
 	private void executeRoot(){
@@ -677,8 +707,8 @@ public class Hostage extends Service {
 	 *         {@link Protocol
 	 *         Protocol}
 	 */
-	private LinkedList<Protocol> getImplementedProtocols() {
-		String[] protocols = getResources().getStringArray(R.array.protocols);
+	private static LinkedList<Protocol> getImplementedProtocols() {
+		String[] protocols = Hostage.getContext().getResources().getStringArray(R.array.protocols);
 		String packageName = Protocol.class.getPackage().getName();
 		LinkedList<Protocol> implementedProtocols = new LinkedList<>();
 
