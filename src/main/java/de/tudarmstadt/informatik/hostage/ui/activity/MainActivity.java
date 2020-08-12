@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
 	public void onStart() {
 		super.onStart();
         // Register syncing with android
-        SyncUtils.CreateSyncAccount(this);
+        //SyncUtils.CreateSyncAccount(this);
 
 		if (isServiceRunning()) {
 			this.bindService();
@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
 		loadFirstRun();
 		//Must start after the location!
 		startAndBind();
-		//addProfileManager();
+		addProfileManager();
 
         if (savedInstanceState == null) {
             // on first time display view for first nav item
