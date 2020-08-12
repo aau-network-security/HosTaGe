@@ -160,11 +160,6 @@ public class MainActivity extends AppCompatActivity {
 	};
 
 	/**
-	 * Holds an profile manager instance
-	 */
-	private ProfileManager mProfileManager;
-
-	/**
 	 * Holds the root fragment for our hierarchical fragment navigation
 	 */
     private Fragment mRootFragment;
@@ -265,7 +260,6 @@ public class MainActivity extends AppCompatActivity {
 		// sets the static context reference to the application context
 		context = new WeakReference<>(getApplicationContext());
 		setContentView(R.layout.activity_drawer_main);
-		getLocationData();
 
 		// init threat indicator animation
 		ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
@@ -276,69 +270,17 @@ public class MainActivity extends AppCompatActivity {
 		arr.recycle();
 
 		// configures the action bar
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_HOME_AS_UP);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeButtonEnabled(true);
-		actionBar.setDisplayShowHomeEnabled(true);
+		configureActionBar();
 
-		// sets the drawer and action title to the application title
-		mTitle = mDrawerTitle = getTitle();
-		mDrawerLayout = findViewById(R.id.drawer_layout);
-		mDrawerList = findViewById(R.id.left_drawer);
-
-		// propagates the navigation drawer with items
-		mDrawerItems = new ArrayList<>();
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_overview, R.drawable.ic_menu_home));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_threat_map, R.drawable.ic_menu_mapmode));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_records, R.drawable.ic_menu_records));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_statistics, R.drawable.ic_menu_stats));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_services, R.drawable.ic_menu_set_as));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
-
-		DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
-
-		mDrawerList.setAdapter(listAdapter);
-		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-		// configures the navigation drawer
-		mDrawerToggle = new androidx.appcompat.app.ActionBarDrawerToggle(this, /* host Activity */
-			mDrawerLayout, /* DrawerLayout object */
-			R.string.drawer_open, /* "open drawer" description for accessibility */
-			R.string.drawer_close /* "close drawer" description for accessibility */
-		) {
-			public void onDrawerClosed(View view) {
-				getSupportActionBar().setTitle(mTitle);
-				invalidateOptionsMenu(); // creates call to
-											// onPrepareOptionsMenu()
-			}
-
-			public void onDrawerOpened(View drawerView) {
-				getSupportActionBar().setTitle(mDrawerTitle);
-				invalidateOptionsMenu(); // creates call to
-											// onPrepareOptionsMenu()
-			}
-		};
-
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
-		// start the hostage service
-		startAndBind();
+		loadDrawer();
 
 //		ActivityCompat.requestPermissions(MainActivity.this,
 //				new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
 //				MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
-
-		mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
-
-		if(mSharedPreferences.getBoolean("isFirstRun", true)){
-
-			// opens navigation drawer if first run
-			mDrawerLayout.postDelayed(() -> mDrawerLayout.openDrawer(Gravity.LEFT), 1000);
-
-			onFirstRun();
-		}
+		getLocationData();
+		loadFirstRun();
+		//Must start after the location!
+		startAndBind();
 
         if (savedInstanceState == null) {
             // on first time display view for first nav item
@@ -374,21 +316,17 @@ public class MainActivity extends AppCompatActivity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
 				.setCancelable(false)
-				.setPositiveButton(getString(R.string.agree), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						// and, if the user accept, you can execute something like this:
-						// We need an Editor object to make preference changes.
-						// All objects are from android.context.Context
-						SharedPreferences.Editor editor = mSharedPreferences.edit();
-						editor.putBoolean("isFirstRun", false);
-						// Commit the edits!
-						editor.apply();
+				.setPositiveButton(getString(R.string.agree), (dialog, id) -> {
+					// and, if the user accept, you can execute something like this:
+					// We need an Editor object to make preference changes.
+					SharedPreferences.Editor editor = mSharedPreferences.edit();
+					editor.putBoolean("isFirstRun", false);
+					editor.apply();
 
-                        // Enabled shared preferences for 'first' time non-portbinder activation
-                        SharedPreferences.Editor editor1= mSharedPreferences.edit();
-                        editor1.putBoolean("isFirstEmulation", true);
-                        editor1.apply();
-					}
+					// Enabled shared preferences for 'first' time non-portbinder activation
+					SharedPreferences.Editor editor1= mSharedPreferences.edit();
+					editor1.putBoolean("isFirstEmulation", true);
+					editor1.apply();
 				})
 				.setNegativeButton(getString(R.string.disagree), (dialog, id) -> {
 					getHostageService().stopListeners();
@@ -397,6 +335,76 @@ public class MainActivity extends AppCompatActivity {
 				});
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+
+	private void loadFirstRun(){
+		mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
+		if(mSharedPreferences.getBoolean("isFirstRun", true)){
+			// opens navigation drawer if first run
+			mDrawerLayout.postDelayed(() -> mDrawerLayout.openDrawer(Gravity.LEFT), 1000);
+
+			onFirstRun();
+		}
+
+	}
+
+	private void configureActionBar(){
+		ActionBar actionBar = getSupportActionBar();
+		assert actionBar != null;
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_HOME_AS_UP);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayShowHomeEnabled(true);
+	}
+
+	private void loadDrawer(){
+		// sets the drawer and action title to the application title
+		mTitle = mDrawerTitle = getTitle();
+		mDrawerLayout = findViewById(R.id.drawer_layout);
+		mDrawerList = findViewById(R.id.left_drawer);
+
+		// propagates the navigation drawer with items
+		mDrawerItems = new ArrayList<>();
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_overview, R.drawable.ic_menu_home));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_threat_map, R.drawable.ic_menu_mapmode));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_records, R.drawable.ic_menu_records));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_statistics, R.drawable.ic_menu_stats));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_services, R.drawable.ic_menu_set_as));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
+
+		DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
+
+		mDrawerList.setAdapter(listAdapter);
+		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		setmDrawerToggle();
+
+	}
+
+	private void setmDrawerToggle(){
+		// configures the navigation drawer
+		mDrawerToggle = new androidx.appcompat.app.ActionBarDrawerToggle(this, /* host Activity */
+				mDrawerLayout, /* DrawerLayout object */
+				R.string.drawer_open, /* "open drawer" description for accessibility */
+				R.string.drawer_close /* "close drawer" description for accessibility */
+		) {
+			public void onDrawerClosed(View view) {
+				getSupportActionBar().setTitle(mTitle);
+				invalidateOptionsMenu(); // creates call to
+				// onPrepareOptionsMenu()
+			}
+
+			public void onDrawerOpened(View drawerView) {
+				getSupportActionBar().setTitle(mDrawerTitle);
+				invalidateOptionsMenu(); // creates call to
+				// onPrepareOptionsMenu()
+			}
+		};
+
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+
 	}
 
 	/**

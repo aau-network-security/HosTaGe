@@ -93,8 +93,7 @@ public class MyLocationManager implements ActivityCompat.OnRequestPermissionsRes
 
 			return;
 		}
-		newestLocation = locationManager
-				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		newestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
 	}
 
@@ -128,18 +127,15 @@ public class MyLocationManager implements ActivityCompat.OnRequestPermissionsRes
 	public void startUpdates(Context context) {
 		boolean gpsEnabled = false;
 		boolean networkEnabled = false;
-		locationManager = (LocationManager) context
-				.getSystemService(Context.LOCATION_SERVICE);
+		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		// exceptions will be thrown if provider is not permitted.
 		try {
-			gpsEnabled = locationManager
-					.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		try {
-			networkEnabled = locationManager
-					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+			networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -160,11 +156,9 @@ public class MyLocationManager implements ActivityCompat.OnRequestPermissionsRes
 
 			return;
 		}
-		locationManager.requestLocationUpdates(
-				LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 		if (networkEnabled)
-			locationManager.requestLocationUpdates(
-					LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
 	}
 
@@ -187,12 +181,9 @@ public class MyLocationManager implements ActivityCompat.OnRequestPermissionsRes
 					dialog.setTitle("Permission Required");
 					dialog.setCancelable(false);
 					dialog.setMessage("You have to Allow permission to access user location");
-					dialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package",
-									context.getPackageName(), null));
-						}
+					dialog.setPositiveButton("Settings", (dialog1, which) -> {
+						Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package",
+								context.getPackageName(), null));
 					});
 					AlertDialog alertDialog = dialog.create();
 					alertDialog.show();

@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -318,29 +316,23 @@ public class Hostage extends Service {
 	public void onCreate() {
 		super.onCreate();
 		context = new WeakReference<>(getApplicationContext());
-		loadProtocols();
 		loadConnectionInfoEditor();
+		loadProtocols();
 		mProtocolActiveAttacks = new HashMap<>();
 		createNotification();
 		registerNetReceiver();
-		loadConnectionInfo();
 		executeRoot();
+		loadConnectionInfo();
 	}
 
 	private void loadConnectionInfo(){
-		try {
-			TimeUnit.MILLISECONDS.sleep(70);
-			updateConnectionInfo();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		updateConnectionInfo();
 	}
 
 	private void loadConnectionInfoEditor(){
 		connectionInfo = getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 		connectionInfoEditor = connectionInfo.edit();
 		connectionInfoEditor.apply();
-
 	}
 
 	private void loadProtocols(){
