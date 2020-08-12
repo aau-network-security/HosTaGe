@@ -49,11 +49,16 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+
+import de.tudarmstadt.informatik.hostage.Listener;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
@@ -217,11 +222,29 @@ public final class Api {
         Process process;
         try {
             process = Runtime.getRuntime().exec(command);
-            process.waitFor();
+            if(process.waitFor() == 0){
+                Log.d(TAG,"Commands executed successfully");
+            }else {
+                toast(MainActivity.getContext(), MainActivity.getContext().getString(R.string.iptables_not_supported));
+                addRediractionPorts();
+            }
 
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Error running commands: " + e.getMessage());
         }
+    }
+
+    private static void addRediractionPorts(){
+        Listener.addRealPorts("ECHO",28144);
+        Listener.addRealPorts("FTP",28169);
+        Listener.addRealPorts("HTTP",28217);
+        Listener.addRealPorts("HTTPS",28580);
+        Listener.addRealPorts("S7COMM",28239);
+        Listener.addRealPorts("SNMP",28298);
+        Listener.addRealPorts("SSH",28160);
+        Listener.addRealPorts("TELNET",28582);
+        Listener.addRealPorts("MODBUS",28162);
+        Listener.addRealPorts("SMTP",28639);
     }
 
     public static void checkAndCopyMissingScript(final Context context, final String fileName) {

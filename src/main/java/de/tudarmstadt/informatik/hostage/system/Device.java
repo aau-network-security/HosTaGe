@@ -1,17 +1,12 @@
 package de.tudarmstadt.informatik.hostage.system;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import android.app.Activity;
-import android.os.Build;
-import android.util.Log;
 
 import de.tudarmstadt.informatik.hostage.system.iptablesUtils.Api;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
@@ -49,7 +44,6 @@ public class Device {
 		}
 
 		initialized = true;
-		Log.i("TESTEST", "initialized");
 	}
 
 
@@ -63,8 +57,8 @@ public class Device {
 	/**
 	 * copies an asset to the local filesystem for later usage
 	 * (used for port hack and shell scripts)
-	 * @param assetFilePath
-	 * @param destFilePath
+	 * @param assetFilePath asset FilePath
+	 * @param destFilePath destination Filepath
 	 * @return true on success
 	 */
 	private static boolean deployAsset(String assetFilePath, String destFilePath) {
@@ -103,10 +97,13 @@ public class Device {
 				Runtime.getRuntime().exec("chmod " + mode + " " + scriptFilePath).waitFor();
 
 				p = new ProcessBuilder("su", "-c", "sh "+scriptFilePath).start();
-				p.waitFor(); // stall the main thread
-
-				System.out.println("Test script "+ String.valueOf(p.waitFor()));
-				System.out.println("Filepath of payload: "+scriptFilePath);
+				if (p.waitFor() == 0) {
+					System.out.println("Test script "+ String.valueOf(p.waitFor()));
+					System.out.println("Filepath of payload: "+scriptFilePath);
+				} else {
+					Api.executeCommands();
+				}
+				// stall the main thread
 			} catch (IOException | InterruptedException e) {
 				System.out.println("InsidePortRedirection");
 				e.printStackTrace();

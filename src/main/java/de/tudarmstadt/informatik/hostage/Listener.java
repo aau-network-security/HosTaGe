@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,7 +57,7 @@ public class Listener implements Runnable {
 
     private static Semaphore mutex = new Semaphore(1); // to enable atomic section in portscan detection
 
-    private static Map<String,Integer> realPorts = new HashMap<>();
+    private static Map<String,Integer> realPorts = new LinkedHashMap<>();
     /**
      * Constructor for the class. Instantiate class variables.
      *
@@ -231,47 +232,43 @@ public class Listener implements Runnable {
         }
     }
 
-
     private Thread socketsThread(Socket client){
-        socketsThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
+        socketsThread = new Thread(() -> {
+            try {
+                if (checkPostScanInProgressNomutex(client))
+                    return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String ip = client.getInetAddress().getHostAddress();
+
+                // the mutex should prevent multiple hostage.logging of a portscan
                 try {
+                    mutex.acquire();
+                    if (checkPostScanInProgress(client))
+                        return;
+
+                    if (checkRegisteredConnection(client, ip))
+                        return;
+
+                    mutex.release();
+                    Thread.sleep(100); // wait to see if other listeners detected a portscan
+
                     if (checkPostScanInProgressNomutex(client))
                         return;
-                } catch (IOException e) {
+
+                    if (protocol.isSecure()) {
+                        startSecureHandler(client);
+                    } else {
+                        startHandler(client);
+                    }
+                    conReg.newOpenConnection();
+
+
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String ip = client.getInetAddress().getHostAddress();
 
-                    // the mutex should prevent multiple hostage.logging of a portscan
-                    try {
-                        mutex.acquire();
-                        if (checkPostScanInProgress(client))
-                            return;
-
-                        if (checkRegisteredConnection(client, ip))
-                            return;
-
-                        mutex.release();
-                        Thread.sleep(100); // wait to see if other listeners detected a portscan
-
-                        if (checkPostScanInProgressNomutex(client))
-                            return;
-
-                        if (protocol.isSecure()) {
-                            startSecureHandler(client);
-                        } else {
-                            startHandler(client);
-                        }
-                        conReg.newOpenConnection();
-
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-            }
         });
 
        return socketsThread;
@@ -357,8 +354,7 @@ public class Listener implements Runnable {
 
         // now that the record exists we can inform the ui
         // only handler informs about attacks so its name is used here
-        service.notifyUI(Handler.class.getName(),
-                new String[]{service.getString(R.string.broadcast_started), "PORTSCAN",
+        service.notifyUI(Handler.class.getName(), new String[]{service.getString(R.string.broadcast_started), "PORTSCAN",
                         Integer.toString(client.getPort())});
     }
 
@@ -397,7 +393,7 @@ public class Listener implements Runnable {
         return networkRecord;
     }
 
-    private void addRealPorts(String protocol, Integer port){
+    public static void addRealPorts(String protocol, Integer port){
         realPorts.put(protocol,port);
     }
 

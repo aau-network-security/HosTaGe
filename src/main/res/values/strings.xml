@@ -288,6 +288,7 @@
     <string name="service">Services</string>
     <string name="multistage_summary">Enable Multistage Attack Detection Service</string>
     <string name="multistage_service">Multistage Service</string>
+    <string name="iptables_not_supported" translatable="false">Iptables rules are not supported for your device!</string>
 
 
 
