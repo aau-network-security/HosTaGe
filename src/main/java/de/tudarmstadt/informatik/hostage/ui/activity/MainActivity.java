@@ -160,6 +160,11 @@ public class MainActivity extends AppCompatActivity {
 	};
 
 	/**
+	 * Holds an profile manager instance
+	 */
+	private ProfileManager mProfileManager;
+
+	/**
 	 * Holds the root fragment for our hierarchical fragment navigation
 	 */
     private Fragment mRootFragment;
@@ -281,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
 		loadFirstRun();
 		//Must start after the location!
 		startAndBind();
+		//addProfileManager();
 
         if (savedInstanceState == null) {
             // on first time display view for first nav item
@@ -335,6 +341,14 @@ public class MainActivity extends AppCompatActivity {
 				});
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+
+	private void addProfileManager(){
+		try {
+			mProfileManager = ProfileManager.getInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void loadFirstRun(){

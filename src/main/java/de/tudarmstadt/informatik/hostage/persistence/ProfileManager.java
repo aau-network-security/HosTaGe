@@ -105,7 +105,7 @@ public class  ProfileManager {
 	 * A private constructor, that can/should only be called by getInstance, since we want to enforce the usage of the singleton.
 	 */
 	private ProfileManager(){
-		mProfiles = new HashMap<>();
+		mProfiles = new HashMap<Integer, Profile>();
 
 		String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
 		mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
@@ -148,7 +148,6 @@ public class  ProfileManager {
 		try {
 			if(loadDefaulData())
 				return;
-
             String UTF8 = "utf8";
             int BUFFER_SIZE = 8192;
             BufferedReader fbr = new BufferedReader(new InputStreamReader(MainActivity.getContext().openFileInput(PERSIST_FILENAME), UTF8), BUFFER_SIZE);
@@ -158,20 +157,51 @@ public class  ProfileManager {
             while((line = fbr.readLine()) != null) {
                 sb.append(line);
             }
-			loadProfiles(sb,fbr);
 
+            JSONArray arr = new JSONArray(sb.toString());
+			fbr.close();
+			loadJson(arr);
 
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		} finally {
-			fillWithDefaultData();
+			if(mProfiles.size() == 0){
+				this.fillWithDefaultData();
+			}
+
+			if(this.mRandomProfile != null){
+				randomizeProtocols(mRandomProfile);
+			}
 		}
 	}
 
-	private void loadProfiles(StringBuilder sb, BufferedReader fbr) throws Exception {
-		JSONArray arr = new JSONArray(sb.toString());
-		fbr.close();
+	private boolean loadDefaulData() {
+		boolean profileExist = new File(PERSIST_FILENAME).exists();
+		if(!profileExist){
+			fillDefaultData();
 
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	private void fillDefaultData()  {
+		if(mProfiles.size() == 0){
+			try {
+				this.fillWithDefaultData();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		if(this.mRandomProfile != null){
+			randomizeProtocols(mRandomProfile);
+		}
+	}
+
+
+	private void loadJson(JSONArray arr) throws Exception {
 		for(int i=0; i<arr.length(); i++){
 			JSONObject obj = arr.getJSONObject(i);
 
@@ -191,24 +221,6 @@ public class  ProfileManager {
 			if(p.mIsRandom){
 				this.mRandomProfile = p;
 			}
-		}
-
-	}
-
-	private boolean loadDefaulData() throws Exception {
-		boolean profileExist = new File(PERSIST_FILENAME).exists();
-		if(!profileExist){
-			if(mProfiles.size() == 0){
-				this.fillWithDefaultData();
-			}
-
-			if(this.mRandomProfile != null){
-				randomizeProtocols(mRandomProfile);
-			}
-
-			return true;
-		}else{
-			return false;
 		}
 	}
 
@@ -243,7 +255,7 @@ public class  ProfileManager {
 	 * @return a list that holds all the profiles
 	 */
 	public List<Profile> getProfilesList() throws Exception {
-		return new ArrayList<>(getProfilesCollection());
+		return new ArrayList<Profile>(getProfilesCollection());
 	}
 
 	/**
@@ -272,7 +284,7 @@ public class  ProfileManager {
 	 * @param profile the profile to randomize the protocols for
 	 */
 	public void randomizeProtocols(Profile profile){
-		LinkedList<String> protocols = new LinkedList<>(Arrays.asList(MainActivity.getContext().getResources().getStringArray(R.array.protocols)));
+		LinkedList<String> protocols = new LinkedList<String>(Arrays.asList(MainActivity.getContext().getResources().getStringArray(R.array.protocols)));
 		profile.mActiveProtocols.clear();
 
 		Random rand = new Random();
@@ -380,6 +392,8 @@ public class  ProfileManager {
 			}
 
 			this.persistData();
+			//this.dbh.deleteProfile(profile.mId);
+
 			if(this.mProfileListAdapter != null){
 				this.mProfileListAdapter.remove(profile);
 				this.mProfileListAdapter.notifyDataSetChanged();
@@ -812,7 +826,7 @@ public class  ProfileManager {
 		arduino.mActiveProtocols.put("MQTT",true);
 		arduino.mActiveProtocols.put("AMQP",true);
 		arduino.mActiveProtocols.put("COAP",true);
-		arduino.mActiveProtocols.put("TELNET",true);
+		arduino.mActiveProtocols.put("TELENET",true);
 
 		this.addProfile(arduino,false);
 	}
@@ -826,5 +840,6 @@ public class  ProfileManager {
 						Context.MODE_PRIVATE).getString("os", "");
 		return profile;
 	}
+
 
 }
