@@ -234,7 +234,7 @@ public final class Api {
         }
     }
 
-    private static void addRediractionPorts(){
+    public static void addRediractionPorts(){
         Listener.addRealPorts("ECHO",28144);
         Listener.addRealPorts("FTP",28169);
         Listener.addRealPorts("HTTP",28217);

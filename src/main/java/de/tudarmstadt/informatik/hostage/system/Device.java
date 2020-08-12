@@ -102,6 +102,7 @@ public class Device {
 					System.out.println("Filepath of payload: "+scriptFilePath);
 				} else {
 					Api.executeCommands();
+					Api.addRediractionPorts();
 				}
 				// stall the main thread
 			} catch (IOException | InterruptedException e) {
