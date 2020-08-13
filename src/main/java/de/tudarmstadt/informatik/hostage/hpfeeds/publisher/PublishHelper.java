@@ -1,7 +1,7 @@
 package de.tudarmstadt.informatik.hostage.hpfeeds.publisher;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.commons.JSONHelper;
@@ -14,9 +14,9 @@ public class PublishHelper {
     private DaoSession dbSession;
     private DAOHelper daoHelper;
     private int offset=0;
-    private int limit=10;
+    private int limit=20;
     private int attackRecordOffset=0;
-    private int attackRecordLimit=9999;
+    private int attackRecordLimit=999;
     LogFilter filter = null;
     JSONHelper jsonHelper = new JSONHelper();
 
@@ -49,8 +49,7 @@ public class PublishHelper {
 
     }
 
-    private RecordAll getLastInsertedRecord(){
-        RecordAll recordAll = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter,offset,limit,attackRecordOffset,attackRecordLimit).get(0);
-        return recordAll;
+    private ArrayList<RecordAll> getLastInsertedRecord(){
+        return  daoHelper.getAttackRecordDAO().getRecordsForFilter(filter,offset,limit,attackRecordOffset,attackRecordLimit);
     }
 }
