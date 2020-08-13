@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.commons.SubnetUtils;
+import de.tudarmstadt.informatik.hostage.hpfeeds.publisher.PublishHelper;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.Logger;
@@ -180,11 +181,13 @@ public class Handler implements Runnable {
 				new String[] { service.getString(R.string.broadcast_started), protocol.toString(), Integer.toString(listener.getPort()) });
 		if(protocol.toString().equals("MQTT")){
 			handleMQTTPackets();
+			uploadHpfeeds();
 			kill();
 			return;
 		}
 		if(protocol.toString().equals("COAP") && COAPHandler.isAnAttackOngoing()){
 			handleCOAPPackets();
+			uploadHpfeeds();
 			kill();
 			return;
 		}
@@ -192,6 +195,7 @@ public class Handler implements Runnable {
 		if(protocol.toString().equals("AMQP")){
 			handleAMQPPackets();
 			kill();
+			uploadHpfeeds();
 			return;
 		}
 
@@ -210,6 +214,7 @@ public class Handler implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		uploadHpfeeds();
 		kill();
 	}
 
@@ -431,6 +436,11 @@ public class Handler implements Runnable {
 
 	protected void logAMQPPackets() {
 		logAMQP(MessageRecord.TYPE.RECEIVE);
+	}
+
+	private void uploadHpfeeds(){
+		PublishHelper publishHelper = new PublishHelper();
+		publishHelper.uploadRecordHpfeeds();
 	}
 
 }

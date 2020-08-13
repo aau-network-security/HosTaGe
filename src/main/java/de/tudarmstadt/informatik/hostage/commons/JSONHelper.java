@@ -1,10 +1,10 @@
 package de.tudarmstadt.informatik.hostage.commons;
 
-import android.content.Context;
 
 import org.json.JSONArray;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -12,16 +12,17 @@ import java.io.OutputStreamWriter;
 import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
-public class JSONHelper {
 
-    private final static String PERSIST_FILENAME = "upload.json";
+public class JSONHelper {
+    private static final String PERSIST_FILENAME = "publish.json";
+    File file = new File("/data/data/" + MainActivity.getContext().getPackageName() + "/" + PERSIST_FILENAME);
+
 
     public void persistData(RecordAll record){
         try {
             int BUFFER_SIZE = 8192;
             String UTF8 = "utf8";
-
-            FileOutputStream fout = MainActivity.getContext().openFileOutput(PERSIST_FILENAME, Context.MODE_PRIVATE);
+            FileOutputStream fout = new FileOutputStream(file);
             BufferedWriter fnw = new BufferedWriter(new OutputStreamWriter(fout, UTF8), BUFFER_SIZE);
 
             JSONArray arr = new JSONArray();
@@ -33,5 +34,10 @@ public class JSONHelper {
             e.printStackTrace();
         }
 
+    }
+
+    public String getFilePath(){
+        System.out.println("Filepath!!! "+file.getAbsolutePath());
+        return file.getAbsolutePath();
     }
 }
