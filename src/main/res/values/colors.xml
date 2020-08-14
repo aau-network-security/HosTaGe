@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    	<color name="light_grey">#FFC0C0C0</color>
+		<color name="bright_grey">#ffeeeeee</color>
+        <color name="dark_grey">#FF808080</color>
+        <color name="holo_red">#FFF44444</color>
+        <color name="holo_dark_green">#ff669900</color>
+		<color name="holo_yellow">#FFFFBB33</color>
+        <color name="apptheme_color">#33b5e5</color>
+        <color name="green">#81c784</color>
+
+</resources>

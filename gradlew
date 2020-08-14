@@ -65,7 +65,7 @@ cd "`dirname \"$PRG\"`/" >&-
 APP_HOME="`pwd -P`"
 cd "$SAVED" >&-
 
-CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+CLASSPATH=$APP_HOME/gradle/hostage.wrapper/gradle-hostage.wrapper.jar
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
@@ -79,14 +79,14 @@ if [ -n "$JAVA_HOME" ] ; then
         die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
 
 Please set the JAVA_HOME variable in your environment to match the
-location of your Java installation."
+hostage.location of your Java installation."
     fi
 else
     JAVACMD="java"
     which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
 
 Please set the JAVA_HOME variable in your environment to match the
-location of your Java installation."
+hostage.location of your Java installation."
 fi
 
 # Increase the maximum file descriptors if we can.
@@ -161,4 +161,4 @@ function splitJvmOpts() {
 eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS
 JVM_OPTS[${#JVM_OPTS[*]}]="-Dorg.gradle.appname=$APP_BASE_NAME"
 
-exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
+exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.hostage.wrapper.GradleWrapperMain "$@"

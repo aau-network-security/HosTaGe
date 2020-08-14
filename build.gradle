@@ -1,80 +1,135 @@
 buildscript {
     repositories {
-        mavenCentral()
-       // google()
         jcenter()
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.6.3'
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
+        classpath 'com.google.gms:google-services:4.3.3' //added gms support
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.2.0'
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'com.google.firebase.crashlytics'
 
-repositories {
-    mavenCentral()
-    maven {
-        url 'https://oss.sonatype.org/content/groups/public'
-    }
-    maven {
-        url 'https://maven.google.com/'
-        name 'Google'
+allprojects {
+    repositories {
+        jcenter()
+        google()
+
+        maven { url "https://jitpack.io" }
     }
 }
-
 dependencies {
-    compile 'com.google.android.gms:play-services:4.+'
-    compile 'org.roboguice:roboguice:2.0'
-    compile files('libs/nineoldandroids-2.4.0.jar')
-    //noinspection GradleCompatible
-    compile 'com.android.support:support-v4:18.0.0'
-    //compile fileTree(dir: 'libs', include: '*.jar')
-    compile files('libs/swipelistview-1.0.jar')
-    compile files('libs/sshlib-v1.1.jar')
-   // compile files('libs/chart-library2.2.jar')
-    //compile files('libs/jlan-5.jar')
-    compile files('libs/alfresco-jlan.jar')
-    compile files('libs/cryptix-jce-provider.jar')
-    compile 'org.snmp4j:snmp4j:1.10.1'
-    compile files('libs/snmp4j-agent-2.3.3.jar')
-    compile files('libs/VirusTotalAPI.jar')
+    //firebase
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.1'
+    implementation 'com.google.firebase:firebase-analytics:17.4.3'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+    //google api
+    implementation 'com.google.android.gms:play-services-base:17.3.0'
+    implementation 'com.google.android.gms:play-services-basement:17.3.0'
+    implementation 'com.google.android.gms:play-services-tasks:17.1.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.google.android.gms:play-services-analytics:17.0.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    //greenDao
+    implementation 'org.roboguice:roboguice:2.0'
+    implementation 'org.greenrobot:greendao:3.3.0'
+    implementation 'org.greenrobot:greendao-generator:3.3.0'
+    //hive-Mq
+    implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: '1.2.0'
+    //moquette
+    implementation 'io.moquette:moquette-broker:0.12.1'
+
+    //androidX legacy support
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.preference:preference:1.1.1'
+
+    //other libraries
+    implementation files('libs/nineoldandroids-2.4.0.jar')
+    implementation files('libs/swipelistview-1.0.jar')
+    implementation files('libs/sshlib-v1.1.jar')
+    implementation files('libs/alfresco-jlan.jar')
+    implementation files('libs/cryptix-jce-provider.jar')
+    implementation 'org.snmp4j:snmp4j:1.10.1'
+    implementation files('libs/snmp4j-agent-2.3.3.jar')
+    implementation files('libs/VirusTotalAPI.jar')
+
+    //materialDesign
+    implementation 'com.google.android.material:material:1.3.0-alpha01'
+
+
+    // Required -- JUnit 4 framework
+    testImplementation 'junit:junit:4.12'
+    //testImplementation 'androidx.test:core:1.2.0'
+
+    // Optional -- Mockito framework
+    testImplementation "org.mockito:mockito-core:2.+"
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.android.support.test:rules:1.0.2'
+    implementation 'com.android.support.test:runner:1.0.2'
+    // Optional -- UI testing with Espresso
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    // Optional -- UI testing with UI Automator for Android X
+     //implementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+//    implementation 'org.powermock:powermock:1.6.5'
+//    implementation 'org.powermock:powermock-module-junit4:1.7.4'
+//    implementation 'org.powermock:powermock-api-mockito:1.7.4'
+    implementation 'com.android.support:multidex:1.0.3'
+    // Optional -- Robolectric environment
+    testImplementation 'org.robolectric:robolectric:4.3.1'
+
+}
+
+greendao{
+    schemaVersion 1
+    //generateTests true
+   // targetGenDir "src/db/"
+}
+//this is for the conflict of common apache libraries between moquette and VirusTotalApi
+configurations {
+    all*.exclude group: 'commons-codec', module: 'commons-codec'
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     defaultConfig {
         versionCode 7
-        versionName "1.3"
-        minSdkVersion 14
-        targetSdkVersion 19
-      //   signingConfig signingConfigs.config
+        versionName "2.0.0"
+        minSdkVersion 24
+        targetSdkVersion 28
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+        useLibrary 'org.apache.http.legacy'
+
+        //   signingConfig signingConfigs.config
+
+    }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
     }
     sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
-        }
-
-        // Move the tests to tests/java, tests/res, etc...
-        androidTest.setRoot('tests')
 
         // Move the build types to build-types/<type>
         // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
-        // This moves them out of them default location under src/<type>/... which would
+        // This moves them out of them default hostage.location under src/<type>/... which would
         // conflict with src/ being used by the main source set.
         // Adding new build types or product flavors should be accompanied
         // by a similar customization.
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
+    }
+
+
+    packagingOptions {
+        pickFirst "META-INF/DEPENDENCIES"
+        pickFirst "META-INF/INDEX.LIST"
+        pickFirst "META-INF/io.netty.versions.properties"
     }
     // signing for release only works in the console
     boolean doSigningForRelease = System.console() != null
@@ -110,5 +165,9 @@ android {
         abortOnError false
     }
     productFlavors {
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 }

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    >
+
+
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/toolbar_layout"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:weightSum="2.">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/plot_parent_layout"
+            android:layout_weight="0.9">
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone"/>
+
+            <!-- TITLE LAYOUT -->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_height="40dp"
+                android:layout_width="match_parent"
+                android:id="@+id/title_layout"
+                android:padding="5dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textAlignment="center"
+                    android:id="@+id/title_text_view" />
+            </LinearLayout>
+            <!-- PLOT LAYOUT -->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:id="@+id/plot_layout"
+                android:padding="2dp"
+                android:layout_below="@+id/title_layout"
+                >
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+        <!-- LIST LAYOUT -->
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:id="@+id/list_parent_layout"
+            android:paddingTop="5dp"
+            android:layout_weight="1.1"
+            >
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:id="@+id/table_header_layout"
+                android:weightSum="1"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/table_header_title_textview"
+                    android:gravity="bottom|left"
+                    android:paddingLeft="75dp"
+                    android:layout_weight="0.4"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/table_header_value_textview"
+                    android:layout_weight="0.6"
+                    android:gravity="bottom|right"
+                    android:textStyle="bold" />
+            </LinearLayout>
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/table_header_layout"
+                android:id="@+id/legend_list_view"
+                android:paddingBottom="0dp"
+                android:paddingTop="6dp"
+                />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <RelativeLayout
+        style="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.8"
+        android:id="@+id/toolbar_layout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <ImageButton
+            style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/FilterButton"
+            android:src="@drawable/ic_filter"
+            android:visibility="invisible"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/plot_data_button" />
+
+        <ImageButton
+            style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/plot_data_button"
+            android:src="@drawable/ic_sort_by_size"
+            android:layout_gravity="right"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

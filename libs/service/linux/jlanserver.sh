@@ -12,7 +12,7 @@ APP_NAME="JLANServer"
 APP_LONG_NAME="JLANServer Virtual Filesystem Server"
 
 # Wrapper
-WRAPPER_CMD="./wrapper"
+WRAPPER_CMD="./hostage.wrapper"
 WRAPPER_CONF="./jlansrv.conf"
 
 # Priority (see the start() method if you want to use this)
@@ -52,7 +52,7 @@ done
 # Change ":" chars back to spaces.
 REALPATH=`echo $REALPATH | sed -e 's;:; ;g'`
 
-# Change the current directory to the location of the script
+# Change the current directory to the hostage.location of the script
 cd "`dirname "$REALPATH"`"
 
 # Find pidof.
@@ -91,9 +91,9 @@ start() {
     then
         # If you wanted to specify the priority with which
         # your app runs, you could use nice here:
-        # exec -a $APP_NAME nice -$PRIORITY $WRAPPER_CMD $WRAPPER_CONF wrapper.daemonize=TRUE wrapper.console.loglevel=NONE
+        # exec -a $APP_NAME nice -$PRIORITY $WRAPPER_CMD $WRAPPER_CONF hostage.wrapper.daemonize=TRUE hostage.wrapper.console.loglevel=NONE
         # See "man nice" for more details.
-        exec -a $APP_NAME $WRAPPER_CMD $WRAPPER_CONF wrapper.daemonize=TRUE wrapper.console.loglevel=NONE
+        exec -a $APP_NAME $WRAPPER_CMD $WRAPPER_CONF hostage.wrapper.daemonize=TRUE hostage.wrapper.console.loglevel=NONE
     else
         echo "$APP_LONG_NAME is already running."
         exit 1
@@ -116,8 +116,8 @@ stopit() {
             exit 1
         fi
 
-        # We can not predict how long it will take for the wrapper to
-        #  actually stop as it depends on settings in wrapper.conf.
+        # We can not predict how long it will take for the hostage.wrapper to
+        #  actually stop as it depends on settings in hostage.wrapper.conf.
         #  Loop until it does.
         CNT=0
         TOTCNT=0
