@@ -5,10 +5,10 @@
 
 #These are bash script arrays we can't use them in a shell script!
 
-#             ECHO  FTP   HTTP  HTTPS S7COMM SNMP SMB (NETBIOS UDP & TCP) SSH   TELNET MODBUS SMTP
-#protocol=(    "tcp" "tcp" "tcp" "tcp" "tcp" "udp" "udp" "udp"  "tcp" "tcp" "tcp" "tcp" "tcp" "tcp")
-#origin=(       7     21    80    443   102	 161   137   138    139   22    23    445   25   502)
-#destination=( 28144 28169 28217 28580 28239 28298 28274 28275 28276 28159 28160 28582 28162 28639)
+#             ECHO  FTP   HTTP  HTTPS S7COMM SNMP  (NETBIOS UDP & TCP) SSH   TELNET MODBUS SMTP
+#protocol=(    "tcp" "tcp" "tcp" "tcp" "tcp" "udp"  "udp"  "tcp" "tcp" "tcp" "tcp" "tcp" "tcp")
+#origin=(       7     21    80    443   102	 161      138    139   22    23    445   25   502)
+#destination=( 28144 28169 28217 28580 28239 28298  28275 28276 28159 28160 28582 28162 28639)
 
 #Shell scripts don't support arrays for old shells :(
 
@@ -30,9 +30,6 @@ iptables -t nat -D OUTPUT -p tcp --dport 28239 -j REDIRECT --to-ports 102
 
 iptables -t nat -D PREROUTING -p udp --dport 161 -j REDIRECT --to-ports 28298
 iptables -t nat -D OUTPUT -p udp --dport 28298 -j REDIRECT --to-ports 161
-
-iptables -t nat -D PREROUTING -p udp --dport 137 -j REDIRECT --to-ports 28274
-iptables -t nat -D OUTPUT -p udp --dport 28274 -j REDIRECT --to-ports 137
 
 iptables -t nat -D PREROUTING -p udp --dport 138 -j REDIRECT --to-ports 28275
 iptables -t nat -D OUTPUT -p udp --dport 28275 -j REDIRECT --to-ports 138
@@ -73,9 +70,6 @@ iptables -t nat -A OUTPUT -p tcp --dport 28239 -j REDIRECT --to-ports 102
 
 iptables -t nat -A PREROUTING -p udp --dport 161 -j REDIRECT --to-ports 28298
 iptables -t nat -A OUTPUT -p udp --dport 28298 -j REDIRECT --to-ports 161
-
-iptables -t nat -A PREROUTING -p udp --dport 137 -j REDIRECT --to-ports 28274
-iptables -t nat -A OUTPUT -p udp --dport 28274 -j REDIRECT --to-ports 137
 
 iptables -t nat -A PREROUTING -p udp --dport 138 -j REDIRECT --to-ports 28275
 iptables -t nat -A OUTPUT -p udp --dport 28275 -j REDIRECT --to-ports 138
