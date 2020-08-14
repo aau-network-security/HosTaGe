@@ -13,20 +13,20 @@ import org.slf4j.LoggerFactory;
 
 public class LogbackSpy
 {
-    private CyclicBufferAppender listAppender;
+    private CyclicBufferAppender<ILoggingEvent> listAppender;
     private static ArrayList<String> packets= new ArrayList<>();
 
     public void register() {
-        listAppender = new CyclicBufferAppender();
+        listAppender = new CyclicBufferAppender<>();
         listAppender.setName("spy");
         listAppender.setContext(getRootLogger().getLoggerContext());
         listAppender.start();
         getRootLogger().addAppender(listAppender);
 
         final Pattern pattern = Pattern.compile("CON-1001*");
+        final Pattern secondPattern = Pattern.compile("\\Q[\\ESMB\\Q]\\E Connection from*");
         listAppender.addFilter(new Filter<ILoggingEvent>()
         {
-
             @Override
             public FilterReply decide(final ILoggingEvent event)
             {
@@ -38,6 +38,24 @@ public class LogbackSpy
                 return FilterReply.DENY;
             }
         });
+
+        listAppender.addFilter(new Filter<ILoggingEvent>()
+        {
+            @Override
+            public FilterReply decide(final ILoggingEvent event)
+            {
+                System.out.println("Received!!!!!!!!..........."+event.getMessage());
+
+                Matcher matcher = secondPattern.matcher(event.getMessage());
+                if (matcher.find()) {
+                    packets.add(event.getMessage());
+                    return FilterReply.ACCEPT;
+                }
+                return FilterReply.DENY;
+            }
+        });
+
+
     }
 
     public void unregister() {

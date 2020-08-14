@@ -5,6 +5,7 @@ import com.hierynomus.smbj.auth.AuthenticationContext;
 import com.hierynomus.smbj.connection.Connection;
 import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 
 
 import org.alfresco.jlan.netbios.server.NetBIOSNameServer;
@@ -21,9 +22,13 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import de.tudarmstadt.informatik.hostage.protocols.AMQP.LogBackFilter;
+import de.tudarmstadt.informatik.hostage.protocols.AMQP.LogbackSpy;
+
 public class SMBTest {
 
     final static ArrayList<String> packets = new ArrayList<>();
+    LogBackFilter spy = new LogBackFilter();
 
     @Before
     public void testSecondSMB() throws IOException, InvalidConfigurationException, DeviceContextException {
@@ -94,7 +99,7 @@ public class SMBTest {
             }
         });
         cfg.addServer(smbServer);
-
+        //spy.register();
         // start servers
         for (int i = 0; i < cfg.numberOfServers(); i++) {
             NetworkServer server = cfg.getServer(i);
@@ -110,11 +115,13 @@ public class SMBTest {
         try (Connection connection = client.connect("0.0.0.0",8812)) {
             AuthenticationContext ac = new AuthenticationContext("GUEST", "1234".toCharArray(), "MYDOMAIN");
             Session session = connection.authenticate(ac);
-
             // Connect to Share
-            try (DiskShare share = (DiskShare) session.connectShare("JLANSHARE")) {
-                System.out.println(share.fileExists("Windows"));
-            }
+//            try (DiskShare share = (DiskShare) session.connectShare("JLANSHARE")) {
+//                System.out.println(share.fileExists("Windows"));
+//            }
+        }catch (Exception e){
+            System.out.println("Meow,meow "+ spy.getList().get(0));
+
         }
     }
 

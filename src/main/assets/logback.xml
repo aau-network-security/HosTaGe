@@ -12,8 +12,21 @@
         </encoder>
     </appender>
 
+    <appender name="CONSOLE-stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target> <!-- the default -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>%d %-5level [%thread] %logger{0}: %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <root level="DEBUG">
+        <appender-ref ref="CONSOLE-stdout" />
         <appender-ref ref="logcat" />
     </root>
+
+
 
 </configuration>

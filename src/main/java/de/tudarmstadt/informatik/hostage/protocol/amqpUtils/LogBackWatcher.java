@@ -17,7 +17,7 @@ import ch.qos.logback.core.spi.FilterReply;
  * http://logback.qos.ch/manual/layouts.html#ClassicPatternLayout
  */
 public class LogBackWatcher {
-    private CyclicBufferAppender listAppender;
+    private CyclicBufferAppender<ILoggingEvent>  listAppender;
     private static ArrayList<String> packets= new ArrayList<>();
 
     /**
@@ -29,7 +29,7 @@ public class LogBackWatcher {
      * More log message ids in https://qpid.apache.org/releases/qpid-broker-j-8.0.0/book/Java-Broker-Appendix-Operation-Logging.html
      */
     public void register() {
-        listAppender = new CyclicBufferAppender();
+        listAppender = new CyclicBufferAppender<>();
         listAppender.setName("watcher");
         listAppender.setContext(getRootLogger().getLoggerContext());
         listAppender.start();
