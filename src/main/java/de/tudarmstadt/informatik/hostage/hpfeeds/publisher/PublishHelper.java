@@ -1,13 +1,18 @@
 package de.tudarmstadt.informatik.hostage.hpfeeds.publisher;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
 import de.tudarmstadt.informatik.hostage.HostageApplication;
+import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.JSONHelper;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
+import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 
 public class PublishHelper {
@@ -19,11 +24,26 @@ public class PublishHelper {
     private int attackRecordLimit=999;
     LogFilter filter = null;
     JSONHelper jsonHelper = new JSONHelper();
+    private String host = "";
+    private int port = 0;
+    private String ident = "";
+    private String secret = "";
+    private String channel = "";
 
 
     public PublishHelper(){
         this.dbSession = HostageApplication.getInstances().getDaoSession();
         this.daoHelper = new DAOHelper(dbSession);
+        initializeHpFeedsCredentials();
+    }
+
+    private void initializeHpFeedsCredentials(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
+        this.host = preferences.getString("pref_host_hpfeeds", String.valueOf(R.string.hpfeeds_host));
+        this.port = Integer.parseInt(preferences.getString("pref_port_hpfeeds", String.valueOf(R.integer.hpfeeds_port)));
+        this.ident = preferences.getString("pref_ident_hpfeeds", String.valueOf(R.string.hpfeeds_ident));
+        this.secret = preferences.getString("pref_secret_hpfeeds", String.valueOf(R.string.hpfeeds_secret));
+        this.channel = preferences.getString("pref_secret_channel", String.valueOf(R.string.hpfeeds_channel));
     }
 
     /**
@@ -57,7 +77,7 @@ public class PublishHelper {
         Publisher publisher = new Publisher();
         String initialConfigurationUrl = jsonHelper.getFilePath();
 
-        publisher.setCommand("192.168.1.3",20000,"testing","secretkey","chan2",initialConfigurationUrl);
+        publisher.setCommand(host,port,ident,secret,channel,initialConfigurationUrl);
 
         publisher.publishFile();
 

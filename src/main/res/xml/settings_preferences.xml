@@ -37,31 +37,81 @@
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/pref_upload" >
-		<!--<CheckBoxPreference
+
+		<CheckBoxPreference
+			android:key="pref_hpfeeds_server"
 			android:defaultValue="false"
-			android:key="pref_auto_synchronize"
-			android:summary="@string/pref_auto_synchronize_summ"
-			android:title="@string/pref_auto_synchronize_title" />-->
+			android:title="@string/pref_upload_hpfeeds" />
 
-		<EditTextPreference
-				android:key="pref_upload_server"
-				android:defaultValue="https://www.tracingmonitor.org"
-				android:title="@string/pref_upload_server" />
+		<PreferenceScreen
+			android:key="pref_hpfeeds_settings"
+			android:title="@string/advanced_hpfeeds_settings"
+			android:persistent="false">
 
-        <EditTextPreference
-                android:key="pref_sync_frequency"
-                android:defaultValue="5"
-                android:title="@string/pref_sync_frequency_title"
-                android:summary="@string/pref_sync_frequency_summary"
-                android:inputType="number"
-                android:numeric="decimal" />
+			<PreferenceCategory android:title="@string/pref_hpfeeds_connection_settings" >
+				<EditTextPreference
+					android:inputType="text"
+					android:key="pref_host_hpfeeds"
+					android:defaultValue="@string/hpfeeds_host"
+					android:title="@string/pref_host_title"
+					android:summary="@string/pref_host_summary" />
+
+				<EditTextPreference
+					android:inputType="number"
+					android:key="pref_port_hpfeeds"
+					android:defaultValue="@integer/hpfeeds_port"
+					android:title="@string/pref_port_title"
+					android:summary="@string/pref_port_summary" />
+
+				<EditTextPreference
+					android:inputType="text"
+					android:key="pref_ident_hpfeeds"
+					android:defaultValue="@string/hpfeeds_ident"
+					android:title="@string/pref_ident_title"
+					android:summary="@string/pref_ident_summary" />
+
+				<EditTextPreference
+					android:inputType="text"
+					android:key="pref_secret_hpfeeds"
+					android:defaultValue="@string/hpfeeds_secret"
+					android:title="@string/pref_secret_title"
+					android:summary="@string/pref_secret_summary" />
+
+				<EditTextPreference
+					android:inputType="text"
+					android:key="pref_secret_channel"
+					android:defaultValue="@string/hpfeeds_channel"
+					android:title="@string/pref_channel_title"
+					android:summary="@string/pref_channel_summary" />
+
+			</PreferenceCategory>
+		</PreferenceScreen>
+
+<!--		Tracing Upload Disabled-->
+		<!--<CheckBoxPreference
+    android:defaultValue="false"
+    android:key="pref_auto_synchronize"
+    android:summary="@string/pref_auto_synchronize_summ"
+    android:title="@string/pref_auto_synchronize_title" />-->
+
+<!--		<EditTextPreference-->
+<!--				android:key="pref_upload_server"-->
+<!--				android:defaultValue="https://www.tracingmonitor.org"-->
+<!--				android:title="@string/pref_upload_server" />-->
+<!--        <EditTextPreference-->
+<!--                android:key="pref_sync_frequency"-->
+<!--                android:defaultValue="5"-->
+<!--                android:title="@string/pref_sync_frequency_title"-->
+<!--                android:summary="@string/pref_sync_frequency_summary"-->
+<!--                android:inputType="number"-->
+<!--                android:numeric="decimal" />-->
         <!--<EditTextPreference
             android:key="pref_download_server"
             android:defaultValue="http://ssi.cased.de/api"
             android:title="@string/pref_download_server" />-->
 	</PreferenceCategory>
 
-	<PreferenceCategory android:title="@string/advanced_settings">
+	<PreferenceCategory android:title="Settings">
 		<PreferenceScreen
 				android:key="pref_advanced settings"
 				android:title="@string/advanced_settings"
@@ -69,7 +119,6 @@
 			<PreferenceCategory android:title="@string/pref_connection_settings" >
 				<EditTextPreference
 						android:inputType="number"
-						android:numeric="decimal"
 						android:key="pref_max_connections"
 						android:defaultValue="@integer/pref_max_connections_default"
 						android:title="@string/pref_max_connections"
@@ -77,23 +126,13 @@
 
 				<EditTextPreference
 						android:inputType="number"
-						android:numeric="decimal"
 						android:key="pref_timeout"
 						android:defaultValue="@integer/pref_timeout_default"
 						android:title="@string/pref_timeout"
 						android:summary="@string/pref_timeout_summary" />
 
-				<!--<EditTextPreference
-						android:inputType="number"
-						android:numeric="decimal"
-						android:key="pref_sleeptime"
-						android:defaultValue="@integer/pref_sleeptime_default"
-						android:title="@string/pref_sleeptime"
-						android:summary="@string/pref_sleeptime_summary" />-->
-
 				<EditTextPreference
 						android:inputType="number"
-						android:numeric="decimal"
 						android:key="pref_portscan_timeout"
 						android:defaultValue="@integer/pref_portscan_timeout_default"
 						android:title="@string/pref_portscan_timeout"

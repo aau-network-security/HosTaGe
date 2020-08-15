@@ -439,8 +439,12 @@ public class Handler implements Runnable {
 	}
 
 	private void uploadHpfeeds(){
-		PublishHelper publishHelper = new PublishHelper();
-		publishHelper.uploadRecordHpfeeds();
+		boolean enabledHpfeeds = pref.getBoolean("pref_hpfeeds_server",false);
+		if(enabledHpfeeds) {
+			PublishHelper publishHelper = new PublishHelper();
+			publishHelper.uploadRecordHpfeeds();
+		}
+
 	}
 
 }

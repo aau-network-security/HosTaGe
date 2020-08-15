@@ -58,9 +58,13 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 			((TextView)view.findViewById(R.id.connectioninfo_externalip_value)).setText(externalIP);
 		}
 
+
+		return getConnectionInfoDialog(ssid).create();
+	}
+
+	private MaterialAlertDialogBuilder getConnectionInfoDialog(String ssid){
 		// capture the SSID for the button action
 		final String filterSSID = ssid;
-
 		// build the actual dialog
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
 
@@ -68,21 +72,24 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 		builder.setTitle(R.string.title_connection_info);
 		builder.setIcon(getResources().getDrawable(R.drawable.ic_info_dark_grey_icon));
 		builder.setPositiveButton(R.string.show_records, (dialog, which) -> {
-			ArrayList<String> ssids = new ArrayList<>();
-			ssids.add(filterSSID);
-
-			LogFilter filter = new LogFilter();
-			filter.setESSIDs(ssids);
-
-			RecordOverviewFragment recordOverviewFragment = new RecordOverviewFragment();
-			recordOverviewFragment.setFilter(filter);
-			recordOverviewFragment.setGroupKey("ESSID");
-
-			MainActivity.getInstance().injectFragment(recordOverviewFragment);
+			showRecords(filterSSID);
 		});
 		builder.setNegativeButton(R.string.close, null);
 
-		return builder.create();
+		return builder;
+	}
+
+	private void showRecords(String filterSSID){
+		ArrayList<String> ssids = new ArrayList<>();
+		ssids.add(filterSSID);
+
+		LogFilter filter = new LogFilter();
+		filter.setESSIDs(ssids);
+
+		RecordOverviewFragment recordOverviewFragment = new RecordOverviewFragment();
+		recordOverviewFragment.setFilter(filter);
+		recordOverviewFragment.setGroupKey("ESSID");
+		MainActivity.getInstance().injectFragment(recordOverviewFragment);
 	}
 
 	@Override

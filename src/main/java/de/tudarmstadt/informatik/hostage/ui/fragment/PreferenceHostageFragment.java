@@ -27,7 +27,6 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 	 */
 	private HashSet<String> mPrefValuePreviewSet;
 	MultiStageAlarm alarm = new MultiStageAlarm();
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -38,8 +37,7 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 		// these preferences are all text preferences
 		final String[] textPreferences = new String[]{
 				"pref_external_location",
-				"pref_upload_server",
-                "pref_download_server",
+				"pref_hpfeeds_server",
 				"pref_max_connections",
 				"pref_timeout",
 				"pref_sleeptime",
@@ -50,7 +48,7 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 
 		mPrefValuePreviewSet = new HashSet<>();
 		mPrefValuePreviewSet.add("pref_external_location");
-		mPrefValuePreviewSet.add("pref_upload_server");
+		mPrefValuePreviewSet.add("pref_hpfeeds_server");
 
 		addPreferencesFromResource(R.xml.settings_preferences);
 
@@ -110,22 +108,42 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		updatePreferenceSummary(key);
-		CheckBoxPreference checkboxPref = (CheckBoxPreference)getPreferenceManager().findPreference("pref_multistage");
+		CheckBoxPreference checkboxPrefMultiStage = (CheckBoxPreference)getPreferenceManager().findPreference("pref_multistage");
+		CheckBoxPreference checkBoxPreferenceHpfeeds = (CheckBoxPreference)getPreferenceManager().findPreference("pref_hpfeeds_server");
 
-		assert checkboxPref != null;
-		checkboxPref.setOnPreferenceChangeListener((preference, newValue) -> {
+		if(checkboxPrefMultiStage != null)
+			checkMultistage(checkboxPrefMultiStage);
+		if(checkBoxPreferenceHpfeeds !=null)
+			checkHpfeeds(checkBoxPreferenceHpfeeds,sharedPreferences);
+	}
+
+	private void checkMultistage(CheckBoxPreference checkboxPrefMultiStage){
+		checkboxPrefMultiStage.setOnPreferenceChangeListener(((preference, newValue) -> {
 			boolean myValue = (Boolean) newValue;
 
 			if (myValue) {
 				startMultiStage();
 			}
-
 			else {
 				stopMultiStage();
 			}
 			return true;
-		});
+		}));
 
+	}
+
+	private void checkHpfeeds(CheckBoxPreference checkBoxPreferenceHpfeeds,SharedPreferences sharedPreferences){
+		checkBoxPreferenceHpfeeds.setOnPreferenceChangeListener((preference, o) -> {
+			boolean myValue = (Boolean) o;
+
+			if (myValue) {
+				sharedPreferences.edit().putBoolean("pref_hpfeeds_server", true).apply();
+
+			} else {
+				sharedPreferences.edit().putBoolean("pref_hpfeeds_server", false).apply();
+			}
+			return true;
+		});
 	}
 
 	public void stopMultiStage() {
