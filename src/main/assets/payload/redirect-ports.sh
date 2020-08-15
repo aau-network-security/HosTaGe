@@ -8,7 +8,7 @@
 #             ECHO  FTP   HTTP  HTTPS S7COMM SNMP  (NETBIOS UDP & TCP) SSH   TELNET MODBUS SMTP
 #protocol=(    "tcp" "tcp" "tcp" "tcp" "tcp" "udp"  "udp"  "tcp" "tcp" "tcp" "tcp" "tcp" "tcp")
 #origin=(       7     21    80    443   102	 161      138    139   22    23    445   25   502)
-#destination=( 28144 28169 28217 28580 28239 28298  28275 28276 28159 28160 28582 28162 28639)
+#destination=( 28144 28158 28217 28580 28239 28298  28275 28276 28159 28160 28582 28162 28639)
 
 #Shell scripts don't support arrays for old shells :(
 
@@ -16,8 +16,8 @@
 iptables -t nat -D PREROUTING -p tcp --dport 7 -j REDIRECT --to-ports 28144
 iptables -t nat -D OUTPUT -p tcp --dport 28144 -j REDIRECT --to-ports 7
 
-iptables -t nat -D PREROUTING -p tcp --dport 21 -j REDIRECT --to-ports 28169
-iptables -t nat -D OUTPUT -p tcp --dport 28169 -j REDIRECT --to-ports 21
+iptables -t nat -D PREROUTING -p tcp --dport 21 -j REDIRECT --to-ports 28158
+iptables -t nat -D OUTPUT -p tcp --dport 28158 -j REDIRECT --to-ports 21
 
 iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 28217
 iptables -t nat -D OUTPUT -p tcp --dport 28217 -j REDIRECT --to-ports 80
@@ -56,8 +56,8 @@ iptables -t nat -D OUTPUT -p tcp --dport 28639 -j REDIRECT --to-ports 502
 iptables -t nat -A PREROUTING -p tcp --dport 7 -j REDIRECT --to-ports 28144
 iptables -t nat -A OUTPUT -p tcp --dport 28144 -j REDIRECT --to-ports 7
 
-iptables -t nat -A PREROUTING -p tcp --dport 21 -j REDIRECT --to-ports 28169
-iptables -t nat -A OUTPUT -p tcp --dport 28169 -j REDIRECT --to-ports 21
+iptables -t nat -A PREROUTING -p tcp --dport 21 -j REDIRECT --to-ports 28158
+iptables -t nat -A OUTPUT -p tcp --dport 28158 -j REDIRECT --to-ports 21
 
 iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 28217
 iptables -t nat -A OUTPUT -p tcp --dport 28217 -j REDIRECT --to-ports 80

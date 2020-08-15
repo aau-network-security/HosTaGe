@@ -6,7 +6,7 @@
 #             ECHO  FTP   HTTP  HTTPS S7COMM SNMP SMB (NETBIOS UDP & TCP) SSH   TELNET MODBUS SMTP
 protocol=(    "tcp" "tcp" "tcp" "tcp" "tcp" "udp" "udp" "udp"  "tcp" "tcp" "tcp" "tcp" "tcp" "tcp"    )
 origin=(       7     21    80    443   102	 161   137   138    139   22    23    445   25   502     )
-destination=( 28144 28169 28217 28580 28239 28298 28274 28275 28276 28159 28160 28582 28162 28639     ) # simply offset by 1024 + 27113
+destination=( 28144 28158 28217 28580 28239 28298 28274 28275 28276 28159 28160 28582 28162 28639     ) # simply offset by 1024 + 27113
 length=${#protocol[@]} # count protocol elements
 
 # for (( i=0; i<$length; i++ ))

@@ -34,8 +34,6 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.stericson.RootTools.RootTools;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,9 +47,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -92,9 +88,6 @@ public final class Api {
 
     /**
      * Asserts that the binary files are installed in the cache directory.
-     *
-     * BusyBox, nflog and run_pie removed, they are still in the raw directory but we don't need them
-     * for our build.
      *
      * @param ctx        context
      * @param showErrors indicates if errors should be alerted
@@ -139,6 +132,13 @@ public final class Api {
         return ret;
     }
 
+    /**
+     * Installs the binary when it copies it to the default system/bin directory.
+     * @param ctx context of app
+     * @param resId where the raw binary is located
+     * @param filename the given filename
+     * @return asserts true when the installation is successful
+     */
     private static boolean installBinary(Context ctx, int resId, String filename) {
         try {
             File f = new File(ctx.getDir("bin", 0), filename);
@@ -201,11 +201,18 @@ public final class Api {
         runCommands(command);
     }
 
+    /**
+     * Remounts system to be writable.
+     */
     public static void remountSystem(){
         String command = "su -c mount -o rw,remount /";
         runCommands(command);
     }
 
+    /**
+     * Executes iptables commands when the script fails
+     * @throws IOException throws IO Exception
+     */
     public static void executeCommands() throws IOException {
         InputStream is = MainActivity.getInstance().getAssets().open("payload/commands.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -218,6 +225,10 @@ public final class Api {
         }
     }
 
+    /**
+     * Runs a cmd command as a process.
+     * @param command given command.
+     */
     private static void runCommands(String command) {
         Process process;
         try {
@@ -226,7 +237,7 @@ public final class Api {
                 Log.d(TAG,"Commands executed successfully");
             }else {
                 toast(MainActivity.getContext(), MainActivity.getContext().getString(R.string.iptables_not_supported));
-                addRediractionPorts();
+                addRedirectionPorts();
             }
 
         } catch (IOException | InterruptedException e) {
@@ -234,9 +245,12 @@ public final class Api {
         }
     }
 
-    public static void addRediractionPorts(){
+    /**
+     * If the redirection of ports doesn't work, this method updates the ui, with the original random ports.
+     */
+    public static void addRedirectionPorts(){
         Listener.addRealPorts("ECHO",28144);
-        Listener.addRealPorts("FTP",28169);
+        Listener.addRealPorts("FTP",28158);
         Listener.addRealPorts("HTTP",28217);
         Listener.addRealPorts("HTTPS",28580);
         Listener.addRealPorts("S7COMM",28239);
@@ -247,25 +261,10 @@ public final class Api {
         Listener.addRealPorts("SMTP",28639);
     }
 
-    public static void checkAndCopyMissingScript(final Context context, final String fileName) {
-            final String srcPath = new File(context.getDir("bin", 0), fileName)
-                    .getAbsolutePath();
-            new Thread(() -> {
-                //String path = G.initPath();
-                String path = srcPath;
-                if (path != null) {
-                    File f = new File(path);
-                    Api.remountSystem();
-                        //make sure it's executable
-                    new RootCommand().setReopenShell(true).setLogging(true).run(context, "chmod 755 " + f.getAbsolutePath());
-                        RootTools.copyFile(srcPath, (f.getAbsolutePath() + "/" + fileName),
-                                true, false);
-
-                }
-            }).start();
-        }
-
-
+    /**
+     * Checks if the netfilter is supported for the device.
+     * @return true if the device supports the netfilter.
+     */
     public static boolean isNetfilterSupported() {
         return new File("/proc/net/netfilter").exists()
                 && new File("/proc/net/ip_tables_targets").exists();
@@ -361,18 +360,6 @@ public final class Api {
         }
     }
 
-    private static void fixupLegacyCmds(List<String> cmds) {
-        for (int i = 0; i < cmds.size(); i++) {
-            String s = cmds.get(i);
-            if (s.matches("#NOCHK# .*")) {
-                s = s.replaceFirst("^#NOCHK# ", "");
-            } else {
-                s += " || exit";
-            }
-            cmds.set(i, s);
-        }
-    }
-
     /**
      * Purge and re-add all saved rules (not in-memory ones).
      * This is much faster than just calling "applyIptablesRules", since it don't need to read installed applications.
@@ -429,11 +416,7 @@ public final class Api {
 
         //make sure reset the OUTPUT chain to accept state.
         cmds.add("-P OUTPUT ACCEPT");
-
-
         cmds.add("-D INPUT -j " + CHAIN_NAME + "-input");
-
-
         try {
             // IPv4
             iptablesCommands(cmds, out, false);
@@ -654,26 +637,6 @@ public final class Api {
         return decryptStr;
     }
 
-    public static int getConnectivityStatus(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        assert cm != null;
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        if (null != activeNetwork) {
-
-            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
-                return 1;
-
-            if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)
-                return 2;
-
-            if (activeNetwork.getType() == ConnectivityManager.TYPE_BLUETOOTH)
-                return 3;
-        }
-        return 0;
-    }
 
     /**
      * Apply default chains based on preference

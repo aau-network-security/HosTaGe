@@ -98,11 +98,9 @@ public class Device {
 
 				p = new ProcessBuilder("su", "-c", "sh "+scriptFilePath).start();
 				if (p.waitFor() == 0) {
-					System.out.println("Test script "+ String.valueOf(p.waitFor()));
 					System.out.println("Filepath of payload: "+scriptFilePath);
 				} else {
 					Api.executeCommands();
-					//Api.addRediractionPorts();
 				}
 				// stall the main thread
 			} catch (IOException | InterruptedException e) {

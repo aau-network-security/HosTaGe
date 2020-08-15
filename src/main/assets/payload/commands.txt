@@ -1,8 +1,8 @@
 iptables -t nat -D PREROUTING -p tcp --dport 7 -j REDIRECT --to-ports 28144
 iptables -t nat -D OUTPUT -p tcp --dport 28144 -j REDIRECT --to-ports 7
 
-iptables -t nat -D PREROUTING -p tcp --dport 21 -j REDIRECT --to-ports 28169
-iptables -t nat -D OUTPUT -p tcp --dport 28169 -j REDIRECT --to-ports 21
+iptables -t nat -D PREROUTING -p tcp --dport 21 -j REDIRECT --to-ports 28158
+iptables -t nat -D OUTPUT -p tcp --dport 28158 -j REDIRECT --to-ports 21
 
 iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 28217
 iptables -t nat -D OUTPUT -p tcp --dport 28217 -j REDIRECT --to-ports 80
@@ -42,8 +42,8 @@ iptables -t nat -D OUTPUT -p tcp --dport 28639 -j REDIRECT --to-ports 502
 iptables -t nat -A PREROUTING -p tcp --dport 7 -j REDIRECT --to-ports 28144
 iptables -t nat -A OUTPUT -p tcp --dport 28144 -j REDIRECT --to-ports 7
 
-iptables -t nat -A PREROUTING -p tcp --dport 21 -j REDIRECT --to-ports 28169
-iptables -t nat -A OUTPUT -p tcp --dport 28169 -j REDIRECT --to-ports 21
+iptables -t nat -A PREROUTING -p tcp --dport 21 -j REDIRECT --to-ports 28158
+iptables -t nat -A OUTPUT -p tcp --dport 28158 -j REDIRECT --to-ports 21
 
 iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 28217
 iptables -t nat -A OUTPUT -p tcp --dport 28217 -j REDIRECT --to-ports 80
