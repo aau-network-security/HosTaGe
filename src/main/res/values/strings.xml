@@ -146,6 +146,9 @@
     <string name="ui_dev_by">Developers team:</string>
     <string name="core_dev_by">Core developed by</string>
     <string name="advanced_settings">Advanced Settings</string>
+    <string name="notification_settings" translatable="false">Notifications &amp; Sound</string>
+    <string name="notification_storage" translatable="false">Media &amp; Storage</string>
+    <string name="storage_location" translatable="false">Storage Location</string>
     <string name="change_name_of_profile">Change the name of this profile</string>
     <string name="change_desc_of_profile">Change the description of this profile here</string>
     <string name="change_icon_of_profile">Choose an icon for this profile</string>
