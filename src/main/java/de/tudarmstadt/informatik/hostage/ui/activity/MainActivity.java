@@ -259,13 +259,7 @@ public class MainActivity extends AppCompatActivity {
 		context = new WeakReference<>(getApplicationContext());
 		setContentView(R.layout.activity_drawer_main);
 
-		// init threat indicator animation
-		ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
-
-		// set background color
-		TypedArray arr = getTheme().obtainStyledAttributes(new int[] { android.R.color.background_light });
-		ThreatIndicatorGLRenderer.setBackgroundColor(arr.getColor(0, 0xFFFFFF));
-		arr.recycle();
+		addAnimation();
 
 		// configures the action bar
 		configureActionBar();
@@ -297,6 +291,17 @@ public class MainActivity extends AppCompatActivity {
 
             injectFragment(mDisplayedFragment);
         }
+	}
+
+
+	private void addAnimation(){
+		// init threat indicator animation
+		ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
+
+		// set background color
+		TypedArray arr = getTheme().obtainStyledAttributes(new int[] { android.R.color.background_light });
+		ThreatIndicatorGLRenderer.setBackgroundColor(arr.getColor(0, 0xFFFFFF));
+		arr.recycle();
 	}
 
     @Override

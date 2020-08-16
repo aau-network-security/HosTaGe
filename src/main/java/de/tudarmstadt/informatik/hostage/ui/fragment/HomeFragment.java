@@ -45,6 +45,8 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 
+import static de.tudarmstadt.informatik.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer.ThreatLevel.LIVE_THREAT;
+
 
 /**
  * @author Alexander Brakowski
@@ -60,7 +62,7 @@ public class HomeFragment extends Fragment {
 	private TextView mHomeTextProfileHeader;
 	private ImageView mHomeProfileImage;
 	private ImageView mHomeConnectionInfoButton;
-
+	private ImageView mHomeAndroidImage;
 	private View mRootView;
 	private LayoutInflater inflater;
 	private ViewGroup container;
@@ -73,13 +75,14 @@ public class HomeFragment extends Fragment {
 	private ProfileManager mProfileManager;
 	private SharedPreferences mConnectionInfo;
 
-	private  DaoSession dbSession;
-	private  DAOHelper daoHelper;
+	private DaoSession dbSession;
+	private DAOHelper daoHelper;
 
 	private boolean mReceiverRegistered;
 	private boolean mRestoredFromSaved = false;
 	private boolean isActive = false;
 	private boolean isConnected = false;
+	private static boolean updatedImageView = false;
 
 	public Context getContext() {
 		return context;
@@ -186,14 +189,7 @@ public class HomeFragment extends Fragment {
 		if (MainActivity.getInstance().getHostageService() != null) {
 			if (MainActivity.getInstance().getHostageService().hasRunningListeners()) {
 				hasActiveListeners = true;
-
-				if (MainActivity.getInstance().getHostageService().hasActiveAttacks() && totalAttacks > 0) {
-					mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.LIVE_THREAT;
-				} else if (totalAttacks > 0) {
-					mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.PAST_THREAT;
-				} else {
-					mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.NO_THREAT;
-				}
+				updateThreatAnimation(totalAttacks);
 			}
 		}
 
@@ -203,28 +199,61 @@ public class HomeFragment extends Fragment {
 			setStateActive(true);
 
 			// color text according to threat level
-			switch (mThreatLevel) {
-				case NO_THREAT:
-					mHomeTextAttacks.setTextColor(getResources().getColor(R.color.holo_dark_green));
-					mHomeTextSecurity.setTextColor(getResources().getColor(R.color.holo_dark_green));
-					break;
-				case PAST_THREAT:
-					mHomeTextAttacks.setTextColor(getResources().getColor(R.color.holo_yellow));
-					mHomeTextSecurity.setTextColor(getResources().getColor(R.color.holo_yellow));
-					break;
-				case LIVE_THREAT:
-					mHomeTextAttacks.setText(totalAttacks
-							+ (totalAttacks == 1 ? getResources().getString(R.string.attack) : getResources().getString(R.string.attacks))
-							+ getResources().getString(R.string.recorded));
-					mHomeTextSecurity.setText(R.string.insecure);
-					mHomeTextAttacks.setTextColor(getResources().getColor(R.color.holo_red));
-					mHomeTextSecurity.setTextColor(getResources().getColor(R.color.holo_red));
-					break;
-			}
-
-			ThreatIndicatorGLRenderer.setThreatLevel(mThreatLevel);
+			changeTextColorThreat(totalAttacks);
+			//updateAndroidIcon();
+			setThreatLevel();
 		} else {
 			setStateNotActive();
+		}
+
+	}
+
+	private void addAndroidIcon(){
+		mHomeAndroidImage = (ImageView) mRootView.findViewById(R.id.imageview);
+		mHomeAndroidImage.setImageResource(R.drawable.ic_android_home);
+
+	}
+
+	private void updateAndroidIcon(){
+		if(mThreatLevel == LIVE_THREAT && !updatedImageView) {
+			mHomeAndroidImage.setImageResource(R.drawable.ic_android_threat_home);
+			updatedImageView = true;
+		}
+	}
+
+	private void setThreatLevel(){
+		ThreatIndicatorGLRenderer.setThreatLevel(mThreatLevel);
+
+	}
+
+	private void changeTextColorThreat(int totalAttacks){
+		switch (mThreatLevel) {
+			case NO_THREAT:
+				mHomeTextAttacks.setTextColor(getResources().getColor(R.color.holo_dark_green));
+				mHomeTextSecurity.setTextColor(getResources().getColor(R.color.holo_dark_green));
+				break;
+			case PAST_THREAT:
+				mHomeTextAttacks.setTextColor(getResources().getColor(R.color.holo_yellow));
+				mHomeTextSecurity.setTextColor(getResources().getColor(R.color.holo_yellow));
+				break;
+			case LIVE_THREAT:
+				mHomeTextAttacks.setText(totalAttacks
+						+ (totalAttacks == 1 ? getResources().getString(R.string.attack) : getResources().getString(R.string.attacks))
+						+ getResources().getString(R.string.recorded));
+				mHomeTextSecurity.setText(R.string.insecure);
+				mHomeTextAttacks.setTextColor(getResources().getColor(R.color.holo_red));
+				mHomeTextSecurity.setTextColor(getResources().getColor(R.color.holo_red));
+				break;
+		}
+
+	}
+	private void updateThreatAnimation(int totalAttacks) {
+		if (MainActivity.getInstance().getHostageService().hasActiveAttacks() && totalAttacks > 0) {
+			mThreatLevel = LIVE_THREAT;
+		} else if (totalAttacks > 0) {
+			mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.PAST_THREAT;
+		} else {
+			mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.NO_THREAT;
 		}
 
 	}
@@ -265,7 +294,6 @@ public class HomeFragment extends Fragment {
 		}
 	}
 
-	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
@@ -291,16 +319,8 @@ public class HomeFragment extends Fragment {
 		mRootView = inflater.inflate(R.layout.fragment_home, container, false);
 		assignViews();
 
-		mRootView.findViewById(R.id.surfaceview).setOnTouchListener((v, event) -> {
-			float relx = event.getX() / (float) v.getWidth();
-			float rely = event.getY() / (float) v.getHeight();
-			if (relx < 0.25f || relx > 0.75f) return false;
-			if (rely < 0.25f || rely > 0.9f) return false;
-
-			ThreatIndicatorGLRenderer.showSpeechBubble();
-
-			return false;
-		});
+		//addAndroidIcon();
+		addThreatAnimation();
 
 		addConnectionInfoButton();
 
@@ -313,7 +333,25 @@ public class HomeFragment extends Fragment {
 
 		mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
 		mHomeSwitchConnection.setSaveEnabled(false);
+		setSwitchListener();
+		mHomeSwitchConnection.setOnCheckedChangeListener(mSwitchChangeListener);
 
+		mRootView.findViewById(R.id.home_profile_details).setOnClickListener(v -> {
+			Fragment fragment = new ProfileManagerFragment();
+			MainActivity.getInstance().injectFragment(fragment);
+		});
+
+		View.OnClickListener attackClickListener = v -> {
+			loadAttackListener();
+		};
+
+		mHomeTextAttacks.setOnClickListener(attackClickListener);
+		mHomeTextSecurity.setOnClickListener(attackClickListener);
+
+		return mRootView;
+	}
+
+	private void setSwitchListener(){
 		if (mSwitchChangeListener == null) {
 			mSwitchChangeListener = (buttonView, isChecked) -> {
 				if (isChecked) { // switch activated
@@ -357,21 +395,21 @@ public class HomeFragment extends Fragment {
 				}
 			};
 		}
-		mHomeSwitchConnection.setOnCheckedChangeListener(mSwitchChangeListener);
 
-		mRootView.findViewById(R.id.home_profile_details).setOnClickListener(v -> {
-			Fragment fragment = new ProfileManagerFragment();
-			MainActivity.getInstance().injectFragment(fragment);
+	}
+
+	@SuppressLint("ClickableViewAccessibility")
+	private void addThreatAnimation(){
+		mRootView.findViewById(R.id.surfaceview).setOnTouchListener((v, event) -> {
+			float relx = event.getX() / (float) v.getWidth();
+			float rely = event.getY() / (float) v.getHeight();
+			if (relx < 0.25f || relx > 0.75f) return false;
+			if (rely < 0.25f || rely > 0.9f) return false;
+
+			ThreatIndicatorGLRenderer.showSpeechBubble();
+
+			return false;
 		});
-
-		View.OnClickListener attackClickListener = v -> {
-			loadAttackListener();
-		};
-
-		mHomeTextAttacks.setOnClickListener(attackClickListener);
-		mHomeTextSecurity.setOnClickListener(attackClickListener);
-
-		return mRootView;
 	}
 
 	private void loadAttackListener(){

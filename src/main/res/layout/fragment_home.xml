@@ -8,8 +8,15 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1" >
+
+        <ImageView
+            android:id="@+id/imageview"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
+            android:layout_gravity="center"
+            />
 
         <de.tudarmstadt.informatik.hostage.ui.fragment.opengl.HomeGLSurfaceView
             android:id="@+id/surfaceview"
