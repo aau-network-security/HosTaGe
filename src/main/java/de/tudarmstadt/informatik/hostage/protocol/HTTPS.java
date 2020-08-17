@@ -44,8 +44,9 @@ public class HTTPS extends HTTP implements SSLProtocol {
 		}
 		SSLContext sslContext = null;
 		try {
-			sslContext = SSLContext.getInstance("SSLv3");
+			sslContext = SSLContext.getInstance("SSL");
 			sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+			System.out.println("HttpsProtocol: "+sslContext.getProtocol());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
