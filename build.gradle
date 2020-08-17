@@ -34,6 +34,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.android.gms:play-services-analytics:17.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
     //greenDao
     implementation 'org.roboguice:roboguice:2.0'
     implementation 'org.greenrobot:greendao:3.3.0'

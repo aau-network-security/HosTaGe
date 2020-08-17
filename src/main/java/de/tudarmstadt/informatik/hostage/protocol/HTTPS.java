@@ -1,11 +1,16 @@
 package de.tudarmstadt.informatik.hostage.protocol;
 
+import com.google.android.gms.security.ProviderInstaller;
+
 import java.security.KeyStore;
+
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
+import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 
 /**
@@ -44,8 +49,10 @@ public class HTTPS extends HTTP implements SSLProtocol {
 		}
 		SSLContext sslContext = null;
 		try {
-			sslContext = SSLContext.getInstance("SSL");
-			sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+			ProviderInstaller.installIfNeeded(MainActivity.getContext());
+			sslContext = SSLContext.getInstance("TLSv1.2");
+			sslContext.init(null, null, null);
+			sslContext.createSSLEngine();
 			System.out.println("HttpsProtocol: "+sslContext.getProtocol());
 		} catch (Exception e) {
 			e.printStackTrace();
