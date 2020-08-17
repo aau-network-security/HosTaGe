@@ -358,7 +358,9 @@ public class AttackRecordDAOTest {
         secondRecord.setProtocol(smb);
         secondRecord.setAttack_id(2);
         networkRecord.setBssid(firstBssid);
+        networkRecord.setTimestampLocation(1);
         networkRecordSecond.setBssid(secondBssid);
+        networkRecordSecond.setTimestampLocation(2);
         networkRecord.setSsid(firstEssid);
         networkRecordSecond.setSsid(secondEssid);
 

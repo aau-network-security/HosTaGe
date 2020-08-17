@@ -48,15 +48,16 @@ public class NetworkRecordDAOTest {
     @Test
     public void testBasics() {
         record.setBssid("1");
+        record.setTimestampLocation(1);
         daoSession.insert(record);
         assertNotNull(record.getAttack_id());
-        assertNotNull(networkRecordDao.load(record.getBssid()));
+        assertNotNull(networkRecordDao.load(record.getTimestampLocation()));
         assertEquals(1, networkRecordDao.count());
         assertEquals(1, daoSession.loadAll(NetworkRecord.class).size());
 
         daoSession.update(record);
         daoSession.delete(record);
-        assertNull(networkRecordDao.load(record.getBssid()));
+        assertNull(networkRecordDao.load(record.getTimestampLocation()));
     }
 
     @Test
@@ -82,9 +83,10 @@ public class NetworkRecordDAOTest {
     @Test
     public void testInsert(){
         record.setBssid("1");
+        record.setTimestampLocation(1);
         networkRecorDAO.insert(record);
         assertNotNull(record.getAttack_id());
-        assertNotNull(networkRecordDao.load(record.getBssid()));
+        assertNotNull(networkRecordDao.load(record.getTimestampLocation()));
     }
 
     @Test
@@ -96,8 +98,10 @@ public class NetworkRecordDAOTest {
         record.setBssid("1");
         record.setSsid(essid);
         recordSecond.setBssid("2");
+        recordSecond.setTimestampLocation(1);
         recordSecond.setSsid(essidSecond);
         recordThird.setBssid("3");
+        recordThird.setTimestampLocation(2);
         recordThird.setSsid(essidSecond);
 
         daoSession.insert(record);
@@ -108,8 +112,8 @@ public class NetworkRecordDAOTest {
 
         assertNotNull(essids);
         assertEquals(2,essids.size());
-        assertEquals(essid,essids.get(0));
-        assertEquals(essidSecond,essids.get(1));
+        assertEquals(essidSecond,essids.get(0));
+        assertEquals(essid,essids.get(1));
 
     }
 
@@ -120,7 +124,9 @@ public class NetworkRecordDAOTest {
 
         record.setBssid("1");
         recordSecond.setBssid("2");
+        recordSecond.setTimestampLocation(1);
         recordThird.setBssid("3");
+        recordThird.setTimestampLocation(2);
 
         daoSession.insert(record);
         daoSession.insert(recordSecond);
@@ -130,9 +136,9 @@ public class NetworkRecordDAOTest {
 
         assertNotNull(bssids);
         assertEquals(3,bssids.size());
-        assertEquals("1",bssids.get(0));
+        assertEquals("3",bssids.get(0));
         assertEquals("2",bssids.get(1));
-        assertEquals("3",bssids.get(2));
+        assertEquals("1",bssids.get(2));
 
     }
 
@@ -141,6 +147,7 @@ public class NetworkRecordDAOTest {
         String before = "de/tudarmstadt/informatik/hostage/fragment";
         String after = "newTest";
         record.setBssid("1");
+        record.setTimestampLocation(1);
         record.setSsid(before);
 
         daoSession.insert(record);
@@ -149,7 +156,7 @@ public class NetworkRecordDAOTest {
 
         networkRecorDAO.updateNetworkInformation(record);
 
-        assertEquals(after,networkRecordDao.load(record.getBssid()).getSsid());
+        assertEquals(after,networkRecordDao.load(record.getTimestampLocation()).getSsid());
 
     }
 
@@ -187,6 +194,7 @@ public class NetworkRecordDAOTest {
         filter.setBSSIDs(filterBSSIDs);
         record.setBssid(filter1);
         networkRecord.setBssid(filter2);
+        networkRecord.setTimestampLocation(1);
 
         daoSession.insert(record);
         daoSession.insert(networkRecord);
@@ -216,6 +224,7 @@ public class NetworkRecordDAOTest {
         record.setSsid(filter1);
         networkRecord.setBssid(filter2);
         networkRecord.setSsid(filter2);
+        networkRecord.setTimestampLocation(1);
 
         daoSession.insert(record);
         daoSession.insert(networkRecord);
@@ -333,13 +342,15 @@ public class NetworkRecordDAOTest {
         attackRecord.setAttack_id(2);
         attackRecord.setProtocol(protocol);
         attackRecord.setBssid(bssid);
+        attackRecord.setTimestampLocation(9);
         record.setBssid(bssid);
+        record.setTimestampLocation(9);
         record.setPacket(packet);
 
         daoSession.insert(attackRecord);
         daoSession.insert(record);
 
-        ArrayList<NetworkRecord> records = networkRecorDAO.joinAttacks(bssid,protocol);
+        ArrayList<NetworkRecord> records = networkRecorDAO.joinAttacks(protocol);
 
         assertEquals(1,records.size());
         assertEquals(bssid,records.get(0).getBssid());

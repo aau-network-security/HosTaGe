@@ -445,12 +445,12 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
         return  plots;
     }
 
-    public ArrayList<NetworkRecord> joinAttacks(String bssid,String protocol){
+    public ArrayList<NetworkRecord> joinAttacks(String protocol){
         NetworkRecordDao networkRecordDao = this.daoSession.getNetworkRecordDao();
 
         QueryBuilder<NetworkRecord> qb = networkRecordDao.queryBuilder();
         qb.join(AttackRecord.class
-                ,AttackRecordDao.Properties.Bssid).where(AttackRecordDao.Properties.Protocol.eq(protocol));
+                ,AttackRecordDao.Properties.TimestampLocation).where(AttackRecordDao.Properties.Protocol.eq(protocol));
 
         ArrayList<NetworkRecord> attacks = (ArrayList<NetworkRecord>) qb.list();
 

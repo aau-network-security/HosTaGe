@@ -7,6 +7,7 @@ import java.io.Serializable;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.ToOne;
 import org.greenrobot.greendao.DaoException;
+import org.greenrobot.greendao.annotation.NotNull;
 
 /**
  * Holds the Information a specific device gathered about a network identified by its BSSID.
@@ -20,8 +21,9 @@ public class SyncInfoRecord implements Serializable{
 	private String deviceID;
 	private String BSSID;
 	private long number_of_attacks;
+	private long timestampLocation;
 	private long number_of_portscans;
-    @ToOne(joinProperty = "BSSID")
+    @ToOne(joinProperty = "timestampLocation")
     private NetworkRecord record;
 				/** Used to resolve relations */
 				@Generated(hash = 2040040024)
@@ -29,15 +31,16 @@ public class SyncInfoRecord implements Serializable{
 				/** Used for active entity operations. */
 				@Generated(hash = 393982986)
 				private transient SyncInfoRecordDao myDao;
-				@Generated(hash = 1541759297)
-				private transient String record__resolvedKey;
+				@Generated(hash = 818274295)
+				private transient Long record__resolvedKey;
 
-	@Generated(hash = 1640797190)
+	@Generated(hash = 828136863)
 	public SyncInfoRecord(String deviceID, String BSSID, long number_of_attacks,
-			long number_of_portscans) {
+			long timestampLocation, long number_of_portscans) {
 		this.deviceID = deviceID;
 		this.BSSID = BSSID;
 		this.number_of_attacks = number_of_attacks;
+		this.timestampLocation = timestampLocation;
 		this.number_of_portscans = number_of_portscans;
 	}
 	@Generated(hash = 1014952315)
@@ -93,10 +96,10 @@ public class SyncInfoRecord implements Serializable{
 		this.number_of_portscans = number_of_portscans;
 	}
 	/** To-one relationship, resolved on first access. */
-	@Generated(hash = 549930765)
+	@Generated(hash = 1062903631)
 	public NetworkRecord getRecord() {
-		String __key = this.BSSID;
-		if (record__resolvedKey == null || record__resolvedKey != __key) {
+		long __key = this.timestampLocation;
+		if (record__resolvedKey == null || !record__resolvedKey.equals(__key)) {
 			final DaoSession daoSession = this.daoSession;
 			if (daoSession == null) {
 				throw new DaoException("Entity is detached from DAO context");
@@ -111,12 +114,16 @@ public class SyncInfoRecord implements Serializable{
 		return record;
 	}
 	/** called by internal mechanisms, do not call yourself. */
-	@Generated(hash = 1503985823)
-	public void setRecord(NetworkRecord record) {
+	@Generated(hash = 957362041)
+	public void setRecord(@NotNull NetworkRecord record) {
+		if (record == null) {
+			throw new DaoException(
+					"To-one property 'timestampLocation' has not-null constraint; cannot set to-one to null");
+		}
 		synchronized (this) {
 			this.record = record;
-			BSSID = record == null ? null : record.getBssid();
-			record__resolvedKey = BSSID;
+			timestampLocation = record.getTimestampLocation();
+			record__resolvedKey = timestampLocation;
 		}
 	}
 	/**
@@ -151,6 +158,12 @@ public class SyncInfoRecord implements Serializable{
 			throw new DaoException("Entity is detached from DAO context");
 		}
 		myDao.update(this);
+	}
+	public long getTimestampLocation() {
+		return this.timestampLocation;
+	}
+	public void setTimestampLocation(long timestampLocation) {
+		this.timestampLocation = timestampLocation;
 	}
 	/** called by internal mechanisms, do not call yourself. */
 	@Generated(hash = 650855813)

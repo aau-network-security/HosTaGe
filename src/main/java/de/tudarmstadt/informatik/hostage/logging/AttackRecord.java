@@ -18,6 +18,7 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import org.greenrobot.greendao.annotation.NotNull;
 
 /**
  * Holds all necessary information about a single attack.
@@ -30,7 +31,8 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 	private long attack_id;
     private long sync_id;
 	private String bssid;
-    private String device;
+	private long timestampLocation;
+	private String device;
 	private String protocol;
 	private String localIP;
 	private int localPort;
@@ -38,7 +40,7 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 	private int remotePort;
 	private String externalIP;
 	private boolean wasInternalAttack;
-    @ToOne(joinProperty = "bssid")
+    @ToOne(joinProperty = "timestampLocation")
 	private NetworkRecord record;
 
 	@ToOne(joinProperty = "device")
@@ -62,8 +64,8 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 	/** Used for active entity operations. */
 	@Generated(hash = 1891517836)
 	private transient AttackRecordDao myDao;
-	@Generated(hash = 1541759297)
-	private transient String record__resolvedKey;
+	@Generated(hash = 818274295)
+	private transient Long record__resolvedKey;
 	@Generated(hash = 768043601)
 	private transient String syncDevice__resolvedKey;
 
@@ -109,13 +111,14 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 
     }
 
-				@Generated(hash = 392632362)
-				public AttackRecord(long attack_id, long sync_id, String bssid, String device, String protocol,
-						String localIP, int localPort, String remoteIP, int remotePort, String externalIP,
-						boolean wasInternalAttack) {
+				@Generated(hash = 696739191)
+				public AttackRecord(long attack_id, long sync_id, String bssid, long timestampLocation,
+						String device, String protocol, String localIP, int localPort, String remoteIP, int remotePort,
+						String externalIP, boolean wasInternalAttack) {
 					this.attack_id = attack_id;
 					this.sync_id = sync_id;
 					this.bssid = bssid;
+					this.timestampLocation = timestampLocation;
 					this.device = device;
 					this.protocol = protocol;
 					this.localIP = localIP;
@@ -281,10 +284,10 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 	}
 
 	/** To-one relationship, resolved on first access. */
-	@Generated(hash = 234930298)
+	@Generated(hash = 1062903631)
 	public NetworkRecord getRecord() {
-		String __key = this.bssid;
-		if (record__resolvedKey == null || record__resolvedKey != __key) {
+		long __key = this.timestampLocation;
+		if (record__resolvedKey == null || !record__resolvedKey.equals(__key)) {
 			final DaoSession daoSession = this.daoSession;
 			if (daoSession == null) {
 				throw new DaoException("Entity is detached from DAO context");
@@ -300,12 +303,16 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 	}
 
 	/** called by internal mechanisms, do not call yourself. */
-	@Generated(hash = 502198762)
-	public void setRecord(NetworkRecord record) {
+	@Generated(hash = 957362041)
+	public void setRecord(@NotNull NetworkRecord record) {
+		if (record == null) {
+			throw new DaoException(
+					"To-one property 'timestampLocation' has not-null constraint; cannot set to-one to null");
+		}
 		synchronized (this) {
 			this.record = record;
-			bssid = record == null ? null : record.getBssid();
-			record__resolvedKey = bssid;
+			timestampLocation = record.getTimestampLocation();
+			record__resolvedKey = timestampLocation;
 		}
 	}
 
@@ -376,6 +383,14 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 
 	public void setAttack_id(Long attack_id) {
 		this.attack_id = attack_id;
+	}
+
+	public long getTimestampLocation() {
+		return this.timestampLocation;
+	}
+
+	public void setTimestampLocation(long timestampLocation) {
+		this.timestampLocation = timestampLocation;
 	}
 
 	/** called by internal mechanisms, do not call yourself. */
