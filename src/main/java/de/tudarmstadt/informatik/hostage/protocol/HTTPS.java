@@ -7,7 +7,6 @@ import java.security.KeyStore;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
@@ -41,8 +40,7 @@ public class HTTPS extends HTTP implements SSLProtocol {
 			keyStore.load(
 					Hostage.getContext().getAssets().open(keyStoreName),
 					keyStorePassword);
-			keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory
-					.getDefaultAlgorithm());
+			keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			keyManagerFactory.init(keyStore, keyStorePassword);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -51,9 +49,8 @@ public class HTTPS extends HTTP implements SSLProtocol {
 		try {
 			ProviderInstaller.installIfNeeded(MainActivity.getContext());
 			sslContext = SSLContext.getInstance("TLSv1.2");
-			sslContext.init(null, null, null);
+			sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
 			sslContext.createSSLEngine();
-			System.out.println("HttpsProtocol: "+sslContext.getProtocol());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
