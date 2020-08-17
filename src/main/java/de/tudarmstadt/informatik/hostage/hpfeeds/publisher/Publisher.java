@@ -184,7 +184,7 @@ public class Publisher {
                 hpfeeds.run(new FilePublisher.DummyMessageHandler(), new FilePublisher.ExampleErrorHandler());
             }
             catch (IOException | Hpfeeds.EOSException | Hpfeeds.ReadTimeOutException | Hpfeeds.LargeMessageException | Hpfeeds.InvalidStateException e) {
-                throw new RuntimeException(e);
+                Log.d(TAG,e.getMessage());
             }
         });
         t.setDaemon(true);
