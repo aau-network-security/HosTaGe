@@ -99,7 +99,7 @@ public class HTTP implements Protocol {
 	}
 
 	private String httpVersion = "HTTP/1.1";
-
+	private String httpVersion_2 = "HTTP/2";
 	private static String htmlDocumentContent = HelperUtils.getRandomString(32, false);
 
 	private static String htmlTitleContent = HelperUtils.getRandomString(32, false);
@@ -177,11 +177,11 @@ public class HTTP implements Protocol {
 		this.request = request;
 
 		assert request != null;
-		if (request.startsWith("G")) {
+		if (request.isEmpty()) {
 			//weird if clause but required for https
 			responsePackets.add(buildPacket(STATUS_CODE_200, GET));
 			checkProfile();
-		} else if (!request.contains(httpVersion)) {
+		} else if (!request.contains(httpVersion) && (!request.contains(httpVersion_2))) {
 			responsePackets.add(buildPacket(STATUS_CODE_505, ""));
 			checkProfile();
 		} else if (request.contains(GET)) {

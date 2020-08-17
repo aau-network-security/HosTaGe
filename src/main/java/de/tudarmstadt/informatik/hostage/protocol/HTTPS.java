@@ -31,30 +31,37 @@ public class HTTPS extends HTTP implements SSLProtocol {
 
 	@Override
 	public SSLContext getSSLContext() {
+		SSLContext sslContext = null;
+		try {
+			ProviderInstaller.installIfNeeded(MainActivity.getContext());
+			sslContext = SSLContext.getInstance("TLSv1.2");
+			sslContext.init(getKeyManager().getKeyManagers(), null, null);
+			sslContext.createSSLEngine();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return sslContext;
+	}
+
+	/**
+	 * KeyManager Factory
+	 * @return self signed certificate
+	 */
+	private KeyManagerFactory getKeyManager(){
 		String keyStoreName = "https_cert.bks";
 		char[] keyStorePassword = "password".toCharArray();
 		KeyStore keyStore;
 		KeyManagerFactory keyManagerFactory = null;
 		try {
 			keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			keyStore.load(
-					Hostage.getContext().getAssets().open(keyStoreName),
-					keyStorePassword);
+			keyStore.load(Hostage.getContext().getAssets().open(keyStoreName), keyStorePassword);
 			keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			keyManagerFactory.init(keyStore, keyStorePassword);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		SSLContext sslContext = null;
-		try {
-			ProviderInstaller.installIfNeeded(MainActivity.getContext());
-			sslContext = SSLContext.getInstance("TLSv1.2");
-			sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
-			sslContext.createSSLEngine();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return sslContext;
+
+		return keyManagerFactory;
 	}
 
 	@Override
