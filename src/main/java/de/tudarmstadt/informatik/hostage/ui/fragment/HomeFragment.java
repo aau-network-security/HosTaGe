@@ -3,8 +3,6 @@ package de.tudarmstadt.informatik.hostage.ui.fragment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,15 +10,12 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -93,9 +88,65 @@ public class HomeFragment extends Fragment {
 	}
 
 	public Context context;
+	private Thread updateUIThread;
+	private static ThreatIndicatorGLRenderer.ThreatLevel mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING;
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);
+
+		final Activity activity = getActivity();
+		if (activity != null) {
+			activity.setTitle(getResources().getString(R.string.drawer_overview));
+		}
+
+		dbSession = HostageApplication.getInstances().getDaoSession();
+		daoHelper = new DAOHelper(dbSession, getActivity());
 
 
-	private ThreatIndicatorGLRenderer.ThreatLevel mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING;
+		mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
+		try {
+			mProfileManager = ProfileManager.getInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		this.inflater = inflater;
+		this.container= container;
+		this.savedInstanceState = savedInstanceState;
+		mRootView = inflater.inflate(R.layout.fragment_home, container, false);
+		assignViews();
+
+		//addAndroidIcon();
+		addThreatAnimation();
+
+		addConnectionInfoButton();
+
+		mDefaultTextColor = mHomeTextName.getCurrentTextColor();
+
+		setStateNotActive(true);
+		setStateNotConnected();
+
+		addBroadcastReceiver();
+
+		mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
+		mHomeSwitchConnection.setSaveEnabled(false);
+		setSwitchListener();
+		mHomeSwitchConnection.setOnCheckedChangeListener(mSwitchChangeListener);
+
+		mRootView.findViewById(R.id.home_profile_details).setOnClickListener(v -> {
+			Fragment fragment = new ProfileManagerFragment();
+			MainActivity.getInstance().injectFragment(fragment);
+		});
+
+		View.OnClickListener attackClickListener = v -> {
+			loadAttackListener();
+		};
+
+		mHomeTextAttacks.setOnClickListener(attackClickListener);
+		mHomeTextSecurity.setOnClickListener(attackClickListener);
+
+		return mRootView;
+	}
 
 	private void assignViews() {
 		mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
@@ -179,6 +230,19 @@ public class HomeFragment extends Fragment {
 		isConnected = true;
 	}
 
+	private void startUpdateUiThread(){
+		updateUIThread = new Thread(){
+			@Override
+			public void run() {
+				MainActivity.getInstance().runOnUiThread(() -> {
+					updateUI();
+				});
+
+			}
+		};
+		updateUIThread.start();
+	}
+
 	public void updateUI() {
 		loadCurrentProfile();
 		loadConnectionInfo();
@@ -192,12 +256,9 @@ public class HomeFragment extends Fragment {
 				updateThreatAnimation(totalAttacks);
 			}
 		}
-
 		updateTextConnection(totalAttacks);
-
 		if (hasActiveListeners) {
 			setStateActive(true);
-
 			// color text according to threat level
 			changeTextColorThreat(totalAttacks);
 			//updateAndroidIcon();
@@ -211,7 +272,6 @@ public class HomeFragment extends Fragment {
 	private void addAndroidIcon(){
 		mHomeAndroidImage = (ImageView) mRootView.findViewById(R.id.imageview);
 		mHomeAndroidImage.setImageResource(R.drawable.ic_android_home);
-
 	}
 
 	private void updateAndroidIcon(){
@@ -247,7 +307,7 @@ public class HomeFragment extends Fragment {
 		}
 
 	}
-	private void updateThreatAnimation(int totalAttacks) {
+	private static void updateThreatAnimation(int totalAttacks) {
 		if (MainActivity.getInstance().getHostageService().hasActiveAttacks() && totalAttacks > 0) {
 			mThreatLevel = LIVE_THREAT;
 		} else if (totalAttacks > 0) {
@@ -292,63 +352,6 @@ public class HomeFragment extends Fragment {
 			mHomeTextProfile.setText(profile.mLabel);
 			mHomeProfileImage.setImageBitmap(profile.getIconBitmap());
 		}
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		super.onCreateView(inflater, container, savedInstanceState);
-
-		final Activity activity = getActivity();
-		if (activity != null) {
-			activity.setTitle(getResources().getString(R.string.drawer_overview));
-		}
-
-		dbSession = HostageApplication.getInstances().getDaoSession();
-		daoHelper = new DAOHelper(dbSession, getActivity());
-
-
-		mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
-		try {
-			mProfileManager = ProfileManager.getInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		this.inflater = inflater;
-		this.container= container;
-		this.savedInstanceState = savedInstanceState;
-		mRootView = inflater.inflate(R.layout.fragment_home, container, false);
-		assignViews();
-
-		//addAndroidIcon();
-		addThreatAnimation();
-
-		addConnectionInfoButton();
-
-		mDefaultTextColor = mHomeTextName.getCurrentTextColor();
-
-		setStateNotActive(true);
-		setStateNotConnected();
-
-		addBroadcastReceiver();
-
-		mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
-		mHomeSwitchConnection.setSaveEnabled(false);
-		setSwitchListener();
-		mHomeSwitchConnection.setOnCheckedChangeListener(mSwitchChangeListener);
-
-		mRootView.findViewById(R.id.home_profile_details).setOnClickListener(v -> {
-			Fragment fragment = new ProfileManagerFragment();
-			MainActivity.getInstance().injectFragment(fragment);
-		});
-
-		View.OnClickListener attackClickListener = v -> {
-			loadAttackListener();
-		};
-
-		mHomeTextAttacks.setOnClickListener(attackClickListener);
-		mHomeTextSecurity.setOnClickListener(attackClickListener);
-
-		return mRootView;
 	}
 
 	private void setSwitchListener(){
@@ -445,12 +448,12 @@ public class HomeFragment extends Fragment {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				if (getUserVisibleHint())
-					updateUI();
+					startUpdateUiThread();
 			}
 		};
 		registerBroadcastReceiver();
 
-		updateUI();
+		startUpdateUiThread();
 	}
 
 	private void noServicesAlertDialog(){
@@ -459,7 +462,6 @@ public class HomeFragment extends Fragment {
 				.setMessage(R.string.profile_no_services_msg)
 				.setPositiveButton(android.R.string.ok,
 						(dialog, which) -> {
-
 						}).setIcon(android.R.drawable.ic_dialog_info)
 				.show();
 
@@ -481,7 +483,7 @@ public class HomeFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 		registerBroadcastReceiver();
-		updateUI();
+		startUpdateUiThread();
 	}
 
 	@Override
@@ -494,6 +496,7 @@ public class HomeFragment extends Fragment {
 		if (mReceiver != null){
 			unregisterBroadcastReceiver();
 		}
+		updateUIThread.stop();
 	}
 
 	private void unbindDrawables(View view) {

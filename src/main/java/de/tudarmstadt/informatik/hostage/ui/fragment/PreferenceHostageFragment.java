@@ -109,7 +109,7 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		updatePreferenceSummary(key);
 		CheckBoxPreference checkboxPrefMultiStage = (CheckBoxPreference)getPreferenceManager().findPreference("pref_multistage");
-		
+
 		if(checkboxPrefMultiStage != null)
 			checkMultistage(checkboxPrefMultiStage);
 	}
