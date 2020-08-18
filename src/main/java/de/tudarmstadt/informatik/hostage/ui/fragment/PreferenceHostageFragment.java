@@ -109,12 +109,9 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		updatePreferenceSummary(key);
 		CheckBoxPreference checkboxPrefMultiStage = (CheckBoxPreference)getPreferenceManager().findPreference("pref_multistage");
-		CheckBoxPreference checkBoxPreferenceHpfeeds = (CheckBoxPreference)getPreferenceManager().findPreference("pref_hpfeeds_server");
-
+		
 		if(checkboxPrefMultiStage != null)
 			checkMultistage(checkboxPrefMultiStage);
-		if(checkBoxPreferenceHpfeeds !=null)
-			checkHpfeeds(checkBoxPreferenceHpfeeds,sharedPreferences);
 	}
 
 	private void checkMultistage(CheckBoxPreference checkboxPrefMultiStage){
@@ -130,20 +127,6 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 			return true;
 		}));
 
-	}
-
-	private void checkHpfeeds(CheckBoxPreference checkBoxPreferenceHpfeeds,SharedPreferences sharedPreferences){
-		checkBoxPreferenceHpfeeds.setOnPreferenceChangeListener((preference, o) -> {
-			boolean myValue = (Boolean) o;
-
-			if (myValue) {
-				sharedPreferences.edit().putBoolean("pref_hpfeeds_server", true).apply();
-
-			} else {
-				sharedPreferences.edit().putBoolean("pref_hpfeeds_server", false).apply();
-			}
-			return true;
-		});
 	}
 
 	public void stopMultiStage() {
