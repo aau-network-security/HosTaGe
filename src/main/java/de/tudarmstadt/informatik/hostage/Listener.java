@@ -172,16 +172,36 @@ public class Listener implements Runnable {
         try {
             server = new MyServerSocketFactory().createServerSocket(port);
             if (server == null) {
-                server = new MyServerSocketFactory().createServerSocket(0);
+                server = new MyServerSocketFactory().createServerSocket(getUnrootedPort(protocol.toString()));
                 addRealPorts(protocol.toString(), server.getLocalPort());
             }
-                if (server == null)
+            if (server == null)
                     return false;
             (this.thread = new Thread(this)).start();
             return notifyUI(true);
         } catch (IOException e) {
             return false;
         }
+    }
+
+    /**
+     * Ports for un-rooted phones.
+     * HTTP 8080 (common >1024 port)
+     * SSH 2222 (common >1024 port)
+     * HTTPS 8443 (common >1024 port)
+     * port "0" is the default and returns a random port.
+     * @return port for unRooted phone
+     */
+    private int getUnrootedPort(String protocol){
+        switch (protocol) {
+            case "HTTP":
+                return 8080;
+            case "SSH":
+                return 2222;
+            case "HTTPS":
+                return 8443;
+        }
+        return 0;
     }
 
     private boolean notifyUI(boolean running){
