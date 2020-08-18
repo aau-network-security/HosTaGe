@@ -256,13 +256,14 @@ public class RecordAll implements JSONSerializable<RecordAll> {
         JSONObject jsonObj = new JSONObject();
         try {
             jsonObj.put("attackId",this.attack_id);
+            jsonObj.put("localIP",this.externalIP);
             jsonObj.put("attackerIP",this.remoteIP);
             jsonObj.put("remotePort",this.remotePort);
             jsonObj.put("localPort",this.localPort);
             jsonObj.put("attackTime",this.timestampLocation);
             jsonObj.put("protocol",this.protocol);
-            jsonObj.put("packet",this.packet);
-            jsonObj.put("attackType",this.type);
+            jsonObj.put("packet",getPacket());
+            jsonObj.put("attackType",getStringMessageType());
             jsonObj.put("profile", ProfileManager.getProfile());
         } catch (JSONException e) {
             e.printStackTrace();

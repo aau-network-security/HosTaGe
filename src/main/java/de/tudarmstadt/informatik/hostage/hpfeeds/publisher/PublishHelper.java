@@ -76,11 +76,8 @@ public class PublishHelper {
     private void publisher() throws Hpfeeds.ReadTimeOutException, Hpfeeds.EOSException, Hpfeeds.InvalidStateException, Hpfeeds.LargeMessageException, IOException {
         Publisher publisher = new Publisher();
         String initialConfigurationUrl = jsonHelper.getFilePath();
-
         publisher.setCommand(host,port,ident,secret,channel,initialConfigurationUrl);
-
         publisher.publishFile();
-
     }
 
     /**
