@@ -255,7 +255,7 @@ public class RecordAll implements JSONSerializable<RecordAll> {
     private JSONObject convertSelectedFieldsToJSON(){
         JSONObject jsonObj = new JSONObject();
         try {
-            jsonObj.put("attackId",this.attack_id);
+            jsonObj.put("attackId",getAttack_id());
             jsonObj.put("localIP",this.externalIP);
             jsonObj.put("attackerIP",this.remoteIP);
             jsonObj.put("remotePort",this.remotePort);
