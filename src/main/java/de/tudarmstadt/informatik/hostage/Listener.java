@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,21 +18,14 @@ import javax.net.ssl.SSLSocketFactory;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-
-import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.Logger;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.net.MyServerSocketFactory;
-import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.protocol.SMB;
 import de.tudarmstadt.informatik.hostage.protocol.SSLProtocol;
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
-import de.tudarmstadt.informatik.hostage.system.Device;
 
 
 /**
@@ -49,7 +43,7 @@ public class Listener implements Runnable {
         return this;
     }
 
-    private ArrayList<Handler> handlers = new ArrayList<Handler>();
+    private ArrayList<Handler> handlers = new ArrayList<>();
 
     private Protocol protocol;
 
@@ -60,11 +54,10 @@ public class Listener implements Runnable {
     private Hostage service;
     private ConnectionRegister conReg;
     private boolean running = false;
-    private int mqttport =1883;
 
     private static Semaphore mutex = new Semaphore(1); // to enable atomic section in portscan detection
 
-    private static Map<String,Integer> realPorts = new HashMap<>();
+    private static Map<String,Integer> realPorts = new LinkedHashMap<>();
     /**
      * Constructor for the class. Instantiate class variables.
      *
@@ -170,38 +163,45 @@ public class Listener implements Runnable {
      * and notifies the background service.
      */
     public boolean start() {
-        if (protocol.toString().equals("")) {
-            if (!Device.isPortRedirectionAvailable()) {
-				/*
-				We can only use SMB with iptables since we can't transfer UDP sockets using domain sockets (port binder).
-				TODO: somehow communicate this limitation to the user. Right now SMB will simply just fail.
-				 */
-                return false;
-            }
-            if (Device.isPorthackInstalled()) {
-				/*
-				Currently the port binder is the preferred method for creating sockets.
-				If it installed, we can't use iptables to create UDP sockets.
-				@see MyServerSocketFactory
-				 */
-                return false;
-            }
+        if (protocol.toString().equals("SMB")) {
             ((SMB) protocol).initialize(this);
+            (this.thread = new Thread(this)).start();
+            return notifyUI(true);
         }
 
         try {
             server = new MyServerSocketFactory().createServerSocket(port);
             if (server == null) {
-                server = new MyServerSocketFactory().createServerSocket(0);
+                server = new MyServerSocketFactory().createServerSocket(getUnrootedPort(protocol.toString()));
                 addRealPorts(protocol.toString(), server.getLocalPort());
             }
-                if (server == null)
+            if (server == null)
                     return false;
             (this.thread = new Thread(this)).start();
             return notifyUI(true);
         } catch (IOException e) {
             return false;
         }
+    }
+
+    /**
+     * Ports for un-rooted phones.
+     * HTTP 8080 (common >1024 port)
+     * SSH 2222 (common >1024 port)
+     * HTTPS 8443 (common >1024 port)
+     * port "0" is the default and returns a random port.
+     * @return port for unRooted phone
+     */
+    private int getUnrootedPort(String protocol){
+        switch (protocol) {
+            case "HTTP":
+                return 8080;
+            case "SSH":
+                return 2222;
+            case "HTTPS":
+                return 8443;
+        }
+        return 0;
     }
 
     private boolean notifyUI(boolean running){
@@ -216,7 +216,7 @@ public class Listener implements Runnable {
      * running in and notifies the background service.
      */
     public void stop() {
-        if(stopMqttBroker())
+        if(stopSMB())
             return;
         try {
             server.close();
@@ -227,15 +227,15 @@ public class Listener implements Runnable {
         }
     }
 
-    public boolean stopMqttBroker(){
-        if(port == mqttport) {
-            MQTT.brokerStop();
+    private boolean stopSMB(){
+        if (protocol.toString().equals("SMB")) {
+            ((SMB) protocol).stop();
+            thread.interrupt();
             notifyUI(false);
             return true;
         }
         return false;
     }
-
 
     /**
      * Waits for an incoming connection, accepts it and starts a {@link Handler}
@@ -243,54 +243,52 @@ public class Listener implements Runnable {
     private void fullHandler() throws IOException {
         if (conReg.isConnectionFree()) {
             ExecutorService threadPool = Executors.newFixedThreadPool(1);
+            if(server==null)
+                return;
             Socket client = server.accept();
             Thread socketsThread = socketsThread(client);
             threadPool.submit(socketsThread);
+            threadPool.shutdown();
         }
     }
 
-
     private Thread socketsThread(Socket client){
-        socketsThread = new Thread(new Runnable() {
+        socketsThread = new Thread(() -> {
+            try {
+                if (checkPostScanInProgressNomutex(client))
+                    return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String ip = client.getInetAddress().getHostAddress();
 
-            @Override
-            public void run() {
+                // the mutex should prevent multiple hostage.logging of a portscan
                 try {
+                    mutex.acquire();
+                    if (checkPostScanInProgress(client))
+                        return;
+
+                    if (checkRegisteredConnection(client, ip))
+                        return;
+
+                    mutex.release();
+                    Thread.sleep(100); // wait to see if other listeners detected a portscan
+
                     if (checkPostScanInProgressNomutex(client))
                         return;
-                } catch (IOException e) {
+
+                    if (protocol.isSecure()) {
+                        startSecureHandler(client);
+                    } else {
+                        startHandler(client);
+                    }
+                    conReg.newOpenConnection();
+
+
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String ip = client.getInetAddress().getHostAddress();
 
-                    // the mutex should prevent multiple hostage.logging of a portscan
-                    try {
-                        mutex.acquire();
-                        if (checkPostScanInProgress(client))
-                            return;
-
-                        if (checkRegisteredConnection(client, ip))
-                            return;
-
-                        mutex.release();
-                        Thread.sleep(100); // wait to see if other listeners detected a portscan
-
-                        if (checkPostScanInProgressNomutex(client))
-                            return;
-
-                        if (protocol.isSecure()) {
-                            startSecureHandler(client);
-                        } else {
-                            startHandler(client);
-                        }
-                        conReg.newOpenConnection();
-
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-            }
         });
 
        return socketsThread;
@@ -376,8 +374,7 @@ public class Listener implements Runnable {
 
         // now that the record exists we can inform the ui
         // only handler informs about attacks so its name is used here
-        service.notifyUI(Handler.class.getName(),
-                new String[]{service.getString(R.string.broadcast_started), "PORTSCAN",
+        service.notifyUI(Handler.class.getName(), new String[]{service.getString(R.string.broadcast_started), "PORTSCAN",
                         Integer.toString(client.getPort())});
     }
 
@@ -416,7 +413,7 @@ public class Listener implements Runnable {
         return networkRecord;
     }
 
-    private void addRealPorts(String protocol, Integer port){
+    public static void addRealPorts(String protocol, Integer port){
         realPorts.put(protocol,port);
     }
 

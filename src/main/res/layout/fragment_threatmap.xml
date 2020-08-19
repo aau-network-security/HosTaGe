@@ -6,10 +6,10 @@
                 android:layout_height="match_parent"
                 tools:context="de.tudarmstadt.informatik.hostage.ui.activity.MainActivity" >
 
-    <fragment
+    <com.google.android.gms.maps.MapView
             android:id="@+id/threatmapfragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            class="com.google.android.gms.maps.MapFragment" />
+             />
 
 </RelativeLayout>

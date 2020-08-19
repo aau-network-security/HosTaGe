@@ -39,7 +39,6 @@
 
     <uses-feature android:name="android.hardware.wifi.direct" android:required="true"/>
 
-
     <application
         android:name="de.tudarmstadt.informatik.hostage.HostageApplication"
         android:allowBackup="true"
@@ -53,10 +52,11 @@
         android:largeHeap="true">
 
         <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4" />
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD5vUfuTVKbAmw2jMX9KTTbKGJ9LOhrPdU" />
 
         <activity
+            android:excludeFromRecents="true"
             android:name="de.tudarmstadt.informatik.hostage.ui.activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleInstance"
@@ -166,6 +166,7 @@
             <meta-data android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
     </application>
 
 </manifest>

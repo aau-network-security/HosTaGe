@@ -8,8 +8,15 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1" >
+
+        <ImageView
+            android:id="@+id/imageview"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
+            android:layout_gravity="center"
+            />
 
         <de.tudarmstadt.informatik.hostage.ui.fragment.opengl.HomeGLSurfaceView
             android:id="@+id/surfaceview"
@@ -44,16 +51,19 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="false"
             android:layout_alignParentEnd="false"
-            android:layout_alignParentLeft="false"
+            android:layout_alignParentStart="false"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="false"
             android:layout_gravity="right"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="0dp"
-            android:layout_weight="1"
+            android:layout_marginStart="0dp"
+            android:minWidth="60dp"
+            android:minHeight="20dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="20dp"
+            android:scaleX="1.1"
+            android:scaleY="1.1"
             android:checked="false"
-            android:textSize="10sp" />
+            />
     </RelativeLayout>
 
     <View

@@ -7,8 +7,6 @@ import java.io.Serializable;
  * @author Lars Pandikow
  */
 public class SyncMessage implements Serializable{
-	
-
 	private static final long serialVersionUID = -7597101233186914926L;
 	
 	//REQUEST CODES

@@ -11,22 +11,22 @@
 
     <TextView
         android:id="@+id/sectionHeaderTitle"
-        android:layout_width="fill_parent"
+        android:layout_width="327dp"
         android:layout_height="wrap_content"
-        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:textSize="17dp"
         android:layout_weight="0.25"
-        android:textColor="#505c6d" />
+        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
+        android:textColor="#505c6d"
+        android:textSize="17dp" />
 
     <TextView
         android:id="@+id/sectionHeaderValue"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:textSize="15dp"
+        android:textSize="14dp"
         android:gravity="right"
         android:textColor="#505c6d"
-        android:layout_weight="0.75"
+        android:layout_weight="0.80"
         />
 
 

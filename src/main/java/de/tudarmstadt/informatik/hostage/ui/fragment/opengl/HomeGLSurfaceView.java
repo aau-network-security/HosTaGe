@@ -25,16 +25,5 @@ public class HomeGLSurfaceView extends GLSurfaceView {
 		// getHolder().setFormat(PixelFormat.RGBA_8888);
 		setRenderer(new ThreatIndicatorGLRenderer());
 	}
-	
-	// TODO: just for testing -> remove this eventually
-	/*@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			ThreatIndicatorGLRenderer.ThreatLevel threatLevel = ThreatIndicatorGLRenderer.ThreatLevel.NO_THREAT;
-			if (event.getX() > 0.5f * getWidth()) threatLevel = ThreatIndicatorGLRenderer.ThreatLevel.PAST_THREAT;
-			if (event.getY() > 0.5f * getHeight()) threatLevel = ThreatIndicatorGLRenderer.ThreatLevel.LIVE_THREAT;
-			ThreatIndicatorGLRenderer.setThreatLevel(threatLevel);
-		}
-		return false;
-	}*/
+
 }

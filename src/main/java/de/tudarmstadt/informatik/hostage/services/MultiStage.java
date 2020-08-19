@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
@@ -47,6 +46,8 @@ public class MultiStage extends Service {
     String stackbssid;
     private DaoSession dbSession;
     private DAOHelper daoHelper;
+    Notification notification;
+    NotificationManager manager;
     private static int offset=0;
     private int limit=50;
     private int size;
@@ -70,7 +71,6 @@ public class MultiStage extends Service {
             startCustomForeground();
             fetchData();
         }
-
         else {
             dbSession = HostageApplication.getInstances().getDaoSession();
             daoHelper = new DAOHelper(dbSession,this);
@@ -85,93 +85,31 @@ public class MultiStage extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             startCustomForeground();
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
+    @Override
+    public void onDestroy(){
+        manager.cancel(1);
+        stopForeground(true);
+        stopSelf();
+    }
 
     //fetch data of records of last 10 mins
-    public Boolean fetchData() {
-
-        Long currentTime = System.currentTimeMillis();
+    public void fetchData() {
+        long currentTime = System.currentTimeMillis();
 
         int fetchInterval = 1000 * 60 * 30; // setInterval in millis  Millisec * Second * Minute
 
-        Long filterTime = (currentTime - fetchInterval);
+        long filterTime = (currentTime - fetchInterval);
 
         LogFilter filter = new LogFilter();
 
         filter.setAboveTimestamp(filterTime);
-        //size = daoHelper.getMessageRecordDAO().getRecordCount();
         recordArray = daoHelper.getAttackRecordDAO().getRecordsForFilterMutliStage(filter);
-
-        if(!recordArray.isEmpty())
-            Collections.sort(recordArray, new Comparator<RecordAll>() {
-                public int compare(RecordAll one, RecordAll other) {
-                    try {
-                        return one.getRemoteIP().compareTo(other.getRemoteIP());
-                    }catch (Exception e){
-                        return  0;
-                    }
-                }
-            });
-        ArrayList<Stackbean> b = new ArrayList<Stackbean>();
-        String prevRemoteIP = "";
-        String prevProt = "";
-        int prevlport = 0;
-        int prevrport = 0;
-        String prevLocalIP = "";
-
-        try {
-            if (recordArray.size() != 0) {
-                for (RecordAll tmp : recordArray) {
-
-                    if ((prevRemoteIP.equals(tmp.getRemoteIP()) && !prevProt.equals(tmp.getProtocol()) && !prevProt.contentEquals("MULTISTAGE"))) {
-
-                        b.add(new Stackbean(prevRemoteIP, prevLocalIP, prevProt, prevrport, prevlport, bssid, ssid));
-                        b.add(new Stackbean(tmp.getRemoteIP(), tmp.getLocalIP(), tmp.getProtocol(), tmp.getRemotePort(), tmp.getLocalPort(), tmp.getBssid(), tmp.getSsid()));         //,tmp.getLocalPort(),tmp.getRemotePort()));
-                    }
-                    prevRemoteIP = tmp.getRemoteIP();
-                    prevProt = tmp.getProtocol();
-                    prevrport = tmp.getRemotePort();
-                    prevlport = tmp.getLocalPort();
-                    externalIP = tmp.getExternalIP();
-                    bssid = tmp.getBssid();
-                    ssid = tmp.getSsid();
-                    prevLocalIP = tmp.getLocalIP();
-
-
-                }
-            }
-        }catch (Exception e){
-
-        }
-        if (b.size() != 0) {
-            StringBuilder message = new StringBuilder();
-            for (Stackbean tmp : b) {
-
-               message.append("\nMulti Stage Attack Detected!\n" + "IP:" + tmp.getRemoteIp() + "\nProtocol:" + tmp.getProtocol());
-
-              //  message.append("\nProtocol:" + tmp.getProtocol());
-
-                stackRemoteIP=tmp.getRemoteIp();
-                stackLocalIp=tmp.getLocalip();
-                stackProtocol=tmp.getProtocol();
-                stackRport=tmp.getRemotePort();
-                stackLport=tmp.getLocalPort();
-                stackbssid=tmp.getBSSID();
-                stackssid = tmp.getSSID();
-
-               //Toast.makeText(MainActivity.getInstance().getApplicationContext(), message, Toast.LENGTH_LONG).show();
-            }
-            log(MessageRecord.TYPE.RECEIVE, message.toString(),externalIP,
-                    stackRemoteIP, stackLocalIp, stackProtocol,stackRport, stackLport,stackbssid, stackssid);
-            b.clear();
-            message.equals("");
-
-        }
-
-        return true;
-
+        sortListIPs();
+        ArrayList<Stackbean> records = new ArrayList<>(addRecordsToStackBean());
+        createMultistageRecord(records);
     }
 
     /**
@@ -187,7 +125,6 @@ public class MultiStage extends Service {
      * @param ssid Service set identifier-Name of the Wifi Network
      */
     public void log(MessageRecord.TYPE type, String message,String externalIP, String remoteip, String localip, String protocol, int rport, int lport, String bssid, String ssid) {
-
         AttackRecord attackRecord = new AttackRecord(true);
 
         attackRecord.setProtocol("MULTISTAGE");
@@ -223,10 +160,80 @@ public class MultiStage extends Service {
 
     }
 
+    private void sortListIPs(){
+        if(!recordArray.isEmpty())
+            Collections.sort(recordArray, (one, other) -> {
+                try {
+                    return one.getRemoteIP().compareTo(other.getRemoteIP());
+                }catch (Exception e){
+                    return  0;
+                }
+            });
+
+    }
+
+    private ArrayList<Stackbean> addRecordsToStackBean(){
+        ArrayList<Stackbean> b = new ArrayList<>();
+        String prevRemoteIP = "";
+        String prevProt = "";
+        int prevlport = 0;
+        int prevrport = 0;
+        String prevLocalIP = "";
+        try {
+            if (recordArray.size() != 0) {
+                for (RecordAll tmp : recordArray) {
+
+                    if ((prevRemoteIP.equals(tmp.getRemoteIP()) && !prevProt.equals(tmp.getProtocol()) && !prevProt.contentEquals("MULTISTAGE"))) {
+
+                        b.add(new Stackbean(prevRemoteIP, prevLocalIP, prevProt, prevrport, prevlport, bssid, ssid));
+                        b.add(new Stackbean(tmp.getRemoteIP(), tmp.getLocalIP(), tmp.getProtocol(), tmp.getRemotePort(), tmp.getLocalPort(), tmp.getBssid(), tmp.getSsid()));         //,tmp.getLocalPort(),tmp.getRemotePort()));
+                    }
+                    prevRemoteIP = tmp.getRemoteIP();
+                    prevProt = tmp.getProtocol();
+                    prevrport = tmp.getRemotePort();
+                    prevlport = tmp.getLocalPort();
+                    externalIP = tmp.getExternalIP();
+                    bssid = tmp.getBssid();
+                    ssid = tmp.getSsid();
+                    prevLocalIP = tmp.getLocalIP();
+
+                }
+            }
+
+            return b;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return b;
+    }
+
+    public void createMultistageRecord(ArrayList<Stackbean> b){
+        if (b.size() != 0) {
+            StringBuilder message = new StringBuilder();
+            for (Stackbean tmp : b) {
+
+                message.append("\nMulti Stage Attack Detected!\n" + "IP:").append(tmp.getRemoteIp()).append("\nProtocol:").append(tmp.getProtocol());
+
+                stackRemoteIP=tmp.getRemoteIp();
+                stackLocalIp=tmp.getLocalip();
+                stackProtocol=tmp.getProtocol();
+                stackRport=tmp.getRemotePort();
+                stackLport=tmp.getLocalPort();
+                stackbssid=tmp.getBSSID();
+                stackssid = tmp.getSSID();
+            }
+            log(MessageRecord.TYPE.RECEIVE, message.toString(),externalIP,
+                    stackRemoteIP, stackLocalIp, stackProtocol,stackRport, stackLport,stackbssid, stackssid);
+            b.clear();
+            message.setLength(0);
+
+        }
+
+    }
+
     /**
      * Custom foreground for background service
      */
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void startCustomForeground(){
         String NOTIFICATION_CHANNEL_ID = "Try";
@@ -234,15 +241,15 @@ public class MultiStage extends Service {
         NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
         chan.setLightColor(Color.BLUE);
         chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         assert manager != null;
         manager.createNotificationChannel(chan);
 
         Notification.Builder notificationBuilder = new Notification.Builder(this,NOTIFICATION_CHANNEL_ID);
-        notificationBuilder.setContentTitle("MutiStage").setContentText("MutiStage running...")
+        notificationBuilder.setContentTitle("MultiStage").setContentText("MultiStage running...")
                 .setSmallIcon(R.drawable.ic_launcher);
 
-        Notification notification = notificationBuilder.setOngoing(true)
+        notification = notificationBuilder.setOngoing(true)
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .build();
         startForeground(1, notification);

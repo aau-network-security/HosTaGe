@@ -25,6 +25,17 @@ public class DAOHelper {
 
     }
 
+    public DAOHelper(DaoSession daoSession){
+        this.daoSession= daoSession;
+        this.messageRecordDAO = new MessageRecordDAO(daoSession);
+        this.networkRecordDAO = new NetworkRecordDAO(daoSession);
+        this.profileDAO = new ProfileDAO(daoSession);
+        this.syncInfoRecordDAO = new SyncInfoRecordDAO(daoSession);
+        this.attackRecordDAO = new AttackRecordDAO(daoSession);
+        this.syncDeviceDAO = new SyncDeviceDAO(daoSession);
+
+    }
+
     public DaoSession getDaoSession() {
         return daoSession;
     }
@@ -37,47 +48,24 @@ public class DAOHelper {
         return messageRecordDAO;
     }
 
-    public void setMessageRecordDAO(MessageRecordDAO messageRecordDAO) {
-        this.messageRecordDAO = messageRecordDAO;
-    }
-
     public NetworkRecordDAO getNetworkRecordDAO() {
         return networkRecordDAO;
-    }
-
-    public void setNetworkRecordDAO(NetworkRecordDAO networkRecordDAO) {
-        this.networkRecordDAO = networkRecordDAO;
     }
 
     public ProfileDAO getProfileDAO() {
         return profileDAO;
     }
 
-    public void setProfileDAO(ProfileDAO profileDAO) {
-        this.profileDAO = profileDAO;
-    }
-
     public SyncInfoRecordDAO getSyncInfoRecordDAO() {
         return syncInfoRecordDAO;
-    }
-
-    public void setSyncInfoRecordDAO(SyncInfoRecordDAO syncInfoRecordDAO) {
-        this.syncInfoRecordDAO = syncInfoRecordDAO;
     }
 
     public AttackRecordDAO getAttackRecordDAO() {
         return attackRecordDAO;
     }
 
-    public void setAttackRecordDAO(AttackRecordDAO attackRecordDAO) {
-        this.attackRecordDAO = attackRecordDAO;
-    }
-
     public SyncDeviceDAO getSyncDeviceDAO() {
         return syncDeviceDAO;
     }
 
-    public void setSyncDeviceDAO(SyncDeviceDAO syncDeviceDAO) {
-        this.syncDeviceDAO = syncDeviceDAO;
-    }
 }

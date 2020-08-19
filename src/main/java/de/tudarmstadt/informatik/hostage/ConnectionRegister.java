@@ -51,7 +51,7 @@ public class ConnectionRegister {
 	public int getMaxConnections() {
 		SharedPreferences defaultPref = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		return Integer.parseInt(defaultPref.getString("pref_max_connections", "5"));
+		return Integer.parseInt(defaultPref.getString("pref_max_connections", "1"));
 	}
 
 	/**

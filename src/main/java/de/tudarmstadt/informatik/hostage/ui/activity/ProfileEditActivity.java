@@ -1,7 +1,7 @@
 package de.tudarmstadt.informatik.hostage.ui.activity;
 
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import de.tudarmstadt.informatik.hostage.ui.fragment.ProfileEditFragment;
 
@@ -12,7 +12,7 @@ import de.tudarmstadt.informatik.hostage.ui.fragment.ProfileEditFragment;
  * @author Alexander Brakowski
  * @created 08.02.14 23:36
  */
-public class ProfileEditActivity extends PreferenceActivity {
+public class ProfileEditActivity extends AppCompatActivity {
 	ProfileEditFragment editFragment;
 
 	/**
@@ -26,8 +26,8 @@ public class ProfileEditActivity extends PreferenceActivity {
 		editFragment = new ProfileEditFragment();
 
 		// injects the fragment into the view
-		getFragmentManager().beginTransaction()
-				.replace(android.R.id.content, editFragment)
+		getSupportFragmentManager().beginTransaction()
+				.replace(android.R.id.content,editFragment)
 				.commit();
 	}
 

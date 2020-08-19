@@ -1,5 +1,6 @@
 package de.tudarmstadt.informatik.hostage.ui.activity;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,19 +12,16 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-
-
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -33,19 +31,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.legacy.app.ActionBarDrawerToggle;
-
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.R;
-import de.tudarmstadt.informatik.hostage.model.Profile;
+import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
-import de.tudarmstadt.informatik.hostage.sync.android.SyncUtils;
-import de.tudarmstadt.informatik.hostage.system.Device;
 import de.tudarmstadt.informatik.hostage.ui.adapter.DrawerListAdapter;
 import de.tudarmstadt.informatik.hostage.ui.fragment.AboutFragment;
 import de.tudarmstadt.informatik.hostage.ui.fragment.HomeFragment;
@@ -68,10 +60,13 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
  * @created 12.01.14 23:24
  */
 public class MainActivity extends AppCompatActivity {
-	public static volatile Context context;
+	private static WeakReference<Context> context;
 
-	/** singleton instance of the MainActivity **/
-	private static MainActivity sInstance = null;
+	private MyLocationManager locationManager;
+
+	/** singleton instance of the MainActivity with WeakReference to avoid Memory leaks **/
+
+	private static WeakReference<MainActivity> mActivityRef;
 
 	/**
 	 * The currently displayed fragment
@@ -101,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 	/**
 	 * Holds the toggler for the navigation drawer in the action bar
 	 */
-	private ActionBarDrawerToggle mDrawerToggle;
+	private androidx.appcompat.app.ActionBarDrawerToggle mDrawerToggle;
 
 	/**
 	 * The text that should be displayed in the drawer toggle
@@ -122,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
 	 * Hold the state of the Hostage service
 	 */
 	private boolean mServiceBound = false;
+	private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 3;
+
 
 	/**
 	 * Connection to bind the background service
@@ -177,11 +174,11 @@ public class MainActivity extends AppCompatActivity {
 
 	/**
 	 * Retrieve the singleton latest instance of the activity
-	 *
+	 *M
 	 * @return MainActivity - the singleton instance
 	 */
 	public static MainActivity getInstance() {
-		return sInstance;
+		return mActivityRef.get();
 	}
 
 	/**
@@ -190,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 	 * @return the context
 	 */
 	public static Context getContext() {
-		return MainActivity.context;
+		return context.get();
 	}
 
 	/**
@@ -199,24 +196,55 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-
         // Register syncing with android
-        SyncUtils.CreateSyncAccount(this);
+        //SyncUtils.CreateSyncAccount(this);
 
 		if (isServiceRunning()) {
 			this.bindService();
 		}
 	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if(locationManager!=null)
+			locationManager.stopUpdates();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		locationManager.getUpdates(60 * 1000, 3,getContext());
+
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void onStop() {
-		this.unbindService();
 		super.onStop();
+		this.unbindService();
+		if(locationManager!=null)
+			locationManager.stopUpdates();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if(locationManager!=null) {
+			locationManager.stopUpdates();
+			locationManager=null;
+		}
+		// Unbind running service
+		if (!mHoneyService.hasRunningListeners()) {
+			stopAndUnbind();
+		}
+	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -225,102 +253,27 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         // make the main activity an singleton
-		sInstance = this;
+		mActivityRef  = new WeakReference<>( this);
 
 		// sets the static context reference to the application context
-		MainActivity.context = getApplicationContext();
-
+		context = new WeakReference<>(getApplicationContext());
 		setContentView(R.layout.activity_drawer_main);
-		mProfileManager = ProfileManager.getInstance();
 
-		// check for the porthack and iptables
-		//Device.checkCapabilities();
-		if (Device.isPortRedirectionAvailable()) {
-			// redirect all the ports!!
-			Device.executePortRedirectionScript();
-		}
-
-		// init threat indicator animation
-		ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
-
-		// set background color
-		TypedArray arr = getTheme().obtainStyledAttributes(new int[] { android.R.color.background_light });
-		ThreatIndicatorGLRenderer.setBackgroundColor(arr.getColor(0, 0xFFFFFF));
-		arr.recycle();
+		addAnimation();
 
 		// configures the action bar
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_HOME_AS_UP);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeButtonEnabled(true);
-		actionBar.setDisplayShowHomeEnabled(true);
+		configureActionBar();
 
-		// sets the drawer and action title to the application title
-		mTitle = mDrawerTitle = getTitle();
-		mDrawerLayout = findViewById(R.id.drawer_layout);
-		mDrawerList = findViewById(R.id.left_drawer);
+		loadDrawer();
 
-		// propagates the navigation drawer with items
-		mDrawerItems = new ArrayList<DrawerListItem>();
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_overview, R.drawable.ic_menu_home));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_threat_map, R.drawable.ic_menu_mapmode));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_records, R.drawable.ic_menu_records));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_statistics, R.drawable.ic_menu_stats));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_services, R.drawable.ic_menu_set_as));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_help, R.drawable.ic_menu_help));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
-
-		DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
-
-		mDrawerList.setAdapter(listAdapter);
-		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-		// configures the navigation drawer
-		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-			mDrawerLayout, /* DrawerLayout object */
-			R.drawable.ic_navigation_drawer, /*
-											 * nav drawer image to replace 'Up'
-											 * caret
-											 */
-			R.string.drawer_open, /* "open drawer" description for accessibility */
-			R.string.drawer_close /* "close drawer" description for accessibility */
-		) {
-			public void onDrawerClosed(View view) {
-				getSupportActionBar().setTitle(mTitle);
-				invalidateOptionsMenu(); // creates call to
-											// onPrepareOptionsMenu()
-			}
-
-			public void onDrawerOpened(View drawerView) {
-				getSupportActionBar().setTitle(mDrawerTitle);
-				invalidateOptionsMenu(); // creates call to
-											// onPrepareOptionsMenu()
-			}
-		};
-
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-		// start the hostage service
+//		ActivityCompat.requestPermissions(MainActivity.this,
+//				new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//				MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+		getLocationData();
+		loadFirstRun();
+		//Must start after the location!
 		startAndBind();
-
-		mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
-
-
-		if(mSharedPreferences.getBoolean("isFirstRun", true)){
-
-			// opens navigation drawer if first run
-			mDrawerLayout.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					mDrawerLayout.openDrawer(Gravity.LEFT);
-				}
-			}, 1000);
-
-			onFirstRun();
-		}
-
+		addProfileManager();
 
         if (savedInstanceState == null) {
             // on first time display view for first nav item
@@ -338,7 +291,17 @@ public class MainActivity extends AppCompatActivity {
 
             injectFragment(mDisplayedFragment);
         }
+	}
 
+
+	private void addAnimation(){
+		// init threat indicator animation
+		ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
+
+		// set background color
+		TypedArray arr = getTheme().obtainStyledAttributes(new int[] { android.R.color.background_light });
+		ThreatIndicatorGLRenderer.setBackgroundColor(arr.getColor(0, 0xFFFFFF));
+		arr.recycle();
 	}
 
     @Override
@@ -357,31 +320,112 @@ public class MainActivity extends AppCompatActivity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
 				.setCancelable(false)
-				.setPositiveButton(getString(R.string.agree), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						// and, if the user accept, you can execute something like this:
-						// We need an Editor object to make preference changes.
-						// All objects are from android.context.Context
-						SharedPreferences.Editor editor = mSharedPreferences.edit();
-						editor.putBoolean("isFirstRun", false);
-						// Commit the edits!
-						editor.commit();
+				.setPositiveButton(getString(R.string.agree), (dialog, id) -> {
+					// and, if the user accept, you can execute something like this:
+					// We need an Editor object to make preference changes.
+					SharedPreferences.Editor editor = mSharedPreferences.edit();
+					editor.putBoolean("isFirstRun", false);
+					editor.apply();
 
-                        // Enabled shared preferences for 'first' time non-portbinder activation
-                        SharedPreferences.Editor editor1= mSharedPreferences.edit();
-                        editor1.putBoolean("isFirstEmulation", true);
-                        editor1.commit();
-					}
+					// Enabled shared preferences for 'first' time non-portbinder activation
+					SharedPreferences.Editor editor1= mSharedPreferences.edit();
+					editor1.putBoolean("isFirstEmulation", true);
+					editor1.apply();
 				})
-				.setNegativeButton(getString(R.string.disagree), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						getHostageService().stopListeners();
-						stopAndUnbind();
-						finish();
-					}
+				.setNegativeButton(getString(R.string.disagree), (dialog, id) -> {
+					getHostageService().stopListeners();
+					stopAndUnbind();
+					finish();
 				});
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+
+	private void addProfileManager(){
+		try {
+			mProfileManager = ProfileManager.getInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void loadFirstRun(){
+		mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
+		if(mSharedPreferences.getBoolean("isFirstRun", true)){
+			// opens navigation drawer if first run
+			mDrawerLayout.postDelayed(() -> mDrawerLayout.openDrawer(Gravity.LEFT), 1000);
+
+			onFirstRun();
+		}
+
+	}
+
+	private void configureActionBar(){
+		ActionBar actionBar = getSupportActionBar();
+		assert actionBar != null;
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_HOME_AS_UP);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayShowHomeEnabled(true);
+	}
+
+	private void loadDrawer(){
+		// sets the drawer and action title to the application title
+		mTitle = mDrawerTitle = getTitle();
+		mDrawerLayout = findViewById(R.id.drawer_layout);
+		mDrawerList = findViewById(R.id.left_drawer);
+
+		// propagates the navigation drawer with items
+		mDrawerItems = new ArrayList<>();
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_overview, R.drawable.ic_menu_home));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_threat_map, R.drawable.ic_menu_mapmode));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_records, R.drawable.ic_menu_records));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_statistics, R.drawable.ic_menu_stats));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_services, R.drawable.ic_menu_set_as));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
+
+		DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
+
+		mDrawerList.setAdapter(listAdapter);
+		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		setmDrawerToggle();
+
+	}
+
+	private void setmDrawerToggle(){
+		// configures the navigation drawer
+		mDrawerToggle = new androidx.appcompat.app.ActionBarDrawerToggle(this, /* host Activity */
+				mDrawerLayout, /* DrawerLayout object */
+				R.string.drawer_open, /* "open drawer" description for accessibility */
+				R.string.drawer_close /* "close drawer" description for accessibility */
+		) {
+			public void onDrawerClosed(View view) {
+				getSupportActionBar().setTitle(mTitle);
+				invalidateOptionsMenu(); // creates call to
+				// onPrepareOptionsMenu()
+			}
+
+			public void onDrawerOpened(View drawerView) {
+				getSupportActionBar().setTitle(mDrawerTitle);
+				invalidateOptionsMenu(); // creates call to
+				// onPrepareOptionsMenu()
+			}
+		};
+
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+	}
+
+	/**
+	 * Starts an Instance of MyLocationManager to set the hostage.location within this
+	 * class.
+	 */
+	private void getLocationData() {
+		locationManager = new MyLocationManager(this);
+		locationManager.getUpdates(60 * 1000, 3,getContext());
 	}
 
 	/**
@@ -390,7 +434,7 @@ public class MainActivity extends AppCompatActivity {
 	public void startAndBind() {
 		if (!isServiceRunning()) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-				context.startForegroundService(getServiceIntent());
+				getContext().startForegroundService(getServiceIntent());
 			else
 				startService(getServiceIntent());
 
@@ -417,7 +461,7 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			unbindService(mConnection);
 		} catch (IllegalArgumentException ex) {
-			// somehow already unbound.
+			ex.printStackTrace();
 		}
 	}
 
@@ -427,19 +471,6 @@ public class MainActivity extends AppCompatActivity {
 	public void bindService() {
 		bindService(getServiceIntent(), mConnection, BIND_AUTO_CREATE);
 		// mServiceBound = true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		// Unbind running service
-		if (!mHoneyService.hasRunningListeners()) {
-			stopAndUnbind();
-		}
 	}
 
 	/**
@@ -527,22 +558,11 @@ public class MainActivity extends AppCompatActivity {
 			return;
 		}
 
-		// open help video list when pressing help navigation item
-		if(menuItemPosition == MainMenuItem.HELP){
-			Intent intent = new Intent(Intent.ACTION_VIEW);
-			intent.setData(Uri.parse("https://www.youtube.com/playlist?list=PLJyUmtMldh3s1XtRfE4YFaQ8ME7xjf7Gx"));
-			startActivity(intent);
-
-			return;
-		}
-
 		Fragment fragment = null;
 
 		try {
 			fragment = (Fragment) menuItemPosition.getKlass().newInstance();
-		} catch (InstantiationException e) {
-			Log.i(menuItemPosition.getKlass().toString(), "Could not create new instance of fragment");
-		} catch (IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			Log.i(menuItemPosition.getKlass().toString(), "Could not create new instance of fragment");
 		}
 
@@ -629,17 +649,16 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		if (mDisplayedFragment instanceof HomeFragment) {
-
 			if (this.mCloseWarning) {
 				MainActivity.getInstance().getHostageService().stopListeners();
 				MainActivity.getInstance().stopAndUnbind();
 				this.mCloseWarning = false;
 				finish();
+				System.exit(0);
 			} else {
 				Toast.makeText(this, "Press the back button again to close HosTaGe", Toast.LENGTH_SHORT).show();
 				this.mCloseWarning = true;
 			}
-			//}
 		} else {
 			super.onBackPressed();
 			this.mDisplayedFragment = getFragmentManager().findFragmentById(R.id.content_frame);
@@ -658,8 +677,7 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	@Override
 	public boolean onKeyDown(int keycode, KeyEvent e) {
-		switch (keycode) {
-		case KeyEvent.KEYCODE_MENU:
+		if (keycode == KeyEvent.KEYCODE_MENU) {
 			if (this.mDrawerToggle.isDrawerIndicatorEnabled()) {
 				if (this.mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
 					this.mDrawerLayout.closeDrawer(Gravity.LEFT);
@@ -730,20 +748,8 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	public void startMonitorServices(List<String> protocols){
 		for(String protocol: protocols){
-			// if the given protocol is ghost start a listener for every defined port for ghost
-			if(protocol.equals("GHOST")){
-				if(mProfileManager.getCurrentActivatedProfile() != null){
-					Profile profile = mProfileManager.getCurrentActivatedProfile();
-					if(profile.mGhostActive){
-						for(int port: profile.getGhostPorts()){
-							if(!getHostageService().isRunning(protocol, port)) getHostageService().startListener(protocol, port);
-						}
-					}
-				}
-			} else {
 				if(!getHostageService().isRunning(protocol)) getHostageService().startListener(protocol);
 			}
-		}
 	}
 
 	/**
@@ -757,8 +763,7 @@ public class MainActivity extends AppCompatActivity {
 		SERVICES(4, ServicesFragment.class),
 		PROFILE_MANAGER(5, ProfileManagerFragment.class),
 		SETTINGS(6, SettingsFragment.class),
-		HELP(7, Class.class),
-		APPLICATION_INFO(8, AboutFragment.class);
+		APPLICATION_INFO(7, AboutFragment.class);
 
 		private int value;
 		private Class<?> klass;
@@ -800,7 +805,26 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
+			if (grantResults.length > 0
+					&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				//Api.assertBinaries(this, true);
+			} else {
+				androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
+				dialog.setTitle("Permission Required");
+				dialog.setCancelable(false);
+				dialog.setMessage("You have to Allow permission to access External Storage");
+				dialog.setPositiveButton("Settings", (dialog1, which) -> {
 
+				});
+				androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
+				alertDialog.show();
+
+			}
+		}
+	}
 
 
 }

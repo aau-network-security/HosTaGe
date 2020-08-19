@@ -17,7 +17,7 @@
         android:textColor="#000000" />
 
     <TextView
-        android:id="@+id/RecordTextFieldSSID"
+        android:id="@+id/RecordTextFieldIP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/RecordTextFieldBSSID"
@@ -29,8 +29,8 @@
         android:id="@+id/RecordTextFieldTimestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/RecordTextFieldSSID"
-        android:layout_alignBottom="@+id/RecordTextFieldSSID"
+        android:layout_alignBaseline="@+id/RecordTextFieldIP"
+        android:layout_alignBottom="@+id/RecordTextFieldIP"
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"
         android:textAppearance="?android:attr/textAppearanceSmall" />

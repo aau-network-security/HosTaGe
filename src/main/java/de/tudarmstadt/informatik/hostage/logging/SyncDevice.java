@@ -6,7 +6,10 @@ import org.greenrobot.greendao.annotation.Id;
 
 import org.greenrobot.greendao.annotation.Generated;
 
+import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
+import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
+import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 /**
  * Created by Julien on 04.12.2014.
@@ -57,7 +60,14 @@ public class SyncDevice {
      * @return {@link SyncDevice}
      */
     public static SyncDevice currentDevice() {
+        SyncDevice device = null;
+        if(MainActivity.getContext()!=null) {
 
-        return AttackRecordDAO.currentDevice();
+            DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+            DAOHelper daoHelper = new DAOHelper(dbSession, (MainActivity.getContext()));
+            return daoHelper.getAttackRecordDAO().currentDevice();
+
+        }
+        return device;
     }
 }

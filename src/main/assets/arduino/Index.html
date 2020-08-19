@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<title>Arduino Home Controller</title>
+
+</head>
+<body>
+<style>
+body {
+    font: 75% Verdana, Helvetica, Arial, sans-serif;
+    background: White;
+    color: #222222;
+    margin: 2em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: Black;
+    clear: left;
+    font: 100% Verdana, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding-left: 0.5em;
+} 
+
+h1 {
+    font-size: 150%;
+    border-bottom: none;
+    text-align: left;
+    border-bottom: 1px solid Gray;
+}
+    
+h2 {
+    font-size: 130%;
+    border-bottom: 1px solid Gray;
+}
+
+h3 {
+    font-size: 120%;
+    border-bottom: 1px solid Gray;
+}
+
+h4 {
+    font-size: 110%;
+    border-bottom: 1px solid Gray;
+}
+
+h5 {
+    font-size: 130%;
+}
+
+p {
+    text-align: justify;
+    line-height: 1.5em;
+}
+
+a {
+    text-decoration: underline;
+    color: Black;
+}
+
+table {
+	border-collapse:collapse;
+
+}
+
+th, td {
+	border: 1px solid #07966E;
+	padding:3px 7px 2px 7px;
+}
+
+th {
+	padding-top:5px;
+	padding-bottom:4px;
+	background-color:#07966E;
+	border: 1px solid white;
+	color:#fff;
+
+}
+
+tr.alt td 
+{
+	color:#000;
+	background-color:#77baba;
+}
+
+
+#title {
+	width: 95%;
+	background: #007F7F;
+	color: white;
+	margin: 10px;
+	padding: 10px;
+	overflow: hidden;
+        font: bold 14px Verdana;
+}
+
+.menu {
+    width: 100%;
+    overflow: hidden;
+border-bottom: 10px solid #077096; 
+}
+
+.menu ul {
+    margin: 0;
+    padding: 0;
+    padding-left: 10px;
+    font: bold 12px Verdana;
+    list-style-type: none;
+}
+
+.menu li {
+    display: inline;
+margin: 0;
+}
+
+.menu li a{
+float: left;
+display: block;
+text-decoration: none;
+margin: 0;
+padding: 7px 8px; 
+border-right: 1px solid white; 
+color: white;
+background: #07468C; 
+}
+
+.menu li a:visited {
+color: white;
+}
+
+.menu li a:hover, .menu li.selected a{
+background: #077096; 
+}
+
+.green {
+	color: #5fa239;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.red {
+	color: #cc0000;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.orange {
+	color: #ff9900;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.blue {
+	color: #0000cc;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.violet {
+	color: #df01a5;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+blink {
+  -webkit-animation: blink 1s step-end infinite;
+  animation: blink 1s step-end infinite
+}
+ 
+@-webkit-keyframes blink {
+  67% { opacity: 0 }
+}
+ 
+@keyframes blink {
+  67% { opacity: 0 }
+}
+#status {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	color: #aaa;
+	background: #f0f0f0;
+	padding: 5px 10px;
+	width: 100%;
+	height: 15px;
+}
+
+#version {
+	float: right;
+	padding-right: 20px;
+}
+</style>
+<div id="title">Arduino Home Controller</div>
+<div class="menu">
+<ul>
+<li>Welcome to the Arduino Home Controller
+<img src="https://www.digikey.be/maker-media/153779ee-1273-44ee-93cc-8c7aa0c2837a">
+<h2>&nbsp;</h2>
+</li>
+
+<li><h1>Input/Output PLC1</h1>
+<table style="float: left" class="inlineTable">
+<tbody><tr><th>Index</th><th>Address</th><th>Status</th></tr>
+<tr>
+<td>0</td><td>I0.0</td><td><span class="green">ON</span></td></tr><tr>
+<td>1</td><td>I0.1</td><td><span class="green">ON</span></td></tr><tr>
+<td>2</td><td>I0.2</td><td><span class="red">OFF</span></td></tr><tr>
+<td>3</td><td>I0.3</td><td><span class="green">ON</span></td></tr><tr>
+<td>4</td><td>I0.4</td><td><span class="green">ON</span></td></tr><tr>
+<td>5</td><td>I0.5</td><td><span class="green">ON</span></td></tr><tr>
+<td>6</td><td>I0.6</td><td><span class="green">ON</span></td></tr><tr>
+<td>7</td><td>I0.7</td><td><span class="green">ON</span></td></tr><tr>
+<td>8</td><td>I1.0</td><td><span class="green">ON</span></td></tr><tr>
+<td>9</td><td>I1.1</td><td><span class="red">OFF</span></td></tr><tr>
+<td>10</td><td>I1.2</td><td><span class="red">OFF</span></td></tr><tr>
+<td>11</td><td>I1.3</td><td><span class="red">OFF</span></td></tr><tr>
+<td>12</td><td>I1.4</td><td><span class="green">ON</span></td></tr><tr>
+<td>13</td><td>I1.5</td><td><span class="green">ON</span></td></tr><tr>
+<td>14</td><td>I2.0</td><td><span class="green">ON</span></td></tr><tr>
+<td>15</td><td>I2.1</td><td><span class="red">OFF</span></td></tr><tr>
+<td>16</td><td>I2.2</td><td><span class="red">OFF</span></td></tr><tr>
+<td>17</td><td>I2.3</td><td><span class="red">OFF</span></td></tr><tr>
+<td>18</td><td>I2.4</td><td><span class="red">OFF</span></td></tr><tr>
+<td>19</td><td>I2.5</td><td><span class="red">OFF</span></td></tr><tr>
+<td>20</td><td>I2.6</td><td><span class="red">OFF</span></td></tr><tr>
+<td>21</td><td>I2.7</td><td><span class="red">OFF</span></td></tr>
+</tbody></table>
+<table style="float: left" class="inlineTable">
+<tbody><tr><th>Index</th><th>Address</th><th>Status</th></tr>
+<tr>
+<td>0</td><td>Q0.0</td><td><span class="red">OFF</span></td></tr><tr>
+<td>1</td><td>Q0.1</td><td><span class="red">OFF</span></td></tr><tr>
+<td>2</td><td>Q0.2</td><td><span class="red">OFF</span></td></tr><tr>
+<td>3</td><td>Q0.3</td><td><span class="red">OFF</span></td></tr><tr>
+<td>4</td><td>Q0.4</td><td><span class="red">OFF</span></td></tr><tr>
+<td>5</td><td>Q0.5</td><td><span class="red">OFF</span></td></tr><tr>
+<td>6</td><td>Q0.6</td><td><span class="red">OFF</span></td></tr><tr>
+<td>7</td><td>Q0.7</td><td><span class="red">OFF</span></td></tr><tr>
+<td>8</td><td>Q1.0</td><td><span class="red">OFF</span></td></tr><tr>
+<td>9</td><td>Q1.1</td><td><span class="red">OFF</span></td></tr><tr>
+<td>10</td><td>Q2.0</td><td><span class="green">ON</span></td></tr><tr>
+<td>11</td><td>Q2.1</td><td><span class="red">OFF</span></td></tr><tr>
+<td>12</td><td>Q2.2</td><td><span class="red">OFF</span></td></tr><tr>
+<td>13</td><td>Q2.3</td><td><span class="red">OFF</span></td></tr><tr>
+<td>14</td><td>Q2.4</td><td><span class="red">OFF</span></td></tr><tr>
+<td>15</td><td>Q2.5</td><td><span class="red">OFF</span></td></tr><tr>
+<td>16</td><td>Q2.6</td><td><span class="red">OFF</span></td></tr><tr>
+<td>17</td><td>Q2.7</td><td><span class="red">OFF</span></td></tr>
+</tbody></table></a></li>
+</ul>
+</div>
+
+</body></html>
