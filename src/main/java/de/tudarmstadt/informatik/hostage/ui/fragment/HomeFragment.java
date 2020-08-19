@@ -496,7 +496,7 @@ public class HomeFragment extends Fragment {
 		if (mReceiver != null){
 			unregisterBroadcastReceiver();
 		}
-		updateUIThread.stop();
+		updateUIThread.interrupt();
 	}
 
 	private void unbindDrawables(View view) {
