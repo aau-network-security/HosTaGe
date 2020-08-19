@@ -11,9 +11,9 @@ HosTaGe emulates the following protocols as of the latest version: AMQP, COAP, E
 
 __Download APK__
 
-[HosTaGe-v2.2.11.apk](https://github.com/aau-network-security/HosTaGe/releases/download/v2.2.11/HosTaGe-2.2.11.apk) [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.2.11)(latest) \
+[HosTaGe-v2.2.11.apk](https://github.com/aau-network-security/HosTaGe/releases/download/v2.2.11/HosTaGe-2.2.11.apk) [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.2.11)(latest) 
 
-HosTaGe-v2.1.1.apk [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.1.1)\
+HosTaGe-v2.1.1.apk [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.1.1)
 
 HosTaGe-v2.0.0.apk [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.0.0)
 
@@ -22,25 +22,26 @@ __Original Authors__
 [Emmanouil Vasilomanolakis](https://mvasiloma.com/) -  idea, guidance and suggestions during development
 
 __Contributors__
-[Shreyas Srinivasa](https://sastry17.github.io/), lead developer, Aalborg University and Technische Universität Darmstadt (Github - @sastry17)\
 
-Eirini Lygerou, GSoC 2020 Developer (Github - @irinil)\
+[Shreyas Srinivasa](https://sastry17.github.io/), lead developer, Aalborg University and Technische Universität Darmstadt (Github - @sastry17)
 
-Mihai Plasoianu, student developer, Technische Universität Darmstadt\
+Eirini Lygerou, GSoC 2020 Developer (Github - @irinil)
 
-Wulf Pfeiffer, student developer, Technische Universität Darmstadt\
+Mihai Plasoianu, student developer, Technische Universität Darmstadt
 
-Lars Pandikow, student developer, Technische Universität Darmstadt\
+Wulf Pfeiffer, student developer, Technische Universität Darmstadt
+
+Lars Pandikow, student developer, Technische Universität Darmstadt
 
 __Researchers__
 
-[Shankar Karuppayah](https://www.kshankar.com/), mentoring, developer, Technische Universität Darmstadt\
+[Shankar Karuppayah](https://www.kshankar.com/), mentoring, developer, Technische Universität Darmstadt
 
-[Mathias Fischer](https://www.inf.uni-hamburg.de/inst/ab/snp/team/fischer.html), mentoring, Universität Hamburg\
+[Mathias Fischer](https://www.inf.uni-hamburg.de/inst/ab/snp/team/fischer.html), mentoring, Universität Hamburg
 
-[Max Mühlhäuser](https://www.informatik.tu-darmstadt.de/telekooperation/telecooperation_group/staff_1/staff_1_details_23168.en.jsp), mentoring, Technische Universität Darmstadt\
+[Max Mühlhäuser](https://www.informatik.tu-darmstadt.de/telekooperation/telecooperation_group/staff_1/staff_1_details_23168.en.jsp), mentoring, Technische Universität Darmstadt
 
-Carlos Garcia Cordero, mentoring, Technische Universität Darmstadt\
+Carlos Garcia Cordero, mentoring, Technische Universität Darmstadt
 
 
 Features of HoneyRJ were inspiration for this project.
