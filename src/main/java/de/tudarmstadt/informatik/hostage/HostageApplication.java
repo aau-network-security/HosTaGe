@@ -3,12 +3,18 @@ package de.tudarmstadt.informatik.hostage;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.logging.DaoMaster;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
+import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by Fabio Arnold on 28.03.14.
@@ -35,8 +41,15 @@ public class HostageApplication extends Application {
 		super.onCreate();
 		instances = this;
 		setDatabase();
+		crashlyticsSetup();
 	}
 
+	private void crashlyticsSetup(){
+		FirebaseApp.initializeApp(this);
+		FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+		crashlytics.sendUnsentReports();
+		//Crashlytics.getInstance().crash(); //force crash to check-only for testing!
+	}
 	/**
 	 * Setting up green Dao
 	 */
