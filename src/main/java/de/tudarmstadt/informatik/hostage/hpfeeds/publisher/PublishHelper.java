@@ -39,11 +39,11 @@ public class PublishHelper {
 
     private void initializeHpFeedsCredentials(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
-        this.host = preferences.getString("pref_host_hpfeeds", String.valueOf(R.string.hpfeeds_host));
-        this.port = Integer.parseInt(preferences.getString("pref_port_hpfeeds", String.valueOf(R.integer.hpfeeds_port)));
-        this.ident = preferences.getString("pref_ident_hpfeeds", String.valueOf(R.string.hpfeeds_ident));
-        this.secret = preferences.getString("pref_secret_hpfeeds", String.valueOf(R.string.hpfeeds_secret));
-        this.channel = preferences.getString("pref_secret_channel", String.valueOf(R.string.hpfeeds_channel));
+        this.host = preferences.getString("pref_host_hpfeeds", "130.226.249.235");
+        this.port = Integer.parseInt(preferences.getString("pref_port_hpfeeds", "20000"));
+        this.ident = preferences.getString("pref_ident_hpfeeds", "irinil");
+        this.secret = preferences.getString("pref_secret_hpfeeds", "gsoc2020");
+        this.channel = preferences.getString("pref_secret_channel", "hostage");
     }
 
     /**

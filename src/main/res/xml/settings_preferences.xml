@@ -23,7 +23,7 @@
 				<EditTextPreference
 					android:inputType="text"
 					android:key="pref_host_hpfeeds"
-					android:defaultValue="@string/hpfeeds_host"
+					android:defaultValue="130.226.249.235"
 					android:title="@string/pref_host_title"
 					android:summary="@string/pref_host_summary" />
 
@@ -37,21 +37,21 @@
 				<EditTextPreference
 					android:inputType="text"
 					android:key="pref_ident_hpfeeds"
-					android:defaultValue="@string/hpfeeds_ident"
+					android:defaultValue="irinil"
 					android:title="@string/pref_ident_title"
 					android:summary="@string/pref_ident_summary" />
 
 				<EditTextPreference
 					android:inputType="text"
 					android:key="pref_secret_hpfeeds"
-					android:defaultValue="@string/hpfeeds_secret"
+					android:defaultValue="gsoc2020"
 					android:title="@string/pref_secret_title"
 					android:summary="@string/pref_secret_summary" />
 
 				<EditTextPreference
 					android:inputType="text"
 					android:key="pref_secret_channel"
-					android:defaultValue="@string/hpfeeds_channel"
+					android:defaultValue="hostage"
 					android:title="@string/pref_channel_title"
 					android:summary="@string/pref_channel_summary" />
 
