@@ -17,13 +17,10 @@
 		<!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-	<!-- Material Design Main Theme. -->
-
 	<style name="Theme.App" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
 		<item name="switchStyle">@style/Widget.App.Switch</item>
-		<item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-
 	</style>
+
 
 	<style name="DoneBarActionButton" parent="android:style/Widget.Holo.ActionButton">
 		<item name="android:layout_height">match_parent</item>
@@ -59,7 +56,6 @@
 		<item name="android:textColor">@color/dark_grey</item>
 	</style>
 
-<!--	Theme for Switch Buttons-->
 	<style name="Widget.App.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
 		<item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
 	</style>
@@ -68,41 +64,4 @@
 		<item name="colorOnSurface">@color/green</item>
 		<item name="colorSecondary">@color/green</item>
 	</style>
-
-	<!--Theme for DialogAlertBoxes-->
-
-	<style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-		<item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
-		<item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
-		<item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
-		<item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>
-	</style>
-
-	<style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.MaterialComponents">
-		<item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
-	</style>
-
-	<style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
-		<item name="android:textColor">@color/dark_cyan</item>
-		<item name="android:textStyle">bold</item>
-		<item name="android:scaleX">1.0</item>
-		<item name="android:scaleY">1.0</item>
-	</style>
-
-	<style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-		<item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
-	</style>
-
-	<style name="ThemeOverlay.App.Button" parent="">
-		<item name="colorPrimary">@color/dark_cyan</item>
-	</style>
-
-	<style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
-
-	</style>
-
-	<style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
-
-	</style>
-
 </resources>

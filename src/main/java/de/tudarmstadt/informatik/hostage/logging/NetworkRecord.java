@@ -16,9 +16,9 @@ import org.greenrobot.greendao.annotation.Generated;
 public class NetworkRecord extends RecordAll implements Parcelable, Serializable {
 
 	private static final long serialVersionUID = -1586629159904177836L;
+	@Id
 	private String bssid;
 	private String ssid;
-	@Id
 	private long timestampLocation;
 	private double latitude;
 	private double longitude;
@@ -166,7 +166,7 @@ public class NetworkRecord extends RecordAll implements Parcelable, Serializable
 		this.accuracy = accuracy;
 	}
 
-	public String toJSONString() {
+	public String toJSON() {
 		return String.format("{\"bssid\":\"%s\",\"ssid\":%s,\"latitude\":%s,\"longitude\":%s,\"timestamp\":%s,\"attacks\":%d,\"portscans\":%d}", bssid, ssid,
 				latitude, longitude, timestampLocation, -1, -1);
 	}

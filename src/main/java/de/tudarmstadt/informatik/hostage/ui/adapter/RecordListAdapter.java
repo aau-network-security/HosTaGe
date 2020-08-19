@@ -8,15 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
-import de.tudarmstadt.informatik.hostage.logging.DaoSession;
-import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.ui.model.ExpandableListItem;
 
 public class RecordListAdapter extends ExpandableListAdapter {
-    private DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-    private DAOHelper daoHelper = new DAOHelper(dbSession);
 
     /**
      * Constructor
@@ -52,10 +47,9 @@ public class RecordListAdapter extends ExpandableListAdapter {
         int valueLabelID = R.id.sectionHeaderValue;
         TextView tView = sectionHeader.findViewById(headerLabelID);
         TextView vView = sectionHeader.findViewById(valueLabelID);
-        int nowValue = this.getChildrenCount(section);
-        int value = daoHelper.getMessageRecordDAO().getRecordCount(); //shows the real number of records, not the ones that they are in section.
+        int value = this.getChildrenCount(section);
         tView.setText(this._sectionHeader.get(section));
-        vView.setText(nowValue+"/" + value);
+        vView.setText("" + value);
     }
 
     @Override

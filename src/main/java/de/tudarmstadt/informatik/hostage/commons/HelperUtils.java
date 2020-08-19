@@ -18,16 +18,12 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
@@ -526,11 +522,11 @@ public final class HelperUtils {
 					if (!inetAddress.isLoopbackAddress()) {
 						String ip = Formatter.formatIpAddress(inetAddress.hashCode());
 						Log.i(TAG, "***** IP="+ ip);
-						return getInetAddress(InetAddress.getByName((ip)));
+						return IPtoInt(ip);
 					}
 				}
 			}
-		} catch (SocketException | UnknownHostException ex) {
+		} catch (SocketException ex) {
 			Log.e(TAG, ex.toString());
 		}
 		return 0;
@@ -571,6 +567,37 @@ public final class HelperUtils {
 		return result;
 	}
 
+	public int IPtoIntTest(String address){
+		int result = 0;
+
+		// iterate over each octet
+		for(String part : address.split(Pattern.quote("."))) {
+			// shift the previously parsed bits over by 1 byte
+			result = result << 8;
+			// set the low order bits to the current octet
+			result |= Integer.parseInt(part);
+		}
+
+		return  result;
+	}
+
+	public long ipToLongTest(String ipAddress) {
+
+		String[] ipAddressInArray = ipAddress.split("\\.");
+
+		long result = 0;
+		for (int i = 0; i < ipAddressInArray.length; i++) {
+
+			int power = 3 - i;
+			int ip = Integer.parseInt(ipAddressInArray[i]);
+			result += ip * Math.pow(256, power);
+
+		}
+
+		return result;
+	}
+
+
 	public static boolean isNetworkAvailable(Context context) {
 		if(context == null) return false;
 
@@ -597,55 +624,9 @@ public final class HelperUtils {
 		return result;
 	}
 
-	private static int convertNetmaskToCIDR(InetAddress netmask){
-		byte[] netmaskBytes = netmask.getAddress();
-		int cidr = 0;
-		boolean zero = false;
-		for(byte b : netmaskBytes){
-			int mask = 0x80;
-
-			for(int i = 0; i < 8; i++){
-				int result = b & mask;
-				if(result == 0){
-					zero = true;
-				}else if(zero){
-					return 24;
-
-				} else {
-					cidr++;
-				}
-				mask >>>= 1;
-			}
-		}
-		if(cidr==0)
-			return 24;
-		return cidr;
-	}
-
-	public static int getPrefix(String[] netmask) throws UnknownHostException {
-		InetAddress mask = InetAddress.getByName(Arrays.toString(netmask).replace("[","").replace("]",""));
-
-		return convertNetmaskToCIDR(mask);
-	}
-
-
-	public static String intToStringIp(int internalIPAddress){
-		String internalIp = String.format("%d.%d.%d.%d",
-				(internalIPAddress & 0xff),
-				(internalIPAddress >> 8 & 0xff),
-				(internalIPAddress >> 16 & 0xff),
-				(internalIPAddress >> 24 & 0xff));
-
-		return internalIp;
-	}
-
-
 	public static String getNetworkClass(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo info = cm.getActiveNetworkInfo();
-
-		TelephonyManager teleMan = (TelephonyManager)
-				context.getSystemService(Context.TELEPHONY_SERVICE);
 		if (info == null || !info.isConnected())
 			return "-"; // not connected
 		if (info.getType() == ConnectivityManager.TYPE_WIFI)
@@ -675,23 +656,12 @@ public final class HelperUtils {
 				case TelephonyManager.NETWORK_TYPE_IWLAN:    // api<25: replace by 18
 				case 19: // LTE_CA
 					return "4G";
+				//case TelephonyManager.NETWORK_TYPE_NR:       // api<29: replace by 20
+					//return "5G";
 				default:
 					return "?";
 			}
 		}
 		return "?";
-	}
-
-
-	//just for debugging purpose
-	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
-	public static String bytesToHex(byte[] bytes) {
-		char[] hexChars = new char[bytes.length * 2];
-		for ( int j = 0; j < bytes.length; j++ ) {
-			int v = bytes[j] & 0xFF;
-			hexChars[j * 2] = hexArray[v >>> 4];
-			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-		}
-		return new String(hexChars);
 	}
 }

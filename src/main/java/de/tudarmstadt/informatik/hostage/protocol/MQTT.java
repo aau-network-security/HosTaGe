@@ -13,11 +13,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTConfig;
 import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 import io.moquette.broker.ClientDescriptor;
-import io.moquette.broker.Server;
 import io.moquette.broker.config.MemoryConfig;
 
 
@@ -26,18 +24,17 @@ import static com.crashlytics.android.Crashlytics.TAG;
 public class MQTT implements Protocol {
 
     private int port = 1883;
-    private String defaultPort="1883";
-    private String defaultAddress="0.0.0.0";
-    private static final int brokerPort = 1883;
-    private static boolean brokerStarted = false; //prevents the server from starting multiple times from the threads
+    private int brokerPort = 1883;
+    private static boolean brokerStarted = false; //prevents the server started multiple times from the threads
    // private static final String MQTT_URI = "broker.mqttdashboard.com";
     private static final String MQTT_URI = "localhost";
-    private static final io.moquette.broker.Server broker = new io.moquette.broker.Server();
+    private static io.moquette.broker.Server broker = new io.moquette.broker.Server();
     private MQTTHandler handler = new MQTTHandler();
 
     public MQTT() throws Exception {
         if(!brokerStarted)
             broker();
+        //publish(client(),"test/topic","payload");
     }
 
 
@@ -92,9 +89,9 @@ public class MQTT implements Protocol {
      * @return a MQTT3 client
      */
 
-    public Mqtt3BlockingClient client(String clientId){
+    public Mqtt3BlockingClient client(){
         Mqtt3BlockingClient client = Mqtt3Client.builder()
-                .identifier(clientId)
+                .identifier(UUID.randomUUID().toString())
                 .serverHost(MQTT_URI)
                 .serverPort(brokerPort)
                 .buildBlocking();
@@ -108,9 +105,10 @@ public class MQTT implements Protocol {
      * An intercept handler added to log connections and messages
      */
 
-    private void broker(){
+    public void broker(){
         try {
-            broker.startServer(getConfig());
+            MemoryConfig memoryConfig = new MemoryConfig(new Properties());
+            broker.startServer(memoryConfig);
             broker.addInterceptHandler(handler.getHandler());
             Log.d(TAG,"Server Started");
             brokerStarted=true;
@@ -118,20 +116,6 @@ public class MQTT implements Protocol {
         catch (IOException e) { e.printStackTrace();
         brokerStarted= false;
         }
-    }
-
-    /**
-     * Initializes ipAddress and port for the broker.
-     * @return
-     */
-    private MemoryConfig getConfig(){
-        MQTTConfig config = new MQTTConfig(defaultPort,defaultAddress);
-        return config.configBroker();
-    }
-
-
-    public Server getBroker(){
-        return broker;
     }
 
     /**
@@ -243,7 +227,7 @@ public class MQTT implements Protocol {
      * @param topic
      * @param payload
      */
-    public void sendMessageMQTT5(Mqtt5BlockingClient client, String topic, String payload) {
+    public void sendMessageMQTT5( Mqtt5BlockingClient client,String topic, String payload) {
         try {
             publishMQTT5(client,topic,payload);
         } catch (Mqtt5MessageException e) {
@@ -252,12 +236,12 @@ public class MQTT implements Protocol {
     }
 
     /**
-     *Sends an MQTT3 message
+     *ends an MQTT3 message
      * @param client
      * @param topic
      * @param payload
      */
-    public void sendMessage(Mqtt3BlockingClient client, String topic, String payload) {
+    public void sendMessage( Mqtt3BlockingClient client,String topic, String payload) {
         try {
             publish(client,topic,payload);
         } catch (Mqtt5MessageException e) {

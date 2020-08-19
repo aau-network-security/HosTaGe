@@ -13,7 +13,6 @@ import android.widget.TextView;
  * Starts a synchronization service and shows the progress of the synchronization.
  * @author Lars Pandikow
  */
-@Deprecated
 public class TracingSyncActivity extends Activity implements TracingSyncResultReciever.Receiver{
 	
 	TextView mInfoText;

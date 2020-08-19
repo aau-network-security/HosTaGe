@@ -1,24 +1,13 @@
 package de.tudarmstadt.informatik.hostage;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
-import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
 import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.SensorProfile;
-
-import static de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler.isTopicPublished;
 
 public class MQTTListener extends Listener {
     private ArrayList<Handler> handlers = new ArrayList<Handler>();
@@ -110,7 +99,7 @@ public class MQTTListener extends Listener {
     @Override
     public void stop() { stopMqttBroker();}
 
-    public void stopMqttBroker(){
+    public boolean stopMqttBroker(){
         if(super.getPort() == mqttport) {
             MQTT.brokerStop();
             if(brokerThread!=null)
@@ -118,18 +107,16 @@ public class MQTTListener extends Listener {
             if(thread!=null)
                 thread.interrupt();
             notifyUI(false);
+            return true;
         }
+        return false;
     }
 
-    private void fullHandler() throws Exception {
+    private void fullHandler() throws IOException {
         if (conReg.isConnectionFree()) {
-            ExecutorService threadPool = Executors.newCachedThreadPool();
-
             Thread brokerThread = brokerThread();
-            threadPool.submit(brokerThread);
-            startsMonitoringProfile();
-            threadPool.shutdown();
-            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+            brokerThread.start();
+
         }
     }
 
@@ -137,10 +124,10 @@ public class MQTTListener extends Listener {
         brokerThread =  new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    if (ConnectionGuard.portscanInProgress())
-                        return;
+                if (ConnectionGuard.portscanInProgress())
+                    return;
 
+                try {
                     mutex.acquire();
 
                     if (checkPostScanInProgress())
@@ -151,9 +138,9 @@ public class MQTTListener extends Listener {
                     if (ConnectionGuard.portscanInProgress())
                         return;
 
-                    isTopicPublished();
-                    if(MQTTHandler.isAnAttackOngoing()) {
+                    if(!MQTTHandler.getCurrentConnectedMessages().isEmpty()) {
                         startHandler();
+
                         conReg.newOpenConnection();
                     }
                 } catch (Exception e) {
@@ -164,35 +151,6 @@ public class MQTTListener extends Listener {
 
         return brokerThread;
 
-    }
-
-    private void startsMonitoringProfile() throws Exception {
-        if(ProfileManager.getInstance().getCurrentActivatedProfile().mId == 14){
-            Timer timer = scheduleMonitorSensorProfile();
-            TimeUnit.SECONDS.sleep(5); //this method is on the loop, so it is necessary to wait until it stops.
-            timer.cancel();
-        }
-    }
-
-    private Timer scheduleMonitorSensorProfile(){
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    monitorSensorProfile();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            }, 3000, 4000 );//milliseconds
-
-        return timer;
-    }
-
-    private void monitorSensorProfile() throws Exception {
-        SensorProfile sensorProfile = new SensorProfile();
-        sensorProfile.startSensor();
     }
 
     private boolean checkPostScanInProgress() throws IOException {

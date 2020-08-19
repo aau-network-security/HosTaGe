@@ -19,7 +19,8 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
  * 
  * @author Wulf Pfeiffer
  */
-@Deprecated
+
+//TODO needs fixing
 public class GHOST implements Protocol {
 
 	private boolean isClosed = false;

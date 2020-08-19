@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
@@ -46,23 +45,29 @@ public class ServicesFragment extends TrackerFragment {
     private TextView mServicesTextName;
 
     private View rootView;
+
     private CompoundButton.OnCheckedChangeListener switchChangeListener = null;
+
     private BroadcastReceiver mReceiver;
+
     private ServicesListAdapter adapter;
+
     private ArrayList<ServicesListItem> protocolList;
 
+    //private HostageDBOpenHelper dbh = new HostageDBOpenHelper(MainActivity.getContext());
     private DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
     private DAOHelper daoHelper = new DAOHelper(dbSession,getActivity());
 
     private String[] protocols;
+
+    private int[] originalPorts;
+
     private SharedPreferences mConnectionInfo;
+
     private boolean mReceiverRegistered = false;
+
     private Profile mProfile;
     private Integer[] mGhostPorts;
-
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private Bundle savedInstanceState;
 
     public ServicesFragment() {
     }
@@ -74,9 +79,12 @@ public class ServicesFragment extends TrackerFragment {
         mServicesSwitchService = rootView.findViewById(R.id.service_switch_connection);
         mServicesTextName = rootView.findViewById(R.id.services_text_name);
 
-        rootView.findViewById(R.id.services_button_connection_info).setOnClickListener(v -> {
-            ConnectionInfoDialogFragment connectionInfoDialogFragment = new ConnectionInfoDialogFragment();
-            connectionInfoDialogFragment.show(getFragmentManager().beginTransaction(), connectionInfoDialogFragment.getTag());
+        rootView.findViewById(R.id.services_button_connection_info).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ConnectionInfoDialogFragment connectionInfoDialogFragment = new ConnectionInfoDialogFragment();
+                connectionInfoDialogFragment.show(getFragmentManager().beginTransaction(), connectionInfoDialogFragment.getTag());
+            }
         });
 
     }
@@ -86,6 +94,8 @@ public class ServicesFragment extends TrackerFragment {
      * in detail: the main switch and the textField mServicesTextName
      */
     public void updateUI() {
+        //SK: Temp bugfix
+        //if (!HelperUtils.isNetworkAvailable(getActivity())) {
         if (!HelperUtils.isNetworkAvailable(getActivity())) {
             if(!MainActivity.getInstance().getHostageService().hasRunningListeners()) {
                 mServicesSwitchService.setOnCheckedChangeListener(null);
@@ -158,68 +168,88 @@ public class ServicesFragment extends TrackerFragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         super.onCreateView(inflater, container, savedInstanceState);
 
-        this.inflater = inflater;
-        this.container= container;
-        this.savedInstanceState = savedInstanceState;
         rootView = inflater.inflate(R.layout.fragment_services, container, false);
         assignViews();
 
         protocols = getResources().getStringArray(R.array.protocols);
-        int[] originalPorts = getResources().getIntArray(R.array.ports);
+        originalPorts = getResources().getIntArray(R.array.ports);
         mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
+
         updateUI();
+
         ListView list = rootView.findViewById(R.id.services_list_view);
-        protocolList = new ArrayList<>();
+
+        protocolList = new ArrayList<ServicesListItem>();
         int i = 0;
         for (String protocol : protocols) {
-            protocolList.add(new ServicesListItem(protocol, originalPorts[i]));
+            protocolList.add(new ServicesListItem(protocol,originalPorts[i]));
             protocolList.get(i).attacks = daoHelper.getAttackRecordDAO().getNumAttacksSeenByBSSID(protocolList.get(i).protocol,
                     mConnectionInfo.getString(getString(R.string.connection_info_bssid), null));
             i++;
         }
+
         mServicesSwitchService = rootView.findViewById(R.id.service_switch_connection);
 
         if (switchChangeListener == null) {
-            switchChangeListener = (buttonView, isChecked) -> {
-                try {
+            switchChangeListener = new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    //SK: Temp bugfix
+                        //if (!HelperUtils.isNetworkAvailable(getActivity())) {
+					//replaced with if (!HelperUtils.isWifiConnected(getActivity())) {
+
+					if (isChecked) { // switch activated
+						// we need a network connection, checks both types
+						if (!HelperUtils.isNetworkAvailable(getActivity())) {
+							new AlertDialog.Builder(getActivity())
+									.setTitle(R.string.information)
+									.setMessage(R.string.wifi_not_connected_msg)
+									.setPositiveButton(android.R.string.ok,
+											new DialogInterface.OnClickListener() {
+												public void onClick(DialogInterface dialog, int which) {
+
+												}
+											}
+									)
+									.setIcon(android.R.drawable.ic_dialog_info)
+									.show();
+							setStateNotActive();
+							setStateNotConnected();
+						} else { // we have a connection
+							// activate all protocols
+							for (String protocol : protocols) {
+								if (protocol.equals("GHOST") && mProfile.mGhostActive) {
+									mGhostPorts = mProfile.getGhostPorts();
+									if (mGhostPorts.length != 0) {
+										for (Integer port : mGhostPorts) {
+											if (MainActivity.getInstance().getHostageService() != null
+													&& !MainActivity.getInstance().getHostageService().isRunning("GHOST", port)) {
+												MainActivity.getInstance().getHostageService().startListener("GHOST", port);
+											}
+										}
+									}
+								} else {
+									if (MainActivity.getInstance().getHostageService() != null
+											&& !MainActivity.getInstance().getHostageService().isRunning(protocol)) {
+										MainActivity.getInstance().getHostageService().startListener(protocol);
+									}
+								}
+							}
+							setStateActive();
+						}
+					} else { // switch deactivated
+						if (MainActivity.getInstance().getHostageService() != null) {
+							// why should the hostage service not be running??
+							MainActivity.getInstance().getHostageService().stopListeners();
+							MainActivity.getInstance().stopAndUnbind();
+						}
+						setStateNotActive();
+					}
                 }
 
-                if (isChecked) { // switch activated
-                    // we need a network connection, checks both types
-                    if (!HelperUtils.isNetworkAvailable(getActivity())) {
-                        new AlertDialog.Builder(getActivity())
-                                .setTitle(R.string.information)
-                                .setMessage(R.string.wifi_not_connected_msg)
-                                .setPositiveButton(android.R.string.ok,
-                                        (dialog, which) -> { }
-                                )
-                                .setIcon(android.R.drawable.ic_dialog_info)
-                                .show();
-                        setStateNotActive();
-                        setStateNotConnected();
-                    } else { // we have a connection
-                        // activate all protocols
-                        for (String protocol : protocols) {
-                                if (MainActivity.getInstance().getHostageService() != null
-                                        && !MainActivity.getInstance().getHostageService().isRunning(protocol)) {
-                                    MainActivity.getInstance().getHostageService().startListener(protocol);
-                                }
-                        }
-                        setStateActive();
-                    }
-                } else { // switch deactivated
-                    if (MainActivity.getInstance().getHostageService() != null) {
-                        // why should the hostage service not be running??
-                        MainActivity.getInstance().getHostageService().stopListeners();
-                        MainActivity.getInstance().stopAndUnbind();
-                    }
-                    setStateNotActive();
-                }
             };
         }
         mServicesSwitchService.setOnCheckedChangeListener(switchChangeListener);
@@ -232,21 +262,6 @@ public class ServicesFragment extends TrackerFragment {
 
         return rootView;
 
-    }
-
-    @Deprecated
-    private void checkGhost(String protocol){
-        if (protocol.equals("GHOST") && mProfile.mGhostActive) {
-            mGhostPorts = mProfile.getGhostPorts();
-            if (mGhostPorts.length != 0) {
-                for (Integer port : mGhostPorts) {
-                    if (MainActivity.getInstance().getHostageService() != null
-                            && !MainActivity.getInstance().getHostageService().isRunning("GHOST", port)) {
-                        MainActivity.getInstance().getHostageService().startListener("GHOST", port);
-                    }
-                }
-            }
-        }
     }
 
 
@@ -301,23 +316,8 @@ public class ServicesFragment extends TrackerFragment {
     @Override
     public void onStop() {
         super.onStop();
-        if(rootView!=null) {
-            mServicesSwitchService.setOnCheckedChangeListener(null);
-//            unbindDrawables(rootView);
-//            rootView=null;
-        }
-
-        if (mReceiver != null)
-            unregisterBroadcastReceiver();
-
+        mServicesSwitchService.setOnCheckedChangeListener(null);
     }
-
-//    @Override
-//    public void onResume(){
-//        super.onResume();
-//        onCreateView(inflater,container,savedInstanceState);
-//        registerBroadcastReceiver();
-//    }
 
     /**
      * overrides onDestroy
@@ -326,24 +326,6 @@ public class ServicesFragment extends TrackerFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(rootView!=null) {
-            mServicesSwitchService.setOnCheckedChangeListener(null);
-            unbindDrawables(rootView);
-            rootView=null;
-        }
-        if (mReceiver != null)
-            unregisterBroadcastReceiver();
-    }
-
-    private void unbindDrawables(View view) {
-        if (view.getBackground() != null) {
-            view.getBackground().setCallback(null);
-        }
-        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                unbindDrawables(((ViewGroup) view).getChildAt(i));
-            }
-            ((ViewGroup) view).removeAllViews();
-        }
+        unregisterBroadcastReceiver();
     }
 }

@@ -1,8 +1,6 @@
 package de.tudarmstadt.informatik.hostage.protocol;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.security.SecureRandom;
@@ -14,14 +12,11 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.os.AsyncTask;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
-import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
-import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 
@@ -35,7 +30,9 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 public class HTTP implements Protocol {
 	
 	public HTTP() {
+
 		checkProfile();
+
 	}
 		/**
 	 * Get the current time in html header format.
@@ -55,14 +52,19 @@ public class HTTP implements Protocol {
 
 	// version stuff
 	private String[][][] possibleHttpVersions = {
-			{{ "Apache/2.0." }, { "28", "32", "35", "36", "39", "40", "42", "43", "44",
+			{
+					{ "Apache/2.0." },
+					{ "28", "32", "35", "36", "39", "40", "42", "43", "44",
 							"45", "46", "47", "48", "49", "50", "51", "52",
 							"53", "54", "55", "58", "59", "61", "63", "64",
 							"65" } },
-			{{ "Apache/2.2." }, { "0", "2", "3", "4", "6", "8", "9", "10", "11", "12",
+			{
+					{ "Apache/2.2." },
+					{ "0", "2", "3", "4", "6", "8", "9", "10", "11", "12",
 							"13", "14", "15", "16", "17", "18", "19", "20",
 							"21", "22", "23", "24", "25" } },
-			{ { "Apache/2.3." }, { "4", "5", "6", "8", "10", "11", "12", "14", "15", "16" } },
+			{ { "Apache/2.3." },
+					{ "4", "5", "6", "8", "10", "11", "12", "14", "15", "16" } },
 			{ { "Apache/2.4." }, { "1", "2", "3", "4", "6" } },
 			{ { "Microsoft-IIS/" }, { "5.1", "7.0", "8.0" } } };
 
@@ -73,33 +75,29 @@ public class HTTP implements Protocol {
 		int majorVersion = rndm.nextInt(possibleHttpVersions.length);
 		checkProfile();
 		String version;
-		String profile = ProfileManager.getProfile();
-		switch (profile) {
-			case "Windows 7":
-			case "Windows Server 2008":
-				version = "Microsoft-IIS/7.5";
-				break;
-			case "Windows Server 2012":
-			case "Windows 8":
-				version = "Microsoft-IIS/8.0";
-				break;
-			case "Windows XP":
-				version = "Microsoft-IIS/5.1";
-				break;
-			case "Arduino":
-				version = "arduino";
-				break;
-			default:
-				version = possibleHttpVersions[majorVersion][0][0]
-						+ possibleHttpVersions[majorVersion][1][rndm
-						.nextInt(possibleHttpVersions[majorVersion][1].length)];
-				break;
+		String sharedPreferencePath = Hostage.getContext().getString(
+				R.string.shared_preference_path);
+		String profile = Hostage
+				.getContext()
+				.getSharedPreferences(sharedPreferencePath,
+						Context.MODE_PRIVATE).getString("os", "");
+		if (profile.equals("Windows 7") || profile.equals("Windows Server 2008")) {
+			version = "Microsoft-IIS/7.5";
+		} else if (profile.equals("Windows Server 2012") || profile.equals("Windows 8")) {
+			version = "Microsoft-IIS/8.0";
+		} else if (profile.equals("Windows XP")) {
+			version = "Microsoft-IIS/5.1";
+		} else {
+			version = possibleHttpVersions[majorVersion][0][0]
+					+ possibleHttpVersions[majorVersion][1][rndm
+					          .nextInt(possibleHttpVersions[majorVersion][1].length)];
 		}
+		
 		return version;
 	}
 
 	private String httpVersion = "HTTP/1.1";
-	private String httpVersion_2 = "HTTP/2";
+
 	private static String htmlDocumentContent = HelperUtils.getRandomString(32, false);
 
 	private static String htmlTitleContent = HelperUtils.getRandomString(32, false);
@@ -123,11 +121,13 @@ public class HTTP implements Protocol {
 	/**
 	 * Sets the html document content for HTTP and HTTPS.
 	 * 
-	 * @param htmlDocumentContent the content of the page
+	 * @param htmlDocumentContent
 	 */
 	public static void setHtmlDocumentContent(String htmlDocumentContent,String htmlTitleContent) {
+
 			HTTP.htmlDocumentContent= htmlDocumentContent;
 			HTTP.htmlTitleContent = htmlTitleContent;
+
 	}
 
 	// html header pre and suffix
@@ -173,15 +173,14 @@ public class HTTP implements Protocol {
 		if (requestPacket != null) {
 			request = requestPacket.toString();
 		}
-		List<Packet> responsePackets = new ArrayList<>();
+		List<Packet> responsePackets = new ArrayList<Packet>();
 		this.request = request;
 
-		assert request != null;
-		if (request.isEmpty()) {
+		if (request.startsWith("G")) {
 			//weird if clause but required for https
 			responsePackets.add(buildPacket(STATUS_CODE_200, GET));
 			checkProfile();
-		} else if (!request.contains(httpVersion) && (!request.contains(httpVersion_2))) {
+		} else if (!request.contains(httpVersion)) {
 			responsePackets.add(buildPacket(STATUS_CODE_505, ""));
 			checkProfile();
 		} else if (request.contains(GET)) {
@@ -215,28 +214,17 @@ public class HTTP implements Protocol {
 
 
 	private void checkProfile() {
-		String profile = ProfileManager.getProfile();
-		if (profile.equals("Nuclear Power Plant")) {
-			addNuclearProfile();
-		}
-		else if(profile.equals("Arduino")){
-			try {
-				addArduinoProfile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		else {
-			boolean useQotd = Hostage.getContext().getSharedPreferences(Hostage.getContext().getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE).getBoolean("useQotd", true);
-			if (useQotd) {
-				new QotdTask().execute();
 
-			}
-		}
-	}
+		String sharedPreferencePath = Hostage.getContext().getString(
+				R.string.shared_preference_path);
+		String profile = Hostage
+				.getContext()
+				.getSharedPreferences(sharedPreferencePath,
+						Context.MODE_PRIVATE).getString("os", "");
 
-	private void addNuclearProfile(){
 		//Dynamically changing the landing site based on the nuclear power plant profile
+		if (profile.equals("Nuclear Power Plant")) {
+
 			htmlDocumentContent = "<font color=\"339966\"> <b>Welcome to Siemens Simatic S7 200 Management Portal</b>\n" +
 					"<img src=\"http://jewishbusinessnews.com/wp-content/uploads/2014/04/siemens-logo.jpg\"alt=\"Siemens Logo\">\n" +
 					"\n" +
@@ -249,24 +237,15 @@ public class HTTP implements Protocol {
 
 			HTTP.setHtmlDocumentContent(htmlDocumentContent,htmlTitleContent);
 
-	}
-
-	private void addArduinoProfile() throws IOException {
-		htmlTitleContent = "Arduino Home Controller";
-		HTTP.setHtmlDocumentContent(getArduinoPageContent(),htmlTitleContent);
-	}
-
-	private String getArduinoPageContent() throws IOException {
-		AssetManager assetManager = MainActivity.getInstance().getAssets();
-		InputStream stream = assetManager.open("arduino/only_body.html");
-		BufferedReader r = new BufferedReader(new InputStreamReader(stream));
-		StringBuilder total = new StringBuilder();
-		String line;
-		while ((line = r.readLine()) != null) {
-			total.append(line).append("\n");
 		}
+		else {
 
-		return total.toString();
+			boolean useQotd = Hostage.getContext().getSharedPreferences(Hostage.getContext().getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE).getBoolean("useQotd", true);
+			if (useQotd) {
+				new QotdTask().execute();
+
+			}
+		}
 	}
 
 	@Override
@@ -290,20 +269,14 @@ public class HTTP implements Protocol {
 	 */
 	private Packet buildPacket(String code, String type) {
 		String document = "";
-		switch (type) {
-			case GET:
-				document = htmlDocument;
-				break;
-			case HEAD:
-			case DELETE:
-				document = "";
-				break;
-			case TRACE:
-				document = request;
-				break;
-			default:
-				document = errorHtmlPrefix + " " + code + errorHtmlSuffix;
-				break;
+		if (type.equals(GET)) {
+			document = htmlDocument;
+		} else if (type.equals(HEAD) || type.equals(DELETE)) {
+			document = "";
+		} else if (type.equals(TRACE)) {
+			document = request;
+		} else {
+			document = errorHtmlPrefix + " " + code + errorHtmlSuffix;
 		}
 
 		return new Packet(httpVersion + " " + code + headerPrefix
@@ -317,8 +290,19 @@ public class HTTP implements Protocol {
 	 */
 	private class QotdTask extends AsyncTask<String, Void, String> {
 		@Override
+
+
 		protected String doInBackground(String... unused) {
+
 			StringBuffer sb = new StringBuffer();
+
+			String sharedPreferencePath = Hostage.getContext().getString(
+					R.string.shared_preference_path);
+			String profile = Hostage
+					.getContext()
+					.getSharedPreferences(sharedPreferencePath,
+							Context.MODE_PRIVATE).getString("os", "");
+
 
 			String[] sources = new String[]{"djxmmx.net"}; //, "alpha.mike-r.com"};
 			SecureRandom rndm = new SecureRandom();
@@ -336,14 +320,18 @@ public class HTTP implements Protocol {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+
 			return sb.toString();
-		}
+			}
 
 
 		@Override
 		protected void onPostExecute(String result) {
+
+
 			checkProfile();
 			if (result != null)
+
 				HTTP.setHtmlDocumentContent(result,result);
 			else
 				HTTP.setHtmlDocumentContent(HelperUtils.getRandomString(32, false),HelperUtils.getRandomString(32, false));

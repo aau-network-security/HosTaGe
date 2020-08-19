@@ -1,0 +1,160 @@
+<!--
+ IMPORTANT
+ ==============================================
+ This project maven configuration depends on configurations defined in user profile files.
+ Please, if you still do not have created the maven profile file, create it like this:
+
+
+ - %USER_HOME%/.m2/settings.xml:
+ ´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+    <settings>
+        <profiles>
+            <profile>
+                <id>hostageUserConfig</id>
+                <properties>
+                    <android.compatibility.version>19</android.compatibility.version>
+                    <android.version>4.4_r1</android.version>
+                </properties>
+            </profile>
+        </profiles>
+
+        <activeProfiles>
+            <activeProfile>hostageUserConfig</activeProfile>
+        </activeProfiles>
+    </settings>
+
+ ´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
+ The important part here is to set the right version numbers in the defined properties. These version
+ numbers are system-dependant and can't be downloaded from the maven repository, since they do not
+ exist there.
+ ==============================================
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.tudarmstadt.informatik</groupId>
+	<artifactId>hostage</artifactId>
+	<version>2.0.0-SNAPSHOT</version>
+	<packaging>apk</packaging>
+	<name>HosTaGe</name>
+	<dependencies>
+		<dependency>
+			<groupId>android</groupId>
+			<artifactId>android</artifactId>
+			<version>${android.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>android.support</groupId>
+			<artifactId>compatibility-v4</artifactId>
+			<version>${android.compatibility.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.roboguice</groupId>
+			<artifactId>roboguice</artifactId>
+			<version>2.0</version>
+		</dependency>
+        <dependency>
+            <groupId>com.nineoldandroids</groupId>
+            <artifactId>library</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fortysevendeg.android</groupId>
+            <artifactId>swipelistview</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>apklib</type>
+        </dependency>
+		<dependency>
+			<groupId>com.google.android.gms</groupId>
+			<artifactId>google-play-services</artifactId>
+			<version>14.0.0</version>
+			<type>apklib</type>
+		</dependency>
+		<dependency>
+			<groupId>com.google.android.gms</groupId>
+			<artifactId>google-play-services</artifactId>
+			<version>14.0.0</version>
+			<type>jar</type>
+		</dependency>
+
+
+	</dependencies>
+
+
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<sourceDirectory>src</sourceDirectory>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+					<artifactId>android-maven-plugin</artifactId>
+					<version>3.8.0</version>
+					<extensions>true</extensions>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.jayway.maven.plugins.android.generation2
+										</groupId>
+										<artifactId>
+											android-maven-plugin
+										</artifactId>
+										<versionRange>
+											[3.8.0,)
+										</versionRange>
+										<goals>
+											<goal>consume-aar</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<artifactId>android-maven-plugin</artifactId>
+				<configuration>
+					<sdk>
+						<platform>19</platform>
+					</sdk>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+    <repositories>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
+
+</project>

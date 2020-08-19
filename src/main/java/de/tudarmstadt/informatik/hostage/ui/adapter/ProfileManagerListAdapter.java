@@ -141,7 +141,7 @@ public class ProfileManagerListAdapter extends ArrayAdapter<Profile> {
 			    //Bitmap bitmap = Bitmap.createScaledBitmap(item.getIconBitmap(), 32, 32, true);
 			    holder.mItemIcon.setImageBitmap(item.getIconBitmap());
 		    } else {
-			    holder.mItemIcon.setImageBitmap(BitmapFactory.decodeResource(MainActivity.getContext().getResources(), R.drawable.ic_launcher));
+			    holder.mItemIcon.setImageBitmap(BitmapFactory.decodeResource(MainActivity.context.getResources(), R.drawable.ic_launcher));
 		    }
 
 		    // open the profile edit activity, if the edit button was pressed
@@ -171,14 +171,10 @@ public class ProfileManagerListAdapter extends ArrayAdapter<Profile> {
 						    })
 						    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 							    public void onClick(DialogInterface dialog, int which) {
-									ProfileManager profileManager = null;
-									try {
-										profileManager = ProfileManager.getInstance();
-										profileManager.deleteProfile(item);
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-									profileManager.getProfileListAdapter().notifyDataSetChanged();
+								    ProfileManager profileManager = ProfileManager.getInstance();
+
+								    profileManager.deleteProfile(item);
+								    profileManager.getProfileListAdapter().notifyDataSetChanged();
 								    mList.closeOpenedItems();
 							    }
 						    })

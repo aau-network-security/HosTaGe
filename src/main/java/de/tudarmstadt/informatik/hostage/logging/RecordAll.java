@@ -1,21 +1,12 @@
 package de.tudarmstadt.informatik.hostage.logging;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Field;
-
 import de.tudarmstadt.informatik.hostage.logging.formatter.Formatter;
-import de.tudarmstadt.informatik.hostage.model.JSONSerializable;
-import de.tudarmstadt.informatik.hostage.model.Profile;
-import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 
-public class RecordAll implements JSONSerializable<RecordAll> {
+public class RecordAll {
     private long id;
     private long attack_id;
     private long timestamp;
     private MessageRecord.TYPE type;
-    private String stringMessageType;
     private String packet;
     private String bssid;
     private String ssid;
@@ -31,15 +22,14 @@ public class RecordAll implements JSONSerializable<RecordAll> {
     private String remoteIP;
     private int remotePort;
     private String externalIP;
-    private boolean wasInternalAttack;
+    private boolean wasInternalAttack= true;
 
     public RecordAll(long id, long attack_id, long timestamp,
-                     MessageRecord.TYPE type, String stringMessageType, String packet, String bssid, String ssid, long timestampLocation, double latitude, double longitude, float accuracy, long sync_id, String device, String protocol, String localIP, int localPort, String remoteIP, int remotePort, String externalIP, boolean wasInternalAttack) {
+                     MessageRecord.TYPE type, String packet, String bssid, String ssid, long timestampLocation, double latitude, double longitude, float accuracy, long sync_id, String device, String protocol, String localIP, int localPort, String remoteIP, int remotePort, String externalIP, boolean wasInternalAttack) {
         this.id = id;
         this.attack_id = attack_id;
         this.timestamp = timestamp;
         this.type = type;
-        this.stringMessageType = stringMessageType;
         this.packet = packet;
         this.bssid = bssid;
         this.ssid = ssid;
@@ -215,19 +205,12 @@ public class RecordAll implements JSONSerializable<RecordAll> {
         this.externalIP = externalIP;
     }
 
-    public boolean getWasInternalAttack() {return wasInternalAttack;}
+    public boolean isWasInternalAttack() {
+        return wasInternalAttack;
+    }
 
     public void setWasInternalAttack(boolean wasInternalAttack) {
         this.wasInternalAttack = wasInternalAttack;
-    }
-
-
-    public String getStringMessageType() {
-        return stringMessageType;
-    }
-
-    public void setStringMessageType(String stringMessageType) {
-        this.stringMessageType = stringMessageType;
     }
 
     @Override
@@ -240,49 +223,6 @@ public class RecordAll implements JSONSerializable<RecordAll> {
             return Formatter.getDefault().format(this);
         }
         return formatter.format(this);
-    }
-
-    @Override
-    public RecordAll fromJSON(JSONObject json) {
-        return null;
-    }
-
-    @Override
-    public JSONObject toJSON() {
-        return convertSelectedFieldsToJSON();
-    }
-
-    private JSONObject convertSelectedFieldsToJSON(){
-        JSONObject jsonObj = new JSONObject();
-        try {
-            jsonObj.put("attackId",getAttack_id());
-            jsonObj.put("localIP",this.externalIP);
-            jsonObj.put("attackerIP",this.remoteIP);
-            jsonObj.put("remotePort",this.remotePort);
-            jsonObj.put("localPort",this.localPort);
-            jsonObj.put("attackTime",this.timestampLocation);
-            jsonObj.put("protocol",this.protocol);
-            jsonObj.put("packet",getPacket());
-            jsonObj.put("attackType",getStringMessageType());
-            jsonObj.put("profile", ProfileManager.getProfile());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObj;
-    }
-
-    private JSONObject convertAllFieldsToJSON(){
-        JSONObject jsonObj = new JSONObject();
-
-        for (Field f : RecordAll.class.getDeclaredFields()) {
-            try {
-                jsonObj.put(f.getName(),f.get(this));
-            } catch (JSONException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return jsonObj;
-
     }
 
 }

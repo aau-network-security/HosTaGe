@@ -90,7 +90,7 @@ public class SyncDeviceDAO extends DAO {
      * Updates the Timestamps of synchronization devices from a HashMap.
      * @param devices HashMap of device ids and their synchronization timestamps.
      */
-    public synchronized void updateSyncDevices(HashMap<String, Long> devices){
+public synchronized void updateSyncDevices(HashMap<String, Long> devices){
         SyncDeviceDao recordDao = this.daoSession.getSyncDeviceDao();
         ArrayList<SyncDevice> allDevices = this.getSyncDevices();
 
@@ -316,4 +316,4 @@ public class SyncDeviceDAO extends DAO {
 
     }
 
-}
+    }

@@ -1,0 +1,11 @@
+√ [Overview]    Greeting animation only to show on application start, not on every fragment creation/recreating
+! [Overview]	Don’t play „no threat“ animation first before playing actual animation (quickly tell ThreatIndicator the threat state)
+! [Statistics]  Switch to records view on record click
+! [Back Button] * Fix scenario: Home View -> Threat Map -> Back Button -> Threat Map
+                * Fix scenario: Home View -> Connection details -> Records -> Back Button
+! [Record Overview] Display a message when there are no records (because of filtering)
+! [Overview]	Correct icon for active profile
+! [Profile Manager] Use new icon for assorted profiles
+! [Honey Service] Use nicer icon
+! [Statistics]  Numbers shouldn't be float numbers
+! [Test] 

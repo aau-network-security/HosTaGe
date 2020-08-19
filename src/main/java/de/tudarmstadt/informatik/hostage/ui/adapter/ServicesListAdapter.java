@@ -3,9 +3,11 @@ package de.tudarmstadt.informatik.hostage.ui.adapter;
 import java.util.List;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-
+import android.content.DialogInterface;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
 import de.tudarmstadt.informatik.hostage.Listener;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
@@ -69,7 +72,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      * @param position    current position in list
      * @param convertView convert view
      * @param parent the parent view group
-     * @return rootView
+     * @return
      */
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -100,50 +103,100 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
         setRealPortListening(holder,item);
         holder.activated.setTag(item);
 
-        try {
-            this.updateStatus(item, holder);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.updateStatus(item, holder);
 
         holder.activated.setOnCheckedChangeListener(
-                (buttonView, isChecked) -> {
-                    ServicesListItem item1 = (ServicesListItem) buttonView.getTag();
-                    try {
+                new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        ServicesListItem item = (ServicesListItem) buttonView.getTag();
                         mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (isChecked && !HelperUtils.isNetworkAvailable(mActivity)) {
-                        if(!MainActivity.getInstance().getHostageService().hasRunningListeners()) {
-                            new AlertDialog.Builder(mActivity)
-                                    .setTitle(R.string.information)
-                                    .setMessage(R.string.wifi_not_connected_msg)
-                                    .setPositiveButton(android.R.string.ok,
-                                            (dialog, which) -> {
-                                            }
-                                    )
-                                    .setIcon(android.R.drawable.ic_dialog_info).show();
-                            if (buttonView.isChecked()) {
-                                buttonView.setChecked(false);
+                        //SK: Temp bugfix
+                        //if (!HelperUtils.isNetworkAvailable(mActivity)) {
+                        if (isChecked && !HelperUtils.isWifiConnected(mActivity)) {
+                            if(!MainActivity.getInstance().getHostageService().hasRunningListeners()) {
+                                new AlertDialog.Builder(mActivity)
+                                        .setTitle(R.string.information)
+                                        .setMessage(R.string.wifi_not_connected_msg)
+                                        .setPositiveButton(android.R.string.ok,
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog,
+                                                                        int which) {
+                                                    }
+                                                }
+                                        )
+                                        .setIcon(android.R.drawable.ic_dialog_info).show();
+                                if (buttonView.isChecked()) {
+                                    buttonView.setChecked(false);
+                                }
                             }
-                        }
-                    } else {
-                        //check if switch is set to ON and start the concrete listener for the protocol
-                        if (isChecked) {
-                            if (!MainActivity.getInstance().getHostageService().isRunning(item1.protocol)) {
-                                boolean success = MainActivity.getInstance().getHostageService().startListener(item1.protocol);
-                                if (success) {
-                                    //set the main switch to null, so that he won't react and starts all protocols
-                                    mServicesSwitch.setOnCheckedChangeListener(null);
-                                    mServicesSwitch.setChecked(true);
-                                    mServicesSwitch.setOnCheckedChangeListener(mListener);
-                                    checkButton(buttonView);
+                        } else {
+                            //check if switch is set to ON and start the concrete listener for the protocol
+                            if (isChecked) {
+                                if(item.protocol.equals("GHOST")){
+                                    if(mProfile.mGhostActive){
+                                        mGhostPorts = mProfile.getGhostPorts();
+
+                                        if(mGhostPorts.length != 0) {
+                                            for(Integer port: mGhostPorts){
+                                                if(!MainActivity.getInstance().getHostageService().isRunning(item.protocol, port)) {
+                                                    MainActivity.getInstance().getHostageService().startListener(item.protocol, port);
+                                                }
+                                            }
+                                            //set the main switch to null, so that he won't react and starts all protocols
+                                            mServicesSwitch.setOnCheckedChangeListener(null);
+                                            mServicesSwitch.setChecked(true);
+                                            mServicesSwitch.setOnCheckedChangeListener(mListener);
+
+                                            if(!buttonView.isChecked()) {
+                                                buttonView.setChecked(true);
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        if(buttonView.isChecked()) {
+                                            buttonView.setChecked(false);
+                                        }
+                                    }
+                                }
+                                else if (!MainActivity.getInstance().getHostageService().isRunning(item.protocol)) {
+                                    boolean success = MainActivity.getInstance().getHostageService().startListener(item.protocol);
+
+									if (success) {
+										//set the main switch to null, so that he won't react and starts all protocols
+										mServicesSwitch.setOnCheckedChangeListener(null);
+										mServicesSwitch.setChecked(true);
+										mServicesSwitch.setOnCheckedChangeListener(mListener);
+										if (!buttonView.isChecked()) {
+											buttonView.setChecked(true);
+										}
+									} else {
+										buttonView.setChecked(false);
+									}
+                                } else {
+                                    if(!buttonView.isChecked()) {
+                                        buttonView.setChecked(true);
+                                    }
                                 }
                             } else {
-                                if(!buttonView.isChecked()) {
-                                    buttonView.setChecked(true);
-                                }
+                                   if(item.protocol.equals("GHOST")) {
+                                       mGhostPorts = mProfile.getGhostPorts();
+                                       for(Integer port: mGhostPorts){
+                                           if(port != null) {
+                                               if(MainActivity.getInstance().getHostageService().isRunning("GHOST",port)){
+                                                   MainActivity.getInstance().getHostageService().stopListener("GHOST", port);
+                                               }
+                                           }
+                                       }
+                                       if(buttonView.isChecked()) {
+                                           buttonView.setChecked(false);
+                                       }
+                                   }
+                                   else if (MainActivity.getInstance().getHostageService().isRunning(item.protocol)) {
+                                        MainActivity.getInstance().getHostageService().stopListener(item.protocol);
+                                    }
+                                    if(buttonView.isChecked()) {
+                                        buttonView.setChecked(false);
+                                    }
                             }
                         }
                     }
@@ -152,46 +205,30 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
         return rowView;
     }
 
-    @Deprecated
-    private void enableGhostProtocol( ServicesListItem item1,CompoundButton buttonView){
-        if(item1.protocol.equals("GHOST")) {
-            if (mProfile.mGhostActive) {
-                mGhostPorts = mProfile.getGhostPorts();
-
-                if (mGhostPorts.length != 0) {
-                    for (Integer port : mGhostPorts) {
-                        if (!MainActivity.getInstance().getHostageService().isRunning(item1.protocol, port)) {
-                            MainActivity.getInstance().getHostageService().startListener(item1.protocol, port);
-                        }
-                    }
-                    //set the main switch to null, so that he won't react and starts all protocols
-                    mServicesSwitch.setOnCheckedChangeListener(null);
-                    mServicesSwitch.setChecked(true);
-                    mServicesSwitch.setOnCheckedChangeListener(mListener);
-
-                    checkButton(buttonView);
-                }
-            }
-        }
-    }
-
-    private void checkButton(CompoundButton buttonView){
-        if(!buttonView.isChecked()) { buttonView.setChecked(true); }
-        else if (buttonView.isChecked()) { buttonView.setChecked(false);}
-    }
-
     /**
      * method to update the current status, which includes changing the attack indication circle and the number of attacks
      *
      * @param item   ServiceListItem which has information about current item, e.g. protocol, activated, attacks
      * @param holder ViewHolder which represents the item in the View
      */
-    private void updateStatus(ServicesListItem item, ViewHolder holder) throws Exception {
+    private void updateStatus(ServicesListItem item, ViewHolder holder) {
 		boolean serviceIsActive = false;
 		// determine if service is active
-        if (MainActivity.getInstance().getHostageService().isRunning(item.protocol)) {
+        if(item.protocol.equals("GHOST")) {
+			mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
+			mGhostPorts = mProfile.getGhostPorts();
+
+			for (Integer port : mGhostPorts) {
+				if (port != null && MainActivity.getInstance().getHostageService()
+						.isRunning("GHOST", port)) {
+					serviceIsActive = true;
+					break;
+				}
+			}
+		} else if (MainActivity.getInstance().getHostageService().isRunning(item.protocol)) {
 			serviceIsActive = true;
 		}
+
 		if (serviceIsActive){
 			if(!holder.activated.isChecked()) {
 				holder.activated.setChecked(true);
@@ -203,12 +240,14 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
 				if (MainActivity.getInstance().getHostageService().hasProtocolActiveAttacks(item.protocol)) {
 					setBackground(holder, R.drawable.services_circle_red);
 				} else {
-					setBackground(holder, R.drawable.services_circle_yellow); }
+					setBackground(holder, R.drawable.services_circle_yellow);
+				}
 			}
 		} else {
 			if(holder.activated.isChecked()) {
 				holder.activated.setChecked(false);
 			}
+
 			if (item.attacks > 0) {
 				setBackground(holder, R.drawable.services_circle_yellow);
 			} else {
@@ -220,21 +259,6 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
                 .setText(String.format(MainActivity.getContext().getResources().getString(R.string.recorded_attacks) + "  %d", Integer.valueOf(item.attacks)));
     }
 
-    @Deprecated
-    private boolean addGhostStatus(ServicesListItem item) throws Exception {
-        if(item.protocol.equals("GHOST")) {
-            mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
-            mGhostPorts = mProfile.getGhostPorts();
-            for (Integer port : mGhostPorts) {
-                if (port != null && MainActivity.getInstance().getHostageService()
-                        .isRunning("GHOST", port)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     /**
      * changes the indicator circle of a service
      *
@@ -242,7 +266,9 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      * @param drawable int which represents the ID of the drawable we want to display, e.g. on a present attack it should be R.drawable.services_circle_red
      */
 	private void setBackground(ViewHolder holder, int drawable) {
+
 	    holder.circle.setBackground(MainActivity.getInstance().getResources().getDrawable(drawable));
+
     }
 
     /**

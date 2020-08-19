@@ -18,15 +18,13 @@ public class LogFilter implements Parcelable {
 	private static final String PROTOCOLS_KEY = "de.tudarmstadt.informatik.hostage.logfilter.protocols";
 	private static final String ESSID_KEY = "de.tudarmstadt.informatik.hostage.logfilter.essid";
 	private static final String BSSID_KEY = "de.tudarmstadt.informatik.hostage.logfilter.bssid";
-	private static final String IP_KEY = "de.tudarmstadt.informatik.hostage.logfilter.ip";
-
 	//private static final String SORTTYPE_KEY = "de.tudarmstadt.informatik.hostage.logfilter.sorttype";
 
     /**
      * The SortType
      */
 	public enum SortType {
-		packet_timestamp(0), protocol(1),ip(2), ssid(3), _bssid(4), _attack_id(7), _id(8);
+		packet_timestamp(0), protocol(1), ssid(2), _bssid(3), _attack_id(7), _id(8);
 		private final int id;
 
 		SortType(int id) {
@@ -40,7 +38,6 @@ public class LogFilter implements Parcelable {
 
 	public ArrayList<String> BSSIDs;
 	public ArrayList<String> ESSIDs;
-	public ArrayList<String> IPs;
 	public ArrayList<String> protocols;
 
 	public boolean isNotEditable;
@@ -68,7 +65,6 @@ public class LogFilter implements Parcelable {
 		this.sorttype = SortType.packet_timestamp;
 		this.BSSIDs = new ArrayList<String>();
 		this.ESSIDs = new ArrayList<String>();
-		this.IPs = new ArrayList<String>();
 		this.protocols = new ArrayList<String>();
 	}
 
@@ -83,10 +79,6 @@ public class LogFilter implements Parcelable {
 		HashMap<String, ArrayList<String>> values = new HashMap<String, ArrayList<String>>();
 		if (this.BSSIDs != null && this.BSSIDs.size() > 0) {
 			values.put(BSSID_KEY, this.getBSSIDs());
-		}
-
-		if (this.IPs != null && this.IPs.size() > 0) {
-			values.put(IP_KEY, this.getIPs());
 		}
 		if (this.ESSIDs != null && this.ESSIDs.size() > 0) {
 			values.put(ESSID_KEY, this.getESSIDs());
@@ -124,13 +116,10 @@ public class LogFilter implements Parcelable {
 
 		this.BSSIDs = values.get(BSSID_KEY);
 		this.ESSIDs = values.get(ESSID_KEY);
-		this.IPs = values.get(IP_KEY);
 		this.protocols = values.get(protocols);
 
 		if (this.BSSIDs == null)
 			this.BSSIDs = new ArrayList<String>();
-		if(this.IPs == null)
-			this.IPs = new ArrayList<>();
 		if (this.ESSIDs == null)
 			this.ESSIDs = new ArrayList<String>();
 		if (this.protocols == null)
@@ -173,16 +162,7 @@ public class LogFilter implements Parcelable {
 	public ArrayList<String> getBSSIDs() {
 		return this.BSSIDs;
 	}
-
-	/**
-	 * Returns the filtered ips names.
-	 * @return ArrayList<String>
-	 */
-	public ArrayList<String> getIPs() {
-		return this.IPs;
-	}
-
-	/**
+    /**
      * Returns the filtered bssid names.
      * @return ArrayList<String>
      */
@@ -236,14 +216,6 @@ public class LogFilter implements Parcelable {
      */
 	public void setBSSIDs(ArrayList<String> bssids) {
 		this.BSSIDs = bssids;
-	}
-
-	/**
-	 * Set the ips which a {@link RecordAll Record} can have.
-	 * @param ips ArrayList<String>
-	 */
-	public void setIps(ArrayList<String> ips) {
-		this.IPs = ips;
 	}
 
     /**
@@ -319,10 +291,9 @@ public class LogFilter implements Parcelable {
 		boolean hasTime = this.hasATimestamp();
 		boolean hasBSSIDs = this.hasBSSIDs();
 		boolean hasESSIDs = this.hasESSIDs();
-		boolean hasIps = this.hasIps();
 		boolean hasProtocols = this.hasProtocols();
 
-		return hasBSSIDs || hasESSIDs || hasIps || hasProtocols | hasTime;
+		return hasBSSIDs || hasESSIDs || hasProtocols | hasTime;
 	}
 
     /**
@@ -331,14 +302,6 @@ public class LogFilter implements Parcelable {
      */
 	public boolean hasBSSIDs() {
 		return this.getBSSIDs().size() > 0;
-	}
-
-	/**
-	 * Returns true if the filter has more than one ip.
-	 * @return boolean
-	 */
-	public boolean hasIps() {
-		return this.getIPs().size() > 0;
 	}
     /**
      * Returns true if the filter has more than one essid.

@@ -1,47 +1,44 @@
 package de.tudarmstadt.informatik.hostage.ui.fragment;
 
+import static com.google.android.gms.common.GooglePlayServicesUtil.getErrorDialog;
+import static com.google.android.gms.common.GooglePlayServicesUtil.isGooglePlayServicesAvailable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
-import android.provider.Settings;
 import android.text.Html;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -68,19 +65,21 @@ import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback,
 		LocationListener {
 
-	private GoogleMap sMap = null;
-	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-	private MapView mapView = null;
-	private View rootView=null;
-	private Thread mLoader = null;
-	private HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
+	private static GoogleMap sMap = null;
+
+	private static View sView = null;
+
+	private static Thread mLoader = null;
+
+	private static HashMap<String, String> sMarkerIDToSSID = new HashMap<String, String>();
+
 	private LocationManager mLocationManager;
 	private String mLocationProvider;
-	private LayoutInflater inflater;
 
 	// needed for LIVE threat map
 	private boolean mReceiverRegistered = false;
 	private BroadcastReceiver mReceiver;
+	private int offset =0;
 
 	/**
 	 * if google play services aren't available an error notification will be displayed
@@ -91,7 +90,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		int status = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getContext());
 		boolean result = status == ConnectionResult.SUCCESS;
 		if (!result) {
-			GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), status, 10).show();
+			GoogleApiAvailability.getInstance().getErrorDialog(getActivity(),status,10).show();
 		}
 		return result;
 	}
@@ -117,13 +116,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		}
 	}
 
-	private void unregisterBroadcastReceiver() {
-		if (mReceiverRegistered) {
-			LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
-			this.mReceiverRegistered = false;
-		}
-	}
-
 	/**
 	 * callback for when the info window of a marker gets clicked
 	 * open the RecordOverviewFragment and display all records belonging to an SSID
@@ -132,9 +124,12 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	 */
 	@Override
 	public void onInfoWindowClick(Marker marker) {
+		//MainActivity.getInstance().displayView(MainActivity.MainMenuItem.RECORDS.getValue());
+		//RecordOverviewFragment recordOverviewFragment = (RecordOverviewFragment)MainActivity.getInstance().getCurrentFragment();
+		//if (recordOverviewFragment != null) {
 		String ssid = sMarkerIDToSSID.get(marker.getId());
 
-		ArrayList<String> ssids = new ArrayList<>();
+		ArrayList<String> ssids = new ArrayList<String>();
 		ssids.add(ssid);
 
 		LogFilter filter = new LogFilter();
@@ -172,6 +167,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	}
 
 
+
 	/**
 	 * helper class
 	 * easier to use than LatLng
@@ -202,6 +198,8 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		public static final float MAX_DISTANCE = 1000.0f; // 1km
 
 		public SSIDArea(LatLng initialLocation) {
+			//mMinimum = new Point(360.0, 360.0);
+			//mMaximum = new Point(-360.0, -360.0);
 			mMinimum = new Point(initialLocation.latitude, initialLocation.longitude);
 			mMaximum = new Point(initialLocation.latitude, initialLocation.longitude);
 			numPoints = 1;
@@ -266,53 +264,56 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 					return;
 				}
 
-				AppCompatActivity activity = (AppCompatActivity) getActivity();
+				Activity activity = getActivity();
 				if (activity != null) {
-					activity.runOnUiThread(() -> {
-						sMap.clear();
-						CircleOptions circleOptions = new CircleOptions().radius(200.0)
-								.fillColor(Color.argb(127, 240, 80, 60)).strokeWidth(0.0f);
-						BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory
-								.fromResource(R.drawable.wifi_marker);
-						for (Map.Entry<String, ArrayList<SSIDArea>> entry : threatAreas.entrySet()) {
-							String ssid = entry.getKey();
-							ArrayList<SSIDArea> areas = entry.getValue();
+					activity.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							sMap.clear();
 
-							for (SSIDArea area : areas) {
-								int color = area.calculateColor();
-								LatLng center = area.calculateCenterLocation();
-								float radius = area.calculateRadius();
+							CircleOptions circleOptions = new CircleOptions().radius(200.0)
+									.fillColor(Color.argb(127, 240, 80, 60)).strokeWidth(0.0f);
+							BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory
+									.fromResource(R.drawable.wifi_marker);
+							for (Map.Entry<String, ArrayList<SSIDArea>> entry : threatAreas.entrySet()) {
+								String ssid = entry.getKey();
+								ArrayList<SSIDArea> areas = entry.getValue();
 
-								sMap.addCircle(circleOptions.center(center).radius(100.0 + radius)
-										.fillColor(color));
-								Marker marker = sMap.addMarker(new MarkerOptions()
-										.title(ssid + ": " + area.numPoints + (area.numPoints == 1
-												? getResources()
-												.getString(R.string.attack)
-												: getResources().getString(R.string.attacks))).position(
-												center));
-								marker.setIcon(bitmapDescriptor);
+								for (SSIDArea area : areas) {
+									int color = area.calculateColor();
+									LatLng center = area.calculateCenterLocation();
+									float radius = area.calculateRadius();
 
-								sMarkerIDToSSID.put(marker.getId(), ssid);
+									sMap.addCircle(circleOptions.center(center).radius(100.0 + radius)
+											.fillColor(color));
+									Marker marker = sMap.addMarker(new MarkerOptions()
+											.title(ssid + ": " + area.numPoints + (area.numPoints == 1
+													? getResources()
+													.getString(R.string.attack)
+													: getResources().getString(R.string.attacks))).position(
+													center));
+									marker.setIcon(bitmapDescriptor);
+
+									sMarkerIDToSSID.put(marker.getId(), ssid);
+								}
 							}
-						}
 
+						}
 					});
 				}
 			}
 
 			private HashMap<String, ArrayList<SSIDArea>> doInBackground() {
-				DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-				DAOHelper daoHelper = new DAOHelper(dbSession);
-				LogFilter filter = null;
-				ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter);
+				 DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+				 DAOHelper daoHelper = new DAOHelper(dbSession,getActivity());
+				 ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getRecordsForFilter(new LogFilter());
 
-				HashMap<String, ArrayList<SSIDArea>> threatAreas
-						= new HashMap<>();
+				 HashMap<String, ArrayList<SSIDArea>> threatAreas
+						= new HashMap<String, ArrayList<SSIDArea>>();
 
 				for (RecordAll record : records) {
 					LatLng location = new LatLng(record.getLatitude(), record.getLongitude());
-					//Log.i("hostage.location ", "lat: " + record.getLatitude() + " long: " + record.getLongitude());
+					//Log.i("hostage.location", "lat: " + hostage.location.latitude + " long: " + hostage.location.longitude);
 					ArrayList<SSIDArea> areas;
 					if (threatAreas.containsKey(record.getSsid())) {
 						areas = threatAreas.get(record.getSsid());
@@ -328,7 +329,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 							areas.add(new SSIDArea(location));
 						}
 					} else {
-						areas = new ArrayList<>();
+						areas = new ArrayList<SSIDArea>();
 						areas.add(new SSIDArea(location));
 						threatAreas.put(record.getSsid(), areas);
 					}
@@ -343,7 +344,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 			}
 		});
 
-		mLoader.start();
+		mLoader.start(); // run!
 	}
 
 	/**
@@ -357,193 +358,124 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	 * @param savedInstanceState the savedInstanceState
 	 * @return the view
 	 */
+	@SuppressLint("MissingPermission")
 	@Override
 	public View onCreateView(final LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
+			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 
-		final AppCompatActivity activity = (AppCompatActivity) getActivity();
+		final Activity activity = getActivity();
 		if (activity != null) {
 			activity.setTitle(getResources().getString(R.string.drawer_threat_map));
 		}
 
-		rootView = inflater.inflate(R.layout.fragment_threatmap, container, false);
-		this.inflater =inflater;
-
-		if (rootView != null) {
-			ViewGroup parent = (ViewGroup) rootView.getParent();
+		if (sView != null) {
+			ViewGroup parent = (ViewGroup) sView.getParent();
 			if (parent != null) {
-				parent.removeView(rootView);
+				parent.removeView(sView);
 			}
 		}
 
 		try {
+			sView = inflater.inflate(R.layout.fragment_threatmap, container, false);
 			if (isGooglePlay()) {
-				if(rootView !=null)
-					mapView  = rootView
-							.findViewById(R.id.threatmapfragment);
-					if (mapView != null) {
-						mapView.onCreate(savedInstanceState);
-						mapView.getMapAsync(this);
-						mapView.onResume();
+				final FragmentManager fragmentManager = getFragmentManager();
+				if (fragmentManager != null) {
+					final MapFragment mapFragment = (MapFragment) getFragmentManager()
+							.findFragmentById(R.id.threatmapfragment);
+					if (mapFragment != null) {
+						mapFragment.getMapAsync(this);
 					}
+				}
 			} else {
 				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.getInstance());
 				builder.setMessage(Html.fromHtml(getString(R.string.google_play_services_unavailable)))
 						.setCancelable(false)
-						.setPositiveButton(getString(R.string.ok), (dialog, id) -> {
+						.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								// :D-|< :D-/< :D-\<
+							}
 						});
 				AlertDialog alert = builder.create();
 				alert.show();
 			}
 		} catch (InflateException e) {
 			// map already exists
-			e.printStackTrace();
+			//e.printStackTrace();
+		}
+
+		if (sMap != null) {
+			sMap.setOnInfoWindowClickListener(this);
+			// custom info window layout
+			sMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+				@Override
+				public View getInfoWindow(Marker marker) {
+					return null;
+				}
+
+				@Override
+				public View getInfoContents(Marker marker) {
+					View view = inflater.inflate(R.layout.fragment_threatmap_infowindow, null);
+					if (view != null) {
+						TextView titleTextView = view
+								.findViewById(R.id.threatmap_infowindow_title);
+						if (titleTextView != null) {
+							titleTextView.setText(marker.getTitle());
+						}
+					}
+					return view;
+				}
+			});
+
+			mLocationManager = (LocationManager)activity.getSystemService(Context.LOCATION_SERVICE);
+			Criteria criteria = new Criteria();
+			criteria.setAccuracy(Criteria.ACCURACY_FINE);
+			mLocationProvider = mLocationManager.getBestProvider(criteria, false);
+			mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
+
+			sMap.setMyLocationEnabled(true);
+
+			LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
+			sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tudarmstadt, 13));
+
+			populateMap();
+
+			registerBroadcastReceiver();
 		}
 
 		// tell the user to enable wifi so map data can be streamed
-		networkConnectionCheck();
-
-		return rootView;
-	}
-
-
-	private void requestPermissionUpdates(){
-		if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-				!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
-				Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-
-			return;
-		}
-		mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
-		sMap.setMyLocationEnabled(true);
-
-		Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		moveCameraToCurrentLocation(currentLocation);
-	}
-
-	private void setInfoWindowAdapter(){
-		sMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-			@Override
-			public View getInfoWindow(Marker marker) {
-				return null;
-			}
-
-			@Override
-			public View getInfoContents(Marker marker) {
-				View view = inflater.inflate(R.layout.fragment_threatmap_infowindow, null);
-				if (view != null) {
-					TextView titleTextView = view
-							.findViewById(R.id.threatmap_infowindow_title);
-					if (titleTextView != null) {
-						titleTextView.setText(marker.getTitle());
-					}
-				}
-				return view;
-			}
-		});
-		locationChecker();
-	}
-
-	private void locationChecker(){
-		final AppCompatActivity activity = (AppCompatActivity) getActivity();
-		mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-		Criteria criteria = new Criteria();
-		criteria.setAccuracy(Criteria.ACCURACY_FINE);
-		mLocationProvider = mLocationManager.getBestProvider(criteria, false);
-		requestPermissionUpdates();
-		populateMap();
-		registerBroadcastReceiver();
-	}
-
-	private void moveCameraToCurrentLocation(Location currentLocation){
-		//LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
-		LatLng newLocation = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
-		sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 13));
-	}
-
-	@Override
-	public void onMapReady(GoogleMap googleMap) {
-		sMap = googleMap;
-		sMap.getUiSettings().setZoomControlsEnabled(true);
-		sMap.setOnInfoWindowClickListener(this);
-		setInfoWindowAdapter();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		registerBroadcastReceiver();
-		if (sMap != null) {
-			// repopulate
-			populateMap();
-		}
-		if (mLocationManager != null) {
-			if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-					!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-					!= PackageManager.PERMISSION_GRANTED) {
-
-				ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-
-				return;
-			}
-			mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
-		}
-	}
-
-
-	private void networkConnectionCheck(){
-		final AppCompatActivity activity = (AppCompatActivity) getActivity();
-
 		if (activity != null && !HelperUtils.isNetworkAvailable(activity)) {
 			new AlertDialog.Builder(activity)
 					.setTitle(R.string.information)
 					.setMessage(R.string.no_network_connection_threatmap_msg)
 					.setPositiveButton(android.R.string.ok,
-							(dialog, which) -> {
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+								}
 							}
 					)
 					.setIcon(android.R.drawable.ic_dialog_info).show();
 		}
 
+		return sView;
 	}
 
-	/**
-	 * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
-	 * @param requestCode the code of the Permission
-	 * @param permissions Get's the location Permission.
-	 * @param grantResults Takes any results.
-	 */
 	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		if (requestCode == 10) {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+	public void onMapReady(GoogleMap googleMap) {
+		sMap = googleMap;
+	}
 
-			} else {
-				if (!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-					androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
-					dialog.setTitle("Permission Required");
-					dialog.setCancelable(false);
-					dialog.setMessage("You have to Allow permission to access user location");
-					dialog.setPositiveButton("Settings", (dialog1, which) -> {
-
-					});
-					androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
-					alertDialog.show();
-				}
-				//Code for deny if needed
-			}
+	@SuppressLint("MissingPermission")
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (sMap != null) {
+			// repopulate
+			populateMap();
 		}
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		if (mReceiver != null)
-			unregisterBroadcastReceiver();
 		if (mLocationManager != null) {
-			mLocationManager.removeUpdates(this);
+			mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
 		}
 	}
 
@@ -552,28 +484,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 		super.onPause();
 		if (mLocationManager != null) {
 			mLocationManager.removeUpdates(this);
-		}
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		unbindDrawables(mapView);
-		unregisterBroadcastReceiver();
-		if (mLocationManager != null) {
-			mLocationManager.removeUpdates(this);
-		}
-	}
-
-	private void unbindDrawables(View view) {
-		if (view.getBackground() != null) {
-			view.getBackground().setCallback(null);
-		}
-		if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
-			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-				unbindDrawables(((ViewGroup) view).getChildAt(i));
-			}
-			((ViewGroup) view).removeAllViews();
 		}
 	}
 }

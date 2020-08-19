@@ -78,14 +78,8 @@
 	<string name="close">Close</string>
 	<string name="show_records">Show records</string>
 	<string name="dialog_clear_database">Clear all data?</string>	
-	<string name="export_dialog_title">Choose Export Format</string>
-    <string name="error_su" translatable="false">Could not acquire root access.\nYour device must be rooted to use default prots.</string>
-    <string name="error_binaries" translatable="false">Binaries are not installed, some error occurred! Check if you gave root permissions on the app</string>
-    <string name="applying_rules" translatable="false">Applying iptables rules</string>
-    <string name="toast_bin_installed" translatable="false">Iptables binary files installed!</string>
-    <string name="toast_bin_already_installed" translatable="false">Iptables binary files already installed!</string>
-    <string name="permissiondenied_asset" translatable="false">READ/WRITE permission to storage denied. Please grant access for copying Iptables binaries.</string>
-    <string name="delete_dialog_title">Delete data sets by:</string>
+	<string name="export_dialog_title">Choose Export Format</string>		
+	<string name="delete_dialog_title">Delete data sets by:</string>	
 	<string name="dialog_clear_database_date">Delete all data before:</string>
 
     <string name="deleteFILTEREDAttacksTitle">Delete the filtered attack data?</string>
@@ -98,7 +92,6 @@
 	<string name="RecordExternalAttack">External attack</string>
     <string name="RecordBSSID">BSSID</string>
     <string name="RecordSSID">SSID</string>
-    <string name="RecordIP" translatable="false">IP</string>
     <string name="RecordTimestamp">Timestamp</string>
     <string name="RecordProtocol">Protocol</string>
 
@@ -140,15 +133,12 @@
     <string name="TODAY">Today</string>
     <string name="YESTERDAY">Yesterday</string>
 
-    <string name="hostage_with_url"><a href="https://aau-network-security.github.io/HosTaGe/">HosTaGe</a></string>
+    <string name="hostage_with_url"><a href="https://aau-network-security.github.io/HosTaGe/">HosTaGe v2.0.0</a></string>
     <string name="hostage_email"><a href="mailto:hostage@es.aau.dk?Subject=Inquiry">Tell us what do you think about HosTaGe</a></string>
     <string name="hostage_email_only" translatable="false">hostage@es.aau.dk</string>
     <string name="ui_dev_by">Developers team:</string>
     <string name="core_dev_by">Core developed by</string>
     <string name="advanced_settings">Advanced Settings</string>
-    <string name="notification_settings" translatable="false">Notifications &amp; Sound</string>
-    <string name="notification_storage" translatable="false">Media &amp; Storage</string>
-    <string name="storage_location" translatable="false">Storage Location</string>
     <string name="change_name_of_profile">Change the name of this profile</string>
     <string name="change_desc_of_profile">Change the description of this profile here</string>
     <string name="change_icon_of_profile">Choose an icon for this profile</string>
@@ -163,7 +153,6 @@
     <string name="date">Date</string>
     <string name="ESSID">ESSID</string>
     <string name="BSSID">BSSID</string>
-    <string name="IP" translatable="false">IP</string>
     <string name="rec_sortby">Sort by</string>
     <string name="rec_latest">Latest</string>
     <string name="rec_earliest">Earliest</string>
@@ -194,7 +183,6 @@
     <string name="stats_select_network_data">Select network data to compare</string>
     <string name="stats_select_protocol_data">Select protocol data to compare</string>
     <string name="stats_per_cent_all">% of all</string>
-    <string name="project_link" translatable="false">https://github.com/aau-network-security/HosTaGe</string>
     <string name="pie_all">All</string>
 
 
@@ -291,7 +279,6 @@
     <string name="service">Services</string>
     <string name="multistage_summary">Enable Multistage Attack Detection Service</string>
     <string name="multistage_service">Multistage Service</string>
-    <string name="iptables_not_supported" translatable="false">Iptables rules are not supported for your device!</string>
 
 
 

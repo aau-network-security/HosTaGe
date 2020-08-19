@@ -18,7 +18,6 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
-import org.greenrobot.greendao.annotation.NotNull;
 
 /**
  * Holds all necessary information about a single attack.
@@ -31,16 +30,15 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 	private long attack_id;
     private long sync_id;
 	private String bssid;
-	private long timestampLocation;
-	private String device;
+    private String device;
 	private String protocol;
 	private String localIP;
 	private int localPort;
 	private String remoteIP;
 	private int remotePort;
 	private String externalIP;
-	private boolean wasInternalAttack;
-    @ToOne(joinProperty = "timestampLocation")
+	private boolean wasInternalAttack= true;
+    @ToOne(joinProperty = "bssid")
 	private NetworkRecord record;
 
 	@ToOne(joinProperty = "device")
@@ -64,8 +62,8 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 	/** Used for active entity operations. */
 	@Generated(hash = 1891517836)
 	private transient AttackRecordDao myDao;
-	@Generated(hash = 818274295)
-	private transient Long record__resolvedKey;
+	@Generated(hash = 1541759297)
+	private transient String record__resolvedKey;
 	@Generated(hash = 768043601)
 	private transient String syncDevice__resolvedKey;
 
@@ -98,7 +96,7 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
             SharedPreferences.Editor editor = pref.edit();
             Long attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
             editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
-            editor.apply();
+            editor.commit();
             this.attack_id = attack_id;
             this.sync_id = attack_id;
 
@@ -111,14 +109,13 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 
     }
 
-				@Generated(hash = 696739191)
-				public AttackRecord(long attack_id, long sync_id, String bssid, long timestampLocation,
-						String device, String protocol, String localIP, int localPort, String remoteIP, int remotePort,
-						String externalIP, boolean wasInternalAttack) {
+				@Generated(hash = 392632362)
+				public AttackRecord(long attack_id, long sync_id, String bssid, String device, String protocol,
+						String localIP, int localPort, String remoteIP, int remotePort, String externalIP,
+						boolean wasInternalAttack) {
 					this.attack_id = attack_id;
 					this.sync_id = sync_id;
 					this.bssid = bssid;
-					this.timestampLocation = timestampLocation;
 					this.device = device;
 					this.protocol = protocol;
 					this.localIP = localIP;
@@ -284,10 +281,10 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 	}
 
 	/** To-one relationship, resolved on first access. */
-	@Generated(hash = 1062903631)
+	@Generated(hash = 234930298)
 	public NetworkRecord getRecord() {
-		long __key = this.timestampLocation;
-		if (record__resolvedKey == null || !record__resolvedKey.equals(__key)) {
+		String __key = this.bssid;
+		if (record__resolvedKey == null || record__resolvedKey != __key) {
 			final DaoSession daoSession = this.daoSession;
 			if (daoSession == null) {
 				throw new DaoException("Entity is detached from DAO context");
@@ -303,16 +300,12 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 	}
 
 	/** called by internal mechanisms, do not call yourself. */
-	@Generated(hash = 957362041)
-	public void setRecord(@NotNull NetworkRecord record) {
-		if (record == null) {
-			throw new DaoException(
-					"To-one property 'timestampLocation' has not-null constraint; cannot set to-one to null");
-		}
+	@Generated(hash = 502198762)
+	public void setRecord(NetworkRecord record) {
 		synchronized (this) {
 			this.record = record;
-			timestampLocation = record.getTimestampLocation();
-			record__resolvedKey = timestampLocation;
+			bssid = record == null ? null : record.getBssid();
+			record__resolvedKey = bssid;
 		}
 	}
 
@@ -383,14 +376,6 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 
 	public void setAttack_id(Long attack_id) {
 		this.attack_id = attack_id;
-	}
-
-	public long getTimestampLocation() {
-		return this.timestampLocation;
-	}
-
-	public void setTimestampLocation(long timestampLocation) {
-		this.timestampLocation = timestampLocation;
 	}
 
 	/** called by internal mechanisms, do not call yourself. */

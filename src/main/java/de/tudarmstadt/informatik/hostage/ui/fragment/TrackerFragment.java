@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 
 import de.tudarmstadt.informatik.hostage.HostageApplication;
@@ -20,10 +19,9 @@ import de.tudarmstadt.informatik.hostage.HostageApplication;
  * @created 01.04.14 19:04
  */
 public class TrackerFragment extends Fragment {
-	private View v;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		v = super.onCreateView(inflater, container, savedInstanceState);
+		View v = super.onCreateView(inflater, container, savedInstanceState);
 
 		final Activity activity = getActivity();
 
@@ -33,35 +31,7 @@ public class TrackerFragment extends Fragment {
 			t.setScreenName(this.getClass().getName());
 			t.send(new HitBuilders.AppViewBuilder().build());
 		}
+
 		return v;
-	}
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		if(v!=null) {
-			unbindDrawables(v);
-			v=null;
-		}
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		if(v!=null) {
-			unbindDrawables(v);
-			v=null;
-		}
-	}
-
-	private void unbindDrawables(View view) {
-		if (view.getBackground() != null) {
-			view.getBackground().setCallback(null);
-		}
-		if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
-			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-				unbindDrawables(((ViewGroup) view).getChildAt(i));
-			}
-			((ViewGroup) view).removeAllViews();
-		}
 	}
 }

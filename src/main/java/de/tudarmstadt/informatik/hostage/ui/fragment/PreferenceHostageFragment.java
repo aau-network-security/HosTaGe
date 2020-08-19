@@ -1,6 +1,5 @@
 package de.tudarmstadt.informatik.hostage.ui.fragment;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,9 +7,9 @@ import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.widget.Toast;
+
 import java.util.HashSet;
-import de.tudarmstadt.informatik.hostage.Hostage;
+
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.services.MultiStageAlarm;
 
@@ -26,7 +25,10 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 	 * Contains preferences for which to display a preview of the value in the summary
 	 */
 	private HashSet<String> mPrefValuePreviewSet;
-	MultiStageAlarm alarm = new MultiStageAlarm();
+
+	MultiStageAlarm alarm;
+
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -34,10 +36,12 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 
+
 		// these preferences are all text preferences
 		final String[] textPreferences = new String[]{
 				"pref_external_location",
-				"pref_hpfeeds_server",
+				"pref_upload_server",
+                "pref_download_server",
 				"pref_max_connections",
 				"pref_timeout",
 				"pref_sleeptime",
@@ -46,11 +50,39 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 				"pref_portscan_timeout"
 		};
 
-		mPrefValuePreviewSet = new HashSet<>();
+		mPrefValuePreviewSet = new HashSet<String>();
 		mPrefValuePreviewSet.add("pref_external_location");
-		mPrefValuePreviewSet.add("pref_hpfeeds_server");
+		mPrefValuePreviewSet.add("pref_upload_server");
 
 		addPreferencesFromResource(R.xml.settings_preferences);
+
+		/*final Context context;
+
+		context= Hostage.getContext().getApplicationContext();
+		final CheckBoxPreference multi = (CheckBoxPreference)getPreferenceManager().findPreference("pref_multistage");
+		multi.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean myValue = (Boolean) newValue;
+
+				MultiStageAlarm alarm = new MultiStageAlarm();
+
+				if(myValue){
+					if (alarm != null) {
+						alarm.SetAlarm(context);
+					}
+				}
+				else if(!myValue){
+					alarm.CancelAlarm(context);
+				}
+
+				return false;
+			}
+		});*/
+
+
+
+
+
 
 		for(String k: textPreferences){
 			updatePreferenceSummary(k);
@@ -65,7 +97,7 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 		Preference p = findPreference(key);
 		SharedPreferences sharedPreferences = this.getPreferenceManager().getSharedPreferences();
 
-		if(p instanceof EditTextPreference) {
+		if(p != null && p instanceof EditTextPreference) {
 			if (mPrefValuePreviewSet.contains(key)) {
 				p.setSummary(sharedPreferences.getString(key, ""));
 			}
@@ -86,21 +118,25 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 	 */
 	@Override
 	public void onPause() {
+		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 		super.onPause();
-		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 	}
 
-	@Override
-	public void onStop() {
-		super.onStop();
-		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	}
+/*	@Override
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+		super.onPreferenceTreeClick(preferenceScreen, preference);
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	}
+		if (preference instanceof PreferenceScreen) {
+			if(MainActivity.getInstance().mDisplayedFragment != null && MainActivity.getInstance().mDisplayedFragment instanceof UpNavigatible){
+				((UpNavigatible) MainActivity.getInstance().mDisplayedFragment).setUpNavigatible(true);
+				((UpNavigatible) MainActivity.getInstance().mDisplayedFragment).setUpFragment(SettingsFragment.class);
+				MainActivity.getInstance().setDrawerIndicatorEnabled(false);
+				return true;
+			}
+		}
+
+		return false;
+	}*/
 
 	/**
 	 * {@inheritDoc}
@@ -108,41 +144,40 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		updatePreferenceSummary(key);
-		CheckBoxPreference checkboxPrefMultiStage = (CheckBoxPreference)getPreferenceManager().findPreference("pref_multistage");
 
-		if(checkboxPrefMultiStage != null)
-			checkMultistage(checkboxPrefMultiStage);
-	}
+		CheckBoxPreference checkboxPref1 = (CheckBoxPreference)getPreferenceManager().findPreference("pref_multistage");
 
-	private void checkMultistage(CheckBoxPreference checkboxPrefMultiStage){
-		checkboxPrefMultiStage.setOnPreferenceChangeListener(((preference, newValue) -> {
-			boolean myValue = (Boolean) newValue;
+		checkboxPref1.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
-			if (myValue) {
-				startMultiStage();
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+				boolean myValue = (Boolean) newValue;
+
+				if (myValue)
+					//startService(new Intent(getActivity(), MultiStage.class));
+					getActivity().startService(new Intent(getActivity(), MultiStageAlarm.class));
+
+
+				else
+					//	stopService(new Intent(getActivity(), MultiStage.class));
+						getActivity().stopService(new Intent(getActivity(),MultiStageAlarm.class));
+					//
+
+
+/*
+				Intent myIntent = new Intent(getActivity(), MultiStageAlarm.class);
+				PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, myIntent, 0);
+				AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+				// cancel the alarm
+				alarmManager.cancel(pendingIntent);
+				// delete the PendingIntent
+				pendingIntent.cancel();*/
+
+				return true;
 			}
-			else {
-				stopMultiStage();
-			}
-			return true;
-		}));
+		});
 
-	}
 
-	public void stopMultiStage() {
-		Context context =Hostage.getContext();
-		alarm.CancelAlarm(context);
-	}
 
-	private void startMultiStage() {
-		Context context = Hostage.getContext();
-		Intent intent = new Intent(context, MultiStageAlarm.class);
-
-		if (alarm != null) {
-			alarm.onReceive(context,intent);
-			alarm.SetAlarm(context);
-		} else {
-			Toast.makeText(context, "Alarm is null", Toast.LENGTH_SHORT).show();
-		}
 	}
 }

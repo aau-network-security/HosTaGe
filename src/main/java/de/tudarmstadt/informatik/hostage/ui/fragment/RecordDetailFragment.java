@@ -1,6 +1,5 @@
 package de.tudarmstadt.informatik.hostage.ui.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -16,7 +15,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,19 +48,24 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
  * Created by Shreyas Srinivasa on 01.10.15.
  */
 public class RecordDetailFragment extends UpNavigatibleFragment {
+
 	/**
 	 * Hold the record of which the detail informations should be shown
 	 */
 	private RecordAll mRecord;
+
 	/**
 	 * The database helper to retrieve data from the database
 	 */
 	private DaoSession dbSession;
 	private DAOHelper daoHelper;
+	//public HostageDBOpenHelper mDBOpenHelper;
+
 	/**
 	 * The layout inflater
 	 */
 	private LayoutInflater mInflater;
+
 	/*
 	 * References to the views in the layout
 	 */
@@ -74,11 +77,10 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	private TextView mRecordDetailsTextRemoteip;
 	private TextView mRecordDetailsTextProtocol;
 	private ImageButton mRecordDeleteButton;
-	private LayoutInflater inflater;
-	private ViewGroup container;
-	private Bundle savedInstanceState;
+
 	public SharedPreferences pref;
 	public int port;
+	public StringBuilder portArray;
 
 	/**
 	 * Sets the record of which the details should be displayed
@@ -121,14 +123,11 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 
-		this.inflater = inflater;
-		this.container= container;
-		this.savedInstanceState = savedInstanceState;
-
 		mInflater = inflater;
 		if(mRecord!=null)
 			getActivity().setTitle(mRecord.getSsid());
 
+		//this.mDBOpenHelper = new HostageDBOpenHelper(this.getActivity().getBaseContext());
 		dbSession = HostageApplication.getInstances().getDaoSession();
 		daoHelper = new DAOHelper(dbSession,getActivity());
 
@@ -169,9 +168,9 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	 *
 	 * @param rootView the view to use to display the informations
 	 */
-	@SuppressLint("ClickableViewAccessibility")
 	private void configurateRootView(View rootView) {
-		mRecordDetailsTextAttackType.setText(mRecord.getWasInternalAttack() ? R.string.RecordInternalAttack : R.string.RecordExternalAttack);
+
+		mRecordDetailsTextAttackType.setText(mRecord.isWasInternalAttack() ? R.string.RecordInternalAttack : R.string.RecordExternalAttack);
 		mRecordDetailsTextBssid.setText(mRecord.getBssid());
 		mRecordDetailsTextSsid.setText(mRecord.getSsid());
 		if (mRecord.getRemoteIP() != null)
@@ -188,7 +187,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 			String from = r.getLocalIP() == null ? "-" : r.getLocalIP() + ":" + r.getLocalPort();
 			String to = r.getRemoteIP() == null ? "-" : r.getRemoteIP() + ":" + r.getRemotePort();
 
-			if (r.getStringMessageType()!=null && r.getStringMessageType().equals( MessageRecord.TYPE.SEND.name())) {
+			if (r.getType() == MessageRecord.TYPE.SEND) {
 				row = mInflater.inflate(R.layout.fragment_record_conversation_sent, null);
 			} else {
 				row = mInflater.inflate(R.layout.fragment_record_conversation_received, null);
@@ -200,18 +199,21 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 			TextView conversationInfo = row.findViewById(R.id.record_conversation_info);
 			TextView conversationContent = row.findViewById(R.id.record_conversation_content);
-			conversationContent.setOnTouchListener((v, motionEvent) -> {
-				if (v.getId() == R.id.record_conversation_content) {
-					if (v.canScrollVertically(1) || v.canScrollVertically(-1)) { // if the view is scrollable
-						v.getParent().requestDisallowInterceptTouchEvent(true);
-						switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-							case MotionEvent.ACTION_UP:
-								v.getParent().requestDisallowInterceptTouchEvent(false);
-								break;
+			conversationContent.setOnTouchListener(new View.OnTouchListener() {
+				@Override
+				public boolean onTouch(final View v, final MotionEvent motionEvent) {
+					if (v.getId() == R.id.record_conversation_content) {
+						if (v.canScrollVertically(1) || v.canScrollVertically(-1)) { // if the view is scrollable
+							v.getParent().requestDisallowInterceptTouchEvent(true);
+							switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+								case MotionEvent.ACTION_UP:
+									v.getParent().requestDisallowInterceptTouchEvent(false);
+									break;
+							}
 						}
 					}
+					return false;
 				}
-				return false;
 			});
 
 			Date date = new Date(r.getTimestamp());
@@ -270,32 +272,44 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.bro_sig) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-			builder.setTitle(MainActivity.getInstance().getString(R.string.bro_signature));
-			builder.setMessage(MainActivity.getInstance().getString(R.string.bro_message));
+			switch (item.getItemId()) {
+			case R.id.bro_sig:
+				AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+				builder.setTitle(MainActivity.getInstance().getString(R.string.bro_signature));
+				builder.setMessage(MainActivity.getInstance().getString(R.string.bro_message));
 
-			builder.setPositiveButton(R.string.generate,
-					(dialog, which) -> {
-						try {
-							getConversation();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						MainActivity.getInstance().navigateBack();
-					}
-			).setNegativeButton(R.string.cancel, null);
+						builder.setPositiveButton(R.string.generate,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+														int which) {
 
-			builder.create();
-			builder.show();
 
-			return true;
+										try {
+											getConversation();
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
+
+
+										//mDBOpenHelper.deleteByAttackID(mRecord.getAttack_id());
+
+										MainActivity.getInstance().navigateBack();
+									}
+								}
+						).setNegativeButton(R.string.cancel, null);
+
+
+				builder.create();
+				builder.show();
+
+				return true;
 		}
 		return false;
 	}
 
 
 	public int protocol2Port(String protocol){
+
 		if(protocol.contains("HTTP")){port=80;}
 		else if(protocol.contains("MODBUS")){port=502;}
 		else if(protocol.contains("TELNET")){port=23;}
@@ -315,8 +329,12 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		return port;
 	}
 
+
 	//Signature generation
+
 	private void getConversation() throws IOException {
+
+
 		ArrayList<RecordAll> conversation = this.daoHelper.getAttackRecordDAO().getConversationForAttackID(mRecord.getAttack_id());
 		for (RecordAll r : conversation) {
 
@@ -464,9 +482,11 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	}
 
 	private void createPolicyFile(String signature,String protocol) throws IOException {
+
+
 		FileOutputStream sig;
-		long tsLong = System.currentTimeMillis() / 1000;
-		String ts = Long.toString(tsLong);
+		Long tsLong = System.currentTimeMillis() / 1000;
+		String ts = tsLong.toString();
 		String fileName = protocol+"Bro_Policy"+ts+".bro";
 		String externalLocation = pref.getString("pref_external_location", "");
 		String root = Environment.getExternalStorageDirectory().toString();
@@ -493,6 +513,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 	//write to file and store in SD Card
 	private void createSignatureFile(String signature,String protocol) throws IOException {
+
+
 		FileOutputStream sig;
 		Long tsLong = System.currentTimeMillis() / 1000;
 		String ts = tsLong.toString();
@@ -520,11 +542,18 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 	}
 
+
 	private boolean isExternalStorageWritable() {
 		String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
+
+	/*****************************
+	 * 
+	 * Date Transform
+	 * 
+	 * ***************************/
 
 	/**
 	 * Converts the given data to an localized string
@@ -544,26 +573,5 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	 */
 	private String getTimeAsString(Date date) {
 		return DateFormat.getTimeFormat(getActivity()).format(date);
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		if(mRootView!=null) {
-			unbindDrawables(mRootView);
-			mRootView=null;
-		}
-	}
-
-	private void unbindDrawables(View view) {
-		if (view.getBackground() != null) {
-			view.getBackground().setCallback(null);
-		}
-		if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
-			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-				unbindDrawables(((ViewGroup) view).getChildAt(i));
-			}
-			((ViewGroup) view).removeAllViews();
-		}
 	}
 }

@@ -221,7 +221,7 @@ public class SyncUtils {
                             "\"ssid\":\"" + record.getSsid() + "\"," +
                             "\"device\":\"" + record.getDevice() + "\"," +
                             "\"sync_id\":\"" + record.getSync_id() + "\"," +
-                            "\"internal_attack\":\"" + record.getWasInternalAttack() + "\"," +
+                            "\"internal_attack\":\"" + record.isWasInternalAttack() + "\"," +
                             "\"external_ip\":\"" + record.getExternalIP() + "\"" +
                             "}\n"
             );
@@ -230,7 +230,7 @@ public class SyncUtils {
         }
     }
 
-    @Deprecated
+
     public static boolean uploadRecordsToServer(String entity, String serverAddress){
         HttpPost httppost;
         try {

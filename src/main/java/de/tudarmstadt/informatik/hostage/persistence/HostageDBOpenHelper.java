@@ -1,11 +1,9 @@
 package de.tudarmstadt.informatik.hostage.persistence;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import android.content.ContentValues;
@@ -17,9 +15,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
@@ -2211,115 +2206,6 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
      * @return int color*/
     public Integer getColor(int index) {
         return ColorSequenceGenerator.getColorForIndex(index);
-    }
-
-    /*****************************
-     *
-     *          TEST
-     *
-     * ***************************/
-    //Moved from RecordOverviewFragment.java, deprecated test method. Some lines commented because they don't work on this class.
-    /**
-     * This will clear the database at first and than add new attacks.
-     * @param createNetworks number of networks to create
-     * @param attacksPerNetwork maximal number of attack per network
-     * @param maxMessagePerAttack maximal number of messages per attack
-     * */
-    private void addRecordToDB( int createNetworks, int attacksPerNetwork, int maxMessagePerAttack) {
-        //if ((daoHelper.getMessageRecordDAO().getRecordCount() > 0)) daoHelper.getAttackRecordDAO().clearData();
-
-        Calendar cal = Calendar.getInstance();
-
-//        int maxProtocolsIndex = this.getResources().getStringArray(
-//                R.array.protocols).length;
-
-        Random random = new Random();
-
-        LatLng tudarmstadtLoc = new LatLng(49.86923, 8.6632768);
-
-
-        final double ssidRadius = 0.1;
-        final double bssidRadius = 0.004;
-
-        int attackId = 0;
-
-
-        ArrayList<NetworkRecord> networkRecords = new ArrayList<NetworkRecord>();
-        ArrayList<AttackRecord> attackRecords = new ArrayList<AttackRecord>();
-        ArrayList<MessageRecord> messageRecords = new ArrayList<MessageRecord>();
-
-
-        for (int numOfNetworks = 0; numOfNetworks < createNetworks; numOfNetworks++){
-            String ssidName = "WiFi" + ((numOfNetworks) + 1);
-            String bssidName = "127.0.0." + ((numOfNetworks) + 1);
-
-//            int protocolIndex = numOfNetworks % maxProtocolsIndex;
-//            String protocolName = this.getResources().getStringArray(
-//                    R.array.protocols)[protocolIndex];
-
-            int numOfAttackPerNetwork = (Math.abs(random.nextInt()) % Math.max(1, attacksPerNetwork + 1));
-
-            NetworkRecord network = new NetworkRecord();
-            network.setBssid(bssidName);
-            network.setSsid(ssidName);
-
-            LatLng ssidLocation = new LatLng(tudarmstadtLoc.latitude - ssidRadius + 2.0 * ssidRadius * Math.random(), tudarmstadtLoc.longitude - ssidRadius + 2.0 * ssidRadius * Math.random());
-            double latitude = ssidLocation.latitude - bssidRadius + 2.0 * bssidRadius * Math.random();
-            double longitude = ssidLocation.longitude - bssidRadius + 2.0 * bssidRadius * Math.random();
-
-            long timestamp = cal.getTimeInMillis();
-            network.setTimestampLocation(timestamp);
-            network.setLongitude(longitude);
-            network.setLatitude(latitude);
-            network.setAccuracy(0.f);
-
-            networkRecords.add(network);
-
-            // ATTACKS PER NETWORK
-            for (int attackNumber = 0; attackNumber < numOfAttackPerNetwork; attackNumber++) {
-
-                int numRecordsPerAttack = (Math.abs(random.nextInt()) % (Math.max( maxMessagePerAttack, 1))) + 1;
-
-                if (maxMessagePerAttack <= 0) numRecordsPerAttack = 0;
-
-                /* ADD A ATTACK*/
-                AttackRecord attack = new AttackRecord(true);
-
-                attack.setBssid(bssidName);
-
-//                attack.setProtocol(protocolName);
-                attack.setLocalIP(bssidName);
-
-                attackRecords.add(attack);
-
-                // MESSAGE PER ATTACK
-                for (int messageID = attackId; messageID < attackId + numRecordsPerAttack; messageID++) {
-                    MessageRecord message = new MessageRecord(true);
-                    message.setAttack_id(attack.getAttack_id());
-
-                    // GO BACK IN TIME
-                    message.setTimestamp(cal.getTimeInMillis()
-                            - ((messageID * 60 * 60 * 24) * 1000) + (1000 * ((messageID - attackId) + 1)));
-
-                    if ((messageID - attackId) % 2 == 0){
-                        message.setType(MessageRecord.TYPE.RECEIVE);
-                    } else {
-                        message.setType(MessageRecord.TYPE.SEND);
-                    }
-                    message.setPacket("");
-
-                    messageRecords.add(message);
-                }
-
-                attackId+=numRecordsPerAttack;
-            }
-
-        }
-
-//        daoHelper.getNetworkRecordDAO().updateNetworkInformation(networkRecords);
-//        daoHelper.getAttackRecordDAO().insertAttackRecords(attackRecords);
-//        daoHelper.getMessageRecordDAO().insertMessageRecords(messageRecords);
-
     }
 
 }

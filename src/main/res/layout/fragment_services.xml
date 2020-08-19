@@ -91,8 +91,6 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="0dp"
                 android:layout_weight="1"
-                android:scaleX="1.1"
-                android:scaleY="1.1"
                 android:checked="false"
                 android:textSize="10dp" />
 

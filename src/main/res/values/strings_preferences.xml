@@ -13,7 +13,7 @@
 	<string name="pref_notification">Notification</string>
 	<string name="pref_vibration">Vibration</string>
 	<string name="pref_vibration_summ">Enable Vibration</string>
-	<string name="pref_upload">HpFeeds</string>
+	<string name="pref_upload">Online Database</string>
 	<string name="pref_upload_server">Server Address</string>
 	<string name="pref_connection_settings">Connection Settings</string>
 	<string name="pref_max_connections">Max Connections</string>	

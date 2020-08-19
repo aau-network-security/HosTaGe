@@ -49,7 +49,7 @@ public class Profile implements JSONSerializable<Profile> {
 	@Transient
 	public boolean mIsRandom = false;
 	@Transient
-	public HashMap<String, Boolean> mActiveProtocols = new HashMap<>();
+	public HashMap<String, Boolean> mActiveProtocols = new HashMap<String, Boolean>();
 
 	@Transient
 	public String mGhostPorts = "";
@@ -74,9 +74,9 @@ public class Profile implements JSONSerializable<Profile> {
 	}
 
 	public Profile(int id, String label, String text, int icon, boolean editable){
-		this(id, label, text, BitmapFactory.decodeResource(MainActivity.getContext().getResources(), icon), editable);
+		this(id, text, label, BitmapFactory.decodeResource(MainActivity.context.getResources(), icon), editable);
 		mIconId = icon;
-		mIconName = MainActivity.getContext().getResources().getResourceName(icon);
+		mIconName = MainActivity.context.getResources().getResourceName(icon);
 	}
 
 	public Profile(int id, String label, String text, String iconPath, boolean editable){
@@ -98,6 +98,8 @@ public class Profile implements JSONSerializable<Profile> {
 		mIconPath = in.readString();
 		mEditable = in.readInt() == 1;
 		mActiveProtocols = (HashMap<String,Boolean>) in.readSerializable();
+
+
 	}
 
 	@Generated(hash = 721292028)
@@ -114,21 +116,21 @@ public class Profile implements JSONSerializable<Profile> {
 	}
 
 	public void setIcon(int icon){
-		this.mIcon = BitmapFactory.decodeResource(MainActivity.getContext().getResources(), icon);
+		this.mIcon = BitmapFactory.decodeResource(MainActivity.context.getResources(), icon);
 	}
 
 	public Bitmap getIconBitmap(){
 		if(this.mIcon != null) return mIcon;
 
 		if(this.mIconId != 0){
-			this.mIcon = BitmapFactory.decodeResource(MainActivity.getContext().getResources(), mIconId);
+			this.mIcon = BitmapFactory.decodeResource(MainActivity.context.getResources(), mIconId);
 			return this.mIcon;
 		}
 
 		if(this.mIconName != null && !this.mIconName.isEmpty()){
-			this.mIconId = MainActivity.getContext().getResources().getIdentifier(this.mIconName,
+			this.mIconId = MainActivity.context.getResources().getIdentifier(this.mIconName,
 					"drawable", "de.tudarmstadt.informatik.hostage");
-			this.mIcon = BitmapFactory.decodeResource(MainActivity.getContext().getResources(), this.mIconId);
+			this.mIcon = BitmapFactory.decodeResource(MainActivity.context.getResources(), this.mIconId);
 
 			return this.mIcon;
 		}
@@ -150,7 +152,7 @@ public class Profile implements JSONSerializable<Profile> {
 	}
 
 	public List<String> getActiveProtocols(){
-		List<String> list = new LinkedList<>();
+		List<String> list = new LinkedList<String>();
 		for(Map.Entry<String, Boolean> entry: this.mActiveProtocols.entrySet()){
 			if(entry.getValue()){
 				list.add(entry.getKey());
@@ -161,7 +163,7 @@ public class Profile implements JSONSerializable<Profile> {
 	}
 
 	public Drawable getIconDrawable(){
-		return new BitmapDrawable(MainActivity.getContext().getResources(), getIconBitmap());
+		return new BitmapDrawable(MainActivity.context.getResources(), getIconBitmap());
 	}
 
 	public boolean isEditable(){
@@ -187,6 +189,7 @@ public class Profile implements JSONSerializable<Profile> {
 
 	public JSONObject toJSON(){
 		JSONObject jsonObj = new JSONObject();
+
 		try {
 			jsonObj.put("text", mText);
 			jsonObj.put("label", mLabel);
