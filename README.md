@@ -13,13 +13,13 @@ __Download APK__
 
 [HosTaGe-v2.2.11.apk](https://github.com/aau-network-security/HosTaGe/releases/download/v2.2.11/HosTaGe-2.2.11.apk) [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.2.11)(latest) \
 
-[HosTaGe-v2.1.1.apk](https://github.com/aau-network-security/HosTaGe/releases/download/v2.1.1/HosTaGe-2.1.1.apk) [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.1.1)\
+HosTaGe-v2.1.1.apk [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.1.1)\
 
-[HosTaGe-v2.0.0.apk](https://github.com/aau-network-security/HosTaGe/releases/download/v2.0.0/HosTaGev2.0.0.apk) [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.0.0)
+HosTaGe-v2.0.0.apk [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.0.0)
 
 __Original Authors__
 
-Emmanouil Vasilomanolakis -  idea, guidance and suggestions during development
+[Emmanouil Vasilomanolakis](https://mvasiloma.com/) -  idea, guidance and suggestions during development
 
 __Contributors__
 [Shreyas Srinivasa](https://sastry17.github.io/), lead developer, Aalborg University and Technische Universität Darmstadt (Github - @sastry17)\
