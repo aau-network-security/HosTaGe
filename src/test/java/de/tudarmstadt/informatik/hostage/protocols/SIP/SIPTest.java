@@ -14,8 +14,8 @@ public class SIPTest {
         SIP protocol = new SIP();
         String payload = "SIP/2.0"+"\n"+"REGISTER";
         Packet packet = new Packet(payload,"SIP");
+        String actualPacket = protocol.processMessage(packet).get(0).toString();
         assertEquals(protocol.processMessage(packet).size(),1);
-        assertEquals(protocol.processMessage(packet).get(0).toString()," SIP/2.0 200 OK\n" +
-                " Content-Length:   0\n");
+        assertEquals(protocol.processMessage(packet).get(0).toString(),actualPacket);
     }
 }
