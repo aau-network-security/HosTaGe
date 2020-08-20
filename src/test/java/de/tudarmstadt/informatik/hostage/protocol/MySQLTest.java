@@ -36,11 +36,8 @@ public class MySQLTest {
                 "\\x00\\x50\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x50\\x02\\x71\\x1d";
 
         MySQL protocolSql = new MySQL();
-        String format = protocolSql.format(s);
+        String format = protocolSql.format(fin.toString());
         System.out.println(format);
-
-
-
 
     }
 }
