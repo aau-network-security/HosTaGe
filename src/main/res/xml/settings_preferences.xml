@@ -91,7 +91,7 @@
 			android:persistent="false">
 		<PreferenceCategory android:title="@string/pref_notification" >
 			<CheckBoxPreference
-				android:defaultValue="true"
+				android:defaultValue="false"
 				android:key="pref_vibration"
 				android:summary="@string/pref_vibration_summ"
 				android:title="@string/pref_vibration" />
