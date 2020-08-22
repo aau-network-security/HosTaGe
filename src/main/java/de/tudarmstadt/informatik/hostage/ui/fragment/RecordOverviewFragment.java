@@ -482,40 +482,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.records_action_synchronize:
-
-				AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-				builder.setTitle(MainActivity.getInstance().getString(R.string.rec_sync_rec));
-				builder.setItems(new String[]{
-						MainActivity.getInstance().getString(R.string.rec_via_bt),
-						"With TraCINg",
-                        "Via WifiDirect"
-				}, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int position) {
-						switch(position){
-							case 0:
-
-								startActivityForResult(new Intent(getBaseContext(), BluetoothSyncActivity.class), 0);
-								break;
-							/*case 1:
-								getActivity().startActivity(new Intent(getActivity(), NFCSyncActivity.class));
-								break;*/
-                            //TODO Temporary removed TracingMonitor
-							case 1:
-                                //startActivityForResult(new Intent(getActivity(), TracingSyncActivity.class), 0);
-								break;
-                            case 2:
-                                startActivityForResult(new Intent(getActivity(), WiFiP2pSyncActivity.class), 0);
-                                break;
-						}
-					}
-				});
-				builder.create();
-				builder.show();
-
-
-				return true;
+//			case R.id.records_action_synchronize:
+//				return synchronizeMenu(item);
 			case R.id.records_action_export:
 				AlertDialog.Builder builderExport = new AlertDialog.Builder(getActivity());
 				builderExport.setTitle(MainActivity.getInstance().getString(R.string.rec_choose_export_format));
@@ -537,6 +505,40 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		return false;
 	}
 
+	//Disabled for release.
+	@Deprecated
+	private boolean synchronizeMenu(MenuItem item){
+//        if (item.getItemId() == R.id.records_action_synchronize) {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+//            builder.setTitle(MainActivity.getInstance().getString(R.string.rec_sync_rec));
+//            builder.setItems(new String[]{
+//                    MainActivity.getInstance().getString(R.string.rec_via_bt),
+//                    "With TraCINg",
+//                    "Via WifiDirect"
+//            }, (dialog, position) -> {
+//                switch (position) {
+//                    case 0:
+//                        startActivityForResult(new Intent(getBaseContext(), BluetoothSyncActivity.class), 0);
+//                        break;
+//                        /*case 1:
+//                            getActivity().startActivity(new Intent(getActivity(), NFCSyncActivity.class));
+//                            break;*/
+//                    //TODO Temporary removed TracingMonitor
+//                    case 1:
+//                        //startActivityForResult(new Intent(getActivity(), TracingSyncActivity.class), 0);
+//                        // break;
+//                    case 2:
+//                        startActivityForResult(new Intent(getActivity(), WiFiP2pSyncActivity.class), 0);
+//                        break;
+//                }
+//            });
+//            builder.create();
+//            builder.show();
+//
+//            return true;
+//        }
+        return false;
+    }
 
     public void openDeleteFilteredAttacksDialog() {
         // Use the Builder class for convenient dialog construction

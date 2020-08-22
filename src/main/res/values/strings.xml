@@ -306,4 +306,8 @@
     <string name="pref_timeout_default">30</string>
     <string name="portscan">&#160;Portscan</string>
     <string name="portscans">&#160;Portscans</string>
+    <string name="export_as_bro_signature" translatable="false">Export as Bro Signature</string>
+    <string name="export_to_storage" translatable="false">Export to storage</string>
+    <string name="synchronize" translatable="false">Synchronize</string>
+    <string name="new_profile" translatable="false">New profile</string>
 </resources>
