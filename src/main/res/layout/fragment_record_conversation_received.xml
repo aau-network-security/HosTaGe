@@ -46,4 +46,31 @@
 			android:layout_below="@+id/record_conversation_info"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"/>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_width="wrap_content"
+		android:layout_marginStart="220dp"
+		android:layout_marginTop="10dp"
+		>
+		<Button android:layout_width="66dp"
+			android:layout_height="40dp"
+			android:text="@string/text_packet"
+			android:textColor="@color/dark_cyan"
+			android:id="@+id/text_id_received"
+			android:layout_gravity="center"
+			android:gravity="bottom"
+			style="?android:attr/borderlessButtonStyle"/>
+
+		<Button android:layout_width="66dp"
+			android:textColor="@color/dark_red"
+			android:layout_height="40dp"
+			android:text="@string/hex_packet"
+			android:id="@+id/hex_id_received"
+			android:layout_gravity="bottom"
+			android:gravity="bottom"
+			style="?android:attr/borderlessButtonStyle"/>
+	</LinearLayout>
+
 </RelativeLayout>

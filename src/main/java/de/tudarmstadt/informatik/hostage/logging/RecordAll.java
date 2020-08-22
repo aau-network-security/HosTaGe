@@ -1,9 +1,14 @@
 package de.tudarmstadt.informatik.hostage.logging;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 import de.tudarmstadt.informatik.hostage.logging.formatter.Formatter;
 import de.tudarmstadt.informatik.hostage.model.JSONSerializable;
@@ -228,6 +233,34 @@ public class RecordAll implements JSONSerializable<RecordAll> {
 
     public void setStringMessageType(String stringMessageType) {
         this.stringMessageType = stringMessageType;
+    }
+
+    public String convertPacketFromHex(String packet){
+        String clean = packet.replaceAll("[, ;]", "");
+        if(validateHex(clean)) {
+            byte[] bytes;
+            try {
+                bytes = Hex.decodeHex(clean.toCharArray());
+            } catch (DecoderException e) {
+                return packet;
+            }
+            return new String(bytes, StandardCharsets.UTF_8);
+        }
+        return packet;
+    }
+
+    public String convertPacketFromText(String packet){
+        String clean = packet.replaceAll("[, ;]", "");
+        if(!validateHex(clean)) {
+            return String.format("%x", new BigInteger(1, clean.getBytes(StandardCharsets.UTF_8)));
+        }
+        return packet;
+    }
+
+    private boolean validateHex(String packet){
+        Pattern pattern = Pattern.compile("^[0-9a-fA-F]+$");
+
+        return pattern.matcher(packet).matches();
     }
 
     @Override
