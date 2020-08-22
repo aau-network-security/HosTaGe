@@ -30,7 +30,7 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
  * This Class is used to get Location data. You can get the last found Location or start searching for new hostage.location data.
  * @author Lars Pandikow
  */
-public class MyLocationManager implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class MyLocationManager{
 	private Context context;
 	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
@@ -151,7 +151,6 @@ public class MyLocationManager implements ActivityCompat.OnRequestPermissionsRes
 
 	private void requestLocationUpdates(boolean networkEnabled,Context context) {
 		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
 			ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
 
 			return;
@@ -162,36 +161,6 @@ public class MyLocationManager implements ActivityCompat.OnRequestPermissionsRes
 
 	}
 
-
-    /**
-     * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     */
-
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		if (requestCode == 10) {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-			} else {
-				if (!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-					AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-					dialog.setTitle("Permission Required");
-					dialog.setCancelable(false);
-					dialog.setMessage("You have to Allow permission to access user location");
-					dialog.setPositiveButton("Settings", (dialog1, which) -> {
-						Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package",
-								context.getPackageName(), null));
-					});
-					AlertDialog alertDialog = dialog.create();
-					alertDialog.show();
-				}
-				//Code for deny if needed
-			}
-		}
-	}
 
 
 	/**

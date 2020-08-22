@@ -50,6 +50,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
@@ -484,7 +485,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 					!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
 					!= PackageManager.PERMISSION_GRANTED) {
 
-				ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+				requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
 
 				return;
 			}
@@ -517,8 +518,9 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 	 */
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		if (requestCode == 10) {
+		if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
 
 			} else {
 				if (!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -527,12 +529,14 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 					dialog.setCancelable(false);
 					dialog.setMessage("You have to Allow permission to access user location");
 					dialog.setPositiveButton("Settings", (dialog1, which) -> {
-
+						Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+								Uri.fromParts("package", Hostage.getContext().getPackageName(), null));
+						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						startActivity(intent);
 					});
 					androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
 					alertDialog.show();
 				}
-				//Code for deny if needed
 			}
 		}
 	}

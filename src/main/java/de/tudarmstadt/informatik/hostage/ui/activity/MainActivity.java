@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -19,9 +20,11 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -31,8 +34,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.R;
@@ -117,7 +123,8 @@ public class MainActivity extends AppCompatActivity {
 	 * Hold the state of the Hostage service
 	 */
 	private boolean mServiceBound = false;
-	private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 3;
+	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+
 
 
 	/**
@@ -245,7 +252,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -260,15 +266,9 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_drawer_main);
 
 		addAnimation();
-
 		// configures the action bar
 		configureActionBar();
-
 		loadDrawer();
-
-//		ActivityCompat.requestPermissions(MainActivity.this,
-//				new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//				MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
 		getLocationData();
 		loadFirstRun();
 		//Must start after the location!
@@ -805,26 +805,36 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	/**
+	 * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
+	 * @param requestCode
+	 * @param permissions
+	 * @param grantResults
+	 */
 	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-		if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
-			if (grantResults.length > 0
-					&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				//Api.assertBinaries(this, true);
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
 			} else {
-				androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
-				dialog.setTitle("Permission Required");
-				dialog.setCancelable(false);
-				dialog.setMessage("You have to Allow permission to access External Storage");
-				dialog.setPositiveButton("Settings", (dialog1, which) -> {
-
-				});
-				androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
-				alertDialog.show();
-
+				if (!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+					androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
+					dialog.setTitle("Permission Required");
+					dialog.setCancelable(false);
+					dialog.setMessage("You have to Allow permission to access user location");
+					dialog.setPositiveButton("Settings", (dialog1, which) -> {
+						Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+								Uri.fromParts("package",getApplicationContext().getPackageName(), null));
+						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						startActivity(intent);
+					});
+					androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
+					alertDialog.show();
+				}
 			}
 		}
 	}
+
 
 
 }
