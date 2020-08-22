@@ -31,7 +31,6 @@ import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.Listener;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.model.Profile;
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.SensorProfile;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.adapter.ProfileManagerListAdapter;
 

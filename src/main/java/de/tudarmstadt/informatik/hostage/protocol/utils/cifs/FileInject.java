@@ -1,17 +1,15 @@
-package de.tudarmstadt.informatik.hostage.protocol;
-
+package de.tudarmstadt.informatik.hostage.protocol.utils.cifs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
+
 import java.net.InetAddress;
-import java.util.List;
 
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.Listener;
-import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
@@ -19,24 +17,17 @@ import de.tudarmstadt.informatik.hostage.logging.Logger;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
-import de.tudarmstadt.informatik.hostage.protocol.utils.cifs.CifsServer;
-import de.tudarmstadt.informatik.hostage.protocol.utils.cifs.FileInject;
+
+import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
-import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 
 /**
- * HostageV3
- * ================
- * @author Alexander Brakowski
- * @author Daniel Lazar
+ * Class to detect file injection
  */
-public class SMB implements Protocol {
-    private Listener mListener;
-    private CifsServer mCifsServer;
-
-    SharedPreferences pref;
-
+public class FileInject {
+    private Listener fListener;
+    SharedPreferences fpref;
     private long attack_id;
     private String externalIP;
     private String BSSID;
@@ -47,18 +38,20 @@ public class SMB implements Protocol {
 
     private boolean logged;
 
-    public Listener getListener(){
-        return mListener;
+
+    //Sets listener for file injection attacks
+
+    public Listener getListener() {
+        return fListener;
     }
 
-    public void initialize(Listener mListener) {
-        this.mListener = mListener;
-        FileInject fileInject = new FileInject();
-        fileInject.startListner(mListener);
-        Hostage service = mListener.getService();
-        pref = PreferenceManager.getDefaultSharedPreferences(service);
+    public void startListner(Listener fListener) {
+        this.fListener = fListener;
+        Hostage service = fListener.getService();
+        fpref = PreferenceManager.getDefaultSharedPreferences(service);
+        getAndIncrementAttackID(fpref);
 
-        getAndIncrementAttackID(pref);
+
         SharedPreferences connInfo = service.getSharedPreferences(service.getString(R.string.connection_info), Context.MODE_PRIVATE);
         BSSID = connInfo.getString(service.getString(R.string.connection_info_bssid), null);
         SSID = connInfo.getString(service.getString(R.string.connection_info_ssid), null);
@@ -70,24 +63,15 @@ public class SMB implements Protocol {
         logged = false;
 
 
-        try {
-            mCifsServer = new CifsServer(this, fileInject);
-            mCifsServer.run();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
-    public void stop(){
-        mCifsServer.stop();
-    }
-
-    public int getLocalIp(){
+    public int getLocalIp() {
         WifiManager wifi = (WifiManager) MainActivity.getContext().getSystemService(Context.WIFI_SERVICE);
         DhcpInfo dhcp = wifi.getDhcpInfo();
 
         return dhcp.ipAddress;
     }
+
 
     private synchronized void getAndIncrementAttackID(SharedPreferences pref) {
         SharedPreferences.Editor editor = pref.edit();
@@ -95,6 +79,7 @@ public class SMB implements Protocol {
         editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
         editor.apply();
     }
+
 
     public MessageRecord createMessageRecord(MessageRecord.TYPE type, String packet) {
         MessageRecord record = new MessageRecord(true);
@@ -111,7 +96,9 @@ public class SMB implements Protocol {
         record.setAttack_id(attack_id);
         record.setSync_id(attack_id);
         record.setDevice(SyncDevice.currentDevice().getDeviceID());
-        record.setProtocol(this.toString());
+
+
+        record.setProtocol("FILE INJECTION");
         record.setExternalIP(externalIP);
         record.setLocalIP(CifsServer.intToInetAddress(getLocalIp()).getHostAddress());
         record.setLocalPort(localPort);
@@ -140,8 +127,8 @@ public class SMB implements Protocol {
         return record;
     }
 
-    public void log(MessageRecord.TYPE type, String packet, int localPort, InetAddress remoteIP, int remotePort){
-        if(!logged){
+    public void log(MessageRecord.TYPE type, String packet, int localPort, InetAddress remoteIP, int remotePort) {
+        if (!logged) {
             Logger.log(Hostage.getContext(), createNetworkRecord());
             Logger.log(Hostage.getContext(), createAttackRecord(localPort, remoteIP, remotePort));
             logged = true;
@@ -149,36 +136,8 @@ public class SMB implements Protocol {
         if (packet != null && packet.length() > 0) { // prevent hostage.logging empty packets
             Logger.log(Hostage.getContext(), createMessageRecord(type, packet));
         }
-    }
-    private int port = 1025;
 
-    @Override
-    public int getPort() { return port; }
 
-    @Override
-    public void setPort(int port){ this.port = port;}
-
-    @Override
-    public boolean isClosed() {
-        return false;
     }
 
-    @Override
-    public boolean isSecure() {
-        return false;
-    }
-
-    @Override
-    public List<Packet> processMessage(Packet requestPacket) {
-        return null;
-    }
-
-    @Override
-    public TALK_FIRST whoTalksFirst() {
-        return TALK_FIRST.CLIENT;
-    }
-
-    public String toString(){
-        return "SMB";
-    }
 }

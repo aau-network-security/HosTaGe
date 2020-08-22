@@ -11,8 +11,8 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
-import de.tudarmstadt.informatik.hostage.protocol.coapUtils.COAPHandler;
-import de.tudarmstadt.informatik.hostage.protocol.coapUtils.smokeSensor.SmokeSensorProfile;
+import de.tudarmstadt.informatik.hostage.protocol.utils.coapUtils.COAPHandler;
+import de.tudarmstadt.informatik.hostage.protocol.utils.coapUtils.smokeSensor.SmokeSensorProfile;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 public class COAP implements Protocol {

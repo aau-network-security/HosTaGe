@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.tudarmstadt.informatik.hostage.protocol.amqpUtils.LogBackWatcher;
+import de.tudarmstadt.informatik.hostage.protocol.commons.logWatchers.LogBackWatcher;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 public class AMQP implements Protocol {

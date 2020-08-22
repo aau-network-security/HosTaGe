@@ -1,8 +1,6 @@
 package de.tudarmstadt.informatik.hostage;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Timer;
@@ -15,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
 import de.tudarmstadt.informatik.hostage.protocol.MQTT;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.SensorProfile;
+import de.tudarmstadt.informatik.hostage.protocol.utils.mqttUtils.MQTTHandler;
+import de.tudarmstadt.informatik.hostage.protocol.utils.mqttUtils.SensorProfile;
 
-import static de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler.isTopicPublished;
+import static de.tudarmstadt.informatik.hostage.protocol.utils.mqttUtils.MQTTHandler.isTopicPublished;
 
 public class MQTTListener extends Listener {
     private ArrayList<Handler> handlers = new ArrayList<Handler>();

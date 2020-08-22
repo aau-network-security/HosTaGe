@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import de.tudarmstadt.informatik.hostage.protocol.AMQP;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
-import de.tudarmstadt.informatik.hostage.protocol.amqpUtils.AMQPHandler;
+import de.tudarmstadt.informatik.hostage.protocol.utils.amqpUtils.AMQPHandler;
 
 public class AMQPListener extends Listener {
     private ArrayList<Handler> handlers = new ArrayList<>();

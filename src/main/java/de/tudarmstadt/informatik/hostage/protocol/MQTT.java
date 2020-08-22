@@ -10,11 +10,10 @@ import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5MessageException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTConfig;
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
+import de.tudarmstadt.informatik.hostage.protocol.utils.mqttUtils.MQTTConfig;
+import de.tudarmstadt.informatik.hostage.protocol.utils.mqttUtils.MQTTHandler;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 import io.moquette.broker.ClientDescriptor;
 import io.moquette.broker.Server;

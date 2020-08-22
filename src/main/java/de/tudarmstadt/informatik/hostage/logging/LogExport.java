@@ -34,9 +34,7 @@ public class LogExport extends IntentService{
 	Handler mMainThreadHandler = null;
 
 	SharedPreferences pref;
-	//HostageDBOpenHelper dbh;
 	DaoSession dbSession;
-	//AttackRecordDAO attackRecordDAO;
 	DAOHelper daoHelper;
 	
 	public LogExport() {
@@ -47,7 +45,6 @@ public class LogExport extends IntentService{
 	public void onCreate() {
 		super.onCreate();
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
-		//dbh = new HostageDBOpenHelper(this);
 		dbSession = HostageApplication.getInstances().getDaoSession();
 		daoHelper = new DAOHelper(dbSession,this);
 		mMainThreadHandler = new Handler();
@@ -120,11 +117,6 @@ public class LogExport extends IntentService{
     }
 
 	private void makeToast(final String text, final int length){
-		mMainThreadHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(getApplicationContext(), text, length).show();
-			}
-		});
+		mMainThreadHandler.post(() -> Toast.makeText(getApplicationContext(), text, length).show());
 	}
 }

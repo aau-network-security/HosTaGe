@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.tudarmstadt.informatik.hostage.protocol.snmpUtils.MOTableBuilder;
+import de.tudarmstadt.informatik.hostage.protocol.utils.snmpUtils.MOTableBuilder;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 /**

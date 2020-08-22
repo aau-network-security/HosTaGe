@@ -3,10 +3,10 @@ package de.tudarmstadt.informatik.hostage.protocol;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.tudarmstadt.informatik.hostage.protocol.smptUtils.SmtpActionType;
-import de.tudarmstadt.informatik.hostage.protocol.smptUtils.SmtpRequest;
-import de.tudarmstadt.informatik.hostage.protocol.smptUtils.SmtpResponse;
-import de.tudarmstadt.informatik.hostage.protocol.smptUtils.SmtpState;
+import de.tudarmstadt.informatik.hostage.protocol.utils.smptUtils.SmtpActionType;
+import de.tudarmstadt.informatik.hostage.protocol.utils.smptUtils.SmtpRequest;
+import de.tudarmstadt.informatik.hostage.protocol.utils.smptUtils.SmtpResponse;
+import de.tudarmstadt.informatik.hostage.protocol.utils.smptUtils.SmtpState;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
 /**
