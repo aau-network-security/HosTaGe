@@ -817,7 +817,6 @@ public class MainActivity extends AppCompatActivity {
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
 			} else {
-				if (!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION)) {
 					androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
 					dialog.setTitle("Permission Required");
 					dialog.setCancelable(false);
@@ -830,8 +829,9 @@ public class MainActivity extends AppCompatActivity {
 					});
 					androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
 					alertDialog.show();
-				}
+
 			}
+
 		}
 	}
 
