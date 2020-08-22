@@ -30,7 +30,7 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
  * This Class is used to get Location data. You can get the last found Location or start searching for new hostage.location data.
  * @author Lars Pandikow
  */
-public class MyLocationManager{
+public class MyLocationManager {
 	private Context context;
 	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
@@ -83,14 +83,21 @@ public class MyLocationManager{
 	public MyLocationManager(Context context) {
 		// Acquire a reference to the system Location Manager
 		this.context = context;
-		locationManager = (LocationManager) context
-				.getSystemService(Context.LOCATION_SERVICE);
+		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
 		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
 				&& ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
 				!= PackageManager.PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
 
+			return;
+		}
+		newestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+	}
+
+	public void initializeNewestLocation() {
+		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 			return;
 		}
 		newestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);

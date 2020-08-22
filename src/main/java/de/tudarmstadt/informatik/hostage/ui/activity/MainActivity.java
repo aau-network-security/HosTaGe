@@ -20,6 +20,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -807,15 +809,15 @@ public class MainActivity extends AppCompatActivity {
 
 	/**
 	 * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
-	 * @param requestCode
-	 * @param permissions
-	 * @param grantResults
+	 * @param requestCode LOCATION_PERMISSION_REQUEST_CODE
+	 * @param permissions Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
+	 * @param grantResults if the user accepts or not our permission
 	 */
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+				locationManager.initializeNewestLocation();
 			} else {
 					androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
 					dialog.setTitle("Permission Required");
