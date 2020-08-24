@@ -19,8 +19,8 @@ import de.tudarmstadt.informatik.hostage.logging.Logger;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.NetworkRecord;
 import de.tudarmstadt.informatik.hostage.logging.SyncDevice;
-import de.tudarmstadt.informatik.hostage.protocol.cifs.CifsServer;
-import de.tudarmstadt.informatik.hostage.protocol.cifs.FileInject;
+import de.tudarmstadt.informatik.hostage.protocol.utils.cifs.CifsServer;
+import de.tudarmstadt.informatik.hostage.protocol.utils.cifs.FileInject;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 
@@ -72,7 +72,6 @@ public class SMB implements Protocol {
 
         try {
             mCifsServer = new CifsServer(this, fileInject);
-            System.out.println("InsideInitialize SMB");
             mCifsServer.run();
         } catch (Exception e) {
             e.printStackTrace();

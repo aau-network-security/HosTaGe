@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import de.tudarmstadt.informatik.hostage.protocol.COAP;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
-import de.tudarmstadt.informatik.hostage.protocol.coapUtils.COAPHandler;
+import de.tudarmstadt.informatik.hostage.protocol.utils.coapUtils.COAPHandler;
 
 public class COAPListener extends Listener {
     private ArrayList<Handler> handlers = new ArrayList<>();

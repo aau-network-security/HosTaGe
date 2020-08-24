@@ -9,16 +9,16 @@
             android:id="@+id/scrollView"
             android:fillViewport="true" android:layout_above="@+id/linearLayout">
 
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				  android:orientation="vertical"
+	<LinearLayout
+		android:orientation="vertical"
 				  android:layout_width="match_parent"
 				  android:layout_height="wrap_content"
 				  android:measureWithLargestChild="false"
 				  android:baselineAligned="true"
 				  android:id="@+id/linearLayout3">
 
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					  android:orientation="vertical"
+		<LinearLayout
+			android:orientation="vertical"
 					  android:layout_width="match_parent"
 					  android:layout_height="wrap_content"
 					  android:measureWithLargestChild="false"
@@ -158,14 +158,13 @@
 				android:text="@string/record_details_conversation"
 				android:textAllCaps="true"
 				android:id="@+id/textView9"
-				android:layout_marginLeft="10dp"
+				android:layout_marginStart="10dp"
 				android:layout_marginTop="10dp"
 				android:layout_marginBottom="20dp"/>
 
-
+	</LinearLayout>
 	</LinearLayout>
 
-	</LinearLayout>
 </ScrollView>
 <RelativeLayout
     style="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse"

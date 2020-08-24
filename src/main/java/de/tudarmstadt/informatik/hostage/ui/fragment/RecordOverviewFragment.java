@@ -1,5 +1,6 @@
 package de.tudarmstadt.informatik.hostage.ui.fragment;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -9,9 +10,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,7 +48,6 @@ import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.LogExport;
-import de.tudarmstadt.informatik.hostage.logging.Record;
 import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.sync.android.SyncUtils;
@@ -56,11 +59,12 @@ import de.tudarmstadt.informatik.hostage.ui.dialog.ChecklistDialog;
 import de.tudarmstadt.informatik.hostage.ui.dialog.DateTimeDialogFragment;
 import de.tudarmstadt.informatik.hostage.ui.model.ExpandableListItem;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
-import de.tudarmstadt.informatik.hostage.ui.popup.AbstractPopup;
 import de.tudarmstadt.informatik.hostage.ui.popup.AbstractPopupItem;
 import de.tudarmstadt.informatik.hostage.ui.popup.SimplePopupItem;
 import de.tudarmstadt.informatik.hostage.ui.popup.SimplePopupTable;
 import de.tudarmstadt.informatik.hostage.ui.popup.SplitPopupItem;
+
+import static de.tudarmstadt.informatik.hostage.ui.activity.MainActivity.getContext;
 
 
 public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimeDialogFragment.DateTimeDialogFragmentListener {
@@ -109,6 +113,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private BroadcastReceiver mReceiver;
     private ExpandableListView mylist;
     ArrayList<RecordAll> data= new ArrayList<>();
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 3;
 
     /* DATE CONVERSION STUFF*/
     static final DateFormat localisedDateFormatter = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
@@ -477,46 +482,15 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.records_action_synchronize:
-
-				AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-				builder.setTitle(MainActivity.getInstance().getString(R.string.rec_sync_rec));
-				builder.setItems(new String[]{
-						MainActivity.getInstance().getString(R.string.rec_via_bt),
-						"With TraCINg",
-                        "Via WifiDirect"
-				}, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int position) {
-						switch(position){
-							case 0:
-
-								startActivityForResult(new Intent(getBaseContext(), BluetoothSyncActivity.class), 0);
-								break;
-							/*case 1:
-								getActivity().startActivity(new Intent(getActivity(), NFCSyncActivity.class));
-								break;*/
-                            //TODO Temporary removed TracingMonitor
-							case 1:
-                                //startActivityForResult(new Intent(getActivity(), TracingSyncActivity.class), 0);
-								break;
-                            case 2:
-                                startActivityForResult(new Intent(getActivity(), WiFiP2pSyncActivity.class), 0);
-                                break;
-						}
-					}
-				});
-				builder.create();
-				builder.show();
-
-
-				return true;
+//			case R.id.records_action_synchronize:
+//				return synchronizeMenu(item);
 			case R.id.records_action_export:
 				AlertDialog.Builder builderExport = new AlertDialog.Builder(getActivity());
 				builderExport.setTitle(MainActivity.getInstance().getString(R.string.rec_choose_export_format));
 				builderExport.setItems(R.array.format, (dialog, position) -> {
-                    //RecordOverviewFragment.this.exportDatabase(position);
                     Intent intent = new Intent(getActivity(), LogExport.class);
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+
                     intent.setAction(LogExport.ACTION_EXPORT_DATABASE);
                     intent.putExtra(LogExport.FORMAT_EXPORT_DATABASE, position);
 
@@ -531,6 +505,40 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 		return false;
 	}
 
+	//Disabled for release.
+	@Deprecated
+	private boolean synchronizeMenu(MenuItem item){
+//        if (item.getItemId() == R.id.records_action_synchronize) {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+//            builder.setTitle(MainActivity.getInstance().getString(R.string.rec_sync_rec));
+//            builder.setItems(new String[]{
+//                    MainActivity.getInstance().getString(R.string.rec_via_bt),
+//                    "With TraCINg",
+//                    "Via WifiDirect"
+//            }, (dialog, position) -> {
+//                switch (position) {
+//                    case 0:
+//                        startActivityForResult(new Intent(getBaseContext(), BluetoothSyncActivity.class), 0);
+//                        break;
+//                        /*case 1:
+//                            getActivity().startActivity(new Intent(getActivity(), NFCSyncActivity.class));
+//                            break;*/
+//                    //TODO Temporary removed TracingMonitor
+//                    case 1:
+//                        //startActivityForResult(new Intent(getActivity(), TracingSyncActivity.class), 0);
+//                        // break;
+//                    case 2:
+//                        startActivityForResult(new Intent(getActivity(), WiFiP2pSyncActivity.class), 0);
+//                        break;
+//                }
+//            });
+//            builder.create();
+//            builder.show();
+//
+//            return true;
+//        }
+        return false;
+    }
 
     public void openDeleteFilteredAttacksDialog() {
         // Use the Builder class for convenient dialog construction
@@ -1558,6 +1566,30 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             if (filterButton != null){
                 filterButton.setImageResource(R.drawable.ic_filter);
                 filterButton.invalidate();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                LogExport.exportDatabase(LogExport.formatter);
+
+            } else {
+                androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
+                dialog.setTitle("Permission Required");
+                dialog.setCancelable(false);
+                dialog.setMessage("You have to Allow permission to access External Storage");
+                dialog.setPositiveButton("Settings", (dialog1, which) -> {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package",getApplicationContext().getPackageName(), null));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+
+                });
+                androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
+                alertDialog.show();
             }
         }
     }

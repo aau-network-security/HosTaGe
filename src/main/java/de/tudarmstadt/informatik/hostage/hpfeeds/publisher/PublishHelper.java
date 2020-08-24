@@ -3,6 +3,9 @@ package de.tudarmstadt.informatik.hostage.hpfeeds.publisher;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.json.JSONArray;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -16,6 +19,8 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 
 public class PublishHelper {
+    private static final String PERSIST_FILENAME = "publish.json";
+    File file = new File("/data/data/" + MainActivity.getContext().getPackageName() + "/" + PERSIST_FILENAME);
     private DaoSession dbSession;
     private DAOHelper daoHelper;
     private int offset=0;
@@ -34,16 +39,16 @@ public class PublishHelper {
     public PublishHelper(){
         this.dbSession = HostageApplication.getInstances().getDaoSession();
         this.daoHelper = new DAOHelper(dbSession);
-        initializeHpFeedsCredentials();
+       //initializeHpFeedsCredentials(); //hpfeeds disabled
     }
 
     private void initializeHpFeedsCredentials(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
-        this.host = preferences.getString("pref_host_hpfeeds", String.valueOf(R.string.hpfeeds_host));
-        this.port = Integer.parseInt(preferences.getString("pref_port_hpfeeds", String.valueOf(R.integer.hpfeeds_port)));
-        this.ident = preferences.getString("pref_ident_hpfeeds", String.valueOf(R.string.hpfeeds_ident));
-        this.secret = preferences.getString("pref_secret_hpfeeds", String.valueOf(R.string.hpfeeds_secret));
-        this.channel = preferences.getString("pref_secret_channel", String.valueOf(R.string.hpfeeds_channel));
+        this.host = preferences.getString("pref_host_hpfeeds", "130.226.249.235");
+        this.port = Integer.parseInt(preferences.getString("pref_port_hpfeeds", "20000"));
+        this.ident = preferences.getString("pref_ident_hpfeeds", "irinil");
+        this.secret = preferences.getString("pref_secret_hpfeeds", "gsoc2020");
+        this.channel = preferences.getString("pref_secret_channel", "hostage");
     }
 
     /**
@@ -62,7 +67,7 @@ public class PublishHelper {
      * Persists the record in a JSON file.
      */
     private void persistRecord(){
-        jsonHelper.persistData(getLastInsertedRecords());
+        jsonHelper.jsonWriter(this.persistData(getLastInsertedRecords()),file);
     }
 
     /**
@@ -75,7 +80,7 @@ public class PublishHelper {
      */
     private void publisher() throws Hpfeeds.ReadTimeOutException, Hpfeeds.EOSException, Hpfeeds.InvalidStateException, Hpfeeds.LargeMessageException, IOException {
         Publisher publisher = new Publisher();
-        String initialConfigurationUrl = jsonHelper.getFilePath();
+        String initialConfigurationUrl = jsonHelper.getFilePath(file);
         publisher.setCommand(host,port,ident,secret,channel,initialConfigurationUrl);
         publisher.publishFile();
     }
@@ -87,4 +92,18 @@ public class PublishHelper {
     private ArrayList<RecordAll> getLastInsertedRecords(){
         return  daoHelper.getAttackRecordDAO().getRecordsForFilter(filter,offset,limit,attackRecordOffset,attackRecordLimit);
     }
+
+    /**
+     * Creates a JSON array.
+     * @param records of the attacks
+     * @return JSON array.
+     */
+    public JSONArray persistData(ArrayList<RecordAll> records){
+        JSONArray arr = new JSONArray();
+        for(RecordAll record: records) {
+            arr.put(record.toJSON());
+        }
+        return arr;
+    }
+
 }

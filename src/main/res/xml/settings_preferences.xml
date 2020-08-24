@@ -7,56 +7,57 @@
 			android:key="pref_multistage"
 			android:summary="@string/multistage_summary"
 			android:title="@string/multistage_service"/>
+		<!--Disable Hpfeeds-->
 
-		<CheckBoxPreference
-			android:key="pref_hpfeeds_server"
-			android:defaultValue="false"
-			android:title="@string/pref_upload"
-			android:summary="@string/pref_upload_hpfeeds" />
+<!--		<CheckBoxPreference-->
+<!--			android:key="pref_hpfeeds_server"-->
+<!--			android:defaultValue="false"-->
+<!--			android:title="@string/pref_upload"-->
+<!--			android:summary="@string/pref_upload_hpfeeds" />-->
 
-		<PreferenceScreen
-			android:key="pref_hpfeeds_settings"
-			android:title="@string/advanced_hpfeeds_settings"
-			android:persistent="false">
+<!--		<PreferenceScreen-->
+<!--			android:key="pref_hpfeeds_settings"-->
+<!--			android:title="@string/advanced_hpfeeds_settings"-->
+<!--			android:persistent="false">-->
 
-			<PreferenceCategory android:title="@string/pref_hpfeeds_connection_settings" >
-				<EditTextPreference
-					android:inputType="text"
-					android:key="pref_host_hpfeeds"
-					android:defaultValue="@string/hpfeeds_host"
-					android:title="@string/pref_host_title"
-					android:summary="@string/pref_host_summary" />
+<!--			<PreferenceCategory android:title="@string/pref_hpfeeds_connection_settings" >-->
+<!--				<EditTextPreference-->
+<!--					android:inputType="text"-->
+<!--					android:key="pref_host_hpfeeds"-->
+<!--					android:defaultValue="130.226.249.235"-->
+<!--					android:title="@string/pref_host_title"-->
+<!--					android:summary="@string/pref_host_summary" />-->
 
-				<EditTextPreference
-					android:inputType="number"
-					android:key="pref_port_hpfeeds"
-					android:defaultValue="@integer/hpfeeds_port"
-					android:title="@string/pref_port_title"
-					android:summary="@string/pref_port_summary" />
+<!--				<EditTextPreference-->
+<!--					android:inputType="number"-->
+<!--					android:key="pref_port_hpfeeds"-->
+<!--					android:defaultValue="@integer/hpfeeds_port"-->
+<!--					android:title="@string/pref_port_title"-->
+<!--					android:summary="@string/pref_port_summary" />-->
 
-				<EditTextPreference
-					android:inputType="text"
-					android:key="pref_ident_hpfeeds"
-					android:defaultValue="@string/hpfeeds_ident"
-					android:title="@string/pref_ident_title"
-					android:summary="@string/pref_ident_summary" />
+<!--				<EditTextPreference-->
+<!--					android:inputType="text"-->
+<!--					android:key="pref_ident_hpfeeds"-->
+<!--					android:defaultValue="irinil"-->
+<!--					android:title="@string/pref_ident_title"-->
+<!--					android:summary="@string/pref_ident_summary" />-->
 
-				<EditTextPreference
-					android:inputType="text"
-					android:key="pref_secret_hpfeeds"
-					android:defaultValue="@string/hpfeeds_secret"
-					android:title="@string/pref_secret_title"
-					android:summary="@string/pref_secret_summary" />
+<!--				<EditTextPreference-->
+<!--					android:inputType="text"-->
+<!--					android:key="pref_secret_hpfeeds"-->
+<!--					android:defaultValue="gsoc2020"-->
+<!--					android:title="@string/pref_secret_title"-->
+<!--					android:summary="@string/pref_secret_summary" />-->
 
-				<EditTextPreference
-					android:inputType="text"
-					android:key="pref_secret_channel"
-					android:defaultValue="@string/hpfeeds_channel"
-					android:title="@string/pref_channel_title"
-					android:summary="@string/pref_channel_summary" />
+<!--				<EditTextPreference-->
+<!--					android:inputType="text"-->
+<!--					android:key="pref_secret_channel"-->
+<!--					android:defaultValue="hostage"-->
+<!--					android:title="@string/pref_channel_title"-->
+<!--					android:summary="@string/pref_channel_summary" />-->
 
-			</PreferenceCategory>
-		</PreferenceScreen>
+<!--			</PreferenceCategory>-->
+<!--		</PreferenceScreen>-->
 	</PreferenceCategory>
 
 	<!--		Tracing Upload Disabled-->
@@ -91,7 +92,7 @@
 			android:persistent="false">
 		<PreferenceCategory android:title="@string/pref_notification" >
 			<CheckBoxPreference
-				android:defaultValue="true"
+				android:defaultValue="false"
 				android:key="pref_vibration"
 				android:summary="@string/pref_vibration_summ"
 				android:title="@string/pref_vibration" />
