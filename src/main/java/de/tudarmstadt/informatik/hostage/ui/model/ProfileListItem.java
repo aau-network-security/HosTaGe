@@ -27,6 +27,6 @@ public class ProfileListItem {
     }
 
     public ProfileListItem(String text, String label, int icon){
-        this(text, label, BitmapFactory.decodeResource(MainActivity.context.getResources(), icon));
+        this(text, label, BitmapFactory.decodeResource(MainActivity.getContext().getResources(), icon));
     }
 }

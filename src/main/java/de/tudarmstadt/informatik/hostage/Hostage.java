@@ -1,11 +1,11 @@
 package de.tudarmstadt.informatik.hostage;
 
-import java.util.ArrayList;
+import java.lang.ref.WeakReference;
+import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -13,7 +13,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
-
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -40,22 +39,18 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-
-import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
-import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
-
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
-import de.tudarmstadt.informatik.hostage.services.MultiStageAlarm;
+import de.tudarmstadt.informatik.hostage.system.Device;
+import de.tudarmstadt.informatik.hostage.system.iptablesUtils.Api;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
-
+import eu.chainfire.libsuperuser.Shell;
 
 import static de.tudarmstadt.informatik.hostage.commons.HelperUtils.getBSSID;
-
 
 /**
  * Background service running as long as at least one protocol is active.
@@ -70,15 +65,17 @@ import static de.tudarmstadt.informatik.hostage.commons.HelperUtils.getBSSID;
 public class Hostage extends Service {
 
 	private HashMap<String, Boolean> mProtocolActiveAttacks;
-	MultiStageAlarm alarm = new MultiStageAlarm();
-	DaoSession dbSession;
+	private DaoSession dbSession;
+	public static int prefix;
+	boolean activeHandlers = false;
+	boolean bssidSeen = false;
+	boolean listening = false;
 
 	public class LocalBinder extends Binder {
 		public Hostage getService() {
 			return Hostage.this;
 		}
 	}
-
 
 	/**
 	 * Task to find out the external IP.
@@ -92,9 +89,7 @@ public class Hostage extends Service {
 				HttpClient httpclient = new DefaultHttpClient();
 				HttpGet httpget = new HttpGet(url[0]);
 				HttpResponse response;
-
 				response = httpclient.execute(httpget);
-
 				HttpEntity entity = response.getEntity();
 				entity.getContentLength();
 				String str = EntityUtils.toString(entity);
@@ -114,7 +109,46 @@ public class Hostage extends Service {
 		}
 	}
 
-	private static Context context;
+	private static class FindPrefix extends AsyncTask<String, String, Integer> {
+		@Override
+		protected Integer doInBackground(String... strings) {
+			try {
+				return HelperUtils.getPrefix(strings);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+			return 24;
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			prefix = result;
+		}
+	}
+
+	private static class CheckRoot extends AsyncTask<Void,Void,Void>{
+
+		@Override
+		protected Void doInBackground(Void... voids) {
+			checkForRoot();
+			return null;
+		}
+	}
+
+	private static class ImplementProtocols extends AsyncTask<Void,Void,LinkedList<Protocol>>{
+
+		@Override
+		protected LinkedList<Protocol> doInBackground(Void... voids) {
+			return getImplementedProtocols();
+		}
+
+		@Override
+		protected void onPostExecute(LinkedList<Protocol> result) {
+			implementedProtocols = result;
+		}
+	}
+
+	private static WeakReference<Context> context;
 
 	/**
 	 * Returns the application context.
@@ -122,16 +156,13 @@ public class Hostage extends Service {
 	 * @return context.
 	 */
 	public static Context getContext() {
-		return Hostage.context;
+		return context.get();
 	}
 
-	private LinkedList<Protocol> implementedProtocols;
-	private ArrayList<Listener> listeners = new ArrayList<Listener>();
-
+	private static LinkedList<Protocol> implementedProtocols;
+	private CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 	private SharedPreferences connectionInfo;
-
 	private Editor connectionInfoEditor;
-
 	private final IBinder mBinder = new LocalBinder();
 
 	/**
@@ -139,14 +170,13 @@ public class Hostage extends Service {
 	 * 
 	 * @see MainActivity #BROADCAST
 	 */
-	//TODO change bssid for 4g....
 	private BroadcastReceiver netReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String bssid_old = connectionInfo.getString(getString(R.string.connection_info_bssid), "");
 			String bssid_new;
 			if (HelperUtils.isCellurarConnected(context)){
-				bssid_new = "not Available";
+				bssid_new = HelperUtils.getNetworkClass(context);
 			}
 			else {
 				 bssid_new = getBSSID(context);
@@ -154,7 +184,6 @@ public class Hostage extends Service {
 			if (bssid_new == null || !bssid_new.equals(bssid_old)) {
 				deleteConnectionData();
 				updateConnectionInfo();
-				getLocationData();
 				notifyUI(this.getClass().getName(), new String[] { getString(R.string.broadcast_connectivity) });
 			}
 		}
@@ -208,8 +237,6 @@ public class Hostage extends Service {
 		}
 		return false;
 	}
-
-
 
 	/**
 	 * Determines if a protocol with the given name is running on its default
@@ -268,6 +295,10 @@ public class Hostage extends Service {
 			this.mProtocolActiveAttacks.put(values[1], true);
 			attackNotification();
 		}
+		informUI(sender,values);
+	}
+
+	private void informUI(String sender, String[] values){
 		// Inform UI of Preference Change
 		Intent intent = new Intent(getString(R.string.broadcast));
 		intent.putExtra("SENDER", sender);
@@ -284,55 +315,60 @@ public class Hostage extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
-		Hostage.context = getApplicationContext();
-		implementedProtocols = getImplementedProtocols();
-		connectionInfo = getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
-		connectionInfoEditor = connectionInfo.edit();
-		connectionInfoEditor.commit();
-		
-		mProtocolActiveAttacks = new HashMap<String, Boolean>();
-
+		context = new WeakReference<>(getApplicationContext());
+		loadConnectionInfoEditor();
+		loadProtocols();
+		mProtocolActiveAttacks = new HashMap<>();
 		createNotification();
 		registerNetReceiver();
-		updateConnectionInfo();
-		getLocationData();
-
+		executeRoot();
+		loadConnectionInfo();
 	}
 
+	private void loadConnectionInfo(){
+		updateConnectionInfo();
+	}
+
+	private void loadConnectionInfoEditor(){
+		connectionInfo = getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
+		connectionInfoEditor = connectionInfo.edit();
+		connectionInfoEditor.apply();
+	}
+
+	private void loadProtocols(){
+		ImplementProtocols implementProtocols = new ImplementProtocols();
+		implementProtocols.execute();
+	}
+
+	private void executeRoot(){
+		CheckRoot checkRoot = new CheckRoot();
+		checkRoot.execute();
+	}
+
+	private static void checkForRoot(){
+		if(Shell.SU.available()) {
+			Device.checkCapabilities();
+			if(Api.assertBinaries(getContext(),true)) {
+				//Api.executeCommands();
+				Device.executePortRedirectionScript();
+			}
+		}
+	}
 
 	@Override
 	public void onDestroy() {
 		cancelNotification();
 		unregisterNetReceiver();
-
 		super.onDestroy();
 	}
-
-
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
-		startMultiStage();
-
+		//startMultiStage(); The method moved in PreferenceHostageFragment class along with stopMultiStage().
 		return START_STICKY;
 	}
-
-	private void stopMultiStage() {
-		Context context =this;
-		alarm.CancelAlarm(context);
-	}
-
-	private void startMultiStage() {
-        Context context = this;
-        if (alarm != null) {
-            alarm.SetAlarm(context);
-        } else {
-            Toast.makeText(context, "Alarm is null", Toast.LENGTH_SHORT).show();
-        }
-    }
 
 	/**
 	 * Starts the listener for the specified protocol. Creates a new
@@ -472,10 +508,8 @@ public class Hostage extends Service {
 			}
 			Notification notification = notificationBuilder.setOngoing(true)
 					.setPriority(Notification.PRIORITY_DEFAULT)
-
 					.build();
 			startForeground(2, notification);
-
 		}
 	}
 
@@ -505,6 +539,12 @@ public class Hostage extends Service {
 				if(protocolName.equals("MQTT")) {
 					return addMQTTListener(protocol, port);
 				}
+				if(protocolName.equals("COAP")) {
+					return addCOAPListener(protocol, port);
+				}
+				if(protocolName.equals("AMQP")){
+					return addAMQPListener(protocol,port);
+				}
 				Listener listener = new Listener(this, protocol, port);
 				listeners.add(listener);
 				return listener;
@@ -514,9 +554,20 @@ public class Hostage extends Service {
 	}
 
 	private MQTTListener addMQTTListener(Protocol protocolName, int port){
-			MQTTListener listener = new MQTTListener(this, protocolName, port);
-			listeners.add(listener);
+		MQTTListener listener = new MQTTListener(this, protocolName, port);
+		listeners.add(listener);
+		return listener;
+	}
 
+	private COAPListener addCOAPListener(Protocol protocolName, int port){
+		COAPListener listener = new COAPListener(this, protocolName, port);
+		listeners.add(listener);
+		return listener;
+	}
+
+	private AMQPListener addAMQPListener(Protocol protocolName, int port){
+		AMQPListener listener = new AMQPListener(this, protocolName, port);
+		listeners.add(listener);
 		return listener;
 	}
 
@@ -528,26 +579,9 @@ public class Hostage extends Service {
 			return; // prevent NullPointerException
 		}
 
-		dbSession = HostageApplication.getInstances().getDaoSession();
+		checkNetworkPreviousInfection();
 
-		AttackRecordDAO attackRecordDAO = new AttackRecordDAO(dbSession);
-		boolean activeHandlers = false;
-		boolean bssidSeen = false;
-		boolean listening = false;
-		Iterator<Listener> iterator = listeners.iterator();
-		while(iterator.hasNext()) {
-			Listener listener = iterator.next();
-			if (listener.isRunning())
-				listening = true;
-			if (listener.getHandlerCount() > 0) {
-				activeHandlers = true;
-			}
-			if (attackRecordDAO.bssidSeen(listener.getProtocolName(), getBSSID(getApplicationContext()))) {
-				bssidSeen = true;
-		}			}
-
-
-	PendingIntent resultPendingIntent = intentNotificationGenerator();
+		PendingIntent resultPendingIntent = intentNotificationGenerator();
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			CharSequence name = "Under Attack";
@@ -559,11 +593,8 @@ public class Hostage extends Service {
 
 			mNotificationManager.createNotificationChannel(channel);
 			Notification.Builder notificationBuilder = new Notification.Builder(this,"42");
-
 			notificationBuilder.setContentTitle(getString(R.string.app_name)).setWhen(System.currentTimeMillis());
-
-            notificationIconBuilder( listening, activeHandlers, bssidSeen, notificationBuilder);
-
+            notificationIconBuilder(listening, activeHandlers, bssidSeen, notificationBuilder);
 			notificationBuilder.setContentIntent(resultPendingIntent);
 
 			Notification notification = notificationBuilder.setOngoing(true)
@@ -574,6 +605,23 @@ public class Hostage extends Service {
 		}
 	}
 
+	private void checkNetworkPreviousInfection(){
+		dbSession = HostageApplication.getInstances().getDaoSession();
+		AttackRecordDAO attackRecordDAO = new AttackRecordDAO(dbSession);
+
+		for (Listener listener : listeners) {
+			if (listener.isRunning())
+				listening = true;
+			if (listener.getHandlerCount() > 0) {
+				activeHandlers = true;
+			}
+			if (attackRecordDAO.bssidSeen(listener.getProtocolName(), getBSSID(getApplicationContext()))) {
+				bssidSeen = true;
+			}
+		}
+
+	}
+
 	/**
 	 * Selects the appropriate icon for the notification.
 	 * @param listening listener for protocols
@@ -581,7 +629,6 @@ public class Hostage extends Service {
 	 * @param bssidSeen checks if this bssid is already seen
 	 * @param notificationBuilder builds the notification
 	 */
-
 	private void notificationIconBuilder(boolean listening,boolean activeHandlers,boolean bssidSeen,Notification.Builder notificationBuilder){
 		if (!listening) {
 			notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
@@ -602,9 +649,7 @@ public class Hostage extends Service {
 	 * Generates the intent for the notification.
 	 * @return the pending Intent
 	 */
-
 	private PendingIntent intentNotificationGenerator(){
-
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 		stackBuilder.addParentStack(MainActivity.class);
 
@@ -615,7 +660,7 @@ public class Hostage extends Service {
 		intent.setAction("SHOW_HOME");
 		stackBuilder.addNextIntent(intent);
 
-		PendingIntent resultPendingIntent = PendingIntent.getActivity(MainActivity.context, 0, intent, 0); //stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent resultPendingIntent = PendingIntent.getActivity(MainActivity.getContext(), 0, intent, 0); //stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		return resultPendingIntent;
 
@@ -654,10 +699,10 @@ public class Hostage extends Service {
 	 *         {@link Protocol
 	 *         Protocol}
 	 */
-	private LinkedList<Protocol> getImplementedProtocols() {
-		String[] protocols = getResources().getStringArray(R.array.protocols);
+	private static LinkedList<Protocol> getImplementedProtocols() {
+		String[] protocols = Hostage.getContext().getResources().getStringArray(R.array.protocols);
 		String packageName = Protocol.class.getPackage().getName();
-		LinkedList<Protocol> implementedProtocols = new LinkedList<Protocol>();
+		LinkedList<Protocol> implementedProtocols = new LinkedList<>();
 
 		for (String protocol : protocols) {
 			try {
@@ -669,14 +714,6 @@ public class Hostage extends Service {
 		return implementedProtocols;
 	}
 
-	/**
-	 * Starts an Instance of MyLocationManager to set the hostage.location within this
-	 * class.
-	 */
-	private void getLocationData() {
-		MyLocationManager locationManager = new MyLocationManager(this);
-		locationManager.getUpdates(60 * 1000, 3,context);
-	}
 
 	// Notifications
 
@@ -718,23 +755,15 @@ public class Hostage extends Service {
 	 * @see MainActivity #CONNECTION_INFO
 	 */
 	private void updateConnectionInfo() {
-
-		if (!HelperUtils.isNetworkAvailable(context) ){
+		if (!HelperUtils.isNetworkAvailable(getContext()) ){
 			return; // no connection
 		}
 
-		if (HelperUtils.isCellurarConnected(context)) {
-
-			int ipAddress = HelperUtils.getCellularIP();
-			String ssid= "not Available";
-			String bssid= "not Available";
-			int netmask= 0;
-
-			updateEditor( ssid,bssid, ipAddress, netmask);
-
+		if (HelperUtils.isCellurarConnected(getContext())) {
+			addCellularInfo(getContext());
 
 		}else {
-			final WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+			final WifiManager wifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 			final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
 
 			if (connectionInfo == null) {
@@ -745,24 +774,43 @@ public class Hostage extends Service {
 				return;
 			}
 
-			String ssid = connectionInfo.getSSID();
-			int ipAddress = dhcpInfo.ipAddress;
-			String bssid= connectionInfo.getBSSID();
-			int netmask= dhcpInfo.netmask;
-
-			if (ssid.startsWith("\"") && ssid.endsWith("\"")) { // trim those quotes
-				ssid = ssid.substring(1, ssid.length() - 1);
-			}
-
-			updateEditor( ssid,bssid, ipAddress, netmask);
-
+			addWifiInfo(connectionInfo,dhcpInfo);
 		}
 
-
-		SetExternalIPTask externalIPTask = new SetExternalIPTask();
-		externalIPTask.execute("https://api.ipify.org?format=json");
+		findExternalIp();
 
 		this.mProtocolActiveAttacks.clear();
+	}
+
+	private void addCellularInfo(Context context){
+		int ipAddress = HelperUtils.getCellularIP();
+		String ssid= HelperUtils.getNetworkClass(context);
+		String bssid= HelperUtils.getNetworkClass(context);
+		int netmask= 0;
+
+		updateEditor(ssid,bssid, ipAddress, netmask);
+
+	}
+
+	private void addWifiInfo(WifiInfo connectionInfo,DhcpInfo dhcpInfo){
+		String ssid = connectionInfo.getSSID();
+		int ipAddress = dhcpInfo.ipAddress;
+		String bssid= connectionInfo.getBSSID();
+		int netmask= dhcpInfo.netmask;
+
+		if (ssid.startsWith("\"") && ssid.endsWith("\"")) { // trim those quotes
+			ssid = ssid.substring(1, ssid.length() - 1);
+		}
+
+		FindPrefix findPrefix = new FindPrefix();
+		findPrefix.execute(HelperUtils.inetAddressToString(netmask));
+
+		updateEditor( ssid,bssid, ipAddress, netmask);
+	}
+
+	private void findExternalIp(){
+		SetExternalIPTask externalIPTask = new SetExternalIPTask();
+		externalIPTask.execute("https://api.ipify.org?format=json");
 	}
 
 	/**
@@ -770,10 +818,8 @@ public class Hostage extends Service {
 	 *
 	 * @see MainActivity #CONNECTION_INFO
 	 */
-
 	public void updateEditor(String ssid, String bssid, int ipAddress, int netmask){
-		SharedPreferences pref = context.getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
-
+		SharedPreferences pref = getContext().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
 		Editor editor = pref.edit();
 
 		editor.putString(getString(R.string.connection_info_ssid), ssid);
@@ -781,10 +827,7 @@ public class Hostage extends Service {
 		editor.putInt(getString(R.string.connection_info_internal_ip), ipAddress);
 		editor.putInt(getString(R.string.connection_info_subnet_mask), netmask);
 
-
-		editor.commit();
-
-
+		editor.apply();
 	}
 
 

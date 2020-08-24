@@ -6,19 +6,9 @@ import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
-
-import org.alfresco.jlan.app.XMLServerConfiguration;
-import org.alfresco.jlan.netbios.server.NetBIOSNameServer;
-import org.alfresco.jlan.server.config.InvalidConfigurationException;
-import org.alfresco.jlan.smb.server.SMBServer;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.List;
 
-
-import de.tudarmstadt.informatik.hostage.Handler;
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.Listener;
 import de.tudarmstadt.informatik.hostage.R;
@@ -43,9 +33,6 @@ import de.tudarmstadt.informatik.hostage.wrapper.Packet;
  */
 public class SMB implements Protocol {
     private Listener mListener;
-    private Handler mHandler;
-    private SMBServer mSmbServer;
-    private NetBIOSNameServer mNbNameServer;
     private CifsServer mCifsServer;
 
     SharedPreferences pref;
@@ -60,9 +47,6 @@ public class SMB implements Protocol {
 
     private boolean logged;
 
-
-    public boolean fileInjected = HelperUtils.isFileInjected;
-
     public Listener getListener(){
         return mListener;
     }
@@ -70,11 +54,7 @@ public class SMB implements Protocol {
     public void initialize(Listener mListener) {
         this.mListener = mListener;
         FileInject fileInject = new FileInject();
-
         fileInject.startListner(mListener);
-
-
-
         Hostage service = mListener.getService();
         pref = PreferenceManager.getDefaultSharedPreferences(service);
 
@@ -89,16 +69,11 @@ public class SMB implements Protocol {
         internalIPAddress = connInfo.getInt(service.getString(R.string.connection_info_internal_ip), 0);
         logged = false;
 
-        XMLServerConfiguration smbConfig = new XMLServerConfiguration();
 
         try {
-            smbConfig.loadConfiguration(new InputStreamReader(MainActivity.context.getResources().openRawResource(R.raw.jlan_config)));
-            mCifsServer = new CifsServer(smbConfig, this, fileInject);
+            mCifsServer = new CifsServer(this, fileInject);
+            System.out.println("InsideInitialize SMB");
             mCifsServer.run();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,7 +84,7 @@ public class SMB implements Protocol {
     }
 
     public int getLocalIp(){
-        WifiManager wifi = (WifiManager) MainActivity.context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifi = (WifiManager) MainActivity.getContext().getSystemService(Context.WIFI_SERVICE);
         DhcpInfo dhcp = wifi.getDhcpInfo();
 
         return dhcp.ipAddress;
@@ -119,14 +94,14 @@ public class SMB implements Protocol {
         SharedPreferences.Editor editor = pref.edit();
         attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
         editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
-        editor.commit();
+        editor.apply();
     }
 
     public MessageRecord createMessageRecord(MessageRecord.TYPE type, String packet) {
         MessageRecord record = new MessageRecord(true);
-        //record.setId(message_id++); // autoincrement
         record.setAttack_id(attack_id);
         record.setType(type);
+        record.setStringMessageType(type.name());
         record.setTimestamp(System.currentTimeMillis());
         record.setPacket(packet);
         return record;
@@ -137,9 +112,6 @@ public class SMB implements Protocol {
         record.setAttack_id(attack_id);
         record.setSync_id(attack_id);
         record.setDevice(SyncDevice.currentDevice().getDeviceID());
-
-
-
         record.setProtocol(this.toString());
         record.setExternalIP(externalIP);
         record.setLocalIP(CifsServer.intToInetAddress(getLocalIp()).getHostAddress());

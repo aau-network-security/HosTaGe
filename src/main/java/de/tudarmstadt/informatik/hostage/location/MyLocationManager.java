@@ -4,23 +4,35 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 
 
 /**
  * This Class is used to get Location data. You can get the last found Location or start searching for new hostage.location data.
  * @author Lars Pandikow
  */
-public class MyLocationManager {
+public class MyLocationManager implements ActivityCompat.OnRequestPermissionsResultCallback {
+	private Context context;
+	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
 	/**
 	 * TimerTask to stop updates after a given time.
@@ -70,16 +82,21 @@ public class MyLocationManager {
 
 	public MyLocationManager(Context context) {
 		// Acquire a reference to the system Location Manager
+		this.context = context;
 		locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
-		if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-				PackageManager.PERMISSION_GRANTED &&
-				ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
-						PackageManager.PERMISSION_GRANTED) {
-			newestLocation = locationManager
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+				&& ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+				!= PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+
+			return;
 		}
+		newestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
 	}
+
 
 	/**
 	 * Starts updating the hostage.location data for the given amount of time. Calls
@@ -98,7 +115,7 @@ public class MyLocationManager {
 		Timer timer1 = new Timer();
 		timer1.schedule(new StopTask(), time);
 		if (newestLocation == null && attempts > 0)
-			getUpdates(time, attempts,context);
+			getUpdates(time, attempts, context);
 	}
 
 	/**
@@ -110,18 +127,17 @@ public class MyLocationManager {
 	public void startUpdates(Context context) {
 		boolean gpsEnabled = false;
 		boolean networkEnabled = false;
-		locationManager = (LocationManager) context
-				.getSystemService(Context.LOCATION_SERVICE);
+		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		// exceptions will be thrown if provider is not permitted.
 		try {
-			gpsEnabled = locationManager
-					.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		try {
-			networkEnabled = locationManager
-					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+			networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 
 		// don't start listeners if no provider is enabled
@@ -130,18 +146,53 @@ public class MyLocationManager {
 
 		// Register the listener with the Location Manager to receive hostage.location updates
 		if (gpsEnabled)
-			if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-				PackageManager.PERMISSION_GRANTED &&
-				ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
-						PackageManager.PERMISSION_GRANTED) {
-
-				locationManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-				if (networkEnabled)
-					locationManager.requestLocationUpdates(
-							LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-			}
+			requestLocationUpdates( networkEnabled, context);
 	}
+
+	private void requestLocationUpdates(boolean networkEnabled,Context context) {
+		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+			ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+
+			return;
+		}
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+		if (networkEnabled)
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
+	}
+
+
+    /**
+     * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if (requestCode == 10) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+			} else {
+				if (!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+					AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+					dialog.setTitle("Permission Required");
+					dialog.setCancelable(false);
+					dialog.setMessage("You have to Allow permission to access user location");
+					dialog.setPositiveButton("Settings", (dialog1, which) -> {
+						Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package",
+								context.getPackageName(), null));
+					});
+					AlertDialog alertDialog = dialog.create();
+					alertDialog.show();
+				}
+				//Code for deny if needed
+			}
+		}
+	}
+
 
 	/**
 	 * Stop updating the hostage.location.
@@ -186,10 +237,9 @@ public class MyLocationManager {
 		// Check whether the new hostage.location fix is more or less accurate
 		int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation
 				.getAccuracy());
-		boolean isMoreAccurate = accuracyDelta < 0;
 
 		// Determine hostage.location quality using a combination of timeliness and
 		// accuracy
-        return isMoreAccurate;
+        return accuracyDelta < 0;
     }
 }

@@ -32,7 +32,8 @@ import static de.tudarmstadt.informatik.hostage.persistence.DAO.SyncDeviceDAO.th
 
 public class AttackRecordDAO extends  DAO {
     private DaoSession daoSession;
-    private static Context context;
+    private Context context;
+    private int limit =20; //limit for the details Conversation
 
 
     public AttackRecordDAO(DaoSession daoSession){
@@ -42,7 +43,7 @@ public class AttackRecordDAO extends  DAO {
 
     public AttackRecordDAO(DaoSession daoSession,Context context){
         this.daoSession= daoSession;
-        AttackRecordDAO.context = context;
+        this.context = context;
 
     }
 
@@ -72,19 +73,29 @@ public class AttackRecordDAO extends  DAO {
 
     public ArrayList<AttackRecord> getAttackRecords(){
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
-        ArrayList<AttackRecord> attackRecords = (ArrayList<AttackRecord>) selectElements(recordDao);
+        QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
+        qb.orderDesc(AttackRecordDao.Properties.Attack_id).build();
+        ArrayList<AttackRecord> attackRecords = (ArrayList<AttackRecord>) qb.list();;
 
         return  attackRecords;
     }
 
-    public ArrayList<AttackRecord> getAttackRecordsLimit(int offset){
-        int limit=50;
+    public ArrayList<AttackRecord> getAttackRecordsLimit(int offset,int limit){
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
-        ArrayList<AttackRecord> attackRecords = (ArrayList<AttackRecord>) selectElementsOffset(recordDao,offset,limit);
+
+        QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
+        qb.orderDesc(AttackRecordDao.Properties.Attack_id).build();
+        qb.offset(offset).limit(limit).build();
+
+        ArrayList<AttackRecord> attackRecords = (ArrayList<AttackRecord>) qb.list();
 
         return  attackRecords;
     }
 
+    public long getRecordsCount(){
+        AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
+        return countElements(recordDao);
+    }
 
     /**
      * Adds a given {@link AttackRecord} to the database.
@@ -320,7 +331,6 @@ public class AttackRecordDAO extends  DAO {
     }
 
     private void addUpdatedRecords(List<AttackRecord> attackRecords, SyncDevice ownDevice,long highestID ){
-
         if(!attackRecords.isEmpty()){
             for (AttackRecord element : attackRecords) {
                 AttackRecord record = this.createAttackRecord(element);
@@ -332,8 +342,6 @@ public class AttackRecordDAO extends  DAO {
         }
 
         ownDevice.setHighest_attack_id(highestID);
-
-
     }
 
     private void updateDevicesNoID(SyncDevice ownDevice,long highestID){
@@ -365,14 +373,15 @@ public class AttackRecordDAO extends  DAO {
         record.setBssid(existingRecord.getBssid());
         record.setSync_id(existingRecord.getSync_id());
         record.setDevice(existingRecord.getDevice());
+
         return record;
     }
 
 
-    public static SyncDevice currentDevice(){
+    public SyncDevice currentDevice(){
         SharedPreferences pref = null;
         if (thisDevice != null){
-            if(MainActivity.getContext() != null)
+            if(MainActivity.getContext() != null && context!=null)
                 pref = PreferenceManager.getDefaultSharedPreferences(context);
                 if(pref == null)
                     thisDevice.setHighest_attack_id(1);
@@ -407,9 +416,9 @@ public class AttackRecordDAO extends  DAO {
      * Deletes all attacks for the given filter object.
      * @param filter
      */
-    public synchronized void deleteAttacksByFilter(LogFilter filter,int offset){
+    public synchronized void deleteAttacksByFilter(LogFilter filter,int offset,int limit){
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
-        ArrayList<AttackRecord>  records = selectionQueryFromFilter(filter,offset);
+        ArrayList<AttackRecord>  records = selectionQueryFromFilter(filter,offset,limit);
         recordDao.deleteInTx(records);
     }
 
@@ -431,10 +440,9 @@ public class AttackRecordDAO extends  DAO {
         ArrayList<MessageRecord> messageRecords =new ArrayList<>();
 
         ArrayList<NetworkRecord> distinctNetworkRecords =  distinctNetworkRecords(filter);
-
         messageRecords = updatedMessageRecordsFields( attackRecords,distinctNetworkRecords,records);
 
-        return sortLists( filter,messageRecords);
+        return sortLists(filter,messageRecords);
     }
 
     public synchronized ArrayList<RecordAll> getRecordsForFilterMutliStage(LogFilter filter){
@@ -444,17 +452,17 @@ public class AttackRecordDAO extends  DAO {
         return allRecords;
     }
 
-    public synchronized ArrayList<RecordAll> getRecordsForFilter(LogFilter filter,int offset) {
+    public synchronized ArrayList<RecordAll> getRecordsForFilter(LogFilter filter,int offset,int limit,int attackRecordOffset,int attackRecordLimit) {
         MessageRecordDAO messageRecordDAO = new MessageRecordDAO(this.daoSession);
-        ArrayList<AttackRecord> attackRecords = this.selectionQueryFromFilter(filter,offset);
-        ArrayList<MessageRecord> records = messageRecordDAO.selectionQueryFromFilter(filter,offset);
+        ArrayList<AttackRecord> attackRecords = this.selectionQueryFromFilter(filter,attackRecordOffset,attackRecordLimit);
+        ArrayList<MessageRecord> records = messageRecordDAO.selectionQueryFromFilter(filter,offset,limit);
         ArrayList<MessageRecord> messageRecords =new ArrayList<>();
 
-        ArrayList<NetworkRecord> distinctNetworkRecords =  distinctNetworkRecords(filter,offset);
+        ArrayList<NetworkRecord> distinctNetworkRecords = distinctNetworkRecords(filter);
 
-        messageRecords = updatedMessageRecordsFields( attackRecords,distinctNetworkRecords,records);
+        messageRecords = updatedMessageRecordsFields(attackRecords,distinctNetworkRecords,records);
 
-        return sortLists( filter,messageRecords);
+        return sortLists(filter,messageRecords);
     }
 
 
@@ -465,10 +473,10 @@ public class AttackRecordDAO extends  DAO {
         return addMessageRecordFields(updatedAttackRecords,records);
     }
 
-    private ArrayList<NetworkRecord> distinctNetworkRecords(LogFilter filter,int offset){
+    private ArrayList<NetworkRecord> distinctNetworkRecords(LogFilter filter,int offset,int limit){
         NetworkRecordDAO networkRecordDAO = new NetworkRecordDAO(this.daoSession);
-        ArrayList<NetworkRecord> bssIdRecords = networkRecordDAO.selectionBSSIDFromFilter(filter,offset);
-        ArrayList<NetworkRecord> essIdRecords = networkRecordDAO.selectionESSIDFromFilter(filter,offset);
+        ArrayList<NetworkRecord> bssIdRecords = networkRecordDAO.selectionBSSIDFromFilter(filter,offset,limit);
+        ArrayList<NetworkRecord> essIdRecords = networkRecordDAO.selectionESSIDFromFilter(filter,offset,limit);
 
         ArrayList<NetworkRecord> distinctNetworkRecords = new ArrayList<>();
         distinctNetworkRecords.addAll(bssIdRecords);
@@ -519,6 +527,15 @@ public class AttackRecordDAO extends  DAO {
                 record.setBssid(current.getBssid());
                 record.setSsid(current.getSsid());
                 record.setRemoteIP(current.getRemoteIP());
+                record.setLocalIP(current.getLocalIP());
+                record.setLocalPort(current.getLocalPort());
+                record.setRemotePort(current.getRemotePort());
+                record.setExternalIP(current.getExternalIP());
+                record.setWasInternalAttack(current.getWasInternalAttack());
+                record.setTimestampLocation(current.getTimestampLocation());
+                record.setLatitude(current.getLatitude());
+                record.setLongitude(current.getLongitude());
+                record.setAccuracy(current.getAccuracy());
                 updatedAttackRecords.add(record);
             }
         }
@@ -527,7 +544,6 @@ public class AttackRecordDAO extends  DAO {
     }
 
     public ArrayList<AttackRecord> addNetworkFields(ArrayList<AttackRecord> attackRecords,ArrayList<NetworkRecord> networkRecords){
-
         ArrayList<AttackRecord > updatedAttackRecords = new ArrayList<>();
         NetworkRecord current = new NetworkRecord();
 
@@ -551,9 +567,9 @@ public class AttackRecordDAO extends  DAO {
      * @param filter (LogFilter)
      * @return QueryBuilder<AttackRecord> query
      */
-    public ArrayList<AttackRecord> selectionQueryFromFilter(LogFilter filter,int offset) {
+    public ArrayList<AttackRecord> selectionQueryFromFilter(LogFilter filter,int offset,int limit) {
         ArrayList<String> filterProtocols = new ArrayList<>();
-        ArrayList<AttackRecord> attackRecords = this.getAttackRecordsLimit(offset);
+        ArrayList<AttackRecord> attackRecords = this.getAttackRecordsLimit(offset,limit);
         ArrayList<AttackRecord> list = new ArrayList<>();
 
         if(filter!= null)
@@ -600,25 +616,21 @@ public class AttackRecordDAO extends  DAO {
 
 
     /**
-     * Returns the Conversation of a specific attack id
+     * Returns the Conversation of a specific attack id with a limit of 10 in case of too many packets.
      *
      * @param attack_id Tha attack id to match the query against.
      *
-     * @return A arraylist with all {@link Record Records}s for an attack id.
+     * @return A arraylist with all {@link RecordAll Records}s for an attack id.
      */
     public synchronized ArrayList<RecordAll> getConversationForAttackID(long attack_id) {
-        ArrayList<RecordAll> recordList = new ArrayList<RecordAll>();
         MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
 
         QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
+        qb.limit(limit);
         qb.where(MessageRecordDao.Properties.Attack_id.eq(attack_id));
+        ArrayList<MessageRecord> attackRecords =  (ArrayList<MessageRecord>) qb.list();
 
-        ArrayList<MessageRecord> attackRecords =  ( ArrayList<MessageRecord>) qb.list();
-
-        recordList.addAll(attackRecords);
-
-        return recordList;
-
+        return new ArrayList<>(attackRecords);
     }
     /**
      * Gets all {@link RecordAll Records} saved in the database.
@@ -642,12 +654,25 @@ public class AttackRecordDAO extends  DAO {
 
     }
 
+    public AttackRecord getMatchingAttackRecord(MessageRecord record){
+        AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
+        QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
+        try {
+            qb.where(AttackRecordDao.Properties.Attack_id.eq(record.getAttack_id()));
+            return qb.list().get(0);
+
+        }catch (Exception e){
+            return new AttackRecord();
+        }
+
+    }
+
     /**
-     * Gets a single {@link Record} with the given attack id from the database.
+     * Gets a single {@link RecordAll} with the given attack id from the database.
      *
      * @param attack_id
-     *            The attack id of the {@link Record};
-     * @return The {@link Record}.
+     *            The attack id of the {@link RecordAll};
+     * @return The {@link RecordAll}.
      */
     public synchronized RecordAll getRecordOfAttackId(long attack_id) {
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
@@ -656,7 +681,9 @@ public class AttackRecordDAO extends  DAO {
         ArrayList<AttackRecord> updatedAttackRecords = new ArrayList<>();
 
         QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
+        qb.orderDesc(AttackRecordDao.Properties.Attack_id);
         qb.where(AttackRecordDao.Properties.Attack_id.eq(attack_id));
+        qb.limit(1);
 
         ArrayList<AttackRecord> attackRecords =  ( ArrayList<AttackRecord>) qb.list();
 
@@ -669,10 +696,26 @@ public class AttackRecordDAO extends  DAO {
         return attackRecord ;
     }
 
+    /**
+     * Gets all non duplicate Records For the key IP.
+     *
+     * @return A ArrayList with received Records.
+     */
+    public synchronized ArrayList<String> getUniqueIPRecords() {
+        ArrayList<AttackRecord> attackRecords = this.getAttackRecords();
+
+        ArrayList<String> ips= new ArrayList<>();
+        attackRecords.stream().filter(o -> ips.add(o.getRemoteIP())).collect(Collectors.toList());
+        ArrayList<String> distinctIps = (ArrayList<String>) ips.stream().distinct().collect(Collectors.toList());
+
+        return  distinctIps;
+
+    }
+
     public ArrayList<MessageRecord> sortFilter(LogFilter filter,ArrayList<MessageRecord> list){
         switch(filter.getSorttype().getValue()){
             case 0:
-                Collections.sort(list, (o1, o2) -> Long.compare(o1.getTimestamp(),o2.getTimestamp()));
+                Collections.sort(list,new DateRecordComparator());
                 return list;
             case 1:
                 Collections.sort(list, (o1, o2) ->o1.getProtocol().compareTo(o2.getProtocol()));
@@ -691,6 +734,19 @@ public class AttackRecordDAO extends  DAO {
                 return list;
             default:
                 return list;
+        }
+    }
+
+    class DateRecordComparator implements Comparator<RecordAll>{
+
+        @Override
+        public int compare(RecordAll recordAll, RecordAll t1) {
+            return -1 * Long.compare(recordAll.getTimestamp(),t1.getTimestamp());
+        }
+
+        @Override
+        public Comparator<RecordAll> reversed() {
+            return null;
         }
     }
 

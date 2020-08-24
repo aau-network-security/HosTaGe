@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string-array name="protocols">
+        <item>AMQP</item>
+        <item>COAP</item>
         <item>ECHO</item>
         <item>FTP</item>
-        <item>GHOST</item>
         <item>HTTP</item>
         <item>HTTPS</item>
         <item>MySQL</item>
@@ -20,9 +20,10 @@
     </string-array>
 
     <string-array name="protocols_description">
+        <item>The Advanced Message Queuing Protocol (AMQP) is an open standard application layer protocol for message-oriented middleware. The defining features of AMQP are message orientation, queuing, routing, reliability and security</item>
+        <item>Constrained Application Protocol (CoAP) is a specialized Internet Application Protocol for constrained devices, as defined in RFC 7252</item>
         <item>A service for testing and measurement of round-trip times in IP networks</item>
         <item>A protocol used to transfer files from one host to another host</item>
-        <item>A protocol mirrors an incoming connection back to the attacker on the same port, that it is running on</item>
         <item>A protocol to exchange or transfer hypertext. It is the foundation of data communication for the World Wide Web</item>
         <item>The same as HTTP, but using a secure connections based on SSL/TLS</item>
         <item>The world\'s second most widely used relational database management system</item>
@@ -33,14 +34,15 @@
         <item>A protocol for VoIP (Voice over IP) services</item>
         <item>A protocol used for providing shared access to files, printers, serial ports, and miscellaneous communications between nodes on a network</item>
         <item>A network protocol that provides file access, file transfer, and file management functionalities over any reliable data stream</item>
-        <item> Mail Transfer Protocol used to send and receive emails</item>
+        <item>Mail Transfer Protocol used to send and receive emails</item>
         <item>A network protocol used on the Internet or local area networks to provide a bidirectional interactive text-oriented communication facility using a virtual terminal connection</item>
     </string-array>
 
     <integer-array name="ports">
+        <item>5672</item>
+        <item>5683</item>
         <item>7</item>
         <item>21</item>
-        <item>1433</item>
         <item>80</item>
         <item>443</item>
         <item>3306</item>
@@ -53,6 +55,5 @@
         <item>22</item>
         <item>25</item>
         <item>23</item>
-
     </integer-array>
 </resources>

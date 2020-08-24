@@ -39,6 +39,7 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
 	private long timestamp;
 	@Transient
 	private TYPE type;
+	private String stringMessageType;
 	private String packet;
     @ToOne(joinProperty = "attack_id")
     private AttackRecord record;
@@ -81,7 +82,7 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
             SharedPreferences.Editor editor = pref.edit();
             long message_id = pref.getLong("MESSAGE_ID_COUNTER", 0L);
             editor.putLong("MESSAGE_ID_COUNTER", message_id + 1L);
-            editor.commit();
+            editor.apply();
             this.id = message_id;
 		}
     }
@@ -91,14 +92,16 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
             this.attack_id = source.readLong();
             this.timestamp = source.readLong();
             this.type = TYPE.valueOf(source.readString());
+            this.stringMessageType = source.readString();
             this.packet = source.readString(); 
     }
 
-				@Generated(hash = 946933615)
-				public MessageRecord(long id, long attack_id, long timestamp, String packet) {
+				@Generated(hash = 102548370)
+				public MessageRecord(long id, long attack_id, long timestamp, String stringMessageType, String packet) {
 					this.id = id;
 					this.attack_id = attack_id;
 					this.timestamp = timestamp;
+					this.stringMessageType = stringMessageType;
 					this.packet = packet;
 				}
 
@@ -113,6 +116,7 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
         dest.writeLong(attack_id);
         dest.writeLong(timestamp);
         dest.writeString(type.name());
+        dest.writeString(stringMessageType);
         dest.writeString(packet);
 	}
 	
@@ -171,6 +175,16 @@ public class MessageRecord extends RecordAll implements Parcelable, Serializable
 	@Override
 	public String getPacket() {
 		return packet;
+	}
+
+	@Override
+	public String getStringMessageType() {
+		return this.stringMessageType;
+	}
+
+	@Override
+	public void setStringMessageType(String stringMessageType) {
+		this.stringMessageType = stringMessageType;
 	}
 
     @Override

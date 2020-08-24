@@ -71,45 +71,45 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         // We will only do a one-direction sync. That is, only sending data to the tracing server.
         // For bidirectional syncing, we will still have to decide how much data should be requested from the server,
         // because the server has relatively to a mobile device almost unlimited space.
-
-        Log.i(TAG, "Beginning network synchronization");
-
-        long lastSyncTime = pref.getLong("LAST_SYNC_TIME", 0);
-
-        String serverAddress = pref.getString("pref_upload_server", "https://www.tracingmonitor.org"); //"https://192.168.1.118:9999"
-
-        Log.i(TAG, "Connecting to " + serverAddress);
-        LogFilter filter = new LogFilter();
-        filter.setAboveTimestamp(lastSyncTime);
-        //int recordsSize = daoHelper.getMessageRecordDAO().getRecordCount();
-        records = this.daoHelper.getAttackRecordDAO().getRecordsForFilter(filter, offset);
-
-        StringWriter writer = new StringWriter();
-
-        int size = records.size();
-        int offset = 1;
-        int currOffset = 1;
-        boolean error = false;
-        for (RecordAll record : records) {
-            SyncUtils.appendRecordToStringWriter(record, writer);
-
-            if(currOffset == 100 || offset == size){
-                boolean success = SyncUtils.uploadRecordsToServer(writer.toString(), serverAddress);
-                if(success){
-                    syncResult.stats.numIoExceptions++;
-                    error =  true;
-                    break;
-                }
-
-                writer.getBuffer().setLength(0);
-                currOffset = 0;
-            }
-
-            offset++;
-            currOffset++;
-        }
-
-        if(!error) pref.edit().putLong("LAST_SYNC_TIME", System.currentTimeMillis()).apply();
-        Log.i(TAG, "Network synchronization complete");
+        //TODO temporary remove tracemonitoring
+//        Log.i(TAG, "Beginning network synchronization");
+//
+//        long lastSyncTime = pref.getLong("LAST_SYNC_TIME", 0);
+//
+//        String serverAddress = pref.getString("pref_upload_server", "https://www.tracingmonitor.org"); //"https://192.168.1.118:9999"
+//
+//        Log.i(TAG, "Connecting to " + serverAddress);
+//        LogFilter filter = new LogFilter();
+//        filter.setAboveTimestamp(lastSyncTime);
+//        //TODO recordCound for performance
+//        records = this.daoHelper.getAttackRecordDAO().getRecordsForFilter(filter, offset);
+//
+//        StringWriter writer = new StringWriter();
+//
+//        int size = records.size();
+//        int offset = 1;
+//        int currOffset = 1;
+//        boolean error = false;
+//        for (RecordAll record : records) {
+//            SyncUtils.appendRecordToStringWriter(record, writer);
+//
+//            if(currOffset == 100 || offset == size){
+//                boolean success = SyncUtils.uploadRecordsToServer(writer.toString(), serverAddress);
+//                if(success){
+//                    syncResult.stats.numIoExceptions++;
+//                    error =  true;
+//                    break;
+//                }
+//
+//                writer.getBuffer().setLength(0);
+//                currOffset = 0;
+//            }
+//
+//            offset++;
+//            currOffset++;
+//        }
+//
+//        if(!error) pref.edit().putLong("LAST_SYNC_TIME", System.currentTimeMillis()).apply();
+//        Log.i(TAG, "Network synchronization complete");
     }
 }
