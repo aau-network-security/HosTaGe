@@ -3,7 +3,6 @@ package de.tudarmstadt.informatik.hostage.ui.fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,7 +32,6 @@ import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
-import de.tudarmstadt.informatik.hostage.logging.Record;
 import de.tudarmstadt.informatik.hostage.logging.RecordAll;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
 import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
@@ -74,6 +73,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	private TextView mRecordDetailsTextRemoteip;
 	private TextView mRecordDetailsTextProtocol;
 	private ImageButton mRecordDeleteButton;
+	private Button textButton;
+	private Button hexButton;
 	private LayoutInflater inflater;
 	private ViewGroup container;
 	private Bundle savedInstanceState;
@@ -89,7 +90,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	}
 
 	/**
-	 * Retriebes the record which is used for the display of the detail informations
+	 * Retrieves the record which is used for the display of the detail information
 	 * @return the record
 	 */
 	public RecordAll getRecord() {
@@ -167,9 +168,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	/**
 	 * Configures the given view and fills it with the detail information
 	 *
-	 * @param rootView the view to use to display the informations
+	 * @param rootView the view to use to display the information
 	 */
-	@SuppressLint("ClickableViewAccessibility")
 	private void configurateRootView(View rootView) {
 		mRecordDetailsTextAttackType.setText(mRecord.getWasInternalAttack() ? R.string.RecordInternalAttack : R.string.RecordExternalAttack);
 		mRecordDetailsTextBssid.setText(mRecord.getBssid());
@@ -190,63 +190,99 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 			if (r.getStringMessageType()!=null && r.getStringMessageType().equals( MessageRecord.TYPE.SEND.name())) {
 				row = mInflater.inflate(R.layout.fragment_record_conversation_sent, null);
+				textButton = (Button) row.findViewById(R.id.text_id_sent);
+				hexButton = (Button) row.findViewById(R.id.hex_id_sent);
 			} else {
 				row = mInflater.inflate(R.layout.fragment_record_conversation_received, null);
+				textButton = (Button) row.findViewById(R.id.text_id_received);
+				hexButton = (Button) row.findViewById(R.id.hex_id_received);
 
 				String tmp = from;
 				from = to;
 				to = tmp;
 			}
 
-			TextView conversationInfo = row.findViewById(R.id.record_conversation_info);
-			TextView conversationContent = row.findViewById(R.id.record_conversation_content);
-			conversationContent.setOnTouchListener((v, motionEvent) -> {
-				if (v.getId() == R.id.record_conversation_content) {
-					if (v.canScrollVertically(1) || v.canScrollVertically(-1)) { // if the view is scrollable
-						v.getParent().requestDisallowInterceptTouchEvent(true);
-						switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-							case MotionEvent.ACTION_UP:
-								v.getParent().requestDisallowInterceptTouchEvent(false);
-								break;
-						}
-					}
-				}
-				return false;
-			});
-
-			Date date = new Date(r.getTimestamp());
-			conversationInfo.setText(String.format(getString(R.string.record_details_info), from, to, getDateAsString(date), getTimeAsString(date)));
-			if (r.getPacket() != null)
-				conversationContent.setText(r.getPacket());
-
-			mRecordOverviewConversation.addView(row);
+			addConversationText(row,from,to,r);
 		}
 
-		mRecordDeleteButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Activity activity = getActivity();
-				if (activity == null) {
-					return;
-				}
-				new AlertDialog.Builder(getActivity())
-						.setTitle(android.R.string.dialog_alert_title)
-						.setMessage(R.string.record_details_confirm_delete)
-						.setPositiveButton(R.string.yes,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-														int which) {
-										daoHelper.getAttackRecordDAO().deleteByAttackID(mRecord.getAttack_id());
+		addDeleteButton();
+	}
 
-										MainActivity.getInstance().navigateBack();
-									}
-								}
-						).setNegativeButton(R.string.no, null)
-						.setIcon(android.R.drawable.ic_dialog_alert).show();
+	@SuppressLint("ClickableViewAccessibility")
+	private void addConversationText(View row, String from, String to, RecordAll r){
+		TextView conversationInfo = row.findViewById(R.id.record_conversation_info);
+		TextView conversationContent = row.findViewById(R.id.record_conversation_content);
+
+
+		conversationContent.setOnTouchListener((v, motionEvent) -> {
+			if (v.getId() == R.id.record_conversation_content) {
+				if (v.canScrollVertically(1) || v.canScrollVertically(-1)) { // if the view is scrollable
+					v.getParent().requestDisallowInterceptTouchEvent(true);
+					if ((motionEvent.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+						v.getParent().requestDisallowInterceptTouchEvent(false);
+					}
+				}
 			}
+			return false;
+		});
+
+		changeHexToText(textButton,r,conversationContent);
+		changeTextToHex(hexButton,r,conversationContent);
+
+		Date date = new Date(r.getTimestamp());
+		conversationInfo.setText(String.format(getString(R.string.record_details_info), from, to, getDateAsString(date), getTimeAsString(date)));
+		if (r.getPacket() != null)
+			conversationContent.setText(r.getPacket());
+
+		mRecordOverviewConversation.addView(row);
+	}
+
+	/**
+	 * Click button listener that changes the packet content from hex to text form
+	 * @param button text button
+	 * @param record record containing the packet
+	 * @param conversationContent the conversion content view
+	 */
+	private void changeHexToText(Button button,RecordAll record,TextView conversationContent){
+		button.setOnClickListener(view -> {
+			conversationContent.setText(record.convertPacketFromHex(record.getPacket()));
 		});
 	}
 
+	/**
+	 * Click button listener that changes packet content from text to hex form
+	 * @param button hex button
+	 * @param record record containing the packet
+	 * @param conversationContent the conversion content view
+	 */
+	private void changeTextToHex(Button button,RecordAll record,TextView conversationContent){
+		button.setOnClickListener(view -> {
+			conversationContent.setText(record.convertPacketFromText(record.getPacket()));
+		});
+	}
+
+	private void addDeleteButton(){
+		mRecordDeleteButton.setOnClickListener(v -> {
+			Activity activity = getActivity();
+			if (activity == null) {
+				return;
+			}
+			deleteDialog();
+		});
+	}
+
+	private void deleteDialog(){
+		new AlertDialog.Builder(getActivity())
+				.setTitle(android.R.string.dialog_alert_title)
+				.setMessage(R.string.record_details_confirm_delete)
+				.setPositiveButton(R.string.yes,
+						(dialog, which) -> {
+							daoHelper.getAttackRecordDAO().deleteByAttackID(mRecord.getAttack_id());
+							MainActivity.getInstance().navigateBack();
+						}
+				).setNegativeButton(R.string.no, null)
+				.setIcon(android.R.drawable.ic_dialog_alert).show();
+	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

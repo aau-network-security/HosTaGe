@@ -1,6 +1,4 @@
 package de.tudarmstadt.informatik.hostage.wrapper;
-
-
 import de.tudarmstadt.informatik.hostage.commons.HelperUtils;
 
 /**

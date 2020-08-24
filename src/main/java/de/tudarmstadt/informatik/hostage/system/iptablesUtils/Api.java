@@ -100,7 +100,7 @@ public final class Api {
         boolean iptablesBinariesExist = new File("/system/bin/iptables").exists()
                 && new File("/system/bin/ip6tables").exists();
         if(iptablesBinariesExist) {
-            toast(ctx, ctx.getString(R.string.toast_bin_already_installed));
+           // toast(ctx, ctx.getString(R.string.toast_bin_already_installed));
             return true;
         }
 
@@ -123,7 +123,7 @@ public final class Api {
 
         if (showErrors) {
             if (ret) {
-                toast(ctx, ctx.getString(R.string.toast_bin_installed));
+                //toast(ctx, ctx.getString(R.string.toast_bin_installed));
             } else {
                 toast(ctx, ctx.getString(R.string.error_binaries));
             }

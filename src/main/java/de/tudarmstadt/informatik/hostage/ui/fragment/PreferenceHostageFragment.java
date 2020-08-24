@@ -48,7 +48,7 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 
 		mPrefValuePreviewSet = new HashSet<>();
 		mPrefValuePreviewSet.add("pref_external_location");
-		mPrefValuePreviewSet.add("pref_hpfeeds_server");
+		//mPrefValuePreviewSet.add("pref_hpfeeds_server");
 
 		addPreferencesFromResource(R.xml.settings_preferences);
 

@@ -29,6 +29,8 @@
     <string name="no_thanks">No, Thanks</string>
     <string name="not_rooted">Your device does not have root access. To unlock full functionality of HosTaGe, a rooted device is required.</string>
     <string name="help">Help</string>
+    <string name="hex_packet" translatable="false">HEX</string>
+    <string name="text_packet" translatable="false">TEXT</string>
     <string name="confirm">Confirm</string>
 	<string name="ok" translatable="false">OK</string>
     <string name="how">How?</string>
@@ -304,4 +306,8 @@
     <string name="pref_timeout_default">30</string>
     <string name="portscan">&#160;Portscan</string>
     <string name="portscans">&#160;Portscans</string>
+    <string name="export_as_bro_signature" translatable="false">Export as Bro Signature</string>
+    <string name="export_to_storage" translatable="false">Export to storage</string>
+    <string name="synchronize" translatable="false">Synchronize</string>
+    <string name="new_profile" translatable="false">New profile</string>
 </resources>

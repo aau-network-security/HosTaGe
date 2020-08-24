@@ -26,9 +26,9 @@ import de.tudarmstadt.informatik.hostage.nio.Reader;
 import de.tudarmstadt.informatik.hostage.nio.Writer;
 import de.tudarmstadt.informatik.hostage.protocol.GHOST;
 import de.tudarmstadt.informatik.hostage.protocol.Protocol;
-import de.tudarmstadt.informatik.hostage.protocol.amqpUtils.AMQPHandler;
-import de.tudarmstadt.informatik.hostage.protocol.coapUtils.COAPHandler;
-import de.tudarmstadt.informatik.hostage.protocol.mqttUtils.MQTTHandler;
+import de.tudarmstadt.informatik.hostage.protocol.utils.amqpUtils.AMQPHandler;
+import de.tudarmstadt.informatik.hostage.protocol.utils.coapUtils.COAPHandler;
+import de.tudarmstadt.informatik.hostage.protocol.utils.mqttUtils.MQTTHandler;
 import de.tudarmstadt.informatik.hostage.sync.tracing.TracingSyncService;
 import de.tudarmstadt.informatik.hostage.wrapper.Packet;
 

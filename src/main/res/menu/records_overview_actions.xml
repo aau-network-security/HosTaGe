@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:id="@+id/records_action_export"
 	      android:icon="@drawable/ic_action_save"
-	      android:title="Export to storage"
-	      android:showAsAction="always" />
+	      android:title="@string/export_to_storage"
+		  app:showAsAction="always" />
 
-	<item android:id="@+id/records_action_synchronize"
-	      android:icon="@drawable/ic_action_import_export"
-	      android:title="Synchronize"
-	      android:showAsAction="always" />
+<!--	<item android:id="@+id/records_action_synchronize"-->
+<!--	      android:icon="@drawable/ic_action_import_export"-->
+<!--	      android:title="@string/synchronize"-->
+<!--		  app:showAsAction="ifRoom" />-->
 </menu>

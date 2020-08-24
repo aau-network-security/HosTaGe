@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -18,36 +19,34 @@ import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.HostageApplication;
 import de.tudarmstadt.informatik.hostage.logging.formatter.Formatter;
 import de.tudarmstadt.informatik.hostage.logging.formatter.TraCINgFormatter;
-import de.tudarmstadt.informatik.hostage.persistence.DAO.AttackRecordDAO;
 import de.tudarmstadt.informatik.hostage.persistence.DAO.DAOHelper;
+
 
 /**
  * The LogExport is used to write a text representation of all logs in the database.
  * The Service runs in its own worker thread.
  * @author Lars Pandikow
  */
-public class LogExport extends IntentService{
-	
+public class LogExport extends IntentService {
 	public static final String ACTION_EXPORT_DATABASE = "de.tudarmstadt.informatik.hostage.hostage.logging.ACTION_EXPORT_DATABASE";
 	public static final String FORMAT_EXPORT_DATABASE = "de.tudarmstadt.informatik.hostage.hostage.logging.FORMAT_EXPORT_DATABASE";
 
-	Handler mMainThreadHandler = null;
+	static Handler mMainThreadHandler = null;
 
-	SharedPreferences pref;
-	//HostageDBOpenHelper dbh;
-	DaoSession dbSession;
-	//AttackRecordDAO attackRecordDAO;
-	DAOHelper daoHelper;
+	static SharedPreferences pref;
+	static DaoSession dbSession;
+	static DAOHelper daoHelper;
+	public static Formatter formatter;
 	
 	public LogExport() {
 		super(LogExport.class.getName());
+
 	}
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		pref = PreferenceManager.getDefaultSharedPreferences(this);
-		//dbh = new HostageDBOpenHelper(this);
 		dbSession = HostageApplication.getInstances().getDaoSession();
 		daoHelper = new DAOHelper(dbSession,this);
 		mMainThreadHandler = new Handler();
@@ -65,8 +64,10 @@ public class LogExport extends IntentService{
 
 			if (ACTION_EXPORT_DATABASE.equals(action)) {
 				final int format = intent.getIntExtra(FORMAT_EXPORT_DATABASE, 0);
-				Formatter formatter = (format == 1 ? TraCINgFormatter.getInstance() : null);
-				exportDatabase(formatter);
+				formatter = (format == 1 ? TraCINgFormatter.getInstance() : null);
+				if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+					exportDatabase(formatter);
+				}
 			}
 		}
 	}
@@ -77,9 +78,9 @@ public class LogExport extends IntentService{
 	 * 
 	 * @param format
 	 *            Integer coded export format
-	 * @see Record #toString(int)
+	 * @see RecordAll #toString(int)
 	 */
-	private void exportDatabase(Formatter format) {
+	public static void exportDatabase(Formatter format) {
 		try {
 			FileOutputStream log;
 			String filename = "hostage_" + (format == null ? "default" : format.toString()) + "_"+ System.currentTimeMillis() + ".log";
@@ -114,17 +115,13 @@ public class LogExport extends IntentService{
 	 * @return True if external storage is available for read and write, else
 	 *         false.
 	 */
-	private boolean isExternalStorageWritable() {
+	private static boolean isExternalStorageWritable() {
 		String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
-	private void makeToast(final String text, final int length){
-		mMainThreadHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(getApplicationContext(), text, length).show();
-			}
-		});
+	private static void makeToast(final String text, final int length){
+		mMainThreadHandler.post(() -> Toast.makeText(Hostage.getContext(), text, length).show());
 	}
+
 }
