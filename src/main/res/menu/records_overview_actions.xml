@@ -7,8 +7,8 @@
 	      android:title="@string/export_to_storage"
 		  app:showAsAction="always" />
 
-<!--	<item android:id="@+id/records_action_synchronize"-->
-<!--	      android:icon="@drawable/ic_action_import_export"-->
-<!--	      android:title="@string/synchronize"-->
-<!--		  app:showAsAction="ifRoom" />-->
+	<item android:id="@+id/records_action_synchronize"
+	      android:icon="@drawable/ic_action_import_export"
+	      android:title="@string/synchronize"
+		  app:showAsAction="ifRoom" />
 </menu>
