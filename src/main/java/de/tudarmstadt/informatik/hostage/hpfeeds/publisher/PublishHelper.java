@@ -39,7 +39,7 @@ public class PublishHelper {
     public PublishHelper(){
         this.dbSession = HostageApplication.getInstances().getDaoSession();
         this.daoHelper = new DAOHelper(dbSession);
-        initializeHpFeedsCredentials();
+       //initializeHpFeedsCredentials(); //hpfeeds disabled
     }
 
     private void initializeHpFeedsCredentials(){
