@@ -669,7 +669,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         int[] ids = new int[] {R.id.RecordTextFieldBSSID, R.id.RecordTextFieldIP, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp };
 
         if(filter!=null && !filter.protocols.isEmpty()){
-            int maxLimit = 10000;
+            int maxLimit = 20000;
             //The offset is always 0, so it used to set the maxLimit for the filter, to avoid missing records.
             data = daoHelper.getAttackRecordDAO().getRecordsForFilter(this.filter,limit,maxLimit,attackRecordOffset,attackRecordLimit);
         }else{
