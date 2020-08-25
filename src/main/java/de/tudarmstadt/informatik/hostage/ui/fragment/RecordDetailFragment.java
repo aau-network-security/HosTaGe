@@ -304,31 +304,32 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		}
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.bro_sig) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-			builder.setTitle(MainActivity.getInstance().getString(R.string.bro_signature));
-			builder.setMessage(MainActivity.getInstance().getString(R.string.bro_message));
-
-			builder.setPositiveButton(R.string.generate,
-					(dialog, which) -> {
-						try {
-							getConversation();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						MainActivity.getInstance().navigateBack();
-					}
-			).setNegativeButton(R.string.cancel, null);
-
-			builder.create();
-			builder.show();
-
-			return true;
-		}
-		return false;
-	}
+	//TODO Disabled for PlayStoreRelease
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		if (item.getItemId() == R.id.bro_sig) {
+//			AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+//			builder.setTitle(MainActivity.getInstance().getString(R.string.bro_signature));
+//			builder.setMessage(MainActivity.getInstance().getString(R.string.bro_message));
+//
+//			builder.setPositiveButton(R.string.generate,
+//					(dialog, which) -> {
+//						try {
+//							getConversation();
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
+//						MainActivity.getInstance().navigateBack();
+//					}
+//			).setNegativeButton(R.string.cancel, null);
+//
+//			builder.create();
+//			builder.show();
+//
+//			return true;
+//		}
+//		return false;
+//	}
 
 
 	public int protocol2Port(String protocol){
