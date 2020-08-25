@@ -176,7 +176,7 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 
 	public void stopMultiStage() {
 		Context context =Hostage.getContext();
-		alarm.CancelAlarm(context);
+		alarm.cancelAlarm(context);
 	}
 
 	private void startMultiStage() {
@@ -185,7 +185,7 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 
 		if (alarm != null) {
 			alarm.onReceive(context,intent);
-			alarm.SetAlarm(context);
+			alarm.setAlarm(context);
 		} else {
 			Toast.makeText(context, "Alarm is null", Toast.LENGTH_SHORT).show();
 		}

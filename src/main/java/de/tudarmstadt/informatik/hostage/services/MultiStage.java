@@ -1,5 +1,6 @@
 package de.tudarmstadt.informatik.hostage.services;
 
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -246,11 +247,10 @@ public class MultiStage extends Service {
         manager.createNotificationChannel(chan);
 
         Notification.Builder notificationBuilder = new Notification.Builder(this,NOTIFICATION_CHANNEL_ID);
-        notificationBuilder.setContentTitle("MultiStage").setContentText("MultiStage running...")
-                .setSmallIcon(R.drawable.ic_launcher);
+        notificationBuilder.setContentTitle("MultiStage").setContentText("MultiStage running...").setSmallIcon(R.drawable.ic_launcher);
 
         notification = notificationBuilder.setOngoing(true)
-                .setPriority(Notification.PRIORITY_DEFAULT)
+                .setPriority(Notification.PRIORITY_LOW)
                 .build();
         startForeground(1, notification);
     }
