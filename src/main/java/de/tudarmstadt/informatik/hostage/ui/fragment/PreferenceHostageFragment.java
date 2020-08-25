@@ -9,6 +9,9 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.widget.Toast;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.HashSet;
 import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.R;
@@ -119,7 +122,7 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 			boolean myValue = (Boolean) newValue;
 
 			if (myValue) {
-				startMultiStage();
+				confirmMultistage(checkboxPrefMultiStage).create().show();
 			}
 			else {
 				stopMultiStage();
@@ -127,6 +130,20 @@ public class PreferenceHostageFragment extends PreferenceFragment implements Sha
 			return true;
 		}));
 
+	}
+
+	private MaterialAlertDialogBuilder confirmMultistage(CheckBoxPreference checkboxPrefMultiStage){
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+		builder.setTitle("Attention");
+		builder.setMessage("if you enable this service,it may use a lot of memory and drain your battery faster.");
+		builder.setPositiveButton("Enable", (dialog, which) -> {
+			startMultiStage();
+		});
+		builder.setNegativeButton(R.string.close, (dialog, which) -> {
+			checkboxPrefMultiStage.setChecked(false);
+		});
+
+		return builder;
 	}
 
 	public void stopMultiStage() {
