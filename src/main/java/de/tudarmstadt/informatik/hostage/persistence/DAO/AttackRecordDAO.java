@@ -455,14 +455,29 @@ public class AttackRecordDAO extends  DAO {
     public synchronized ArrayList<RecordAll> getRecordsForFilter(LogFilter filter,int offset,int limit,int attackRecordOffset,int attackRecordLimit) {
         MessageRecordDAO messageRecordDAO = new MessageRecordDAO(this.daoSession);
         ArrayList<AttackRecord> attackRecords = this.selectionQueryFromFilter(filter,attackRecordOffset,attackRecordLimit);
-        ArrayList<MessageRecord> records = messageRecordDAO.selectionQueryFromFilter(filter,offset,limit);
+        ArrayList<MessageRecord> records = messageRecordDAO.selectionQueryFromFilter(filter,0,limit);
         ArrayList<MessageRecord> messageRecords =new ArrayList<>();
+        ArrayList<MessageRecord> filterProtocolRecords = new ArrayList<>();
 
         ArrayList<NetworkRecord> distinctNetworkRecords = distinctNetworkRecords(filter);
 
         messageRecords = updatedMessageRecordsFields(attackRecords,distinctNetworkRecords,records);
+        filterProtocolRecords = getProtocolsFilter(filter,messageRecords,offset);
 
-        return sortLists(filter,messageRecords);
+        return sortLists(filter,filterProtocolRecords);
+    }
+
+    private ArrayList<MessageRecord> getProtocolsFilter(LogFilter filter,ArrayList<MessageRecord> messageRecords,int limit){
+        ArrayList<MessageRecord> records = new ArrayList<>();
+        if(filter!=null && !filter.protocols.isEmpty()){
+            ArrayList<String> filterProtocols = filter.protocols;
+            for (final String current : filterProtocols) {
+                records.addAll(messageRecords.stream().filter(o -> o.getProtocol().equals(current)).limit(limit).collect(Collectors.toList()));
+            }
+        }else{
+            return messageRecords;
+        }
+        return records;
     }
 
 

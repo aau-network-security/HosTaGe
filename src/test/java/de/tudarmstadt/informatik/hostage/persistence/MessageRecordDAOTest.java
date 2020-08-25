@@ -13,6 +13,7 @@ import org.robolectric.RuntimeEnvironment;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
+import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
 import de.tudarmstadt.informatik.hostage.logging.DaoMaster;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
@@ -85,7 +86,7 @@ public class MessageRecordDAOTest {
     }
 
     @Test
-    public void  testInsertMessageRecords(){
+    public void testInsertMessageRecords(){
         ArrayList<MessageRecord> records = new ArrayList<>();
         MessageRecord second = new MessageRecord();
         second.setId(2);
@@ -95,6 +96,32 @@ public class MessageRecordDAOTest {
         messageRecordDAO.insertMessageRecords(records);
         assertNotNull(records);
         assertEquals(2,records.size());
+
+    }
+
+    @Test
+    public void testJoins(){
+        String protocolFirst = "https";
+        String protocolSecond = "telnet";
+        AttackRecord attackRecord = new AttackRecord();
+        AttackRecord attackRecordSecond = new AttackRecord();
+
+        attackRecord.setAttack_id(2);
+        attackRecord.setAttack_id(2);
+        attackRecord.setProtocol(protocolFirst);
+        attackRecordSecond.setAttack_id(3);
+        attackRecordSecond.setProtocol(protocolSecond);
+
+        record.setId(1);
+        record.setAttack_id(2);
+        record.setRecord(attackRecord);
+        daoSession.insert(attackRecord);
+        daoSession.insert(attackRecordSecond);
+        daoSession.insert(record);
+
+        ArrayList<AttackRecord> records = messageRecordDAO.joinAttacks(protocolFirst);
+        assertEquals(1,records.size());
+        assertEquals(protocolFirst,records.get(0).getProtocol());
 
     }
 

@@ -64,8 +64,6 @@ import de.tudarmstadt.informatik.hostage.ui.popup.SimplePopupItem;
 import de.tudarmstadt.informatik.hostage.ui.popup.SimplePopupTable;
 import de.tudarmstadt.informatik.hostage.ui.popup.SplitPopupItem;
 
-import static de.tudarmstadt.informatik.hostage.ui.activity.MainActivity.getContext;
-
 
 public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimeDialogFragment.DateTimeDialogFragmentListener {
     static final String FILTER_MENU_TITLE_BSSID = MainActivity.getContext().getString(R.string.BSSID);
@@ -670,7 +668,14 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         String[] keys = new String[] { RecordOverviewFragment.this.getString(R.string.RecordIP), RecordOverviewFragment.this.getString(R.string.RecordSSID), RecordOverviewFragment.this.getString(R.string.RecordProtocol), RecordOverviewFragment.this.getString(R.string.RecordTimestamp)};
         int[] ids = new int[] {R.id.RecordTextFieldBSSID, R.id.RecordTextFieldIP, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp };
 
-        data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter == null ? this.filter : filter,offset,limit,attackRecordOffset,attackRecordLimit);
+        if(filter!=null && !filter.protocols.isEmpty()){
+            int maxLimit = 10000;
+            //The offset is always 0, so it used to set the maxLimit for the filter, to avoid missing records.
+            data = daoHelper.getAttackRecordDAO().getRecordsForFilter(this.filter,limit,maxLimit,attackRecordOffset,attackRecordLimit);
+        }else{
+            data = daoHelper.getAttackRecordDAO().getRecordsForFilter(filter,offset,limit,attackRecordOffset,attackRecordLimit);
+
+        }
 
         HashMap<String, Integer> mapping = new HashMap<>();
         int i = 0;

@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.tudarmstadt.informatik.hostage.logging.AttackRecord;
+import de.tudarmstadt.informatik.hostage.logging.AttackRecordDao;
 import de.tudarmstadt.informatik.hostage.logging.DaoSession;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecord;
 import de.tudarmstadt.informatik.hostage.logging.MessageRecordDao;
@@ -218,6 +219,19 @@ public class MessageRecordDAO extends DAO {
         }
 
         return list;
+
+    }
+
+    public ArrayList<AttackRecord> joinAttacks(String protocol){
+        AttackRecordDao messageRecordDao = this.daoSession.getAttackRecordDao();
+
+        QueryBuilder<AttackRecord> qb = messageRecordDao.queryBuilder();
+        qb.join(MessageRecord.class
+                , MessageRecordDao.Properties.Attack_id);
+
+        ArrayList<AttackRecord> attacks = (ArrayList<AttackRecord>) qb.list();
+
+        return attacks;
 
     }
 
