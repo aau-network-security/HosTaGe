@@ -316,12 +316,12 @@ public class Hostage extends Service {
 	public void onCreate() {
 		super.onCreate();
 		context = new WeakReference<>(getApplicationContext());
+		executeRoot();
 		loadConnectionInfoEditor();
 		loadProtocols();
 		mProtocolActiveAttacks = new HashMap<>();
 		createNotification();
 		registerNetReceiver();
-		executeRoot();
 		loadConnectionInfo();
 	}
 
