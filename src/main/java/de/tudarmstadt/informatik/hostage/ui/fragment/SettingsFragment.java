@@ -33,7 +33,6 @@ public class SettingsFragment extends UpNavigatibleFragment {
 		v = inflater.inflate(R.layout.fragment_settings, container, false);
 
 		TextView rootedText = v.findViewById(R.id.settings_device_rooted);
-		TextView iptablesText = v.findViewById(R.id.settings_iptables_available);
 
 		if (Device.isRooted()) {
 			rootedText.setText(R.string.yes);
@@ -41,14 +40,6 @@ public class SettingsFragment extends UpNavigatibleFragment {
 		} else {
 			rootedText.setText(R.string.no);
 			rootedText.setTextColor(getResources().getColor(R.color.holo_red));
-		}
-
-		if (Device.isPortRedirectionAvailable()) {
-			iptablesText.setText(R.string.yes);
-			iptablesText.setTextColor(getResources().getColor(R.color.holo_dark_green));
-		} else {
-			iptablesText.setText(R.string.no);
-			iptablesText.setTextColor(getResources().getColor(R.color.holo_red));
 		}
 
 		return v;
