@@ -19,8 +19,7 @@ import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
 
 public class PublishHelper {
-    private static final String PERSIST_FILENAME = "publish.json";
-    File file = new File("/data/data/" + MainActivity.getContext().getPackageName() + "/" + PERSIST_FILENAME);
+
     private DaoSession dbSession;
     private DAOHelper daoHelper;
     private int offset=0;
@@ -30,7 +29,7 @@ public class PublishHelper {
     LogFilter filter = null;
     JSONHelper jsonHelper = new JSONHelper();
     private String host = "";
-    private int port = 0;
+    private int port = 20000;
     private String ident = "";
     private String secret = "";
     private String channel = "";
@@ -67,7 +66,7 @@ public class PublishHelper {
      * Persists the record in a JSON file.
      */
     private void persistRecord(){
-        jsonHelper.jsonWriter(this.persistData(getLastInsertedRecords()),file);
+        jsonHelper.jsonWriter(getLastInsertedRecords());
     }
 
     /**
@@ -80,7 +79,7 @@ public class PublishHelper {
      */
     private void publisher() throws Hpfeeds.ReadTimeOutException, Hpfeeds.EOSException, Hpfeeds.InvalidStateException, Hpfeeds.LargeMessageException, IOException {
         Publisher publisher = new Publisher();
-        String initialConfigurationUrl = jsonHelper.getFilePath(file);
+        String initialConfigurationUrl = jsonHelper.getFilePath();
         publisher.setCommand(host,port,ident,secret,channel,initialConfigurationUrl);
         publisher.publishFile();
     }
@@ -91,19 +90,6 @@ public class PublishHelper {
      */
     private ArrayList<RecordAll> getLastInsertedRecords(){
         return  daoHelper.getAttackRecordDAO().getRecordsForFilter(filter,offset,limit,attackRecordOffset,attackRecordLimit);
-    }
-
-    /**
-     * Creates a JSON array.
-     * @param records of the attacks
-     * @return JSON array.
-     */
-    public JSONArray persistData(ArrayList<RecordAll> records){
-        JSONArray arr = new JSONArray();
-        for(RecordAll record: records) {
-            arr.put(record.toJSON());
-        }
-        return arr;
     }
 
 }
