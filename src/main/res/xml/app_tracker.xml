@@ -2,25 +2,25 @@
 <resources>
 	<integer name="ga_sessionTimeout">300</integer>
 	<bool name="ga_autoActivityTracking">true</bool>
-	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.HomeFragment">
+	<screenName name="dk.aau.netsec.hostage.ui2.fragment.HomeFragment">
 		HosTaGe Homeview
 	</screenName>
-	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.ProfileManagerFragment">
+	<screenName name="dk.aau.netsec.hostage.ui2.fragment.ProfileManagerFragment">
 		HosTaGe Profiles
 	</screenName>
-	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.RecordOverviewFragment">
+	<screenName name="dk.aau.netsec.hostage.ui2.fragment.RecordOverviewFragment">
 		HosTaGe Records
 	</screenName>
-	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.ServicesFragment">
+	<screenName name="dk.aau.netsec.hostage.ui2.fragment.ServicesFragment">
 		HosTaGe Services
 	</screenName>
-	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.StatisticsFragment">
+	<screenName name="dk.aau.netsec.hostage.ui2.fragment.StatisticsFragment">
 		HosTaGe Statistics
 	</screenName>
-	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.SettingsFragment">
+	<screenName name="dk.aau.netsec.hostage.ui2.fragment.SettingsFragment">
 		HosTaGe Settings
 	</screenName>
-	<screenName name="de.tudarmstadt.informatik.hostage.ui2.fragment.ThreatMapFragment">
+	<screenName name="dk.aau.netsec.hostage.ui2.fragment.ThreatMapFragment">
 		HosTaGe ThreatMap
 	</screenName>
 	<!--  The following value should be replaced with correct property id. -->

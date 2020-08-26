@@ -40,8 +40,8 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import de.tudarmstadt.informatik.hostage.R;
-import de.tudarmstadt.informatik.hostage.ui.activity.MainActivity;
+import dk.aau.netsec.hostage.R;
+import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 public class PieGraph extends View {
 

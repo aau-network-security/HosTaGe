@@ -26,8 +26,8 @@ public class BrodcastManagerTest {
         LocalBroadcastManager instance = mock(LocalBroadcastManager.class);
         PowerMockito.when(LocalBroadcastManager.getInstance(context)).thenReturn(instance);
 
-        String [] values = new String [] {"de.tudarmstadt.informatik.hostage.BROADCAST.STARTED","HTTP","true"};
-        intent.putExtra("SENDER", " de.tudarmstadt.informatik.hostage.Handler");
+        String [] values = new String [] {"dk.aau.netsec.hostage.BROADCAST.STARTED","HTTP","true"};
+        intent.putExtra("SENDER", " dk.aau.netsec.hostage.Handler");
         intent.putExtra("VALUES", values);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }

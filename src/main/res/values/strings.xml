@@ -119,7 +119,7 @@
 
     <string name="button_title_apply">Apply</string>
     <string name="button_title_cancel">Cancel</string>
-    <string name="shared_preference_path">de.tudarmstadt.informatik.hostage.preferences</string>
+    <string name="shared_preference_path">dk.aau.netsec.hostage.preferences</string>
     <string name="UUID">9fc4f490-659e-11e3-949a-0800200c9a66</string>
 
     <string name="recorded_attacks">recorded attacks: </string>

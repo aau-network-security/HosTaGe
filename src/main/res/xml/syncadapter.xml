@@ -16,8 +16,8 @@ limitations under the License.
 -->
 
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
-              android:contentAuthority="de.tudarmstadt.informatik.hostage.androidsync"
-              android:accountType="de.tudarmstadt.informatik.hostage"
+              android:contentAuthority="dk.aau.netsec.hostage.androidsync"
+              android:accountType="dk.aau.netsec.hostage"
               android:userVisible="true"
               android:supportsUploading="true"
               android:allowParallelSyncs="false"
