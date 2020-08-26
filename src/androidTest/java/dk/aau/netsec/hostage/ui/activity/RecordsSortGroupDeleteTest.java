@@ -81,7 +81,7 @@ public class RecordsSortGroupDeleteTest {
         linearLayout2.perform(click());
 
         ViewInteraction imageButton = onView(
-                allOf(withId(R.id.FilterButton), withContentDescription("Περισσότερες επιλογές"),
+                allOf(withId(R.id.FilterButton), withContentDescription("More Options"),
                         childAtPosition(
                                 allOf(withId(R.id.linearLayout),
                                         childAtPosition(
@@ -110,7 +110,7 @@ public class RecordsSortGroupDeleteTest {
         button.perform(click());
 
         ViewInteraction imageButton2 = onView(
-                allOf(withId(R.id.GroupButton), withContentDescription("Περισσότερες επιλογές"),
+                allOf(withId(R.id.GroupButton), withContentDescription("More Options"),
                         childAtPosition(
                                 allOf(withId(R.id.linearLayout),
                                         childAtPosition(
@@ -148,7 +148,7 @@ public class RecordsSortGroupDeleteTest {
         }
 
         ViewInteraction imageButton3 = onView(
-                allOf(withId(R.id.SortButton), withContentDescription("Περισσότερες επιλογές"),
+                allOf(withId(R.id.SortButton), withContentDescription("More Options"),
                         childAtPosition(
                                 allOf(withId(R.id.linearLayout),
                                         childAtPosition(
@@ -177,7 +177,7 @@ public class RecordsSortGroupDeleteTest {
         button3.perform(click());
 
         ViewInteraction imageButton4 = onView(
-                allOf(withId(R.id.DeleteButton), withContentDescription("Περισσότερες επιλογές"),
+                allOf(withId(R.id.DeleteButton), withContentDescription("More Options"),
                         childAtPosition(
                                 allOf(withId(R.id.linearLayout),
                                         childAtPosition(

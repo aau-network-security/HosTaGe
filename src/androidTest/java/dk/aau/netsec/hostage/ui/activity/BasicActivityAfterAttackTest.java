@@ -116,7 +116,7 @@ public class BasicActivityAfterAttackTest {
         frameLayout.check(matches(isDisplayed()));
 
         ViewInteraction linearLayout3 = onView(
-                allOf(withContentDescription("Net, Πλοήγηση προς τα επάνω"),
+                allOf(withContentDescription("Net, Go up"),
                         childAtPosition(
                                 allOf(withClassName(is("com.android.internal.widget.ActionBarView")),
                                         childAtPosition(
