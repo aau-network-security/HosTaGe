@@ -1,5 +1,6 @@
 package de.tudarmstadt.informatik.hostage.ui.activity;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import android.content.res.TypedArray;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -300,16 +302,29 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void executeRoot(){
-		checkForRoot();
+		CheckRoot checkRoot = new CheckRoot();
+		checkRoot.execute();
 	}
 
-	private void checkForRoot(){
+	private static void checkForRoot(){
 		if(Shell.SU.available()) {
 			Device.checkCapabilities();
 			if(Api.assertBinaries(getContext(),true)) {
-				//Api.executeCommands();
-				Device.executePortRedirectionScript();
+				try {
+					Api.executeCommands();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				//Device.executePortRedirectionScript(); //not working with Samsungs
 			}
+		}
+	}
+
+	private static class CheckRoot extends AsyncTask<Void,Void,Void> {
+		@Override
+		protected Void doInBackground(Void... voids) {
+			checkForRoot();
+			return null;
 		}
 	}
 
