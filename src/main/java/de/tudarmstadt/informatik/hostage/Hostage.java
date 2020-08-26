@@ -126,14 +126,6 @@ public class Hostage extends Service {
 		}
 	}
 
-	private static class CheckRoot extends AsyncTask<Void,Void,Void>{
-
-		@Override
-		protected Void doInBackground(Void... voids) {
-			checkForRoot();
-			return null;
-		}
-	}
 
 	private static class ImplementProtocols extends AsyncTask<Void,Void,LinkedList<Protocol>>{
 
@@ -316,7 +308,6 @@ public class Hostage extends Service {
 	public void onCreate() {
 		super.onCreate();
 		context = new WeakReference<>(getApplicationContext());
-		executeRoot();
 		loadConnectionInfoEditor();
 		loadProtocols();
 		mProtocolActiveAttacks = new HashMap<>();
@@ -338,21 +329,6 @@ public class Hostage extends Service {
 	private void loadProtocols(){
 		ImplementProtocols implementProtocols = new ImplementProtocols();
 		implementProtocols.execute();
-	}
-
-	private void executeRoot(){
-		CheckRoot checkRoot = new CheckRoot();
-		checkRoot.execute();
-	}
-
-	private static void checkForRoot(){
-		if(Shell.SU.available()) {
-			Device.checkCapabilities();
-			if(Api.assertBinaries(getContext(),true)) {
-				//Api.executeCommands();
-				Device.executePortRedirectionScript();
-			}
-		}
 	}
 
 	@Override

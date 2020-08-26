@@ -46,6 +46,8 @@ import de.tudarmstadt.informatik.hostage.Hostage;
 import de.tudarmstadt.informatik.hostage.R;
 import de.tudarmstadt.informatik.hostage.location.MyLocationManager;
 import de.tudarmstadt.informatik.hostage.persistence.ProfileManager;
+import de.tudarmstadt.informatik.hostage.system.Device;
+import de.tudarmstadt.informatik.hostage.system.iptablesUtils.Api;
 import de.tudarmstadt.informatik.hostage.ui.adapter.DrawerListAdapter;
 import de.tudarmstadt.informatik.hostage.ui.fragment.AboutFragment;
 import de.tudarmstadt.informatik.hostage.ui.fragment.HomeFragment;
@@ -59,6 +61,7 @@ import de.tudarmstadt.informatik.hostage.ui.fragment.UpNavigatibleFragment;
 import de.tudarmstadt.informatik.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer;
 import de.tudarmstadt.informatik.hostage.ui.model.DrawerListItem;
 import de.tudarmstadt.informatik.hostage.ui.model.LogFilter;
+import eu.chainfire.libsuperuser.Shell;
 
 
 /**
@@ -271,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
 		// configures the action bar
 		configureActionBar();
 		loadDrawer();
+		executeRoot();
 		getLocationData();
 		loadFirstRun();
 		//Must start after the location!
@@ -295,6 +299,19 @@ public class MainActivity extends AppCompatActivity {
         }
 	}
 
+	private void executeRoot(){
+		checkForRoot();
+	}
+
+	private static void checkForRoot(){
+		if(Shell.SU.available()) {
+			Device.checkCapabilities();
+			if(Api.assertBinaries(getContext(),true)) {
+				//Api.executeCommands();
+				Device.executePortRedirectionScript();
+			}
+		}
+	}
 
 	private void addAnimation(){
 		// init threat indicator animation
