@@ -36,7 +36,7 @@ public class HostageApplication extends Application {
 		super.onCreate();
 		instances = this;
 		setDatabase();
-		//crashlyticsSetup();
+		crashlyticsSetup();
 	}
 
 	private void crashlyticsSetup(){
