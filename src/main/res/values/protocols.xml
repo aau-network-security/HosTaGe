@@ -11,7 +11,7 @@
         <item>MQTT</item>
         <item>MODBUS</item>
         <item>S7COMM</item>
-        <item>SNMP</item>
+        <!--        <item>SNMP</item>-->
         <item>SIP</item>
         <item>SMB</item>
         <item>SSH</item>
@@ -19,7 +19,7 @@
         <item>TELNET</item>
     </string-array>
 
-    <string-array name="protocols_description">
+    <string-array name="protocols_description" >
         <item>The Advanced Message Queuing Protocol (AMQP) is an open standard application layer protocol for message-oriented middleware. The defining features of AMQP are message orientation, queuing, routing, reliability and security</item>
         <item>Constrained Application Protocol (CoAP) is a specialized Internet Application Protocol for constrained devices, as defined in RFC 7252</item>
         <item>A service for testing and measurement of round-trip times in IP networks</item>
@@ -30,7 +30,7 @@
         <item>MQTT(MQ Telemetry Transportor Message Queuing Telemetry Transport) is an open OASIS and ISO standard (ISO/IEC 20922) lightweight, publish-subscribe network protocol that transports messages between devices</item>
         <item>ICS SCADA MODBUS</item>
         <item>Siemens SIMATIC Communication Protocol</item>
-        <item>Simple Network Management Protocol</item>
+        <!--        <item>Simple Network Management Protocol</item>-->
         <item>A protocol for VoIP (Voice over IP) services</item>
         <item>A protocol used for providing shared access to files, printers, serial ports, and miscellaneous communications between nodes on a network</item>
         <item>A network protocol that provides file access, file transfer, and file management functionalities over any reliable data stream</item>
@@ -49,7 +49,7 @@
         <item>1883</item>
         <item>502</item>
         <item>102</item>
-        <item>161</item>
+        <!--        <item>161</item>-->
         <item>5060</item>
         <item>1025</item>
         <item>22</item>

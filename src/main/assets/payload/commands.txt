@@ -13,9 +13,6 @@ iptables -t nat -D OUTPUT -p tcp --dport 28580 -j REDIRECT --to-ports 443
 iptables -t nat -D PREROUTING -p tcp --dport 102 -j REDIRECT --to-ports 28239
 iptables -t nat -D OUTPUT -p tcp --dport 28239 -j REDIRECT --to-ports 102
 
-iptables -t nat -D PREROUTING -p udp --dport 161 -j REDIRECT --to-ports 28298
-iptables -t nat -D OUTPUT -p udp --dport 28298 -j REDIRECT --to-ports 161
-
 iptables -t nat -D PREROUTING -p udp --dport 138 -j REDIRECT --to-ports 28275
 iptables -t nat -D OUTPUT -p udp --dport 28275 -j REDIRECT --to-ports 138
 
@@ -53,9 +50,6 @@ iptables -t nat -A OUTPUT -p tcp --dport 28580 -j REDIRECT --to-ports 443
 
 iptables -t nat -A PREROUTING -p tcp --dport 102 -j REDIRECT --to-ports 28239
 iptables -t nat -A OUTPUT -p tcp --dport 28239 -j REDIRECT --to-ports 102
-
-iptables -t nat -A PREROUTING -p udp --dport 161 -j REDIRECT --to-ports 28298
-iptables -t nat -A OUTPUT -p udp --dport 28298 -j REDIRECT --to-ports 161
 
 iptables -t nat -A PREROUTING -p udp --dport 138 -j REDIRECT --to-ports 28275
 iptables -t nat -A OUTPUT -p udp --dport 28275 -j REDIRECT --to-ports 138

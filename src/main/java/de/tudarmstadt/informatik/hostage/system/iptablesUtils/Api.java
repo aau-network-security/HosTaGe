@@ -254,7 +254,7 @@ public final class Api {
         Listener.addRealPorts("HTTP",28217);
         Listener.addRealPorts("HTTPS",28580);
         Listener.addRealPorts("S7COMM",28239);
-        Listener.addRealPorts("SNMP",28298);
+//        Listener.addRealPorts("SNMP",28298);
         Listener.addRealPorts("SSH",28160);
         Listener.addRealPorts("TELNET",28582);
         Listener.addRealPorts("MODBUS",28162);

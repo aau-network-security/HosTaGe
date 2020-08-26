@@ -544,7 +544,7 @@ public class  ProfileManager {
 		addRandomProfile();
 		addNuclearPlantProfile();
 		addModbusMasterProfile();
-		addSNMPProfile();
+		//addSNMPProfile();
 		addParanoidProfile();
         addMQTTBrokerProfile();
         addMQTTSensorProfile();
