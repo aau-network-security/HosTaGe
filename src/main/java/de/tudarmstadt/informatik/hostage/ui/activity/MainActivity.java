@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
 		checkForRoot();
 	}
 
-	private static void checkForRoot(){
+	private void checkForRoot(){
 		if(Shell.SU.available()) {
 			Device.checkCapabilities();
 			if(Api.assertBinaries(getContext(),true)) {
