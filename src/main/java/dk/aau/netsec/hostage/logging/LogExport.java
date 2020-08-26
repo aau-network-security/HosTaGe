@@ -13,13 +13,12 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
-
-
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.logging.formatter.Formatter;
 import dk.aau.netsec.hostage.logging.formatter.TraCINgFormatter;
 import dk.aau.netsec.hostage.persistence.DAO.DAOHelper;
+import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 
 /**
@@ -63,8 +62,8 @@ public class LogExport extends IntentService {
 			final String action = intent.getAction();
 
 			if (ACTION_EXPORT_DATABASE.equals(action)) {
-				final int format = intent.getIntExtra(FORMAT_EXPORT_DATABASE, 0);
-				formatter = (format == 1 ? TraCINgFormatter.getInstance() : null);
+				//final int format = intent.getIntExtra(FORMAT_EXPORT_DATABASE, 0);
+				formatter = (TraCINgFormatter.getInstance());
 				if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 					exportDatabase(formatter);
 				}
@@ -85,8 +84,8 @@ public class LogExport extends IntentService {
 			FileOutputStream log;
 			String filename = "hostage_" + (format == null ? "default" : format.toString()) + "_"+ System.currentTimeMillis() + ".log";
 			String externalLocation = pref.getString("pref_external_location", "");
-            String root = Environment.getExternalStorageDirectory().toString();
-			if (root != null && isExternalStorageWritable()) {
+            String root = MainActivity.getContext().getExternalFilesDir(null).getAbsolutePath();
+			if (isExternalStorageWritable()) {
 				File dir = new File(root + externalLocation);
 				dir.mkdirs();
 				File file = new File(dir, filename);
