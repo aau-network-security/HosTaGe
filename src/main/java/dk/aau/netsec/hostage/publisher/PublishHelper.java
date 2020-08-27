@@ -24,11 +24,11 @@ public class PublishHelper {
     private int attackRecordLimit=999;
     LogFilter filter = null;
     JSONHelper jsonHelper = new JSONHelper();
-    private String host = "";
+    private String host = "130.226.249.235";
     private int port = 20000;
-    private String ident = "";
-    private String secret = "";
-    private String channel = "";
+    private String ident = "playstore";
+    private String secret = "jqqm?DEGzwSf7qFmGjQ2NtZcRegHH3NH";
+    private String channel = "hostage";
 
 
     public PublishHelper(){
