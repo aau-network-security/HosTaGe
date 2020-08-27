@@ -26,9 +26,9 @@ public class PublishHelper {
     JSONHelper jsonHelper = new JSONHelper();
     private String host = "130.226.249.235";
     private int port = 20000;
-    private String ident = "playstore";
-    private String secret = "jqqm?DEGzwSf7qFmGjQ2NtZcRegHH3NH";
-    private String channel = "hostage";
+    private String ident = "";
+    private String secret = "";
+    private String channel = "";
 
 
     public PublishHelper(){
