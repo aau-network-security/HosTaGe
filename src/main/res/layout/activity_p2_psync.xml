@@ -6,7 +6,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="de.tudarmstadt.informatik.hostage.sync.p2p.P2PSyncActivity">
+    tools:context="dk.aau.netsec.hostage.sync.p2p.P2PSyncActivity">
 
 
 

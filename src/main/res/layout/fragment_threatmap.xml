@@ -4,7 +4,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="de.tudarmstadt.informatik.hostage.ui.activity.MainActivity" >
+                tools:context="dk.aau.netsec.hostage.ui.activity.MainActivity" >
 
     <com.google.android.gms.maps.MapView
             android:id="@+id/threatmapfragment"

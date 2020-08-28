@@ -18,7 +18,7 @@
             android:layout_gravity="center"
             />
 
-        <de.tudarmstadt.informatik.hostage.ui.fragment.opengl.HomeGLSurfaceView
+        <dk.aau.netsec.hostage.ui.fragment.opengl.HomeGLSurfaceView
             android:id="@+id/surfaceview"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

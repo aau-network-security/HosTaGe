@@ -3,12 +3,12 @@
 
     
    
-    <string name="connection_info" translatable="false">de.tudarmstadt.informatik.hostage.CONNECTION_INFO</string>
-    <string name="connection_info_bssid" translatable="false">de.tudarmstadt.informatik.hostage.CONNECTION_INFO.BSSID</string>
-    <string name="connection_info_ssid" translatable="false">de.tudarmstadt.informatik.hostage.CONNECTION_INFO.SSID</string>
-    <string name="connection_info_internal_ip" translatable="false">de.tudarmstadt.informatik.hostage.CONNECTION_INFO.INTERNAL_IP</string>
-	<string name="connection_info_subnet_mask" translatable="false">de.tudarmstadt.informatik.hostage.CONNECTION_INFO.SUBNET_MASK</string>
- 	<string name="connection_info_external_ip" translatable="false">de.tudarmstadt.informatik.hostage.CONNECTION_INFO.EXTERNAL_IP</string>
+    <string name="connection_info" translatable="false">dk.aau.netsec.hostage.CONNECTION_INFO</string>
+    <string name="connection_info_bssid" translatable="false">dk.aau.netsec.hostage.CONNECTION_INFO.BSSID</string>
+    <string name="connection_info_ssid" translatable="false">dk.aau.netsec.hostage.CONNECTION_INFO.SSID</string>
+    <string name="connection_info_internal_ip" translatable="false">dk.aau.netsec.hostage.CONNECTION_INFO.INTERNAL_IP</string>
+	<string name="connection_info_subnet_mask" translatable="false">dk.aau.netsec.hostage.CONNECTION_INFO.SUBNET_MASK</string>
+ 	<string name="connection_info_external_ip" translatable="false">dk.aau.netsec.hostage.CONNECTION_INFO.EXTERNAL_IP</string>
 
     
 </resources>

@@ -114,8 +114,8 @@
 	        android:layout_alignParentLeft="true"
 	        android:layout_alignParentStart="true" android:scaleType="centerInside"/>
 
-		<de.tudarmstadt.informatik.hostage.ui.layouts.FlowLayout
-				xmlns:f="http://schemas.android.com/apk/res/de.tudarmstadt.informatik.hostage"
+		<dk.aau.netsec.hostage.ui.layouts.FlowLayout
+				xmlns:f="http://schemas.android.com/apk/res/dk.aau.netsec.hostage"
 				android:orientation="horizontal"
 				android:layout_width="fill_parent"
 				android:layout_height="fill_parent"
@@ -132,7 +132,7 @@
 					android:textAppearance="?android:attr/textAppearanceSmall"
 					style="@style/ProfileManagerListBadge"
 					android:id="@+id/record_details_text_ssid" android:layout_gravity="center_vertical" android:layout_marginLeft="10dp"/>
-		</de.tudarmstadt.informatik.hostage.ui.layouts.FlowLayout>
+		</dk.aau.netsec.hostage.ui.layouts.FlowLayout>
 
 	</RelativeLayout>
 

@@ -7,14 +7,14 @@
 			android:key="pref_multistage"
 			android:summary="@string/multistage_summary"
 			android:title="@string/multistage_service"/>
-		<!--Disable Hpfeeds-->
 
-<!--		<CheckBoxPreference-->
-<!--			android:key="pref_hpfeeds_server"-->
-<!--			android:defaultValue="false"-->
-<!--			android:title="@string/pref_upload"-->
-<!--			android:summary="@string/pref_upload_hpfeeds" />-->
+		<CheckBoxPreference
+			android:key="pref_hpfeeds_server"
+			android:defaultValue="false"
+			android:title="@string/pref_upload"
+			android:summary="@string/pref_upload_hpfeeds" />
 
+		<!--Disable Hpfeeds Settings-->
 <!--		<PreferenceScreen-->
 <!--			android:key="pref_hpfeeds_settings"-->
 <!--			android:title="@string/advanced_hpfeeds_settings"-->

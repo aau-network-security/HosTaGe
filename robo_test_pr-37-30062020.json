@@ -49,7 +49,7 @@
         "recyclerViewChildPosition": -1,
         "adapterViewChildPosition": -1,
         "groupViewChildPosition": 1,
-        "resourceId": "de.tudarmstadt.informatik.hostage:id/home_switch_connection",
+        "resourceId": "dk.aau.netsec.hostage:id/home_switch_connection",
         "contentDescription": "",
         "text": ""
       },
@@ -86,7 +86,7 @@
         "recyclerViewChildPosition": -1,
         "adapterViewChildPosition": -1,
         "groupViewChildPosition": 1,
-        "resourceId": "de.tudarmstadt.informatik.hostage:id/home_button_connection_info",
+        "resourceId": "dk.aau.netsec.hostage:id/home_button_connection_info",
         "contentDescription": "",
         "text": ""
       },
@@ -169,7 +169,7 @@
         "recyclerViewChildPosition": -1,
         "adapterViewChildPosition": -1,
         "groupViewChildPosition": 0,
-        "resourceId": "de.tudarmstadt.informatik.hostage:id/action_bar",
+        "resourceId": "dk.aau.netsec.hostage:id/action_bar",
         "contentDescription": "",
         "text": ""
       },
@@ -178,7 +178,7 @@
         "recyclerViewChildPosition": -1,
         "adapterViewChildPosition": -1,
         "groupViewChildPosition": 1,
-        "resourceId": "de.tudarmstadt.informatik.hostage:id/action_bar_container",
+        "resourceId": "dk.aau.netsec.hostage:id/action_bar_container",
         "contentDescription": "",
         "text": ""
       }
@@ -206,7 +206,7 @@
         "recyclerViewChildPosition": -1,
         "adapterViewChildPosition": -1,
         "groupViewChildPosition": 1,
-        "resourceId": "de.tudarmstadt.informatik.hostage:id/left_drawer",
+        "resourceId": "dk.aau.netsec.hostage:id/left_drawer",
         "contentDescription": "",
         "text": ""
       },
@@ -215,7 +215,7 @@
         "recyclerViewChildPosition": -1,
         "adapterViewChildPosition": -1,
         "groupViewChildPosition": 0,
-        "resourceId": "de.tudarmstadt.informatik.hostage:id/drawer_layout",
+        "resourceId": "dk.aau.netsec.hostage:id/drawer_layout",
         "contentDescription": "",
         "text": ""
       }
