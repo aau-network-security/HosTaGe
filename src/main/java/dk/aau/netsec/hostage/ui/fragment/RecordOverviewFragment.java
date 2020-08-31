@@ -1582,14 +1582,14 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             } else {
                 androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
                 dialog.setTitle("Permission Required");
-                dialog.setCancelable(false);
-                dialog.setMessage("You have to Allow permission to access External Storage");
+                dialog.setMessage("If you don't allow the permission to access External Storage you won't be able to extract any records.");
                 dialog.setPositiveButton("Settings", (dialog1, which) -> {
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                             Uri.fromParts("package",getApplicationContext().getPackageName(), null));
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-
+                });
+                dialog.setNegativeButton("No, thanks",(dialog1, which) -> {
                 });
                 androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
                 alertDialog.show();

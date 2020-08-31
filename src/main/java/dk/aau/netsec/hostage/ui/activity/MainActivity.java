@@ -5,6 +5,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -39,6 +40,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
@@ -127,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	private boolean mServiceBound = false;
 	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-
+	private static final int LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE = 101;
 
 
 	/**
@@ -835,6 +837,22 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	private void denyPermissionDialog(String text){
+		androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
+		dialog.setTitle("Permission Required");
+		dialog.setMessage(text);
+		dialog.setPositiveButton("Settings", (dialog1, which) -> {
+			Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+					Uri.fromParts("package",getApplicationContext().getPackageName(), null));
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
+		});
+		dialog.setNegativeButton("No, thanks",(dialog1, which) -> {
+		});
+		androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
+		alertDialog.show();
+	}
+
 	/**
 	 * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
 	 * @param requestCode LOCATION_PERMISSION_REQUEST_CODE
@@ -843,28 +861,30 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				locationManager.initializeNewestLocation();
-			} else {
-					androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
-					dialog.setTitle("Permission Required");
-					dialog.setCancelable(false);
-					dialog.setMessage("You have to Allow permission to access user location");
-					dialog.setPositiveButton("Settings", (dialog1, which) -> {
-						Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-								Uri.fromParts("package",getApplicationContext().getPackageName(), null));
-						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						startActivity(intent);
-					});
-					androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
-					alertDialog.show();
+		switch(requestCode) {
+			case LOCATION_PERMISSION_REQUEST_CODE: {
+				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					locationManager.initializeNewestLocation();
+					if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+						ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_BACKGROUND_LOCATION}, LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
+					}
 
+				} else {
+					String message = "If you don't allow the Location permission you will not be able to access" +
+							" certain features of the app which are ThreatMap,Wifi name appearance and precise attack detection";
+					denyPermissionDialog(message);
+
+				}
+			}
+			case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
+				if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+					String message = "If you don't allow the Background Location permission the app won't have you " +
+							"location when the app is running on the background and the previous features won't work when the app is running in the background ";
+					denyPermissionDialog(message);
+				}
 			}
 
 		}
 	}
-
-
 
 }
