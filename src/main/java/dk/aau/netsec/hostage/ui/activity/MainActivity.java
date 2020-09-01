@@ -878,8 +878,8 @@ public class MainActivity extends AppCompatActivity {
 			}
 			case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
 				if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-					String message = "If you don't allow the Background Location permission the app won't have you " +
-							"location when the app is running on the background and the previous features won't work when the app is running in the background ";
+					String message = "If you don't allow the Background Location permission the app won't have your " +
+							"location when it is running on the background and the previous features won't work.";
 					denyPermissionDialog(message);
 				}
 			}
