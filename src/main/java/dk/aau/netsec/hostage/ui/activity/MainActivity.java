@@ -853,6 +853,14 @@ public class MainActivity extends AppCompatActivity {
 		alertDialog.show();
 	}
 
+	private void askBackgroundPermission(){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+				ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_BACKGROUND_LOCATION}, LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
+			}
+		}
+	}
+
 	/**
 	 * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
 	 * @param requestCode LOCATION_PERMISSION_REQUEST_CODE
@@ -865,10 +873,7 @@ public class MainActivity extends AppCompatActivity {
 			case LOCATION_PERMISSION_REQUEST_CODE: {
 				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 					locationManager.initializeNewestLocation();
-					if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-						ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_BACKGROUND_LOCATION}, LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
-					}
-
+					askBackgroundPermission();
 				} else {
 					String message = "If you don't allow the Location permission you will not be able to access" +
 							" certain features of the app which are ThreatMap,Wifi name appearance and precise attack detection.";
