@@ -871,7 +871,7 @@ public class MainActivity extends AppCompatActivity {
 
 				} else {
 					String message = "If you don't allow the Location permission you will not be able to access" +
-							" certain features of the app which are ThreatMap,Wifi name appearance and precise attack detection";
+							" certain features of the app which are ThreatMap,Wifi name appearance and precise attack detection.";
 					denyPermissionDialog(message);
 
 				}
