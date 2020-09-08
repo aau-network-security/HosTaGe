@@ -1,8 +1,10 @@
 package dk.aau.netsec.hostage.protocol.utils.cifs;
 
-import android.app.Activity;
-import android.app.FragmentManager;
+
 import android.content.Context;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import org.alfresco.jlan.server.SrvSession;
 import org.alfresco.jlan.server.core.DeviceContext;
@@ -168,11 +170,9 @@ public class PseudoJavaFileDiskDriver extends JavaFileDiskDriver {
     }
 
     private static void displayAlert() {
+        final AppCompatActivity activity = MainActivity.getInstance();
 
-        Context context = null;
-        final Activity activity = MainActivity.getInstance();
-
-        final FragmentManager fragmentManager = activity.getFragmentManager();
+        final FragmentManager fragmentManager = activity.getSupportFragmentManager();
         if (fragmentManager != null) {
             FileAlertDialogFragment fileAlertDialogFragment = new FileAlertDialogFragment();
             fileAlertDialogFragment.show(fragmentManager.beginTransaction(), fileAlertDialogFragment.getTag());

@@ -34,12 +34,11 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
-
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.PreferenceManager;
 
 import dk.aau.netsec.hostage.commons.HelperUtils;
 import dk.aau.netsec.hostage.logging.DaoSession;

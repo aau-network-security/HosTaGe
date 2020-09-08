@@ -1,14 +1,15 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.system.Device;
@@ -49,7 +50,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		manager = this.getFragmentManager();
+		manager = getFragmentManager();
 		manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
 	}
 

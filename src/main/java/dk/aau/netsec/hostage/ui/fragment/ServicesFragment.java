@@ -2,7 +2,6 @@ package dk.aau.netsec.hostage.ui.fragment;
 
 import java.util.ArrayList;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +18,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import dk.aau.netsec.hostage.Handler;

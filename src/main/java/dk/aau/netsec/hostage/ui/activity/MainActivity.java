@@ -9,9 +9,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +39,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.location.MyLocationManager;
@@ -286,14 +287,14 @@ public class MainActivity extends AppCompatActivity {
             displayView(0);
         } else {
             mDisplayedFragmentIndex = savedInstanceState.getInt("mDisplayedFragmentIndex");
-            mDisplayedFragment = getFragmentManager().getFragment(savedInstanceState, "mDisplayedFragment");
-            mRootFragment = getFragmentManager().getFragment(savedInstanceState, "mRootFragment");
+            mDisplayedFragment = getSupportFragmentManager().getFragment(savedInstanceState, "mDisplayedFragment");
+            mRootFragment = getSupportFragmentManager().getFragment(savedInstanceState, "mRootFragment");
 
             mDrawerList.setItemChecked(mDisplayedFragmentIndex, true);
             mDrawerList.setSelection(mDisplayedFragmentIndex);
             setTitle(mDrawerItems.get(mDisplayedFragmentIndex).text);
-            getFragmentManager().popBackStack(HomeFragment.class.getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            getFragmentManager().putFragment(savedInstanceState, mRootFragment.getClass().getName(), mRootFragment);
+			getSupportFragmentManager().popBackStack(HomeFragment.class.getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+			getSupportFragmentManager().putFragment(savedInstanceState, mRootFragment.getClass().getName(), mRootFragment);
 
             injectFragment(mDisplayedFragment);
         }
@@ -339,8 +340,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState){
         outState.putInt("mDisplayedFragmentIndex", mDisplayedFragmentIndex);
-        getFragmentManager().putFragment(outState, "mRootFragment", mRootFragment);
-        getFragmentManager().putFragment(outState, "mDisplayedFragment", mDisplayedFragment);
+		getSupportFragmentManager().putFragment(outState, "mRootFragment", mRootFragment);
+		getSupportFragmentManager().putFragment(outState, "mDisplayedFragment", mDisplayedFragment);
 
         super.onSaveInstanceState(outState);
     }
@@ -535,8 +536,8 @@ public class MainActivity extends AppCompatActivity {
 
 		UpNavigatibleFragment upNav = (UpNavigatibleFragment) this.mDisplayedFragment;
 
-		getFragmentManager().popBackStackImmediate(upNav.getUpFragment().getName(), 0);
-		this.mDisplayedFragment = getFragmentManager().findFragmentById(R.id.content_frame);
+		getSupportFragmentManager().popBackStackImmediate(upNav.getUpFragment().getName(), 0);
+		this.mDisplayedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
 		configureFragment();
 
 		if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigatible()) {
@@ -636,7 +637,7 @@ public class MainActivity extends AppCompatActivity {
 		configureFragment(fragment);
 
 		// exchange the existing fragment with the given one
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.replace(R.id.content_frame, fragment, fragment.getClass().getName());
 		fragmentTransaction.addToBackStack(fragment.getClass().getName());
@@ -693,7 +694,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		} else {
 			super.onBackPressed();
-			this.mDisplayedFragment = getFragmentManager().findFragmentById(R.id.content_frame);
+			this.mDisplayedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
 			configureFragment();
 
 			if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigatible()) {

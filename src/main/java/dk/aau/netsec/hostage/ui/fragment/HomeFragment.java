@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +22,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import dk.aau.netsec.hostage.HostageApplication;
@@ -90,19 +90,31 @@ public class HomeFragment extends Fragment {
 	private static ThreatIndicatorGLRenderer.ThreatLevel mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING;
 
 	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+
+		AppCompatActivity a;
+
+		if (context instanceof AppCompatActivity){
+			a= (AppCompatActivity) context;
+		}
+
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 
-		final Activity activity = getActivity();
-		if (activity != null) {
-			activity.setTitle(getResources().getString(R.string.drawer_overview));
+		final AppCompatActivity activity = MainActivity.getInstance();
+		if (isAdded() && activity != null) {
+			activity.setTitle(getActivity().getString(R.string.drawer_overview));
 		}
 
 		dbSession = HostageApplication.getInstances().getDaoSession();
 		daoHelper = new DAOHelper(dbSession, getActivity());
 
 
-		mConnectionInfo = getActivity().getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
+		mConnectionInfo = getActivity().getSharedPreferences(getActivity().getString(R.string.connection_info), Context.MODE_PRIVATE);
 		try {
 			mProfileManager = ProfileManager.getInstance();
 		} catch (Exception e) {
@@ -159,7 +171,7 @@ public class HomeFragment extends Fragment {
 
 	private void registerBroadcastReceiver() {
 		if (!mReceiverRegistered) {
-			LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, new IntentFilter(getString(R.string.broadcast)));
+			LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, new IntentFilter(getActivity().getString(R.string.broadcast)));
 			this.mReceiverRegistered = true;
 		}
 	}
@@ -175,11 +187,11 @@ public class HomeFragment extends Fragment {
 	}
 
 	public void setStateNotActive(boolean initial) {
-		mHomeTextName.setTextColor(getResources().getColor(R.color.light_grey));
-		mHomeTextSecurity.setTextColor(getResources().getColor(R.color.light_grey));
-		mHomeTextAttacks.setTextColor(getResources().getColor(R.color.light_grey));
-		mHomeTextProfile.setTextColor(getResources().getColor(R.color.light_grey));
-		mHomeTextProfileHeader.setTextColor(getResources().getColor(R.color.light_grey));
+		mHomeTextName.setTextColor(getActivity().getColor(R.color.light_grey));
+		mHomeTextSecurity.setTextColor(getActivity().getColor(R.color.light_grey));
+		mHomeTextAttacks.setTextColor(getActivity().getColor(R.color.light_grey));
+		mHomeTextProfile.setTextColor(getActivity().getColor(R.color.light_grey));
+		mHomeTextProfileHeader.setTextColor(getActivity().getColor(R.color.light_grey));
 
 		if (!initial) {
 			ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
@@ -246,7 +258,7 @@ public class HomeFragment extends Fragment {
 		loadConnectionInfo();
 
 		boolean hasActiveListeners = false;
-		int totalAttacks = daoHelper.getAttackRecordDAO().getNumAttacksSeenByBSSID(mConnectionInfo.getString(getString(R.string.connection_info_bssid), null));
+		int totalAttacks = daoHelper.getAttackRecordDAO().getNumAttacksSeenByBSSID(mConnectionInfo.getString(getActivity().getString(R.string.connection_info_bssid), null));
 
 		if (MainActivity.getInstance().getHostageService() != null) {
 			if (MainActivity.getInstance().getHostageService().hasRunningListeners()) {
@@ -287,20 +299,20 @@ public class HomeFragment extends Fragment {
 	private void changeTextColorThreat(int totalAttacks){
 		switch (mThreatLevel) {
 			case NO_THREAT:
-				mHomeTextAttacks.setTextColor(getResources().getColor(R.color.holo_dark_green));
-				mHomeTextSecurity.setTextColor(getResources().getColor(R.color.holo_dark_green));
+				mHomeTextAttacks.setTextColor(getActivity().getColor(R.color.holo_dark_green));
+				mHomeTextSecurity.setTextColor(getActivity().getColor(R.color.holo_dark_green));
 				break;
 			case PAST_THREAT:
-				mHomeTextAttacks.setTextColor(getResources().getColor(R.color.holo_yellow));
-				mHomeTextSecurity.setTextColor(getResources().getColor(R.color.holo_yellow));
+				mHomeTextAttacks.setTextColor(getActivity().getColor(R.color.holo_yellow));
+				mHomeTextSecurity.setTextColor(getActivity().getColor(R.color.holo_yellow));
 				break;
 			case LIVE_THREAT:
 				mHomeTextAttacks.setText(totalAttacks
-						+ (totalAttacks == 1 ? getResources().getString(R.string.attack) : getResources().getString(R.string.attacks))
-						+ getResources().getString(R.string.recorded));
+						+ (totalAttacks == 1 ? getActivity().getString(R.string.attack) : getActivity().getString(R.string.attacks))
+						+ getActivity().getString(R.string.recorded));
 				mHomeTextSecurity.setText(R.string.insecure);
-				mHomeTextAttacks.setTextColor(getResources().getColor(R.color.holo_red));
-				mHomeTextSecurity.setTextColor(getResources().getColor(R.color.holo_red));
+				mHomeTextAttacks.setTextColor(getActivity().getColor(R.color.holo_red));
+				mHomeTextSecurity.setTextColor(getActivity().getColor(R.color.holo_red));
 				break;
 		}
 
@@ -323,8 +335,8 @@ public class HomeFragment extends Fragment {
 				mHomeTextSecurity.setText(R.string.secure);
 			} else {
 				mHomeTextAttacks.setText(totalAttacks
-						+ (totalAttacks == 1 ? getResources().getString(R.string.attack) : getResources().getString(R.string.attacks))
-						+ getResources().getString(R.string.recorded));
+						+ (totalAttacks == 1 ? getActivity().getString(R.string.attack) : getActivity().getString(R.string.attacks))
+						+ getActivity().getString(R.string.recorded));
 				mHomeTextSecurity.setText(R.string.insecure);
 			}
 		} else {
@@ -337,7 +349,7 @@ public class HomeFragment extends Fragment {
 	private void loadConnectionInfo(){
 		if (HelperUtils.isNetworkAvailable(getActivity())) {
 			setStateConnected();
-			String ssid = mConnectionInfo.getString(getString(R.string.connection_info_ssid), "");
+			String ssid = mConnectionInfo.getString(getActivity().getString(R.string.connection_info_ssid), "");
 			mHomeTextName.setText(ssid);
 		} else {
 			setStateNotConnected();

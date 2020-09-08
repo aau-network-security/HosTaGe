@@ -12,8 +12,9 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.preference.PreferenceManager;
 import android.util.Log;
+
+import androidx.preference.PreferenceManager;
 
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.logging.DaoSession;
