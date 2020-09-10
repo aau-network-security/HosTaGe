@@ -52,7 +52,7 @@ http://code.google.com/p/ganymed-ssh-2/
 
 __GSoC 2020__
 
-The project was actively developed with participation in Google Summer of Code 2020. More information about GSoC2020 is here:https://summerofcode.withgoogle.com/projects/#5293206515744768
+The project was actively developed with participation in Google Summer of Code 2020. More information about GSoC2020 is [here](https://summerofcode.withgoogle.com/projects/#5293206515744768)
 
 __HPFeeds__
 
@@ -61,8 +61,8 @@ To access the hpfeeds from hostage please send an access request to hostage@es.a
 __Contact__
 
 Please use the Github issues to report any issues or for questions. 
-Slack channel: https://honeynetpublic.slack.com/archives/CUCJPUE3H
-Email: hostage@es.aau.dk
+[Slack channel] (https://honeynetpublic.slack.com/archives/CUCJPUE3H)
+[Email] (mailto:hostage@es.aau.dk)
 
 __License & Distribution__
 
