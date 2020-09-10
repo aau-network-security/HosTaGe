@@ -16,6 +16,15 @@ __Download from Play Store!__
 
 The stable release of HosTaGe can be installed from Google Play Store. [Play Store Link](https://play.google.com/store/apps/details?id=dk.aau.netsec.hostage)
 
+__References__
+
+[1] Emmanouil Vasilomanolakis, Shankar Karuppayah, Mathias Fischer, Mihai Plasoianu, Wulf Pfeiffer, Lars Pandikow, Max Mühlhäuser: This Network is Infected: HosTaGe – a Low-Interaction Honeypot for Mobile Devices. SPSM@CCS 2013:43-48
+
+[2] Emmanouil Vasilomanolakis, Shankar Karuppayah, Mathias Fischer, Max Mühlhäuser: HosTaGe: a Mobile Honeypot for Collaborative Defense. ACM SIN 2014:330-333
+
+[3] Emmanouil Vasilomanolakis, Shreyas Srinivasa, Max Mühlhäuser: Did you really hack a nuclear power plant? An industrial control mobile honeypot. IEEE CNS 2015:729-730
+
+[4] Emmanouil Vasilomanolakis, Shreyas Srinivasa, Carlos Garcia Cordero, Max Mühlhäuser: Multi-stage Attack Detection and Signature Generation with ICS Honeypots. IEEE/IFIP DISSECT@NOMS 2016:1227-1232
 
 __Download APK__
 
