@@ -1,6 +1,5 @@
-![alt text][logo]
+![alt text](https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/ic_launcher.png "Logo Title Text 1")
 
-[logo]: https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/ic_launcher.png "Logo Title Text 2"
 
 HosTaGe - Honeypot-To-Go
 ========================
