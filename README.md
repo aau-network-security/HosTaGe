@@ -83,4 +83,4 @@ Please use the Github issues to report any issues or for questions.
 
 __License & Distribution__
 
-See [LICENSE](./LICENSE.md) for license information. 
+Distributed under the MIT license. See [LICENSE](./LICENSE.md) for license information. 
