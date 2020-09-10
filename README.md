@@ -1,6 +1,7 @@
 ![alt text][logo]
 
 [logo]: https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/ic_launcher.png "Logo Title Text 2"
+
 HosTaGe - Honeypot-To-Go
 ========================
 Copyright (C) 2013-2020, Aalborg University (Denmark) and Technische Universität Darmstadt (Germany)
