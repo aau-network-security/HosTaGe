@@ -1,3 +1,6 @@
+![alt text][logo]
+
+[logo]: https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/ic_launcher.png "Logo Title Text 2"
 HosTaGe - Honeypot-To-Go
 ========================
 Copyright (C) 2013-2020, Aalborg University (Denmark) and Technische Universität Darmstadt (Germany)
@@ -9,6 +12,11 @@ As most malware propagate over the network via specific protocols, a low-interac
 
 HosTaGe emulates the following protocols as of the latest version: AMQP, COAP, ECHO, FTP, HTTP, HTTPS, MySQL, MQTT, MODBUS, S7COMM, SNMP, SIP, SMB, SSH, SMTP and TELNET
 
+__Download from Play Store!__
+
+The stable release of HosTaGe can be installed from Google Play Store. [Play Store Link](https://play.google.com/store/apps/details?id=dk.aau.netsec.hostage)
+
+
 __Download APK__
 
 [HosTaGe-v2.2.11.apk](https://github.com/aau-network-security/HosTaGe/releases/download/v2.2.11/HosTaGe-2.2.11.apk) [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.2.11)(latest) 
@@ -16,6 +24,12 @@ __Download APK__
 HosTaGe-v2.1.1.apk [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.1.1)
 
 HosTaGe-v2.0.0.apk [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.0.0)
+
+__HosTaGe Inspirational Video__
+
+[![HosTaGe Video](http://img.youtube.com/vi/nRrc2T8_oKM/0.jpg)](http://www.youtube.com/watch?v=nRrc2T8_oKM)
+
+
 
 __Original Authors__
 
