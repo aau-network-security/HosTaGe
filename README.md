@@ -66,4 +66,4 @@ Email: hostage@es.aau.dk
 
 __License & Distribution__
 
-See [LICENSE](../LICENSE.md) for license information. 
+See [LICENSE](./LICENSE.md) for license information. 
