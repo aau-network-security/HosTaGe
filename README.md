@@ -35,6 +35,12 @@ HosTaGe-v2.1.1.apk [Release-Notes](https://github.com/aau-network-security/HosTa
 HosTaGe-v2.0.0.apk [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.0.0)
 
 
+__Wiki__
+
+The Wiki provides information on getting started and using the app. 
+Wiki for HosTaGe can be found here: [Wiki](https://github.com/aau-network-security/HosTaGe/wiki/2.-Getting-Started).
+
+
 __Original Authors__
 
 [Emmanouil Vasilomanolakis](https://mvasiloma.com/) -  idea, guidance and suggestions during development
