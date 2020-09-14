@@ -41,6 +41,11 @@ The Wiki provides information on getting started and using the app.
 Wiki for HosTaGe can be found here: [Wiki](https://github.com/aau-network-security/HosTaGe/wiki/2.-Getting-Started).
 
 
+__Screenshots__
+
+![homescreen](https://github.com/sastry17/HosTaGe-Wiki/blob/master/img/homescreen.jpg)![attackscreen](https://github.com/sastry17/HosTaGe-Wiki/blob/master/img/home-danger.jpg)![servicescreen](https://github.com/sastry17/HosTaGe-Wiki/blob/master/img/services.jpg)![Profilescreen](https://github.com/sastry17/HosTaGe-Wiki/blob/master/img/profile1.jpg)
+
+
 __Original Authors__
 
 [Emmanouil Vasilomanolakis](https://mvasiloma.com/) -  idea, guidance and suggestions during development
