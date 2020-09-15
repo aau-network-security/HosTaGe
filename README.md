@@ -14,7 +14,10 @@ HosTaGe emulates the following protocols as of the latest version: AMQP, COAP, E
 
 __Download from Play Store!__
 
-The stable release of HosTaGe can be installed from Google Play Store. [Play Store Link](https://play.google.com/store/apps/details?id=dk.aau.netsec.hostage)
+The stable release of HosTaGe can be installed from Google Play Store. [Play Store Link](https://play.google.com/store/apps/details?id=dk.aau.netsec.hostage) or, Scan the QR code below from your Android device.
+
+![QR](https://github.com/sastry17/HosTaGe-Wiki/blob/master/img/HosTaGe-QR.png)
+
 
 __References__
 
