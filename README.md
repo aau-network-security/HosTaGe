@@ -43,7 +43,7 @@ Wiki for HosTaGe can be found here: [Wiki](https://github.com/aau-network-securi
 
 __Screenshots__
 
-![homescreen](https://github.com/sastry17/HosTaGe-Wiki/blob/master/img/homescreen.jpg)![attackscreen](https://github.com/sastry17/HosTaGe-Wiki/blob/master/img/home-danger.jpg)![servicescreen](https://github.com/sastry17/HosTaGe-Wiki/blob/master/img/services.jpg)![Profilescreen](https://github.com/sastry17/HosTaGe-Wiki/blob/master/img/profile1.jpg)
+![homescreen](https://github.com/sastry17/HosTaGe-Wiki/raw/master/gif/alert.gif)
 
 
 __Original Authors__
