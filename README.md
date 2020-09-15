@@ -41,7 +41,7 @@ The Wiki provides information on getting started and using the app.
 Wiki for HosTaGe can be found here: [Wiki](https://github.com/aau-network-security/HosTaGe/wiki/2.-Getting-Started).
 
 
-__Screenshots__
+__GUI__
 
 ![homescreen](https://github.com/sastry17/HosTaGe-Wiki/raw/master/gif/alert.gif)
 
