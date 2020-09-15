@@ -476,11 +476,11 @@ public class Hostage extends Service {
 					.setSound(Uri.parse(strRingtonePreference));
 
 			if (defaultPref.getBoolean("pref_vibration", false)) {
-				notificationBuilder.setVibrate(new long[] { 100, 200, 100, 200 });
+				channel.setVibrationPattern(new long[] { 100, 200, 100, 200 });
 			}else{
 				channel.setVibrationPattern(new long[]{ 0 });
-				channel.enableVibration(true);
 			}
+			channel.enableVibration(true);
 			Notification notification = notificationBuilder.setOngoing(true)
 					.build();
 			startForeground(2, notification);
