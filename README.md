@@ -18,6 +18,8 @@ The stable release of HosTaGe can be installed from Google Play Store. [Play Sto
 
 __References__
 
+The research work behind HosTaGe has been published and presented in a number of scientific and industrial conferences. Below you can find some selected papers:
+
 [1] Emmanouil Vasilomanolakis, Shankar Karuppayah, Mathias Fischer, Mihai Plasoianu, Wulf Pfeiffer, Lars Pandikow, Max Mühlhäuser: This Network is Infected: HosTaGe – a Low-Interaction Honeypot for Mobile Devices. SPSM@CCS 2013:43-48
 
 [2] Emmanouil Vasilomanolakis, Shankar Karuppayah, Mathias Fischer, Max Mühlhäuser: HosTaGe: a Mobile Honeypot for Collaborative Defense. ACM SIN 2014:330-333
