@@ -75,14 +75,14 @@ public class LogExport extends IntentService {
 
 	private void exportJSONFormat(){
 		JSONHelper jsonHelper = new JSONHelper();
-		if (isExternalStorageWritable()) {
+		try {
 			File file = getDirFile("file", ".json");
 			String filename = getFileName("file",".json");
 			ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getAllRecords();
 			jsonHelper.jsonWriter(records,file);
 
-			makeToast(filename+" saved on external memory! ", Toast.LENGTH_LONG);
-		}else{
+			makeToast(filename+" saved on external (if you have an sd card) or internal memory! ", Toast.LENGTH_LONG);
+		}catch (Exception e){
 			makeToast("Could not write to a JSON File in SD Card or Internal Storage",Toast.LENGTH_SHORT);
 		}
 
@@ -123,12 +123,7 @@ public class LogExport extends IntentService {
 		try {
 			FileOutputStream log;
 			String filename = getFileName(format.toString(),".log");
-			if (isExternalStorageWritable()) {
-				log = new FileOutputStream(getDirFile(format.toString(),".log"));
-			} else {
-				makeToast("Could not write to SD Card or Internal Storage",Toast.LENGTH_SHORT);
-				return;
-			}
+			log = new FileOutputStream(getDirFile(format.toString(),".log"));
 
 			ArrayList<RecordAll> records = daoHelper.getAttackRecordDAO().getAllRecords();
 			for (RecordAll record : records) {
@@ -136,7 +131,7 @@ public class LogExport extends IntentService {
 			}
 			log.flush();
 			log.close();
-			makeToast(filename + " saved on external memory! ", Toast.LENGTH_LONG);
+			makeToast(filename + " saved on external (if you have an sd card) or internal memory! ", Toast.LENGTH_LONG);
 		} catch (Exception e) {
 			makeToast("Could not write to SD Card or Internal Storage", Toast.LENGTH_SHORT);
 			e.printStackTrace();
