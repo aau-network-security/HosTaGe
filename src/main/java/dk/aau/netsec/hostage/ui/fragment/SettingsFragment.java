@@ -76,23 +76,6 @@ public class SettingsFragment extends UpNavigatibleFragment {
 		}
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		onCreateView(inflater,container,savedInstanceState);
-		manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		if(v!=null) {
-			unbindDrawables(v);
-			v = null;
-			removeSettingsFragment();
-		}
-	}
-
 	private void unbindDrawables(View view) {
 		if (view.getBackground() != null) {
 			view.getBackground().setCallback(null);
