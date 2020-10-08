@@ -287,7 +287,10 @@
     <string name="pref_sync_countries_desc">Only download attack data of these countries</string>
     <string name="pref_sync_countries">Countries</string>
     <string name="pref_download_server">Download server</string>
-	<string name="google_play_services_unavailable">Error: Google Play Services are unavailable.</string>
+    <string name="pcap_writer" translatable="false">Pcap Capturing</string>
+    <string name="pcap_enable" translatable="false">start</string>
+    <string name="pcap_stop" translatable="false">stop</string>
+    <string name="google_play_services_unavailable">Error: Google Play Services are unavailable.</string>
     <string name="pref_sync_frequency_summary">The interval in minutes synchronization with TraCINg should be performed</string>
     <string name="pref_sync_frequency_title">Synchronization interval</string>
     <string name="service">Services</string>

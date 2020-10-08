@@ -19,11 +19,9 @@ import io.moquette.broker.ClientDescriptor;
 import io.moquette.broker.Server;
 import io.moquette.broker.config.MemoryConfig;
 
-
-import static com.crashlytics.android.Crashlytics.TAG;
-
 public class MQTT implements Protocol {
 
+    private static final String TAG = "MQTT" ;
     private int port = 1883;
     private String defaultPort="1883";
     private String defaultAddress="0.0.0.0";

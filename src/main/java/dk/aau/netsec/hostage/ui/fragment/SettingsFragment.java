@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.system.Device;
+import dk.aau.netsec.hostage.system.PcapWriter;
 
 /**
  * @author Alexander Brakowski
@@ -35,6 +36,9 @@ public class SettingsFragment extends UpNavigatibleFragment {
 		v = inflater.inflate(R.layout.fragment_settings, container, false);
 
 		TextView rootedText = v.findViewById(R.id.settings_device_rooted);
+
+		PcapWriter pcapWriter = new PcapWriter(v);
+		pcapWriter.initializeButtons();
 
 		if (Device.isRooted()) {
 			rootedText.setText(R.string.yes);

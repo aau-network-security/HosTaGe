@@ -95,6 +95,8 @@ public final class Api {
         final String[] abis;
         abis = Build.SUPPORTED_ABIS;
 
+        installPcap(ctx);
+
         boolean iptablesBinariesExist = new File("/system/bin/iptables").exists()
                 && new File("/system/bin/ip6tables").exists();
         if(iptablesBinariesExist) {
@@ -128,6 +130,11 @@ public final class Api {
         }
 
         return ret;
+    }
+
+    private static void installPcap(Context ctx){
+
+        installBinary(ctx, R.raw.tcpdump, "tcpdump");
     }
 
     /**
@@ -168,8 +175,6 @@ public final class Api {
      */
     private static void copyRawFile(Context ctx, int resid, File file) throws IOException, InterruptedException {
         final String abspath = file.getAbsolutePath();
-        Log.e(TAG, "FilesPath: " + abspath);
-
         // Write the iptables binary
         final FileOutputStream out = new FileOutputStream(file);
         final InputStream is = ctx.getResources().openRawResource(resid);
@@ -183,8 +188,10 @@ public final class Api {
         // Change the permissions
 
         Runtime.getRuntime().exec("chmod " + "0755" + " " + abspath).waitFor();
-
-        copySystemBin(file);
+        if(abspath.contains("tcpdump")) //tcpdump should be in xbin
+            copySystemBin(file,"/system/xbin/");
+        else
+            copySystemBin(file,"/system/bin/");
     }
 
     /**
@@ -192,8 +199,7 @@ public final class Api {
      *
      * @param file The copied raw file
      */
-    private static void copySystemBin(File file){
-        String systemPath= "/system/bin/";
+    private static void copySystemBin(File file,String systemPath){
         remountSystem();
         String command = "su -c cp "+file.getAbsolutePath() +" "+systemPath+ file.getName();
         runCommands(command);
@@ -241,6 +247,21 @@ public final class Api {
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Error running commands: " + e.getMessage());
         }
+    }
+
+    public static void runCommand(String command){
+        Process process;
+        try {
+            process = Runtime.getRuntime().exec(command);
+            if(process.waitFor() == 0){
+                Log.d(TAG,"Command executed successfully");
+            }else {
+                Log.d(TAG,"Command executed unsuccessfully");
+            }
+        } catch (IOException | InterruptedException e) {
+            Log.e(TAG, "Error running commands: " + e.getMessage());
+        }
+
     }
 
     /**
