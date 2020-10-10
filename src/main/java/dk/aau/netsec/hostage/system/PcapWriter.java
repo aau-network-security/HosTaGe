@@ -18,6 +18,7 @@ public class PcapWriter {
    private Button enable;
    private Button stop;
    private static String  internalIP;
+   public static boolean on = false;
 
     public PcapWriter(View rootView){
         enable = (Button) rootView.findViewById(R.id.enable_pcap);
@@ -46,6 +47,7 @@ public class PcapWriter {
         enable.setOnTouchListener((view, motionEvent) -> {
             enable.setPressed(true);
             stop.setPressed(false);
+            on = true;
             return true;
         });
 
@@ -59,6 +61,7 @@ public class PcapWriter {
         stop.setOnTouchListener((view, motionEvent) -> {
             enable.setPressed(false);
             stop.setPressed(true);
+            on = false;
             return true;
         });
       stop.performClick();
@@ -69,8 +72,16 @@ public class PcapWriter {
         });
     }
 
+    public Button getEnabledButton(){
+        return enable;
+    }
+
+    public Button getStopButton(){
+        return stop;
+    }
+
     private static void runTcpdumpPcap(){
-        String command = "su -c tcpdump -vv -i any 'dst host "+internalIP+ " and (dst port 80 or 7 or 21 or 3306 or 502 or 102 or 161 or 5060 or 22 or 25 or 23 or 443 or 1883 or 5683 or 5672 or 1025)' -s 65535 -C 500 -w /sdcard/pcap/save.pcap";
+        String command = "su -c tcpdump -vv -i any 'dst host "+internalIP+ " and (dst port 80 or 7 or 21 or 3306 or 502 or 102 or 161 or 5060 or 22 or 25 or 23 or 443 or 1883 or 5683 or 5672 or 1025)' -s 65535 -C 900 -w /sdcard/pcap/save.pcap";
         //remountSystem();
         runCommand(command);
     }
