@@ -3,7 +3,7 @@
 
 HosTaGe - Honeypot-To-Go
 ========================
-Copyright (C) 2013-2020, Aalborg University (Denmark) and Technische Universität Darmstadt (Germany)
+Copyright (C) 2013-2021, Aalborg University (Denmark) and Technische Universität Darmstadt (Germany)
 
 [![HosTaGe Video](http://img.youtube.com/vi/nRrc2T8_oKM/0.jpg)](http://www.youtube.com/watch?v=nRrc2T8_oKM)
 
