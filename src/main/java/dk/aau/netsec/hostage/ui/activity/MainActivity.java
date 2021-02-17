@@ -39,6 +39,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
@@ -391,12 +392,16 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void configureActionBar(){
+
+//		Toolbar toolbar = new Toolbar(this);
 		ActionBar actionBar = getSupportActionBar();
 		assert actionBar != null;
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_HOME_AS_UP);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(true);
+//		setSupportActionBar(toolbar);
+
 	}
 
 	private void loadDrawer(){
