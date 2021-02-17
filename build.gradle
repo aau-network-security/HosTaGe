@@ -21,6 +21,9 @@ allprojects {
         google()
 
         maven { url "https://jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+        mavenCentral()
+
     }
 }
 dependencies {
@@ -136,6 +139,12 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     // Optional -- Robolectric environment
     testImplementation 'org.robolectric:robolectric:4.3.1'
+
+//    // UI overlay
+    implementation ('com.github.worker8:tourguide:2.0.0-SNAPSHOT@aar') {
+        transitive=true
+        exclude group: 'com.nineoldandroids', module: 'library'
+    }
 }
 
 greendao{
