@@ -48,7 +48,7 @@ dependencies {
 
     //AMQP
     // https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
-    implementation group: 'com.rabbitmq', name: 'amqp-client', version: '5.9.0'
+    implementation group: 'com.rabbitmq', name: 'amqp-client', version: '5.10.0'
 
     implementation files('libs/qpid-broker-core-9.0.0-SNAPSHOT.jar') //forked repo https://github.com/irinil/qpid-broker-j
     //implementation group: 'org.apache.qpid', name: 'qpid-broker-core', version: '8.0.0' //default package doesn't support android.
