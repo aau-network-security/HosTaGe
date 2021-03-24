@@ -71,7 +71,7 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 
 		builder.setView(view);
 		builder.setTitle(R.string.title_connection_info);
-		builder.setIcon(getResources().getDrawable(R.drawable.ic_info_dark_grey_icon));
+		builder.setIcon(getResources().getDrawable(R.drawable.ic_outline_info_24));
 		builder.setPositiveButton(R.string.show_records, (dialog, which) -> {
 			showRecords(filterSSID);
 		});
