@@ -118,7 +118,7 @@ dependencies {
     //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 
     // Required -- JUnit 4 framework
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     //testImplementation 'androidx.test:core:1.2.0'
 
     // Optional -- Mockito framework
