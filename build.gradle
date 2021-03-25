@@ -55,11 +55,11 @@ dependencies {
     // https://mvnrepository.com/artifact/javax.naming/jndi
     implementation files('libs/jndi-1.2.1.jar');
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-amqp-0-8-protocol
-    implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-amqp-0-8-protocol', version: '8.0.2'
+    implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-amqp-0-8-protocol', version: '8.0.0'
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-amqp-1-0-protocol
-    implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-amqp-1-0-protocol', version: '8.0.2'
+    implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-amqp-1-0-protocol', version: '8.0.0'
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-memory-store
-    implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-memory-store', version: '8.0.2'
+    implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-memory-store', version: '8.0.0'
 
     //dependencies of AMQP broker
     // https://mvnrepository.com/artifact/com.google.guava/guava
