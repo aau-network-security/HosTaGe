@@ -89,6 +89,7 @@
 		<PreferenceScreen
 			android:key="pref_notification_sound"
 			android:title="@string/notification_settings"
+			android:icon="@drawable/ic_baseline_notifications_active_24"
 			android:persistent="false">
 		<PreferenceCategory android:title="@string/pref_notification" >
 			<CheckBoxPreference
@@ -111,6 +112,7 @@
 		<PreferenceScreen
 			android:key="pref_notification_storage"
 			android:title="@string/notification_storage"
+			android:icon="@drawable/ic_baseline_perm_media_24"
 			android:persistent="false">
 			<PreferenceCategory android:title="@string/storage_location" >
 			<EditTextPreference
@@ -125,6 +127,7 @@
 	<PreferenceScreen
 				android:key="pref_advanced settings"
 				android:title="@string/advanced_settings"
+				android:icon="@drawable/ic_baseline_settings_suggest_24"
 				android:persistent="false">
 			<PreferenceCategory android:title="@string/pref_connection_settings" >
 				<EditTextPreference
