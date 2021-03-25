@@ -63,7 +63,7 @@ dependencies {
 
     //dependencies of AMQP broker
     // https://mvnrepository.com/artifact/com.google.guava/guava
-    implementation group: 'com.google.guava', name: 'guava', version: '29.0-android'
+    implementation group: 'com.google.guava', name: 'guava', version: '30.1-android'
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
     // https://mvnrepository.com/artifact/joda-time/joda-time
