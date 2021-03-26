@@ -106,7 +106,7 @@ dependencies {
     testImplementation group: 'com.hierynomus', name: 'smbj', version: '0.10.0'
 
     // https://mvnrepository.com/artifact/commons-io/commons-io
-    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.7'
 
     //device-Names
     implementation 'com.jaredrummler:android-device-names:2.0.0'
