@@ -29,10 +29,13 @@
     <!-- Required because we're manually creating a new account. -->
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <!--
     	<uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     -->
+    <uses-permission  android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+
     <uses-feature
         android:name="android.hardware.nfc"
         android:required="false" />
@@ -69,20 +72,24 @@
             </intent-filter>
         </activity>
         <activity
+            android:screenOrientation="portrait"
             android:name="dk.aau.netsec.hostage.ui.activity.ProfileEditActivity"
             android:label="Edit Profile" >
         </activity>
         <activity
+            android:screenOrientation="portrait"
             android:name="dk.aau.netsec.hostage.sync.tracing.TracingSyncActivity"
             android:label="@string/gui_tracing"
             android:theme="@android:style/Theme.Holo.Dialog" >
         </activity>
         <activity
+            android:screenOrientation="portrait"
             android:name="dk.aau.netsec.hostage.sync.bluetooth.BluetoothSyncActivity"
             android:label="@string/gui_bluetooth"
             android:theme="@android:style/Theme.Holo.Dialog" >
         </activity>
         <activity
+            android:screenOrientation="portrait"
             android:name="dk.aau.netsec.hostage.sync.nfc.NFCSyncActivity"
             android:label="@string/gui_nfc"
             android:theme="@android:style/Theme.Dialog" >
@@ -143,6 +150,7 @@
         </receiver>
 
         <activity
+            android:screenOrientation="portrait"
             android:name="dk.aau.netsec.hostage.sync.wifi_direct.ui.WiFiP2pSyncActivity"
             android:label="@string/title_activity_p2_psync">
         </activity>

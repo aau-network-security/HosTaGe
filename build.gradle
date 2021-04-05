@@ -90,6 +90,7 @@ dependencies {
     //androidX legacy support
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.preference:preference:1.1.1'
+    implementation "androidx.appcompat:appcompat:1.2.0"
 
     //other libraries
     implementation files('libs/swipelistview-1.0.jar')
@@ -141,7 +142,7 @@ dependencies {
 greendao{
     schemaVersion 1
     //generateTests true
-   // targetGenDir "src/db/"
+    // targetGenDir "src/db/"
 }
 //The first is for the conflict of common apache libraries between moquette and VirusTotalApi
 //The second one is for the conflict with an older version of deprecated slf4j
@@ -219,6 +220,7 @@ android {
         }
         if (doSigningForRelease) {
             release {
+                minifyEnabled false
                 debuggable false
                 jniDebuggable false
                 signingConfig signingConfigs.release

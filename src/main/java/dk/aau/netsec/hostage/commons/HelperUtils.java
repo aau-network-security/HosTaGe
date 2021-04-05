@@ -18,6 +18,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -57,6 +58,7 @@ import static android.content.ContentValues.TAG;
 public final class HelperUtils {
 
 	//Getter and setters for detection of file injection
+
 
 	public static String filePath;
 	public static String getFilePath() {
@@ -520,7 +522,7 @@ public final class HelperUtils {
 				NetworkInterface intf = en.nextElement();
 				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
 					InetAddress inetAddress = enumIpAddr.nextElement();
-					if (!inetAddress.isLoopbackAddress()) {
+					if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
 						String ip = Formatter.formatIpAddress(inetAddress.hashCode());
 						Log.i(TAG, "***** IP="+ ip);
 						return getInetAddress(InetAddress.getByName((ip)));
