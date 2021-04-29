@@ -95,7 +95,8 @@
 				android:defaultValue="false"
 				android:key="pref_vibration"
 				android:summary="@string/pref_vibration_summ"
-				android:title="@string/pref_vibration" />
+				android:title="@string/pref_vibration"
+				android:icon="@drawable/ic_vibration"/>
 
 			<RingtonePreference
 				android:defaultValue="content://settings/system/notification_sound"
@@ -104,7 +105,8 @@
 				android:showDefault="true"
 				android:showSilent="true"
 				android:summary="@string/pref_alarm_summ"
-				android:title="@string/pref_alarm" />
+				android:title="@string/pref_alarm"
+				android:icon="@drawable/ic_set_sound"/>
 		</PreferenceCategory>
 		</PreferenceScreen>
 
