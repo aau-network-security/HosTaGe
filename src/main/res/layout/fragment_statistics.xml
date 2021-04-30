@@ -46,6 +46,7 @@
                         android:layout_height="match_parent"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textAlignment="center"
+                        android:gravity="center"
                         android:id="@+id/title_text_view" />
                 </LinearLayout>
                 <!-- PLOT LAYOUT -->
