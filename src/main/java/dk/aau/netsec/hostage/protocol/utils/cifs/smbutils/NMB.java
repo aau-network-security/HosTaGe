@@ -14,7 +14,7 @@ import dk.aau.netsec.hostage.net.MyDatagramSocketFactory;
 
 /**
  * NetBIOS.
- * Used to registrate computers and workgroups in a windows network.
+ * Used to register computers and workgroups in a windows network.
  * @author Wulf Pfeiffer
  */
 public class NMB extends Thread {

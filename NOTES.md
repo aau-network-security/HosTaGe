@@ -15,5 +15,5 @@ Description: Unable to support higher version of SDK
 Solution: Use SDK 19.1.0
 
 ## API key
-Description: Ensure the correct API key and save both debug and release SHA- fingeprint
+Description: Ensure the correct API key and save both debug and release SHA- fingerprint
 

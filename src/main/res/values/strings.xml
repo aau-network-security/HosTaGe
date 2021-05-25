@@ -81,7 +81,7 @@
 	<string name="show_records">Show records</string>
 	<string name="dialog_clear_database">Clear all data?</string>	
 	<string name="export_dialog_title">Choose Export Format</string>
-    <string name="error_su" translatable="false">Could not acquire root access.\nYour device must be rooted to use default prots.</string>
+    <string name="error_su" translatable="false">Could not acquire root access.\nYour device must be rooted to use default ports.</string>
     <string name="error_binaries" translatable="false">Binaries are not installed, some error occurred! Check if you gave root permissions on the app</string>
     <string name="applying_rules" translatable="false">Applying iptables rules</string>
     <string name="toast_bin_installed" translatable="false">Iptables binary files installed!</string>
@@ -160,7 +160,7 @@
     <string name="delete_profile">Delete profile</string>
     <string name="discard">Discard</string>
     <string name="save">Save</string>
-	<string name="really_want_delete_profiel">Do you really want to delete this profile?</string>
+	<string name="really_want_delete_profile">Do you really want to delete this profile?</string>
     <string name="rec_protocol">Protocol</string>
     <string name="date">Date</string>
     <string name="ESSID">ESSID</string>
@@ -237,7 +237,7 @@
     <string name="Change_Device_Name">Change your device name</string>
     <string name="Device_Name">Device Name</string>
     <string name="Device_Status">Device Status</string>
-    <string name="Wifi_Direct_Not_suppported">Your device does not support Wifi Direct.</string>
+    <string name="Wifi_Direct_Not_supported">Your device does not support Wifi Direct.</string>
     <string name="Available_Devices">Available Devices</string>
     <string name="Looking_For_Devices_Progress_Title">Scanning for other devices.</string>
 

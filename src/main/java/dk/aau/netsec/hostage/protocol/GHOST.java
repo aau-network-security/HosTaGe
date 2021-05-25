@@ -14,8 +14,8 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 /**
  * Ghost Protocol. This protocol mirrors an incoming connection back to the
  * attacker on the same port, that it is running on. It will send all incoming
- * requests back to the attacker on the mirrored connection and will relpy with
- * the responses it get's from this mirrored connection.
+ * requests back to the attacker on the mirrored connection and will reply with
+ * the responses it gets from this mirrored connection.
  * 
  * @author Wulf Pfeiffer
  */

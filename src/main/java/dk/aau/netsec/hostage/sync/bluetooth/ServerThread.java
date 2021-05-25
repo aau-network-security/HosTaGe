@@ -8,7 +8,7 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 
 /**
- * Thread listens for incomming connections.
+ * Thread listens for incoming connections.
  * @author Lars Pandikow
  */
 public class ServerThread extends Thread {
