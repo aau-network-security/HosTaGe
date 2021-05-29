@@ -2,6 +2,8 @@ package dk.aau.netsec.hostage.ui.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,7 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-import com.fortysevendeg.android.swipelistview.BaseSwipeListViewListener;
+//import com.fortysevendeg.android.swipelistview.BaseSwipeListViewListener;
+
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,8 +28,8 @@ import dk.aau.netsec.hostage.model.Profile;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.activity.ProfileEditActivity;
-import dk.aau.netsec.hostage.ui.adapter.ProfileManagerListAdapter;
-import dk.aau.netsec.hostage.ui.swipelist.SwipeListView;
+//import dk.aau.netsec.hostage.ui.adapter.ProfileManagerListAdapter;
+import dk.aau.netsec.hostage.ui.adapter.ProfileManagerRecyclerAdapter;
 
 /**
  * Displays a list of all available profiles and allows invocation of the edit activity for an profile
@@ -35,7 +41,7 @@ public class ProfileManagerFragment extends TrackerFragment {
 	/**
 	 * The adapter for the profile list
 	 */
-	private ProfileManagerListAdapter mAdapter;
+	private ProfileManagerRecyclerAdapter mAdapter;
 	/**
 	 * Holds the shared preferences for the app
 	 */
@@ -46,12 +52,13 @@ public class ProfileManagerFragment extends TrackerFragment {
 	/**
 	 * Holds the listview for the profile list
 	 */
-	private SwipeListView list;
+	private RecyclerView recyclerView;
 
 	private View rootView;
 	private LayoutInflater inflater;
 	private ViewGroup container;
 	private Bundle savedInstanceState;
+	private ProfileManagerRecyclerAdapter myAdapter;
 
 	/**
 	 * {@inheritDoc}
@@ -72,7 +79,7 @@ public class ProfileManagerFragment extends TrackerFragment {
 
 		// inflate the view
         rootView = inflater.inflate(R.layout.fragment_profile_manager, container, false);
-	    list = rootView.findViewById(R.id.profile_manager_listview);
+	    recyclerView = rootView.findViewById(R.id.filips_recycler_view);
 
 		ProfileManager pmanager = null;
 		try {
@@ -93,53 +100,101 @@ public class ProfileManagerFragment extends TrackerFragment {
 			e.printStackTrace();
 		}
 
-		// show an help item in the listview to indicate, that the items in the list are swipeable
-		assert strList != null;
-		if(!strList.isEmpty() && !mSharedPreferences.getBoolean("dismissedProfileSwipeHelp", false)){
-		    Profile tProfile = new Profile();
-		    tProfile.mShowTooltip = true;
+//		// show an help item in the listview to indicate, that the items in the list are swipeable
+//		assert strList != null;
+//		if(!strList.isEmpty() && !mSharedPreferences.getBoolean("dismissedProfileSwipeHelp", false)){
+//		    Profile tProfile = new Profile();
+//		    tProfile.mShowTooltip = true;
+//
+//			strList.add(1, tProfile);
+//	    }
 
-			strList.add(1, tProfile);
-	    }
 
-		mAdapter = new ProfileManagerListAdapter(getActivity(), strList, list);
-		pmanager.setProfileListAdapter(mAdapter);
 
-        list.setAdapter(mAdapter);
+		myAdapter = new ProfileManagerRecyclerAdapter(container.getContext(), strList);
+		recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
+		recyclerView.setAdapter(myAdapter);
 
-		// add open and close actions to the items of the list view
-		ProfileManager finalPmanager = pmanager;
-		List<Profile> finalStrList = strList;
-		list.setSwipeListViewListener(new BaseSwipeListViewListener() {
+
+		ItemTouchHelper.SimpleCallback touchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+			private final ColorDrawable background = new ColorDrawable(getResources().getColor(R.color.green));
+
 			@Override
-			public void onOpened(int position, boolean toRight){
-				Profile profile = mAdapter.getItem(position);
-				assert profile != null;
-				if(profile.mShowTooltip){
-					mAdapter.remove(profile);
-					finalStrList.remove(profile);
-					list.dismiss(position);
-
-					mSharedPreferences.edit().putBoolean("dismissedProfileSwipeHelp", true).apply();
-				}
+			public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+				return false;
 			}
 
 			@Override
-			public void onClickFrontView(int position) {
-				// active the pressed profile
-				Profile profile = mAdapter.getItem(position);
-				assert profile != null;
-				if(profile.mShowTooltip) return;
+			public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+//				TODO launch profile edit action here
+//				myAdapter.showMenu(viewHolder.getAdapterPosition());
+			}
 
-				try {
-					finalPmanager.activateProfile(profile);
-				} catch (Exception e) {
-					e.printStackTrace();
+			@Override
+			public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+				super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+				View itemView = viewHolder.itemView;
+
+				if (dX > 0) {
+					background.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + ((int) dX), itemView.getBottom());
+				} else if (dX < 0) {
+					background.setBounds(itemView.getRight() + ((int) dX), itemView.getTop(), itemView.getRight(), itemView.getBottom());
+				} else {
+					background.setBounds(0, 0, 0, 0);
 				}
 
-				mAdapter.notifyDataSetChanged();
+				background.draw(c);
+			}
+		};
+		ItemTouchHelper itemTouchHelper = new ItemTouchHelper(touchHelperCallback);
+		itemTouchHelper.attachToRecyclerView(recyclerView);
+
+		recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+			@Override
+			public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+				myAdapter.closeMenu();
 			}
 		});
+
+//		mAdapter = new ProfileManagerListAdapter(getActivity(), strList, list);
+//		pmanager.setProfileListAdapter(mAdapter);
+//
+//        list.setAdapter(mAdapter);
+//
+//		// add open and close actions to the items of the list view
+//		ProfileManager finalPmanager = pmanager;
+//		List<Profile> finalStrList = strList;
+//		list.setSwipeListViewListener(new BaseSwipeListViewListener() {
+//			@Override
+//			public void onOpened(int position, boolean toRight){
+//				Profile profile = mAdapter.getItem(position);
+//				assert profile != null;
+//				if(profile.mShowTooltip){
+//					mAdapter.remove(profile);
+//					finalStrList.remove(profile);
+//					list.dismiss(position);
+//
+//					mSharedPreferences.edit().putBoolean("dismissedProfileSwipeHelp", true).apply();
+//				}
+//			}
+//
+//			@Override
+//			public void onClickFrontView(int position) {
+//				// active the pressed profile
+//				Profile profile = mAdapter.getItem(position);
+//				assert profile != null;
+//				if(profile.mShowTooltip) return;
+//
+//				try {
+//					finalPmanager.activateProfile(profile);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//
+//				mAdapter.notifyDataSetChanged();
+//			}
+//		});
 
         return rootView;
     }
@@ -151,8 +206,8 @@ public class ProfileManagerFragment extends TrackerFragment {
 	public void onResume() {
 		super.onResume();
 		onCreateView(inflater,container,savedInstanceState);
-		list.closeOpenedItems();
-		mAdapter.notifyDataSetChanged();
+//		list.closeOpenedItems();
+//		mAdapter.notifyDataSetChanged();
 	}
 
 	/**

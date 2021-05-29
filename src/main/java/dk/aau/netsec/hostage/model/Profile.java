@@ -57,6 +57,8 @@ public class Profile implements JSONSerializable<Profile> {
 	public boolean mGhostActive = false;
 	@Transient
 	public boolean mShowTooltip = false;
+	@Transient
+	public boolean mShowMenu = true;
 
 	public Profile(){
 		this.mEditable = true;
@@ -273,5 +275,13 @@ public class Profile implements JSONSerializable<Profile> {
 
 	public void setMEditable(boolean mEditable) {
 		this.mEditable = mEditable;
+	}
+
+	public boolean ismShowMenu() {
+		return mShowMenu;
+	}
+
+	public void setmShowMenu(boolean mShowMenu) {
+		this.mShowMenu = mShowMenu;
 	}
 }

@@ -98,7 +98,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.1'
 
     //other libraries
-    implementation files('libs/swipelistview-1.0.jar')
+//    implementation files('libs/swipelistview-1.0.jar')
     implementation files('libs/sshlib-v1.1.jar')
     implementation files('libs/alfresco-jlan.jar')
     implementation files('libs/nineoldandroids-2.4.0.jar')

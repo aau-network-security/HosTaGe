@@ -1,31 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/profile_manager_root_view"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:id="@+id/profile_manager_root_view">
+    android:orientation="vertical">
 
-    <dk.aau.netsec.hostage.ui.swipelist.SwipeListView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/filips_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:swipe="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/profile_manager_listview"
-        android:choiceMode="singleChoice"
-        android:background="#F2F2F2"
-        android:cacheColorHint="#F2F2F2"
-        android:dividerHeight="10dp"
-        android:divider="@android:color/transparent"
-        android:padding="5dp"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="0dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp"
-        swipeFrontView="@+id/swipelist_frontview"
-        swipeBackView="@+id/swipelist_backview"
-        swipe:swipeFrontView="@+id/swipelist_frontview"
-        swipe:swipeBackView="@+id/swipelist_backview"
-        swipe:swipeMode="both"/>
+        android:layout_marginTop="20dp"></androidx.recyclerview.widget.RecyclerView>
 
 </RelativeLayout>

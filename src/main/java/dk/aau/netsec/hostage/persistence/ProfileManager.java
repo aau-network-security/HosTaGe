@@ -32,7 +32,8 @@ import dk.aau.netsec.hostage.Listener;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.model.Profile;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
-import dk.aau.netsec.hostage.ui.adapter.ProfileManagerListAdapter;
+import dk.aau.netsec.hostage.ui.adapter.ProfileManagerRecyclerAdapter;
+//import dk.aau.netsec.hostage.ui.adapter.ProfileManagerListAdapter;
 
 
 /**
@@ -51,7 +52,8 @@ public class  ProfileManager {
 	/**
 	 * An list adapter, which the profile manager informs about data changes
 	 */
-	private ProfileManagerListAdapter mProfileListAdapter = null;
+	private ProfileManagerRecyclerAdapter mProfileListAdapter = null;
+//	private ProfileManagerListAdapter mProfileListAdapter = null;
 
 	/**
 	 * Holds a reference to the currently active profile
@@ -316,7 +318,8 @@ public class  ProfileManager {
 		this.persistData();
 
 		if(this.mProfileListAdapter != null){
-			this.mProfileListAdapter.notifyDataSetChanged();
+//			this.mProfileListAdapter.notifyDataSetChanged();
+			;
 		}
 
 		return profile.mId;
@@ -370,8 +373,9 @@ public class  ProfileManager {
 		}
 
 		if(this.mProfileListAdapter != null){
-			this.mProfileListAdapter.add(profile);
-			this.mProfileListAdapter.notifyDataSetChanged();
+//			this.mProfileListAdapter.
+			this.mProfileListAdapter.addProfile(profile);
+//			this.mProfileListAdapter.notifyDataSetChanged();
 		}
 	}
 
@@ -394,8 +398,8 @@ public class  ProfileManager {
 			//this.dbh.deleteProfile(profile.mId);
 
 			if(this.mProfileListAdapter != null){
-				this.mProfileListAdapter.remove(profile);
-				this.mProfileListAdapter.notifyDataSetChanged();
+				this.mProfileListAdapter.removeProfile(profile);
+//				this.mProfileListAdapter.notifyDataSetChanged();
 			}
 		}
 	}
@@ -440,7 +444,8 @@ public class  ProfileManager {
 		if(persist) persistData();
 
 		if(this.mProfileListAdapter != null){
-			this.mProfileListAdapter.notifyDataSetChanged();
+			;
+//			this.mProfileListAdapter.notifyDataSetChanged();
 		}
 
 		if(MainActivity.getInstance().getHostageService() != null){
@@ -491,7 +496,7 @@ public class  ProfileManager {
 	 *
 	 * @param profileListAdapter the list adapter to manage
 	 */
-	public void setProfileListAdapter(ProfileManagerListAdapter profileListAdapter){
+	public void setProfileListAdapter(ProfileManagerRecyclerAdapter profileListAdapter){
 		this.mProfileListAdapter = profileListAdapter;
 	}
 
@@ -500,7 +505,7 @@ public class  ProfileManager {
 	 * Retrieves the list adapter, that is being managed by the profile manager
 	 * @return the list adapter
 	 */
-	public ProfileManagerListAdapter getProfileListAdapter(){
+	public ProfileManagerRecyclerAdapter getProfileListAdapter(){
 		return this.mProfileListAdapter;
 	}
 
