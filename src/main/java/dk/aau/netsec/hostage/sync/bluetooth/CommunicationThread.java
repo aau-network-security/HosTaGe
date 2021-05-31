@@ -28,7 +28,7 @@ public class CommunicationThread extends Thread {
 	private final Context context;
 	private final BluetoothSocket mmSocket;
 	private final ObjectInputStream objectInput;
-	private final ObjectOutputStream objectOuput;
+	private final ObjectOutputStream objectOutput;
 	private final Handler mHandler;
 	private final DaoSession dbSession;
 	private final DAOHelper daoHelper;
@@ -58,14 +58,14 @@ public class CommunicationThread extends Thread {
 		}
 
 		objectInput = tmpIn;
-		objectOuput = tmpOut;
+		objectOutput = tmpOut;
 	}
 
 	/* Call this from the main activity to shutdown the connection */
 	public void cancel() {
 		try {
 			objectInput.close();
-			objectOuput.close();
+			objectOutput.close();
 			mmSocket.close();
 		} catch (IOException e) {
 		}
@@ -97,7 +97,7 @@ public class CommunicationThread extends Thread {
 	 * @param message The received message.
 	 */
 	private void handleMessage(SyncMessage message){
-		Log.i("CommunicationThread", "Recieved: " + message.getMessage_code());
+		Log.i("CommunicationThread", "Received: " + message.getMessage_code());
 		switch(message.getMessage_code()){
 			case SyncMessage.SYNC_REQUEST:
                 mHandler.obtainMessage(BluetoothSyncActivity.SYNC_START).sendToTarget();
@@ -127,7 +127,7 @@ public class CommunicationThread extends Thread {
 	 */
 	public void write(SyncMessage message) {
 		try {
-			objectOuput.writeObject(message);
+			objectOutput.writeObject(message);
 		} catch (IOException e) {
 			mHandler.obtainMessage(BluetoothSyncActivity.CONNECTION_FAILED).sendToTarget();
 			e.printStackTrace();

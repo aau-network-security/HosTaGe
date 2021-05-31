@@ -68,7 +68,7 @@ public class ChecklistDialog extends DialogFragment {
      * The Constructor Method
      * @param  title String
      * @param itemTitles ArrayList<String> item titles list
-     * @param selected boolean[] an array of bools descriping the position of all the selected titles.
+     * @param selected boolean[] an array of bools describing the position of all the selected titles.
      * @param isMultipleChoice boolean isMultipleChoice
      * @param listener ChecklistDialogListener an user "event" listener
      *

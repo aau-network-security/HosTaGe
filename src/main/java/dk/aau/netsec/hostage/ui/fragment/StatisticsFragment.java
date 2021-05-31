@@ -243,7 +243,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     }
 
     /**Configures the given rootview.
-    * Sets the Spinner, the list and all requiered buttons.
+    * Sets the Spinner, the list and all required buttons.
     * It also actualises the current plot type.
     * @param  rootView View
     * */
@@ -319,7 +319,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         }
     }
 
-    /**Sets the current chart to the given type and acualises it.
+    /**Sets the current chart to the given type and actualises it.
     * @param  type  {@link StatisticsFragment.ChartType ChartType}
     * */
     public void setChartType(ChartType type){
@@ -373,7 +373,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         }
     }
 
-    /**Actualises the list view. Therefore it requiers the "currentData".*/
+    /**Actualises the list view. Therefore it requires the "currentData".*/
     public void actualiseLegendList(){
         StatisticListAdapter adapter = new StatisticListAdapter(this.getApplicationContext(), this.currentData);
         if (this.currentPlotView instanceof LineGraph){
@@ -491,7 +491,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     *
     * */
     /**
-     * Will be called if the user selects the positiv button on an checklist dialog.
+     * Will be called if the user selects the positive button on an checklist dialog.
      * @param dialog  {@link ChecklistDialog ChecklistDialog}
      * */
      public void onDialogPositiveClick(ChecklistDialog dialog) {
@@ -556,7 +556,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     }
 
     /**
-     * Will be called if the user selects the negativ button on an checklist dialog.
+     * Will be called if the user selects the negative button on an checklist dialog.
      * @param dialog  {@link ChecklistDialog ChecklistDialog}
      * */
     public void onDialogNegativeClick(ChecklistDialog dialog) {

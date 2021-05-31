@@ -51,7 +51,7 @@ public class LogFilter implements Parcelable {
 	public long aboveTimestamp;
 
     /**
-     * Constructur
+     * Constructor
      */
 	public LogFilter() {
 		this.clear();
@@ -348,7 +348,7 @@ public class LogFilter implements Parcelable {
 		return this.getESSIDs().size() > 0;
 	}
     /**
-     * Returns true if the filter has more than one protocl.
+     * Returns true if the filter has more than one protocol.
      * @return boolean
      */
 	public boolean hasProtocols() {
