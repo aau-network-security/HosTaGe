@@ -10,54 +10,8 @@
               android:layout_marginTop="0dp"
 			>
 
-	<RelativeLayout
-        android:id="@+id/swipelist_backview"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/panel_white_bg">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-                >
-
-            <ImageButton
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/profile_manager_item_button_edit"
-                android:layout_weight="1"
-                style="@android:style/DeviceDefault.Light.ButtonBar"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:src="@drawable/ic_edit"/>
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/light_grey"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-		        android:id="@+id/profile_manager_item_seperator"/>
-
-            <ImageButton
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:id="@+id/profile_manager_item_button_delete"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_weight="1"
-                style="@android:style/DeviceDefault.Light.ButtonBar"
-                android:focusable="false"
-                android:layout_marginTop="0dp"
-                android:src="@drawable/ic_discard"/>
-        </LinearLayout>
-
-    </RelativeLayout>
 	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	                android:id="@+id/swipelist_frontview"
+	                android:id="@+id/swipelist_frontview_filip"
 	                android:layout_width="match_parent"
 	                android:layout_height="match_parent"
 	                android:padding="5dp"

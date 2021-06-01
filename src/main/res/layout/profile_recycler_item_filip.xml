@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/container"
+    android:id="@+id/filips_cool_container"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:background="#333333"
     android:orientation="horizontal">
 
 
@@ -16,15 +15,16 @@
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintStart_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
-            android:src="@drawable/ic_bro" />
+            android:src="@drawable/ic_edit"
+            app:tint="@color/yellow" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -37,4 +37,4 @@
     </LinearLayout>
 
 
-</ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

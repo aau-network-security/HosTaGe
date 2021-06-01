@@ -58,7 +58,7 @@ public class Profile implements JSONSerializable<Profile> {
 	@Transient
 	public boolean mShowTooltip = false;
 	@Transient
-	public boolean mShowMenu = true;
+	boolean mShowMenu = false;
 
 	public Profile(){
 		this.mEditable = true;
