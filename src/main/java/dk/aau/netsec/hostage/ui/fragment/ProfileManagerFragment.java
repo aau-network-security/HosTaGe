@@ -117,48 +117,75 @@ public class ProfileManagerFragment extends TrackerFragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
         recyclerView.setAdapter(myAdapter);
 
-
-        ItemTouchHelper.SimpleCallback touchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            private final ColorDrawable background = new ColorDrawable(getResources().getColor(R.color.green));
-
-
+        SwipeToEditCallback swipeHandler = new SwipeToEditCallback(container.getContext()) {
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 
-            @Override
-            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                int itemPosition = viewHolder.getAdapterPosition();
+                myAdapter.notifyItemChanged(itemPosition);
 
-                container.post(new Runnable() {
+                myAdapter.editProfile(container.getContext(), myAdapter.getItem(itemPosition));
 
-                    @Override
-                    public void run() {
-                        myAdapter.showMenu(viewHolder.getAdapterPosition());
-                    }
-                });
 
-            }
-
-            @Override
-            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-
-                View itemView = viewHolder.itemView;
-
-                if (dX > 0) {
-                    background.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + ((int) dX), itemView.getBottom());
-                } else if (dX < 0) {
-                    background.setBounds(itemView.getRight() + ((int) dX), itemView.getTop(), itemView.getRight(), itemView.getBottom());
-                } else {
-                    background.setBounds(0, 0, 0, 0);
-                }
-
-                background.draw(c);
+//                myAdapter.noti
             }
         };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(touchHelperCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        ItemTouchHelper helper = new ItemTouchHelper(swipeHandler);
+        helper.attachToRecyclerView(recyclerView);
+
+//        val swipeHandler = object : SwipeToDeleteCallback(this) {
+//            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+//                val adapter = recyclerView.adapter as SimpleAdapter
+//                adapter.removeAt(viewHolder.adapterPosition)
+//            }
+//        }
+//        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+//        itemTouchHelper.attachToRecyclerView(recyclerView)
+
+
+//        ItemTouchHelper.SimpleCallback touchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+//            private final ColorDrawable background = new ColorDrawable(getResources().getColor(R.color.green));
+//
+//
+//            @Override
+//            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+//
+//                container.post(new Runnable() {
+//
+//                    @Override
+//                    public void run() {
+//                        ;
+////                        myAdapter.showMenu(viewHolder.getAdapterPosition());
+//                    }
+//                });
+//
+//            }
+//
+//            @Override
+//            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+//                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+//
+//                View itemView = viewHolder.itemView;
+//
+//                if (dX > 0) {
+//                    background.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + ((int) dX), itemView.getBottom());
+//                } else if (dX < 0) {
+//                    background.setBounds(itemView.getRight() + ((int) dX), itemView.getTop(), itemView.getRight(), itemView.getBottom());
+//                } else {
+//                    background.setBounds(0, 0, 0, 0);
+//                }
+//
+//                background.draw(c);
+//            }
+//        };
+//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(touchHelperCallback);
+//        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         recyclerView.setOnScrollChangeListener(
 
@@ -168,7 +195,8 @@ public class ProfileManagerFragment extends TrackerFragment {
                         v.post(new Runnable() {
                             @Override
                             public void run() {
-                                myAdapter.closeMenu();
+                                ;
+//                                myAdapter.closeMenu();
                             }
                         });
 

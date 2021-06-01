@@ -1,6 +1,7 @@
 package dk.aau.netsec.hostage.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,14 +18,12 @@ import java.util.List;
 
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.model.Profile;
+import dk.aau.netsec.hostage.ui.activity.ProfileEditActivity;
 import dk.aau.netsec.hostage.ui.layouts.FlowLayout;
 
 public class ProfileManagerRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     List<Profile> list;
     Context context;
-
-    private final int SHOW_MENU = 1;
-    private final int HIDE_MENU = 2;
 
     public ProfileManagerRecyclerAdapter(Context context, List<Profile> articlesList) {
         this.list = articlesList;
@@ -32,25 +31,11 @@ public class ProfileManagerRecyclerAdapter extends RecyclerView.Adapter<Recycler
     }
 
     @Override
-    public int getItemViewType(int position) {
-        if (list.get(position).ismShowMenu()) {
-            return SHOW_MENU;
-        } else {
-            return HIDE_MENU;
-        }
-    }
-
-    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View v;
-        if (viewType == SHOW_MENU) {
-            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_recycler_item_filip, parent, false);
-            return new MenuViewHolder(v);
-        } else {
-            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_manager_list_item, parent, false);
-            return new MyViewHolder(v);
-        }
+        v = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_manager_list_item, parent, false);
+        return new MyViewHolder(v);
     }
 
     @Override
@@ -89,10 +74,6 @@ public class ProfileManagerRecyclerAdapter extends RecyclerView.Adapter<Recycler
                 ((MyViewHolder) holder).mBadgesContainer.setVisibility(View.VISIBLE);
             }
         }
-        if (holder instanceof MenuViewHolder){
-            ;
-//            Do stuff with menu here?
-        }
     }
 
     @Override
@@ -105,35 +86,26 @@ public class ProfileManagerRecyclerAdapter extends RecyclerView.Adapter<Recycler
         list.add(profile);
     }
 
+    public void editProfile(Context mContext, Profile profile) {
+        Intent intent = new Intent(mContext, ProfileEditActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("profile_id", profile.getId());
+
+        mContext.startActivity(intent);
+
+        System.out.println("Hello there");
+
+    }
+
     public void removeProfile(Profile profile) {
 //        TODO implement stuffs here
         return;
     }
 
-    public void showMenu(int position) {
-        for (int i = 0; i < list.size(); i++) {
-            list.get(i).setmShowMenu(false);
-        }
-        list.get(position).setmShowMenu(true);
-        notifyDataSetChanged();
+    public Profile getItem(int position) {
+        return list.get(position);
     }
 
-
-    public boolean isMenuShown() {
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).ismShowMenu()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void closeMenu() {
-        for (int i = 0; i < list.size(); i++) {
-            list.get(i).setmShowMenu(false);
-        }
-        notifyDataSetChanged();
-    }
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView itemText;
@@ -153,11 +125,6 @@ public class ProfileManagerRecyclerAdapter extends RecyclerView.Adapter<Recycler
         }
     }
 
-    public class MenuViewHolder extends RecyclerView.ViewHolder{
-        public MenuViewHolder(View view){
-            super(view);
-        }
-    }
 
 }
 
