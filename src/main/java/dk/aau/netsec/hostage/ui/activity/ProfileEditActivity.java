@@ -1,5 +1,6 @@
 package dk.aau.netsec.hostage.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,6 +30,15 @@ public class ProfileEditActivity extends AppCompatActivity {
 		getSupportFragmentManager().beginTransaction()
 				.replace(android.R.id.content,editFragment)
 				.commit();
+	}
+
+	@Override
+	public void on BackPressed(){
+		super.onBackPressed();
+		Intent intent=new
+		Intent(ProfileEditActivity.this,MainActivity.class);
+		startActivity(intent);
+		finish();
 	}
 
 
