@@ -67,7 +67,7 @@ import eu.chainfire.libsuperuser.Shell;
 
 
 /**
- * Manages the whole application, and should act like an singleton.
+ * Manages the whole application, and should act like a singleton.
  *
  * @author Alexander Brakowski
  * @created 12.01.14 23:24
@@ -77,8 +77,9 @@ public class MainActivity extends AppCompatActivity {
 
 	private MyLocationManager locationManager;
 
-	/** singleton instance of the MainActivity with WeakReference to avoid Memory leaks **/
-
+	/**
+	 * singleton instance of the MainActivity with WeakReference to avoid Memory leaks
+	 */
 	private static WeakReference<MainActivity> mActivityRef;
 
 	/**
@@ -265,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        // make the main activity an singleton
+        // make the main activity a singleton
 		mActivityRef  = new WeakReference<>( this);
 
 		// sets the static context reference to the application context
@@ -490,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	/**
-	 * Unbindes the activity from the service
+	 * Unbinds the activity from the service
 	 */
 	public void unbindService() {
 		try {
@@ -575,7 +576,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		// Pass any configuration change to the drawer toggls
+		// Pass any configuration change to the drawer toggle
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
@@ -727,7 +728,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	/**
-	 * Create a new intent intented for binding the hostage service to the activity
+	 * Create a new intent intended for binding the hostage service to the activity
 	 *
 	 * @return the new service intent
 	 */

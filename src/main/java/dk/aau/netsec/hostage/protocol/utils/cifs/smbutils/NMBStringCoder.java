@@ -50,7 +50,7 @@ public class NMBStringCoder {
 	}
 
 	/**
-	 * Wraps a NetBIOS name with the required start and end bytes and some more informations.
+	 * Wraps a NetBIOS name with the required start and end bytes and some more information.
 	 * @param name netbios name.
 	 * @param service NBNDSService.
 	 * @return wrapped content.

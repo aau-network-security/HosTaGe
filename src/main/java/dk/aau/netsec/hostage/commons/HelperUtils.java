@@ -351,7 +351,7 @@ public final class HelperUtils {
 	}
 
 	/**
-	 * Gets the mac address of the devicek.
+	 * Gets the mac address of the device.
 	 *
 	 * @param context
 	 *            Needs a context to get system recourses

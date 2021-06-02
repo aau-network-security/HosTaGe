@@ -50,7 +50,7 @@ public abstract class WiFiP2pServerTask extends BackgroundTask {
     /**
      * Set the time out seconds to
      * -1 for infinity
-     * 0 for defaut 15 seconds
+     * 0 for default 15 seconds
      * 1 or more for other seconds
      * @param timeoutSeconds the seconds to wait for an request before time ist out.
      */

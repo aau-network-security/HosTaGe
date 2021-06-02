@@ -723,7 +723,7 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
 	}
 	
 	/**
-	 * Determines the number of recorded attacks for a specific protocol and accesss point since the given attack_id.
+	 * Determines the number of recorded attacks for a specific protocol and access point since the given attack_id.
 	 * 
 	 * @param protocol
 	 *            The String representation of the
@@ -1882,7 +1882,7 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
 	}
 
     /**
-     * Returns PlotComparisionItems for attacks per essid.
+     * Returns PlotComparisonItems for attacks per essid.
      * @param filter (LogFilter) filter object
      *
      * @return ArrayList<PlotComparisonItem>
