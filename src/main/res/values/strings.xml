@@ -145,7 +145,7 @@
     <string name="hostage_with_url"><a href="https://aau-network-security.github.io/HosTaGe/">HosTaGe</a></string>
     <string name="hostage_email"><a href="mailto:hostage@es.aau.dk?Subject=Inquiry">Tell us what do you think about HosTaGe</a></string>
     <string name="hostage_email_only" translatable="false">hostage@es.aau.dk</string>
-    <string name="ui_dev_by">Developers team:</string>
+    <string name="ui_dev_by">Current Funding:</string>
     <string name="core_dev_by">Core developed by</string>
     <string name="advanced_settings">Advanced Settings</string>
     <string name="notification_settings" translatable="false">Notifications &amp; Sound</string>
@@ -198,10 +198,13 @@
     <string name="stats_per_cent_all">% of all</string>
     <string name="project_link" translatable="false">https://github.com/aau-network-security/HosTaGe</string>
     <string name="pie_all">All</string>
+    <string name="privacy_policy" translatable="false">Privacy Policy</string>
 
 
     <string name="CONNECTION_LOST_MESSAGE">Connection lost permanently, please enable wifi direct.</string>
     <string name="COULD_NOT_CONNECT_MESSAGE">Could not connect to device. Retry.</string>
+    <string name="Privacy_Policy" translatable="false">Privacy Policy</string>
+
 
     <string name="SYNCHRONIZATION_COMPLETE_MESSAGE">Synchronization complete.</string>
     <string name="SYNCHRONIZATION_FAILED_MESSAGE">Could not synchronize devices. Retry</string>

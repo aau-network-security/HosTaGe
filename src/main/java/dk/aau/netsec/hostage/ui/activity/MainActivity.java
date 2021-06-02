@@ -52,6 +52,7 @@ import dk.aau.netsec.hostage.system.iptablesUtils.Api;
 import dk.aau.netsec.hostage.ui.adapter.DrawerListAdapter;
 import dk.aau.netsec.hostage.ui.fragment.AboutFragment;
 import dk.aau.netsec.hostage.ui.fragment.HomeFragment;
+import dk.aau.netsec.hostage.ui.fragment.PrivacyFragment;
 import dk.aau.netsec.hostage.ui.fragment.ProfileManagerFragment;
 import dk.aau.netsec.hostage.ui.fragment.RecordOverviewFragment;
 import dk.aau.netsec.hostage.ui.fragment.ServicesFragment;
@@ -418,6 +419,7 @@ public class MainActivity extends AppCompatActivity {
 		mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
 		mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
 		mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
+		mDrawerItems.add(new DrawerListItem(R.string.privacy_policy, R.drawable.ic_menu_privacy));
 
 		DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
 
@@ -796,7 +798,9 @@ public class MainActivity extends AppCompatActivity {
 		SERVICES(4, ServicesFragment.class),
 		PROFILE_MANAGER(5, ProfileManagerFragment.class),
 		SETTINGS(6, SettingsFragment.class),
-		APPLICATION_INFO(7, AboutFragment.class);
+		APPLICATION_INFO(7, AboutFragment.class),
+		PRIVACY(8, PrivacyFragment.class);
+
 
 		private int value;
 		private Class<?> klass;

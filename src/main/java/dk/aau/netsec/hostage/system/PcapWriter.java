@@ -4,8 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
@@ -81,9 +86,21 @@ public class PcapWriter {
     }
 
     private static void runTcpdumpPcap(){
-        String command = "su -c tcpdump -vv -i any 'dst host "+internalIP+ " and (dst port 80 or 7 or 21 or 3306 or 502 or 102 or 161 or 5060 or 22 or 25 or 23 or 443 or 1883 or 5683 or 5672 or 1025)' -s 65535 -C 900 -w /sdcard/pcap/save.pcap";
-        //remountSystem();
-        runCommand(command);
+
+                //String command = "su -c tcpdump -vv -i any 'dst host "+internalIP+ " and (dst port 80 or 7 or 21 or 3306 or 502 or 102 or 161 or 5060 or 22 or 25 or 23 or 443 or 1883 or 5683 or 5672 or 1025)' -s 65535 -C 900 -w /sdcard/sdcard/pcap/save.pcap";
+        String fileName = new SimpleDateFormat("yyyyMMddHHmmss'.pcap'").format(new Date());
+        String command = "su -c tcpdump -i any -s 65535 -w /sdcard/"+fileName;
+
+        try {
+            //remountSystem();
+            runCommand(command);
+            Log.d("DEBUG", "PCAP Writer Started");
+
+        } catch (Exception pcape) {
+            pcape.printStackTrace();
+            Log.d("ERROR", "PCAP Error:"+pcape);
+        }
+
     }
 
     private static void stopTcpdumpPcap(){
