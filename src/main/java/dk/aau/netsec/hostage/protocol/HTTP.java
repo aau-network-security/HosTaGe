@@ -310,7 +310,7 @@ public class HTTP implements Protocol {
 	}
 	
 	/**
-	 * Task for acquiring a qotd from one of four possible servers.
+	 * Task for accuiring a qotd from one of four possible servers.
 	 * 
 	 * @author Wulf Pfeiffer
 	 */

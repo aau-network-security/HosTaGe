@@ -37,7 +37,7 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 
 /**
- * Displays detailed information about an record.
+ * Displays detailed informations about an record.
  *
  * @author Fabio Arnold
  * @author Alexander Brakowski
@@ -49,7 +49,7 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
  */
 public class RecordDetailFragment extends UpNavigatibleFragment {
 	/**
-	 * Hold the record of which the detail information should be shown
+	 * Hold the record of which the detail informations should be shown
 	 */
 	private RecordAll mRecord;
 	/**

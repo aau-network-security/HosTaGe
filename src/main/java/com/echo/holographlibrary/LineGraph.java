@@ -538,7 +538,7 @@ public class LineGraph extends View {
 
         float yPixels = getHeight() - (bottomPadding - (10));
 
-        // DRAW SEPARATOR
+        // DRAW SEPERATOR
         paint.setColor(Color.BLACK);
         paint.setAlpha(50);
         paint.setAntiAlias(true);

@@ -41,7 +41,7 @@ public class SmtpState {
 
 	/** CONNECT state: waiting for a client connection. */
 	public static final SmtpState CONNECT = new SmtpState(CONNECT_BYTE);
-	/** GREET state: waiting for a ELHO message. */
+	/** GREET state: wating for a ELHO message. */
 	static final SmtpState GREET = new SmtpState(GREET_BYTE);
 	/** MAIL state: waiting for the MAIL FROM: command. */
 	static final SmtpState MAIL = new SmtpState(MAIL_BYTE);

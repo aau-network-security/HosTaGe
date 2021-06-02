@@ -103,7 +103,7 @@ public class MyLocationManager {
 	 * @param time
 	 *            Time to update hostage.location data
 	 * @param attempts
-	 *            Remaining attempts for receiving hostage.location data
+	 *            Remaining attempts for recieving hostage.location data
 	 */
 	public void getUpdates(long time, int attempts, Context context) {
 		startUpdates(context);

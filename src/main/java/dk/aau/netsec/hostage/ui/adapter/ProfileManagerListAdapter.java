@@ -162,7 +162,7 @@ public class ProfileManagerListAdapter extends ArrayAdapter<Profile> {
 			    public void onClick(View v) {
 				    new AlertDialog.Builder(mContext)
 						    .setTitle(R.string.delete_profile)
-						    .setMessage(R.string.really_want_delete_profile)
+						    .setMessage(R.string.really_want_delete_profiel)
 						    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
 							    @Override
 							    public void onClick(DialogInterface dialog, int which) {

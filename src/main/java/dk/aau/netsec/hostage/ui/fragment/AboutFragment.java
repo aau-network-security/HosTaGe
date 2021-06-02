@@ -17,7 +17,7 @@ import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
 
 /**
- * Shows information about the developers of the app
+ * Shows informations about the developers of the app
  *
  * Created by Fabio Arnold on 25.02.14.
  * displays credits for the app

@@ -186,7 +186,7 @@ public class AttackRecordDAO extends  DAO {
     }
 
     /**
-     * Determines the number of recorded attacks for a specific protocol and access point since the given attack_id.
+     * Determines the number of recorded attacks for a specific protocol and accesss point since the given attack_id.
      *
      * @param protocol
      *            The String representation of the

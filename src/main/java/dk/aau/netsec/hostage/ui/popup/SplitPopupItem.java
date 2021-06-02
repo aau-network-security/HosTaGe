@@ -69,7 +69,7 @@ public class SplitPopupItem extends AbstractPopupItem {
 
     /**
      * Returns the displayed object for the clicked position in the view.
-     * E.g. the user tapped the right side, it returns the object representing the right side of the clicked view.
+     * E.g. the user tapped the right side, it returns the object representing the right side of the clickt view.
      * @param event MotionEvent
      * @return Object
      */

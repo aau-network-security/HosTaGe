@@ -234,7 +234,7 @@ public class TELNET implements Protocol {
 	}
 
 	/**
-	 * Checks a byte array for occurrence of one byte.
+	 * Checks a byte array for occurence of one byte.
 	 * 
 	 * @param bytes
 	 *            byte array that is checked.
