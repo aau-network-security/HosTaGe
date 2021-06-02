@@ -12,7 +12,7 @@ public class LoaderTask extends AsyncTask<Void, Void, Void> {
 
     @SuppressLint("ValidFragment")
     public interface TaskListener {
-        void doInBackground();
+        void doInBackgorund();
         void onFinish();
     }
 
@@ -24,7 +24,7 @@ public class LoaderTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... unused) {
         if (this.listener != null){
-            this.listener.doInBackground();
+            this.listener.doInBackgorund();
         }
         return(null);
     }

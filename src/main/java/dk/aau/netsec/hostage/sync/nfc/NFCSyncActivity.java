@@ -77,7 +77,7 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 			case MESSAGE_RECEIVED:
 				runOnUiThread(new Runnable() {
 					public void run() {
-		            	Toast.makeText(NFCSyncActivity.this, "Data received!", Toast.LENGTH_LONG).show();
+		            	Toast.makeText(NFCSyncActivity.this, "Data recieved!", Toast.LENGTH_LONG).show();
 					}
 		        });				
 				break;
@@ -98,7 +98,7 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 		} else if(!mNfcAdapter.isEnabled()){
 			mInfoText.setText("Enable Android Beam before synchronizing.");
 		} else {
-			mInfoText.setText("Hold phones together to send or receive data.");
+			mInfoText.setText("Hold phones together to send or recieve data.");
 			// Register callback to set NDEF message
 			mNfcAdapter.setNdefPushMessageCallback(this, this);
 			// Register callback to listen for message-sent success

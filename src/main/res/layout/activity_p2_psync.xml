@@ -110,7 +110,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/Wifi_Direct_Not_supported"
+                android:text="@string/Wifi_Direct_Not_suppported"
                 android:id="@+id/txtP2PNotAvailable"
                 android:textAlignment="center"
                 android:gravity="center_horizontal"

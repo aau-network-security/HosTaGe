@@ -101,7 +101,7 @@ public class BluetoothSyncActivity extends Activity{
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
-		if(mReceiverRegistered){
+		if(mRecieverRegistered){
 			unregisterBroadcastReceiver();
 		}
 		cancelThreads();
@@ -163,7 +163,7 @@ public class BluetoothSyncActivity extends Activity{
 	}
 
 	/**
-	 * BroadcastReceiver listens for state changes of bluetooth and discovery of new devices.
+	 * BroadcastReciever listens for state changes of bluetooth and discovery of new devices.
 	 */
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
 		@Override
@@ -189,7 +189,7 @@ public class BluetoothSyncActivity extends Activity{
 		}
 	};
 	
-	private boolean mReceiverRegistered = false;
+	private boolean mRecieverRegistered = false;
 
 
 	/**
@@ -199,7 +199,7 @@ public class BluetoothSyncActivity extends Activity{
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		filter.addAction(BluetoothAdapter. ACTION_STATE_CHANGED);
 		registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
-		mReceiverRegistered = true;
+		mRecieverRegistered = true;
 	}
 	
 	/**
@@ -207,7 +207,7 @@ public class BluetoothSyncActivity extends Activity{
 	 */
 	private void unregisterBroadcastReceiver(){
 		unregisterReceiver(mReceiver);
-		mReceiverRegistered = false;
+		mRecieverRegistered = false;
 	}
 	
 	/**

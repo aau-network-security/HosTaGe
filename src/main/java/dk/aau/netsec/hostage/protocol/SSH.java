@@ -59,7 +59,7 @@ public class SSH implements Protocol {
 						.nextInt(possibleSshTypes[majorVersion][1].length)];
 	}
 
-	// server info
+	// server infos
 	private static final String serverVersion = "SSH-2.0-";
 	private String serverType = initSshType();
 	private String serverName = HelperUtils.getRandomString(16, false);

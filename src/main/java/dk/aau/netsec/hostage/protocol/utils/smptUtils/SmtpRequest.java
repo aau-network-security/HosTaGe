@@ -64,7 +64,7 @@ public class SmtpRequest {
 
 	/**
 	 * Execute the SMTP request returning a response. This method models the state transition table for the SMTP server.
-	 * @return response to the request
+	 * @return reponse to the request
 	 */
 	public SmtpResponse execute() {
 		SmtpResponse response;
