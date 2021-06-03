@@ -1,6 +1,5 @@
 package dk.aau.netsec.hostage.protocol;
 
-import android.util.Log;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -18,6 +17,8 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 import io.moquette.broker.ClientDescriptor;
 import io.moquette.broker.Server;
 import io.moquette.broker.config.MemoryConfig;
+
+import static com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance;
 
 public class MQTT implements Protocol {
 
@@ -105,7 +106,10 @@ public class MQTT implements Protocol {
         try {
             broker.startServer(getConfig());
             broker.addInterceptHandler(handler.getHandler());
-            Log.d(TAG,"Server Started");
+
+//            TODO quick hack to resolve dependency errors. Take better look at logging.
+            getInstance().log("Server Started");
+//            Log.d(TAG,"Server Started");
             brokerStarted=true;
         }
         catch (IOException e) { e.printStackTrace();

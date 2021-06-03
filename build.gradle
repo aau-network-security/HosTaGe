@@ -1,13 +1,18 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
         google()
+
+//        jcenter reached end-of-life, but is required for MQTT until migrated.
+        jcenter()
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
-        classpath 'com.google.gms:google-services:4.3.4' //added gms support
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
+
+        classpath 'com.google.gms:google-services:4.3.8' //added gms support
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.6.1'
     }
 }
 apply plugin: 'com.android.application'
@@ -17,25 +22,27 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
         google()
+        jcenter()
 
         maven { url "https://jitpack.io" }
     }
 }
 dependencies {
     //firebase
-    implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
-    implementation 'com.google.firebase:firebase-analytics:17.5.0'
-    implementation 'com.google.firebase:firebase-core:17.5.0'
+    implementation 'com.google.firebase:firebase-crashlytics:18.0.0'
+    implementation 'com.google.firebase:firebase-analytics:19.0.0'
+    implementation 'com.google.firebase:firebase-core:19.0.0'
     //google api
-    implementation 'com.google.android.gms:play-services-base:17.4.0'
-    implementation 'com.google.android.gms:play-services-basement:17.4.0'
-    implementation 'com.google.android.gms:play-services-tasks:17.2.0'
-    implementation 'com.google.android.gms:play-services-location:17.1.0'
+    implementation 'com.google.android.gms:play-services-base:17.6.0'
+    implementation 'com.google.android.gms:play-services-basement:17.6.0'
+    implementation 'com.google.android.gms:play-services-tasks:17.2.1'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
     implementation 'com.google.android.gms:play-services-analytics:17.0.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
-    implementation 'com.google.android.gms:play-services-auth:18.1.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
     //greenDao
     implementation 'org.roboguice:roboguice:2.0'
     implementation 'org.greenrobot:greendao:3.3.0'
@@ -100,6 +107,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.snmp4j/snmp4j-agent
     implementation group: 'org.snmp4j', name: 'snmp4j-agent', version: '3.3.4'
     implementation files('libs/VirusTotalAPI.jar')
+    implementation 'com.google.firebase:firebase-analytics:19.0.0'
 
     // https://mvnrepository.com/artifact/com.hierynomus/smbj
     testImplementation group: 'com.hierynomus', name: 'smbj', version: '0.10.0'
@@ -111,7 +119,7 @@ dependencies {
     implementation 'com.jaredrummler:android-device-names:2.0.0'
 
     //materialDesign
-    implementation 'com.google.android.material:material:1.3.0-alpha03'
+    implementation 'com.google.android.material:material:1.4.0-beta01'
 
     //leakcanary
     //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
@@ -123,8 +131,10 @@ dependencies {
     // Optional -- Mockito framework
     testImplementation "org.mockito:mockito-core:3.4.4"
     implementation 'com.android.support:support-annotations:28.0.0'
-    androidTestImplementation 'androidx.test:rules:1.3.0'
-    androidTestImplementation 'androidx.test:runner:1.3.0'
+
+    androidTestImplementation 'androidx.test:rules:1.4.0-beta01'
+    androidTestImplementation 'androidx.test:runner:1.4.0-beta01'
+
     // Optional -- UI testing with Espresso
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     //PowerMock
