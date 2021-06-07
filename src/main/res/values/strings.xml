@@ -300,7 +300,9 @@
     <string name="multistage_summary">Enable Multistage Attack Detection Service</string>
     <string name="multistage_service">Multistage Service</string>
     <string name="iptables_not_supported" translatable="false">Iptables rules are not supported for your device!</string>
-
+    <string name="nfc_not_available">NFC is not available on this device</string>
+    <string name="nfc_enable_beam">Enable Android Beam before synchronizing.</string>
+    <string name="nfc_hold_phones_together">Hold phones together to send or receive data.</string>
 
 
 <!-- TODO: Remove or change this placeholder text -->

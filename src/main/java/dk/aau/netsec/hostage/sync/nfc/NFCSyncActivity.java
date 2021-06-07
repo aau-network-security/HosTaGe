@@ -94,11 +94,11 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 		// Check for available NFC Adapter
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 		if (mNfcAdapter == null) {
-			mInfoText.setText("NFC is not available on this device.");
+			mInfoText.setText(R.string.nfc_not_available);
 		} else if(!mNfcAdapter.isEnabled()){
-			mInfoText.setText("Enable Android Beam before synchronizing.");
+			mInfoText.setText(R.string.nfc_enable_beam);
 		} else {
-			mInfoText.setText("Hold phones together to send or receive data.");
+			mInfoText.setText(R.string.nfc_hold_phones_together);
 			// Register callback to set NDEF message
 			mNfcAdapter.setNdefPushMessageCallback(this, this);
 			// Register callback to listen for message-sent success
