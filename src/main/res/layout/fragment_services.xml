@@ -110,6 +110,9 @@
               android:id="@+id/services_list_view"
               android:layout_marginLeft="15dp"
               android:layout_marginRight="15dp"
+              android:fadeScrollbars="true"
+              android:fastScrollEnabled="true"
+              android:scrollbarThumbVertical="@color/holo_yellow"
             >
 
 
