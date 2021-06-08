@@ -35,6 +35,7 @@ public class ProfileManagerRecyclerAdapter extends RecyclerView.Adapter<Recycler
 
         View v;
         v = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_manager_list_item, parent, false);
+
         return new MyViewHolder(v);
     }
 
@@ -86,6 +87,12 @@ public class ProfileManagerRecyclerAdapter extends RecyclerView.Adapter<Recycler
         list.add(profile);
     }
 
+
+    public void addProfile(Profile profile, int position) {
+        list.add(position, profile);
+        notifyItemInserted(position);
+    }
+
     public void editProfile(Context mContext, Profile profile) {
         Intent intent = new Intent(mContext, ProfileEditActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -93,13 +100,17 @@ public class ProfileManagerRecyclerAdapter extends RecyclerView.Adapter<Recycler
 
         mContext.startActivity(intent);
 
-        System.out.println("Hello there");
-
     }
 
     public void removeProfile(Profile profile) {
-//        TODO implement stuffs here
+        list.remove(profile);
         return;
+    }
+
+    public Profile removeProfile(int position) {
+        Profile temprof =  list.remove(position);
+        notifyItemRemoved(position);
+        return temprof;
     }
 
     public Profile getItem(int position) {
@@ -122,7 +133,11 @@ public class ProfileManagerRecyclerAdapter extends RecyclerView.Adapter<Recycler
             itemActivated = itemView.findViewById(R.id.profile_manager_item_activated);
             container = itemView.findViewById(R.id.swipelist_frontview_filip);
             mBadgesContainer = itemView.findViewById(R.id.badges_container);
+
+            this.setIsRecyclable(false);
         }
+
+
     }
 
 

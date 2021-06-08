@@ -1,94 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-	<FrameLayout
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			  android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_alignParentLeft="true"
-              android:layout_marginLeft="0dp"
-              android:layout_alignParentTop="true"
-              android:layout_marginTop="0dp"
-			>
 
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	                android:id="@+id/swipelist_frontview_filip"
-	                android:layout_width="match_parent"
-	                android:layout_height="match_parent"
-	                android:padding="5dp"
-	                android:baselineAligned="false"
-	                android:background="@drawable/panel_bg_selector">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipelist_frontview_filip"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/panel_bg_selector"
+    android:baselineAligned="false"
+    android:padding="5dp">
 
-	    <TextView
-	        android:id="@+id/profile_manager_item_label"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:textAppearance="?android:attr/textAppearanceListItemSmall"
-	        android:gravity="center_vertical"
-	        android:paddingLeft="16dp"
-	        android:paddingRight="16dp"
-	        android:textColor="?android:attr/colorForeground"
-	        android:minHeight="?android:attr/listPreferredItemHeightSmall"
-	        android:layout_alignParentTop="true"
-	        android:layout_toRightOf="@+id/profile_manager_item_image" />
+    <TextView
+        android:id="@+id/profile_manager_item_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/profile_manager_item_image"
+        android:gravity="center_vertical"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textColor="?android:attr/colorForeground" />
 
-	    <TextView
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:id="@+id/profile_manager_item_text"
-	        android:paddingLeft="16dp"
-	        android:paddingRight="16dp"
-	        android:paddingBottom="16dp"
-	        android:textColor="#808080"
-	        android:visibility="visible"
-	        android:singleLine="false"
-	        android:layout_alignParentLeft="true"
-	        android:layout_alignParentStart="true"
-	        android:layout_below="@+id/profile_manager_item_label"
-	        android:paddingTop="10dp"
-	        android:layout_toLeftOf="@+id/profile_manager_item_activated"/>
+    <TextView
+        android:id="@+id/profile_manager_item_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/profile_manager_item_label"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/profile_manager_item_activated"
+        android:paddingLeft="16dp"
+        android:paddingTop="10dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"
+        android:singleLine="false"
+        android:textColor="#808080"
+        android:visibility="visible" />
 
-	    <ImageView
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:id="@+id/profile_manager_item_activated"
-	        android:src="@drawable/ic_action_accept"
-	        android:layout_alignParentRight="true"
-	        android:layout_alignParentEnd="false"
-	        android:layout_marginRight="20dp"
-	        android:visibility="visible"
-	        android:layout_marginLeft="20dp"
-	        android:baselineAlignBottom="false" android:layout_above="@+id/badges_container" android:layout_alignTop="@+id/profile_manager_item_label"/>
+    <ImageView
+        android:id="@+id/profile_manager_item_activated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/badges_container"
+        android:layout_alignTop="@+id/profile_manager_item_label"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:baselineAlignBottom="false"
+        android:src="@drawable/ic_action_accept"
+        android:visibility="visible" />
 
-		<ImageView
-	        android:layout_width="48dp"
-	        android:layout_height="48dp"
-	        android:id="@+id/profile_manager_item_image"
-	        android:src="@drawable/ic_launcher"
-	        android:layout_above="@+id/profile_manager_item_text"
-	        android:layout_alignParentLeft="true"
-	        android:layout_alignParentStart="true" android:scaleType="centerInside"/>
+    <ImageView
+        android:id="@+id/profile_manager_item_image"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_above="@+id/profile_manager_item_text"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_launcher" />
 
-		<dk.aau.netsec.hostage.ui.layouts.FlowLayout
-				xmlns:f="http://schemas.android.com/apk/res/dk.aau.netsec.hostage"
-				android:orientation="horizontal"
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent"
-				android:layout_below="@+id/profile_manager_item_text"
-				android:padding="10dp"
-				f:horizontalSpacing="10dip"
-				f:verticalSpacing="10dip"
-				android:layout_alignParentRight="true"
-				android:layout_alignParentEnd="false"
-				android:id="@+id/badges_container">
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceSmall"
-					style="@style/ProfileManagerListBadge"
-					android:id="@+id/record_details_text_ssid" android:layout_gravity="center_vertical" android:layout_marginLeft="10dp"/>
-		</dk.aau.netsec.hostage.ui.layouts.FlowLayout>
+    <dk.aau.netsec.hostage.ui.layouts.FlowLayout xmlns:f="http://schemas.android.com/apk/res/dk.aau.netsec.hostage"
+        android:id="@+id/badges_container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/profile_manager_item_text"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        f:horizontalSpacing="10dip"
+        f:verticalSpacing="10dip">
 
-	</RelativeLayout>
+        <TextView
+            android:id="@+id/record_details_text_ssid"
+            style="@style/ProfileManagerListBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </dk.aau.netsec.hostage.ui.layouts.FlowLayout>
 
-
-	</FrameLayout>
+</RelativeLayout>

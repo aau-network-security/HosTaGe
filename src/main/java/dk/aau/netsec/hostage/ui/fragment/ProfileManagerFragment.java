@@ -1,10 +1,12 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,10 +60,13 @@ public class ProfileManagerFragment extends TrackerFragment {
     RecyclerView recyclerView;
 
     private View rootView;
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private Bundle savedInstanceState;
+    //    private LayoutInflater inflater;
+//    private ViewGroup container;
+//    private Bundle savedInstanceState;
+    int posSwiped;
     ProfileManagerRecyclerAdapter myAdapter;
+
+    boolean skipBS = false;
 
     /**
      * {@inheritDoc}
@@ -70,15 +75,20 @@ public class ProfileManagerFragment extends TrackerFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
+        Log.d("filipko", "This part?");
         super.onCreateView(inflater, container, savedInstanceState);
+
+
         getActivity().setTitle(getResources().getString(R.string.drawer_profile_manager));
 
         // show action bar menu items
         setHasOptionsMenu(true);
 
-        this.inflater = inflater;
-        this.container = container;
-        this.savedInstanceState = savedInstanceState;
+//            this.inflater = inflater;
+//            this.container = container;
+//            this.savedInstanceState = savedInstanceState;
+
 
         // inflate the view
         rootView = inflater.inflate(R.layout.fragment_profile_manager, container, false);
@@ -120,127 +130,14 @@ public class ProfileManagerFragment extends TrackerFragment {
         SwipeToEditCallback swipeHandler = new SwipeToEditCallback(container.getContext()) {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
                 int itemPosition = viewHolder.getAdapterPosition();
-                myAdapter.notifyItemChanged(itemPosition);
-
                 myAdapter.editProfile(container.getContext(), myAdapter.getItem(itemPosition));
-
-
-//                myAdapter.noti
+                posSwiped = itemPosition;
             }
         };
 
         ItemTouchHelper helper = new ItemTouchHelper(swipeHandler);
         helper.attachToRecyclerView(recyclerView);
-
-//        val swipeHandler = object : SwipeToDeleteCallback(this) {
-//            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//                val adapter = recyclerView.adapter as SimpleAdapter
-//                adapter.removeAt(viewHolder.adapterPosition)
-//            }
-//        }
-//        val itemTouchHelper = ItemTouchHelper(swipeHandler)
-//        itemTouchHelper.attachToRecyclerView(recyclerView)
-
-
-//        ItemTouchHelper.SimpleCallback touchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-//            private final ColorDrawable background = new ColorDrawable(getResources().getColor(R.color.green));
-//
-//
-//            @Override
-//            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-//                return false;
-//            }
-//
-//            @Override
-//            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
-//
-//                container.post(new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-//                        ;
-////                        myAdapter.showMenu(viewHolder.getAdapterPosition());
-//                    }
-//                });
-//
-//            }
-//
-//            @Override
-//            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-//                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-//
-//                View itemView = viewHolder.itemView;
-//
-//                if (dX > 0) {
-//                    background.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + ((int) dX), itemView.getBottom());
-//                } else if (dX < 0) {
-//                    background.setBounds(itemView.getRight() + ((int) dX), itemView.getTop(), itemView.getRight(), itemView.getBottom());
-//                } else {
-//                    background.setBounds(0, 0, 0, 0);
-//                }
-//
-//                background.draw(c);
-//            }
-//        };
-//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(touchHelperCallback);
-//        itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        recyclerView.setOnScrollChangeListener(
-
-                new View.OnScrollChangeListener() {
-                    @Override
-                    public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                        v.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                ;
-//                                myAdapter.closeMenu();
-                            }
-                        });
-
-                    }
-                });
-
-//		mAdapter = new ProfileManagerListAdapter(getActivity(), strList, list);
-//		pmanager.setProfileListAdapter(mAdapter);
-//
-//        list.setAdapter(mAdapter);
-//
-//		// add open and close actions to the items of the list view
-//		ProfileManager finalPmanager = pmanager;
-//		List<Profile> finalStrList = strList;
-//		list.setSwipeListViewListener(new BaseSwipeListViewListener() {
-//			@Override
-//			public void onOpened(int position, boolean toRight){
-//				Profile profile = mAdapter.getItem(position);
-//				assert profile != null;
-//				if(profile.mShowTooltip){
-//					mAdapter.remove(profile);
-//					finalStrList.remove(profile);
-//					list.dismiss(position);
-//
-//					mSharedPreferences.edit().putBoolean("dismissedProfileSwipeHelp", true).apply();
-//				}
-//			}
-//
-//			@Override
-//			public void onClickFrontView(int position) {
-//				// active the pressed profile
-//				Profile profile = mAdapter.getItem(position);
-//				assert profile != null;
-//				if(profile.mShowTooltip) return;
-//
-//				try {
-//					finalPmanager.activateProfile(profile);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//
-//				mAdapter.notifyDataSetChanged();
-//			}
-//		});
 
         return rootView;
     }
@@ -251,9 +148,8 @@ public class ProfileManagerFragment extends TrackerFragment {
     @Override
     public void onResume() {
         super.onResume();
-        onCreateView(inflater, container, savedInstanceState);
-//		list.closeOpenedItems();
-//		mAdapter.notifyDataSetChanged();
+
+        myAdapter.notifyItemChanged(posSwiped);
     }
 
     /**
@@ -270,6 +166,7 @@ public class ProfileManagerFragment extends TrackerFragment {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         if (item.getItemId() == R.id.profile_manager_action_add) {
             Intent intent = new Intent(getActivity(), ProfileEditActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -283,28 +180,34 @@ public class ProfileManagerFragment extends TrackerFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (rootView != null) {
-            unbindDrawables(rootView);
-            rootView = null;
-        }
+//        if (rootView != null) {
+//            unbindDrawables(rootView);
+//            rootView = null;
+//        }
     }
 
     @Override
     public void onPause() {
+
+        getView().invalidate();
+        getView().postInvalidate();
+//        if (rootView != null) {
+//            unbindDrawables(rootView);
+//            rootView = null;
+//        }
+
         super.onPause();
-        if (rootView != null) {
-            unbindDrawables(rootView);
-            rootView = null;
-        }
+
     }
+
 
     @Override
     public void onStop() {
         super.onStop();
-        if (rootView != null) {
-            unbindDrawables(rootView);
-            rootView = null;
-        }
+//        if (rootView != null) {
+//            unbindDrawables(rootView);
+//            rootView = null;
+//        }
     }
 
     private void unbindDrawables(View view) {
@@ -317,17 +220,15 @@ public class ProfileManagerFragment extends TrackerFragment {
             }
             ((ViewGroup) view).removeAllViews();
         }
+//        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+//            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+//                unbindDrawables(((ViewGroup) view).getChildAt(i));
+//            }
+//            ((ViewGroup) view).removeAllViews();
+//        }
     }
 
-//	@Override
-//	public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-////		recyclerView.post(new Runnable() {
-////			@Override
-////			public void run() {
-////				myAdapter.closeMenu();
-////			}
-////		});
-////	}
+
 
 
 }

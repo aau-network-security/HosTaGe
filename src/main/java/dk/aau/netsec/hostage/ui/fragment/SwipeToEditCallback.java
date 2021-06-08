@@ -88,6 +88,7 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
         deleteIcon.draw(c);
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+//        clearCanvas(c, itemView.getRight() + dX, itemView.getTop(),itemView.getRight(), itemView.getBottom());
     }
 
     private void clearCanvas(Canvas c, float left, float top, float right, float bottom){
