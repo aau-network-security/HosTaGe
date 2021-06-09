@@ -1,21 +1,14 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-
-//import com.fortysevendeg.android.swipelistview.BaseSwipeListViewListener;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -31,8 +24,8 @@ import dk.aau.netsec.hostage.model.Profile;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.activity.ProfileEditActivity;
-//import dk.aau.netsec.hostage.ui.adapter.ProfileManagerListAdapter;
 import dk.aau.netsec.hostage.ui.adapter.ProfileManagerRecyclerAdapter;
+import dk.aau.netsec.hostage.ui.helper.SwipeToEditCallback;
 
 /**
  * Displays a list of all available profiles and allows invocation of the edit activity for an profile
@@ -40,33 +33,20 @@ import dk.aau.netsec.hostage.ui.adapter.ProfileManagerRecyclerAdapter;
  * @author Alexander Brakowski
  * @created 14.01.14 15:05
  */
-public class ProfileManagerFragment extends TrackerFragment {
-    /**
-     * The adapter for the profile list
-     */
-    private ProfileManagerRecyclerAdapter mAdapter;
-    /**
-     * Holds the shared preferences for the app
-     */
-    private SharedPreferences mSharedPreferences;
+public class ProfileManagerFragment extends TrackerFragment implements ProfileManagerRecyclerAdapter.OnProfileClickedListener {
 
     public ProfileManagerFragment() {
     }
 
 
     /**
-     * Holds the listview for the profile list
+     * Holds the recyclerView for the profile list
      */
     RecyclerView recyclerView;
 
-    private View rootView;
-    //    private LayoutInflater inflater;
-//    private ViewGroup container;
-//    private Bundle savedInstanceState;
     int posSwiped;
     ProfileManagerRecyclerAdapter myAdapter;
-
-    boolean skipBS = false;
+    ProfileManager filipsPManager;
 
     /**
      * {@inheritDoc}
@@ -75,23 +55,15 @@ public class ProfileManagerFragment extends TrackerFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-        Log.d("filipko", "This part?");
         super.onCreateView(inflater, container, savedInstanceState);
-
 
         getActivity().setTitle(getResources().getString(R.string.drawer_profile_manager));
 
         // show action bar menu items
         setHasOptionsMenu(true);
 
-//            this.inflater = inflater;
-//            this.container = container;
-//            this.savedInstanceState = savedInstanceState;
-
-
         // inflate the view
-        rootView = inflater.inflate(R.layout.fragment_profile_manager, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_profile_manager, container, false);
         recyclerView = rootView.findViewById(R.id.filips_recycler_view);
 
         ProfileManager pmanager = null;
@@ -99,20 +71,26 @@ public class ProfileManagerFragment extends TrackerFragment {
             pmanager = ProfileManager.getInstance();
             pmanager.loadData();
 
+            this.filipsPManager = pmanager;
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
-        mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
+        /**
+         * Holds the shared preferences for the app
+         */
+        SharedPreferences mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
 
         List<Profile> strList = null;
         try {
+            assert pmanager != null;
             strList = new LinkedList<>(pmanager.getProfilesList());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+//        TODO re-add hint (was disabled during RecyclerView implementation
 //		// show an help item in the listview to indicate, that the items in the list are swipeable
 //		assert strList != null;
 //		if(!strList.isEmpty() && !mSharedPreferences.getBoolean("dismissedProfileSwipeHelp", false)){
@@ -123,9 +101,11 @@ public class ProfileManagerFragment extends TrackerFragment {
 //	    }
 
 
-        myAdapter = new ProfileManagerRecyclerAdapter(container.getContext(), strList);
+        myAdapter = new ProfileManagerRecyclerAdapter(container.getContext(), strList, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
         recyclerView.setAdapter(myAdapter);
+
+//        TODO comments around here
 
         SwipeToEditCallback swipeHandler = new SwipeToEditCallback(container.getContext()) {
             @Override
@@ -149,7 +129,8 @@ public class ProfileManagerFragment extends TrackerFragment {
     public void onResume() {
         super.onResume();
 
-        myAdapter.notifyItemChanged(posSwiped);
+//        myAdapter.notifyItemChanged(posSwiped);
+        myAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -166,7 +147,6 @@ public class ProfileManagerFragment extends TrackerFragment {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         if (item.getItemId() == R.id.profile_manager_action_add) {
             Intent intent = new Intent(getActivity(), ProfileEditActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -177,58 +157,15 @@ public class ProfileManagerFragment extends TrackerFragment {
         return false;
     }
 
+    //    TODO docs and comments
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-//        if (rootView != null) {
-//            unbindDrawables(rootView);
-//            rootView = null;
-//        }
-    }
-
-    @Override
-    public void onPause() {
-
-        getView().invalidate();
-        getView().postInvalidate();
-//        if (rootView != null) {
-//            unbindDrawables(rootView);
-//            rootView = null;
-//        }
-
-        super.onPause();
-
-    }
-
-
-    @Override
-    public void onStop() {
-        super.onStop();
-//        if (rootView != null) {
-//            unbindDrawables(rootView);
-//            rootView = null;
-//        }
-    }
-
-    private void unbindDrawables(View view) {
-        if (view.getBackground() != null) {
-            view.getBackground().setCallback(null);
+    public void onClicked(int position) {
+        try {
+            filipsPManager.activateProfile(myAdapter.getItem(position));
+            myAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                unbindDrawables(((ViewGroup) view).getChildAt(i));
-            }
-            ((ViewGroup) view).removeAllViews();
-        }
-//        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
-//            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-//                unbindDrawables(((ViewGroup) view).getChildAt(i));
-//            }
-//            ((ViewGroup) view).removeAllViews();
-//        }
     }
-
-
-
 
 }

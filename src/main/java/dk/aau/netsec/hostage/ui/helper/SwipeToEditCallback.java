@@ -1,4 +1,4 @@
-package dk.aau.netsec.hostage.ui.fragment;
+package dk.aau.netsec.hostage.ui.helper;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -14,22 +14,19 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import dk.aau.netsec.hostage.R;
-import dk.aau.netsec.hostage.ui.adapter.ProfileManagerRecyclerAdapter;
 
 public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback {
 
-    Context mContext;
-    private Drawable deleteIcon ;
-    private int intrinsicWidth;
-    private int intrinsicHeight ;
-    private ColorDrawable background ;
-    private int backgroundColor;
-    private Paint clearPaint;
+    private final Drawable deleteIcon;
+    private final int intrinsicWidth;
+    private final int intrinsicHeight;
+    private final ColorDrawable background;
+    private final int backgroundColor;
+    private final Paint clearPaint;
 
-
-    public SwipeToEditCallback(Context context){
+    // TODO docs
+    public SwipeToEditCallback(Context context) {
         super(0, ItemTouchHelper.LEFT);
-        mContext = context;
 
         deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_edit);
         intrinsicWidth = deleteIcon.getIntrinsicWidth();
@@ -38,12 +35,13 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
         backgroundColor = Color.parseColor("#009900");
         clearPaint = new Paint();
 
+    }
 
-
-}
-
+    //    TODO docs
     @Override
-    public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull  RecyclerView.ViewHolder viewHolder) {
+    public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+
+//TODO once swipe hint is implemented, this should be enabled or removed
         /**
          * To disable "swipe" for specific item return 0 here.
          * For example:
@@ -55,11 +53,13 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
         return super.getMovementFlags(recyclerView, viewHolder);
     }
 
+    //    TODO docs
     @Override
-    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull  RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
         return false;
     }
 
+    //    TODO docs and comments
     @Override
     public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
 
@@ -67,15 +67,14 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
         int itemHeight = itemView.getBottom() - itemView.getTop();
         boolean isCanceled = dX == 0f && !isCurrentlyActive;
 
-        if (isCanceled){
-            clearCanvas(c, itemView.getRight() + dX, itemView.getTop(),itemView.getRight(), itemView.getBottom());
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        if (isCanceled) {
+            clearCanvas(c, itemView.getRight() + dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, false);
             return;
         }
 
-
         background.setColor(backgroundColor);
-        background.setBounds(itemView.getRight() + (int)dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+        background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
         background.draw(c);
 
         int deleteIconTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
@@ -88,10 +87,10 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
         deleteIcon.draw(c);
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-//        clearCanvas(c, itemView.getRight() + dX, itemView.getTop(),itemView.getRight(), itemView.getBottom());
     }
 
-    private void clearCanvas(Canvas c, float left, float top, float right, float bottom){
+    //    TODO docs
+    private void clearCanvas(Canvas c, float left, float top, float right, float bottom) {
         c.drawRect(left, top, right, bottom, clearPaint);
     }
 

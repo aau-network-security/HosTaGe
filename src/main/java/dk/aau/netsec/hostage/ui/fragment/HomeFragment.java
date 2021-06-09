@@ -47,6 +47,7 @@ import static dk.aau.netsec.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer
  */
 
 public class HomeFragment extends Fragment {
+//	TODO IDE is complaining to "Use SwitchCompat from AppCompat or SwitchMaterial from Material library"
 	private Switch mHomeSwitchConnection;
 	private TextView mHomeTextName;
 	private TextView mHomeTextSecurity;
