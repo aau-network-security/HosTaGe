@@ -74,14 +74,15 @@
         f:horizontalSpacing="10dip"
         f:verticalSpacing="10dip">
 
-        <TextView
-            android:id="@+id/record_details_text_ssid"
-            style="@style/ProfileManagerListBadge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+<!--        Tentatively removing this TODO test to see if if's necessary-->
+<!--        <TextView-->
+<!--            android:id="@+id/record_details_text_ssid"-->
+<!--            style="@style/ProfileManagerListBadge"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center_vertical"-->
+<!--            android:layout_marginLeft="10dp"-->
+<!--            android:textAppearance="?android:attr/textAppearanceSmall" />-->
     </dk.aau.netsec.hostage.ui.layouts.FlowLayout>
 
 </RelativeLayout>
