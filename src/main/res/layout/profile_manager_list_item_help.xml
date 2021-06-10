@@ -4,7 +4,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:id="@+id/swipelist_frontview_filip"
+              android:id="@+id/list_item_container"
               android:background="@drawable/panel_help_bg"
               android:padding="10dp">
 

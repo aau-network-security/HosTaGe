@@ -24,29 +24,23 @@ import dk.aau.netsec.hostage.model.Profile;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.activity.ProfileEditActivity;
-import dk.aau.netsec.hostage.ui.adapter.ProfileManagerRecyclerAdapter;
+import dk.aau.netsec.hostage.ui.adapter.ProfileRecyclerAdapter;
 import dk.aau.netsec.hostage.ui.helper.SwipeToEditCallback;
 
 /**
- * Displays a list of all available profiles and allows invocation of the edit activity for an profile
+ * Displays a list of all available profiles and allows invocation of the edit activity for a profile
  *
  * @author Alexander Brakowski
  * @created 14.01.14 15:05
  */
-public class ProfileManagerFragment extends TrackerFragment implements ProfileManagerRecyclerAdapter.OnProfileClickedListener {
+public class ProfileManagerFragment extends TrackerFragment implements ProfileRecyclerAdapter.OnProfileClickedListener {
 
     public ProfileManagerFragment() {
     }
 
-
-    /**
-     * Holds the recyclerView for the profile list
-     */
     RecyclerView recyclerView;
-
-    int posSwiped;
-    ProfileManagerRecyclerAdapter myAdapter;
-    ProfileManager filipsPManager;
+    ProfileRecyclerAdapter profileRecyclerAdapter;
+    ProfileManager profileManager;
 
     /**
      * {@inheritDoc}
@@ -64,14 +58,14 @@ public class ProfileManagerFragment extends TrackerFragment implements ProfileMa
 
         // inflate the view
         View rootView = inflater.inflate(R.layout.fragment_profile_manager, container, false);
-        recyclerView = rootView.findViewById(R.id.filips_recycler_view);
+        recyclerView = rootView.findViewById(R.id.profile_manager_recycler_view);
 
-        ProfileManager pmanager = null;
+        // Get ProfileManager instance
+        profileManager = null;
         try {
-            pmanager = ProfileManager.getInstance();
-            pmanager.loadData();
+            profileManager = ProfileManager.getInstance();
+            profileManager.loadData();
 
-            this.filipsPManager = pmanager;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,10 +76,13 @@ public class ProfileManagerFragment extends TrackerFragment implements ProfileMa
          */
         SharedPreferences mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
 
+        /**
+         * Get list of profiles to be displayed in the recyclerview
+         */
         List<Profile> strList = null;
         try {
-            assert pmanager != null;
-            strList = new LinkedList<>(pmanager.getProfilesList());
+            assert profileManager != null;
+            strList = new LinkedList<>(profileManager.getProfilesList());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,22 +97,27 @@ public class ProfileManagerFragment extends TrackerFragment implements ProfileMa
 //			strList.add(1, tProfile);
 //	    }
 
+        //Get a ProfileRecyclerAdapter and assign it to ProfileManager
+        profileRecyclerAdapter = new ProfileRecyclerAdapter(strList, this);
+        profileManager.setProfileListAdapter(profileRecyclerAdapter);
 
-        myAdapter = new ProfileManagerRecyclerAdapter(container.getContext(), strList, this);
+        //Initialize RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
-        recyclerView.setAdapter(myAdapter);
+        recyclerView.setAdapter(profileRecyclerAdapter);
 
-//        TODO comments around here
-
+        /**
+         * Implement Swipe-to-edit functionality (swipe left to launch a ProfileEditFragment)
+         */
         SwipeToEditCallback swipeHandler = new SwipeToEditCallback(container.getContext()) {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int itemPosition = viewHolder.getAdapterPosition();
-                myAdapter.editProfile(container.getContext(), myAdapter.getItem(itemPosition));
-                posSwiped = itemPosition;
+                profileRecyclerAdapter.editProfile(container.getContext(),
+                        profileRecyclerAdapter.getItem(itemPosition));
             }
         };
 
+        // Create and attach Swipe-to-edit handler to recyclerview
         ItemTouchHelper helper = new ItemTouchHelper(swipeHandler);
         helper.attachToRecyclerView(recyclerView);
 
@@ -129,8 +131,8 @@ public class ProfileManagerFragment extends TrackerFragment implements ProfileMa
     public void onResume() {
         super.onResume();
 
-//        myAdapter.notifyItemChanged(posSwiped);
-        myAdapter.notifyDataSetChanged();
+        //Refresh recyclerAdapter to remove graphics possibly left after a swipe.
+        profileRecyclerAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -157,12 +159,18 @@ public class ProfileManagerFragment extends TrackerFragment implements ProfileMa
         return false;
     }
 
-    //    TODO docs and comments
+    /***
+     * Activate profile if it has been clicked.
+     *
+     * @param position position of the clicked Profile within profileRecyclerAdapter
+     */
     @Override
     public void onClicked(int position) {
         try {
-            filipsPManager.activateProfile(myAdapter.getItem(position));
-            myAdapter.notifyDataSetChanged();
+            profileManager.activateProfile(profileRecyclerAdapter.getItem(position));
+
+            //Refresh view to display checkmark next to profile
+            profileRecyclerAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
         }

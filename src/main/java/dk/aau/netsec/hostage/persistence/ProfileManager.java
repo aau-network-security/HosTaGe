@@ -49,11 +49,10 @@ public class  ProfileManager {
 	 */
 	private static ProfileManager INSTANCE = null;
 
-	/**
-	 * An list adapter, which the profile manager informs about data changes
-	 */
-	private ProfileManagerRecyclerAdapter mProfileListAdapter = null;
-//	private ProfileManagerListAdapter mProfileListAdapter = null;
+    /**
+     * An recycler adapter, which the profile manager informs about data changes
+     */
+    private ProfileRecyclerAdapter mProfileRecyclerAdapter = null;
 
 	/**
 	 * Holds a reference to the currently active profile
@@ -317,10 +316,9 @@ public class  ProfileManager {
 
 		this.persistData();
 
-		if(this.mProfileListAdapter != null){
-//			this.mProfileListAdapter.notifyDataSetChanged();
-			;
-		}
+        if (this.mProfileRecyclerAdapter != null) {
+            this.mProfileRecyclerAdapter.notifyDataSetChanged();
+        }
 
 		return profile.mId;
 	}
@@ -372,12 +370,10 @@ public class  ProfileManager {
 			persistData();
 		}
 
-		if(this.mProfileListAdapter != null){
-//			this.mProfileListAdapter.
-			this.mProfileListAdapter.addProfile(profile);
-//			this.mProfileListAdapter.notifyDataSetChanged();
-		}
-	}
+        if (this.mProfileRecyclerAdapter != null) {
+            this.mProfileRecyclerAdapter.addProfile(profile);
+        }
+    }
 
 	/**
 	 * Deletes a given profile. These changes will be persisted immediatly.
@@ -397,12 +393,12 @@ public class  ProfileManager {
 			this.persistData();
 			//this.dbh.deleteProfile(profile.mId);
 
-			if(this.mProfileListAdapter != null){
-				this.mProfileListAdapter.removeProfile(profile);
-//				this.mProfileListAdapter.notifyDataSetChanged();
-			}
-		}
-	}
+            if (this.mProfileRecyclerAdapter != null) {
+                this.mProfileRecyclerAdapter.removeProfile(profile);
+                this.mProfileRecyclerAdapter.notifyDataSetChanged();
+            }
+        }
+    }
 
 	/**
 	 * Removes all profiles.
@@ -492,23 +488,24 @@ public class  ProfileManager {
 		return mCurrentActivatedProfile;
 	}
 
-	/**
-	 * Sets the list adapter that should also be managed by the profile manager
-	 *
-	 * @param profileListAdapter the list adapter to manage
-	 */
-	public void setProfileListAdapter(ProfileManagerRecyclerAdapter profileListAdapter){
-		this.mProfileListAdapter = profileListAdapter;
-	}
+    /**
+     * Sets the list adapter that should also be managed by the profile manager
+     *
+     * @param profileRecyclerAdapter the list adapter to manage
+     */
+    public void setProfileListAdapter(ProfileRecyclerAdapter profileRecyclerAdapter) {
+        this.mProfileRecyclerAdapter = profileRecyclerAdapter;
+    }
 
 
-	/**
-	 * Retrieves the list adapter, that is being managed by the profile manager
-	 * @return the list adapter
-	 */
-	public ProfileManagerRecyclerAdapter getProfileListAdapter(){
-		return this.mProfileListAdapter;
-	}
+    /**
+     * Retrieves the list adapter, that is being managed by the profile manager
+     *
+     * @return the list adapter
+     */
+    public ProfileRecyclerAdapter getProfileRecyclerAdapter() {
+        return this.mProfileRecyclerAdapter;
+    }
 
 	/**
 	 * Retrieves the number of profiles

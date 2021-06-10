@@ -15,6 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import dk.aau.netsec.hostage.R;
 
+/**
+ * Animate on left swipe of item in ProfileManagerFragment (swipe-to-edit). Display
+ * coloured background and pen icon.
+ *
+ * @author Filip Adamik
+ * Created on 09-06-2021
+ */
 public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback {
 
     private final Drawable deleteIcon;
@@ -24,7 +31,6 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
     private final int backgroundColor;
     private final Paint clearPaint;
 
-    // TODO docs
     public SwipeToEditCallback(Context context) {
         super(0, ItemTouchHelper.LEFT);
 
@@ -34,14 +40,16 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
         background = new ColorDrawable();
         backgroundColor = Color.parseColor("#009900");
         clearPaint = new Paint();
-
     }
 
-    //    TODO docs
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Disable swiping on certain rows (for example a hint row or non-editable profile).
+     */
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-
-//TODO once swipe hint is implemented, this should be enabled or removed
+        //TODO once swipe hint is implemented, this should be enabled or removed
         /**
          * To disable "swipe" for specific item return 0 here.
          * For example:
@@ -53,13 +61,22 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
         return super.getMovementFlags(recyclerView, viewHolder);
     }
 
-    //    TODO docs
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Disable dragging items up and down
+     */
     @Override
     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
         return false;
     }
 
-    //    TODO docs and comments
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Draw green background and pen icon on swipe.
+     */
     @Override
     public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
 
@@ -67,6 +84,7 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
         int itemHeight = itemView.getBottom() - itemView.getTop();
         boolean isCanceled = dX == 0f && !isCurrentlyActive;
 
+        // If user abandoned swipe, return to previous state
         if (isCanceled) {
             clearCanvas(c, itemView.getRight() + dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, false);
@@ -89,7 +107,9 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
-    //    TODO docs
+    /**
+     * Clear canvas and restore item view to its previous state (before the swipe)
+     */
     private void clearCanvas(Canvas c, float left, float top, float right, float bottom) {
         c.drawRect(left, top, right, bottom, clearPaint);
     }

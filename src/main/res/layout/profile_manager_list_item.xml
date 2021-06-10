@@ -2,7 +2,7 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/swipelist_frontview_filip"
+    android:id="@+id/list_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/panel_bg_selector"
@@ -10,11 +10,11 @@
     android:padding="5dp">
 
     <TextView
-        android:id="@+id/profile_manager_item_label"
+        android:id="@+id/profile_row_item_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/profile_manager_item_image"
+        android:layout_toRightOf="@+id/profile_row_item_image"
         android:gravity="center_vertical"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:paddingLeft="16dp"
@@ -23,13 +23,13 @@
         android:textColor="?android:attr/colorForeground" />
 
     <TextView
-        android:id="@+id/profile_manager_item_text"
+        android:id="@+id/profile_row_item_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/profile_manager_item_label"
+        android:layout_below="@+id/profile_row_item_label"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/profile_manager_item_activated"
+        android:layout_toLeftOf="@+id/profile_row_item_activated"
         android:paddingLeft="16dp"
         android:paddingTop="10dp"
         android:paddingRight="16dp"
@@ -39,11 +39,11 @@
         android:visibility="visible" />
 
     <ImageView
-        android:id="@+id/profile_manager_item_activated"
+        android:id="@+id/profile_row_item_activated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/badges_container"
-        android:layout_alignTop="@+id/profile_manager_item_label"
+        android:layout_above="@+id/profile_row_badges_container"
+        android:layout_alignTop="@+id/profile_row_item_label"
         android:layout_alignParentEnd="false"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="20dp"
@@ -53,20 +53,20 @@
         android:visibility="visible" />
 
     <ImageView
-        android:id="@+id/profile_manager_item_image"
+        android:id="@+id/profile_row_item_image"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_above="@+id/profile_manager_item_text"
+        android:layout_above="@+id/profile_row_item_text"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:scaleType="centerInside"
         android:src="@drawable/ic_launcher" />
 
     <dk.aau.netsec.hostage.ui.layouts.FlowLayout xmlns:f="http://schemas.android.com/apk/res/dk.aau.netsec.hostage"
-        android:id="@+id/badges_container"
+        android:id="@+id/profile_row_badges_container"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/profile_manager_item_text"
+        android:layout_below="@+id/profile_row_item_text"
         android:layout_alignParentEnd="false"
         android:layout_alignParentRight="true"
         android:orientation="horizontal"
