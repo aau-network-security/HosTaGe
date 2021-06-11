@@ -132,34 +132,39 @@
 						android:key="pref_max_connections"
 						android:defaultValue="@integer/pref_max_connections_default"
 						android:title="@string/pref_max_connections"
-						android:summary="@string/pref_max_connections_summary" />
+						android:summary="@string/pref_max_connections_summary"
+						android:icon="@drawable/ic_max_connections"/>
 
 				<EditTextPreference
 						android:inputType="number"
 						android:key="pref_timeout"
 						android:defaultValue="@integer/pref_timeout_default"
 						android:title="@string/pref_timeout"
-						android:summary="@string/pref_timeout_summary" />
+						android:summary="@string/pref_timeout_summary"
+						android:icon="@drawable/ic_socket_timeout" />
 
 				<EditTextPreference
 						android:inputType="number"
 						android:key="pref_portscan_timeout"
 						android:defaultValue="@integer/pref_portscan_timeout_default"
 						android:title="@string/pref_portscan_timeout"
-						android:summary="@string/pref_portscan_timeout_summary" />
+						android:summary="@string/pref_portscan_timeout_summary"
+					android:icon="@drawable/ic_portscan_timeout"/>
 			</PreferenceCategory>
             <PreferenceCategory android:title="@string/pref_location_settings" >
                 <EditTextPreference
                     android:key="pref_location_time"
                     android:defaultValue="@string/pref_location_time_default"
                     android:summary="@string/pref_location_time_summary"
-                    android:title="@string/pref_location_time" />
+                    android:title="@string/pref_location_time"
+					android:icon="@drawable/ic_location_timeout"/>
 
                 <EditTextPreference
                     android:key="pref_location_retries"
                     android:defaultValue="@string/pref_location_retries_default"
                     android:title="@string/pref_location_retries"
-					android:summary="@string/pref_location_retries_summary" />
+					android:summary="@string/pref_location_retries_summary"
+					android:icon="@drawable/ic_retries" />
 
             </PreferenceCategory>
 		</PreferenceScreen>
