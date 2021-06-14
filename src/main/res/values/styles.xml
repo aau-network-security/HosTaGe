@@ -6,10 +6,15 @@
     </style>
 
 	<!-- Material Design Main Theme. -->
-
 	<style name="Theme.App" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
 		<item name="switchStyle">@style/Widget.App.Switch</item>
 		<item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+		<item name="colorPrimary">#212121</item>
+		<item name="colorPrimaryVariant">#484848</item>
+		<item name="colorOnPrimary">#ffffff</item>
+		<item name="colorSecondary">#f57c00</item>
+		<item name="colorSecondaryVariant">#ffad42</item>
+		<item name="colorOnSecondary">#000000</item>
 
 	</style>
 
@@ -44,7 +49,7 @@
 		<item name="android:paddingLeft">4dp</item>
 		<item name="android:paddingRight">4dp</item>
 		<item name="android:background">@drawable/profile_protocol_badge</item>
-		<item name="android:textColor">@color/dark_grey</item>
+		<item name="android:textColor">?attr/colorOnSecondary</item>
 	</style>
 
 <!--	Theme for Switch Buttons-->
