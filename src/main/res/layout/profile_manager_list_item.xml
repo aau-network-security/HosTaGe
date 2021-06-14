@@ -23,7 +23,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:textColor="?attr/colorOnPrimary"
+        android:textColor="?attr/colorOnSurface"
         tools:text="Windows XP profile" />
 
     <TextView
@@ -39,7 +39,7 @@
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
         android:singleLine="false"
-        android:textColor="?attr/colorOnPrimary"
+        android:textColor="?attr/colorOnSurface"
         android:visibility="visible"
         tools:text="This Profile simulates behaviour of Windows XP" />
 
@@ -56,7 +56,7 @@
         android:baselineAlignBottom="false"
         android:src="@drawable/ic_action_accept"
         android:visibility="visible"
-        android:tint="?attr/colorOnPrimary" />
+        android:tint="?attr/colorOnSurface" />
 
     <ImageView
         android:id="@+id/profile_row_item_image"

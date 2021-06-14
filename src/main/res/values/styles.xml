@@ -45,7 +45,7 @@
 		<item name="android:paddingLeft">4dp</item>
 		<item name="android:paddingRight">4dp</item>
 		<item name="android:background">@drawable/profile_protocol_badge</item>
-		<item name="android:textColor">?attr/colorOnSecondary</item>
+		<item name="android:textColor">?attr/colorOnPrimary</item>
 	</style>
 
 <!--	Theme for Switch Buttons-->
