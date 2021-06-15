@@ -204,13 +204,20 @@ public class ServicesFragment extends TrackerFragment {
                         setStateNotConnected();
                     } else { // we have a connection
                         // activate all protocols
-                        for (String protocol : protocols) {
+                        try {
+                            for (String protocol : protocols) {
                                 if (MainActivity.getInstance().getHostageService() != null
                                         && !MainActivity.getInstance().getHostageService().isRunning(protocol)) {
                                     MainActivity.getInstance().getHostageService().startListener(protocol);
                                 }
+                            }
+
+                            setStateActive();
+                        } catch (NullPointerException ne) {
+                            Toast.makeText(getContext(), R.string.error_activating_services, Toast.LENGTH_SHORT).show();
+                            setStateNotActive();
                         }
-                        setStateActive();
+
                     }
                 } else { // switch deactivated
                     if (MainActivity.getInstance().getHostageService() != null) {

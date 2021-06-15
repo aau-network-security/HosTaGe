@@ -641,8 +641,13 @@ public class Hostage extends Service {
      * @param protocolName The name of the protocol
      * @return Returns the default port number, if the protocol is implemented.
      * Else returns -1.
+     * @throws NullPointerException gets thrown if {@link ImplementProtocols} has not yet been
+     * initialized.
      */
-    private int getDefaultPort(String protocolName) {
+    private int getDefaultPort(String protocolName) throws NullPointerException{
+        if (implementedProtocols == null){
+            throw new NullPointerException();
+        }
         for (Protocol protocol : implementedProtocols) {
             if (protocolName.equals(protocol.toString())) {
                 return protocol.getPort();
