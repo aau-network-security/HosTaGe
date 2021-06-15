@@ -219,8 +219,8 @@
     <string name="PERFORMING_TASK_AS_CLIENT">Acting as Client.</string>
 
     <string name="ACTIONBAR_TITLE">WifiDirect Synchronization</string>
-    <string name="PROGRESS_TITLE_LOADING">Loading...</string>
-    <string name="PROGRESS_TITLE_CONNECTING">Connecting...</string>
+    <string name="PROGRESS_TITLE_LOADING">Loading…</string>
+    <string name="PROGRESS_TITLE_CONNECTING">Connecting…</string>
     <string name="PROGRESS_TITLE_SYNC">Synchronize</string>
 
 
