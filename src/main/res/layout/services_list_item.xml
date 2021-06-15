@@ -62,7 +62,7 @@
             android:textColor="?attr/colorOnBackground"
             android:textStyle="bold" />
 
-        <Switch
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/services_item_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,10 +74,7 @@
             android:layout_marginStart="0dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="0dp"
-            android:checked="false"
-            android:scaleX="1.1"
-            android:scaleY="1.1"
-            android:textSize="10sp" />
+            android:checked="false" />
     </RelativeLayout>
 
 </LinearLayout>

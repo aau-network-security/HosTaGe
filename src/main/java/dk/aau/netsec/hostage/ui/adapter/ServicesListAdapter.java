@@ -11,8 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
+
 import dk.aau.netsec.hostage.Listener;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.commons.HelperUtils;
@@ -29,7 +31,7 @@ import dk.aau.netsec.hostage.ui.model.ServicesListItem;
  */
 public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
     private final List<ServicesListItem> values;
-    private Switch mServicesSwitch;
+    private SwitchMaterial mServicesSwitch;
     private CompoundButton.OnCheckedChangeListener mListener;
     private Profile mProfile;
     private Integer[] mGhostPorts;
@@ -53,7 +55,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      * @param servicesSwitch the switch from parent fragment
      * @param mainListener   Listener from parent fragment
      */
-    public void setActivity(Switch servicesSwitch, CompoundButton.OnCheckedChangeListener mainListener) {
+    public void setActivity(SwitchMaterial servicesSwitch, CompoundButton.OnCheckedChangeListener mainListener) {
         mServicesSwitch = servicesSwitch;
         mListener = mainListener;
     }
@@ -270,7 +272,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
 
         public TextView port;
 
-        public Switch activated;
+        public SwitchMaterial activated;
 
         public View circle;
     }

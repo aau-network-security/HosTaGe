@@ -11,6 +11,9 @@
 		<item name="colorSecondary">@color/colorSecondaryVariant</item>
 		<item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
 		<item name="colorOnSecondary">@color/colorOnSecondary</item>
+		<item name="colorControlActivated">@color/colorSecondary</item>
+		<item name="colorSurface">@color/colorSurface</item>
+		<item name="colorOnSurface">@color/colorOnSurface</item>
 
 	</style>
 

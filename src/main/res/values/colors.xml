@@ -7,6 +7,7 @@
     <color name="colorSecondaryVariant">#5caf8d</color>
     <color name="colorOnSecondary">#000000</color>
     <color name="colorSurface">#e3e3e3</color>
+    <color name="colorOnSurface">#000000</color>
     <color name="colorSurfaceShade">#ababab</color>
 
     <color name="light_grey">#FFC0C0C0</color>
