@@ -28,9 +28,7 @@ import dk.aau.netsec.hostage.ui.model.ServicesListItem;
  * a list adapter for loading switches and service information asynchronously
  */
 public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
-    private final Context context;
     private final List<ServicesListItem> values;
-    private Context mActivity;
     private Switch mServicesSwitch;
     private CompoundButton.OnCheckedChangeListener mListener;
     private Profile mProfile;
@@ -45,7 +43,6 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
     public ServicesListAdapter(Context context, List<ServicesListItem> objects) {
         super(context, R.layout.services_list_item, objects);
 
-        this.context = context;
         this.values = objects;
     }
 
@@ -56,8 +53,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      * @param servicesSwitch the switch from parent fragment
      * @param mainListener   Listener from parent fragment
      */
-    public void setActivity(Context activity, Switch servicesSwitch, CompoundButton.OnCheckedChangeListener mainListener) {
-        mActivity = activity;
+    public void setActivity(Switch servicesSwitch, CompoundButton.OnCheckedChangeListener mainListener) {
         mServicesSwitch = servicesSwitch;
         mListener = mainListener;
     }
@@ -73,7 +69,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      */
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context
+        LayoutInflater inflater = (LayoutInflater) parent.getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = convertView;
 
@@ -114,9 +110,9 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    if (isChecked && !HelperUtils.isNetworkAvailable(mActivity)) {
+                    if (isChecked && !HelperUtils.isNetworkAvailable(parent.getContext())) {
                         if(!MainActivity.getInstance().getHostageService().hasRunningListeners()) {
-                            new AlertDialog.Builder(mActivity)
+                            new AlertDialog.Builder(parent.getContext())
                                     .setTitle(R.string.information)
                                     .setMessage(R.string.wifi_not_connected_msg)
                                     .setPositiveButton(android.R.string.ok,

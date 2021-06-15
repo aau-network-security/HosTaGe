@@ -1,43 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <RelativeLayout android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
-        <View android:id="@+id/services_circle"
-              android:layout_width="25dp" android:layout_height="25dp"
-              android:layout_marginLeft="12dp"
-              android:layout_marginTop="10dp"
-              android:background="@drawable/services_circle" />
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <View
+            android:id="@+id/services_circle"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/services_circle" />
+
         <TextView
-                android:id="@+id/services_item_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="false"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_weight="1"
-                android:textStyle="bold"
-                android:textSize="16dp"/>
+            android:id="@+id/services_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="false"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnBackground"
+            tools:text="HTTPS" />
+
         <TextView
-                android:id="@+id/services_item_rec_attacks"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="25dp"
-                android:layout_weight="1"
-                android:text="@string/recorded_attacks"
-                android:textStyle="bold"
-                android:textSize="12dp"/>
+            android:id="@+id/services_item_rec_attacks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="25dp"
+            android:layout_weight="1"
+            android:text="@string/recorded_attacks"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="12dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/services_item_port"
@@ -49,24 +59,25 @@
             android:layout_marginBottom="10dp"
             android:text="@string/open_ports"
             android:textSize="12sp"
+            android:textColor="?attr/colorOnBackground"
             android:textStyle="bold" />
 
         <Switch
-                android:id="@+id/services_item_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="false"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="false"
-                android:layout_alignParentTop="false"
-                android:layout_gravity="end"
-                android:layout_marginStart="0dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="0dp"
-                android:checked="false"
-                android:scaleX="1.1"
-                android:scaleY="1.1"
-                android:textSize="10sp" />
+            android:id="@+id/services_item_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="false"
+            android:layout_gravity="end"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="0dp"
+            android:checked="false"
+            android:scaleX="1.1"
+            android:scaleY="1.1"
+            android:textSize="10sp" />
     </RelativeLayout>
 
 </LinearLayout>

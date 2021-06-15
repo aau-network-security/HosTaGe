@@ -224,7 +224,7 @@ public class ServicesFragment extends TrackerFragment {
         mServicesSwitchService.setOnCheckedChangeListener(switchChangeListener);
 
         adapter = new ServicesListAdapter(getActivity().getBaseContext(), protocolList);
-        adapter.setActivity(this.getActivity(), this.mServicesSwitchService, this.switchChangeListener);
+        adapter.setActivity(this.mServicesSwitchService, this.switchChangeListener);
         list.setAdapter(adapter);
 
         registerBroadcastReceiver();
