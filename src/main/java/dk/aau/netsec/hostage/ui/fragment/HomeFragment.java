@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 
@@ -26,6 +25,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
@@ -47,8 +48,7 @@ import static dk.aau.netsec.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer
  */
 
 public class HomeFragment extends Fragment {
-//	TODO IDE is complaining to "Use SwitchCompat from AppCompat or SwitchMaterial from Material library"
-	private Switch mHomeSwitchConnection;
+	private SwitchMaterial mHomeSwitchConnection;
 	private TextView mHomeTextName;
 	private TextView mHomeTextSecurity;
 	private TextView mHomeTextAttacks;
