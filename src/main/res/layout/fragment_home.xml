@@ -3,19 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="1" >
+    android:weightSum="1">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_weight="1">
 
         <ImageView
             android:id="@+id/imageview"
             android:layout_width="256dp"
             android:layout_height="256dp"
-            android:layout_gravity="center"
-            />
+            android:layout_gravity="center" />
 
         <dk.aau.netsec.hostage.ui.fragment.opengl.HomeGLSurfaceView
             android:id="@+id/surfaceview"
@@ -28,14 +27,14 @@
         android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:weightSum="1" >
+        android:weightSum="1">
 
         <TextView
             android:id="@+id/record_details_text_ssid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="false"
             android:layout_centerVertical="true"
             android:layout_gravity="center_horizontal"
@@ -48,21 +47,20 @@
             android:id="@+id/home_switch_connection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="false"
-            android:layout_alignParentEnd="false"
             android:layout_alignParentStart="false"
-            android:layout_alignParentRight="true"
             android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="false"
             android:layout_gravity="right"
             android:layout_marginStart="0dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="15dp"
+            android:checked="false"
             android:minWidth="60dp"
             android:minHeight="20dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginTop="20dp"
             android:scaleX="1.1"
-            android:scaleY="1.1"
-            android:checked="false"
-            />
+            android:scaleY="1.1" />
     </RelativeLayout>
 
     <View
@@ -78,11 +76,11 @@
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:orientation="vertical"
-        android:weightSum="1" >
+        android:weightSum="1">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/home_text_name"
@@ -99,10 +97,10 @@
                 android:id="@+id/home_button_connection_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_info_details"
                 android:layout_alignTop="@+id/home_text_name"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"/>
+                android:src="@android:drawable/ic_menu_info_details" />
         </RelativeLayout>
 
         <TextView
@@ -125,9 +123,9 @@
             android:textSize="11sp" />
 
         <RelativeLayout
+            android:id="@+id/home_profile_details"
             android:layout_width="fill_parent"
-            android:layout_height="match_parent" android:id="@+id/home_profile_details"
-		        >
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/home_text_profile_header"
@@ -135,10 +133,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp"
                 android:text="@string/active_profile"
                 android:textSize="11sp"
-                android:textStyle="bold"
-                android:layout_marginTop="15dp"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/home_text_profile"
@@ -147,15 +145,16 @@
                 android:layout_below="@+id/home_text_profile_header"
                 android:layout_centerHorizontal="true"
                 android:textSize="11sp" />
-	        <ImageView
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:id="@+id/home_image_profile"
-			        android:src="@drawable/ic_launcher"
-			        android:scaleType="fitCenter"
-			        android:layout_alignBottom="@+id/home_text_profile"
-			        android:layout_toLeftOf="@+id/home_text_profile"
-			        android:layout_alignTop="@+id/home_text_profile_header"/>
+
+            <ImageView
+                android:id="@+id/home_image_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/home_text_profile_header"
+                android:layout_alignBottom="@+id/home_text_profile"
+                android:layout_toLeftOf="@+id/home_text_profile"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_launcher" />
         </RelativeLayout>
     </LinearLayout>
 
