@@ -334,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
 		ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
 
 		// set background color
-		TypedArray arr = getTheme().obtainStyledAttributes(new int[] { android.R.color.background_light });
+		TypedArray arr = getTheme().obtainStyledAttributes(new int[] { android.R.attr.windowBackground});
 		ThreatIndicatorGLRenderer.setBackgroundColor(arr.getColor(0, 0xFFFFFF));
 		arr.recycle();
 	}
