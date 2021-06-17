@@ -24,8 +24,8 @@ public class RecordListAdapter extends ExpandableListAdapter {
      * @param listSectionHeaders the section titles
      * @param dataMapping HashMap<String, ArrayList<{@link ExpandableListItem ExpandableListItem}>> the data to visualise
      */
-    public RecordListAdapter(Context context, List<String> listSectionHeaders, HashMap<String, ArrayList<ExpandableListItem>> dataMapping) {
-        super(context, listSectionHeaders, dataMapping);
+    public RecordListAdapter(List<String> listSectionHeaders, HashMap<String, ArrayList<ExpandableListItem>> dataMapping) {
+        super(listSectionHeaders, dataMapping);
     }
 
 
