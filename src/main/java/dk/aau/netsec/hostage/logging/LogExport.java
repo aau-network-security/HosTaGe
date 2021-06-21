@@ -62,13 +62,26 @@ public class LogExport extends IntentService {
 			if (ACTION_EXPORT_DATABASE.equals(action)) {
 				final int format = intent.getIntExtra(FORMAT_EXPORT_DATABASE, 0);
 				formatter = (format == 0 ? TraCINgFormatter.getInstance() : null);
-				if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-					if(format == 0) {
-						exportDatabase(formatter);
-					} else if(format == 1) {
-						exportJSONFormat();
-					}
-				}
+
+				Intent filipsIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+
+				filipsIntent.setType("application/json");
+
+				filipsIntent.putExtra(Intent.EXTRA_TITLE, getFileName("file",".json"));
+
+//				startActivityForResult
+
+
+//				if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+//					if(format == 0) {
+//						exportDatabase(formatter);
+//					} else if(format == 1) {
+//						exportJSONFormat();
+//					}
+//				}
+//				else{
+//					Toast.makeText(this, "Could not write out to storage", Toast.LENGTH_SHORT).show();
+//				}
 			}
 		}
 	}
@@ -108,7 +121,7 @@ public class LogExport extends IntentService {
 		return System.getenv("EXTERNAL_STORAGE"); //internal Storage
 	}
 
-	private static String getFileName(String format,String extension){
+	public static String getFileName(String format,String extension){
 		return "hostage_" + (format) + "_"+ System.currentTimeMillis() + extension;
 	}
 	
