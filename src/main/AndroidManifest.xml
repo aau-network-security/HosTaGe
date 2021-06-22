@@ -105,9 +105,6 @@
         <service
             android:name="dk.aau.netsec.hostage.sync.tracing.TracingSyncService"
             android:exported="false"></service>
-        <service
-            android:name="dk.aau.netsec.hostage.logging.LogExport"
-            android:exported="false"></service>
 
         <service
             android:name="dk.aau.netsec.hostage.services.MultiStage"

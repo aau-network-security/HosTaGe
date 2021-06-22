@@ -487,31 +487,42 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         inflater.inflate(R.menu.records_overview_actions, menu);
     }
 
+    /**
+     * Handle user click on one of the option buttons.
+     *
+     * @param item button that was clicked.
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 //			case R.id.records_action_synchronize:
 //				return synchronizeMenu(item);
+
+            // Process click on log save button.
             case R.id.records_action_export:
+
+                // Show export format selection dialog
                 AlertDialog.Builder builderExport = new AlertDialog.Builder(getActivity());
                 builderExport.setTitle(MainActivity.getInstance().getString(R.string.rec_choose_export_format));
                 builderExport.setItems(R.array.format, (dialog, position) -> {
 
                     Intent saveLogsIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 
+                    // Start file destination selection activity for plaintext file
                     if (position == EXPORT_FORMAT_POSITION_PLAINTEXT) {
                         saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_PLAINTEXT));
                         saveLogsIntent.setType("text/plain");
 
                         startActivityForResult(saveLogsIntent, EXPORT_LOGS_PLAINTEXT_REQUEST_CODE);
 
+                        // Start file destination selection activity for JSON file
                     } else {
                         saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_JSON));
                         saveLogsIntent.setType("application/json");
 
                         startActivityForResult(saveLogsIntent, EXPORT_LOGS_JSON_REQUEST_CODE);
                     }
-
 
                 });
                 builderExport.create();
@@ -592,6 +603,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         dialog.show();
     }
 
+    /**
+     * Hanlde results from activities, such as the export file location picker.
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -600,31 +614,28 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             if (resultCode == SyncUtils.SYNC_SUCCESSFUL) {
                 actualiseListViewInBackground();
             }
+
+            // Handle result from export file location picker
         } else if (requestCode == EXPORT_LOGS_PLAINTEXT_REQUEST_CODE || requestCode == EXPORT_LOGS_JSON_REQUEST_CODE) {
             switch (resultCode) {
                 case AppCompatActivity.RESULT_OK:
                     if (data != null
                             && data.getData() != null) {
 
-                        int export_format;
+                        // Determine file export format based on user selection.
+                        int export_format = (requestCode == EXPORT_LOGS_PLAINTEXT_REQUEST_CODE ? EXPORT_FORMAT_POSITION_PLAINTEXT : EXPORT_FORMAT_POSITION_JSON);
 
-                        if (requestCode == EXPORT_LOGS_PLAINTEXT_REQUEST_CODE){
-                            export_format = EXPORT_FORMAT_POSITION_PLAINTEXT;
-                        }
-                        else {
-                            export_format = EXPORT_FORMAT_POSITION_JSON;
-                        }
-
+                        // Prepare date for background file-writing worker task
                         Data workData = new Data.Builder()
                                 .putString(WORKER_DATA_URI_KEY, data.getData().toString())
                                 .putInt(LOG_EXPORT_FORMAT, export_format)
                                 .build();
 
+                        //Create and launch background file-writing worker task
                         WorkRequest createLogWorkRequest = new OneTimeWorkRequest
                                 .Builder(LogSaveWorker.class)
                                 .setInputData(workData)
                                 .build();
-
                         WorkManager.getInstance(getContext()).enqueue(createLogWorkRequest);
                     }
                     break;
@@ -1712,30 +1723,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             }
         }
     }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                LogExport.exportDatabase(LogExport.formatter);
-//
-//            } else {
-//                androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
-//                dialog.setTitle("Permission Required");
-//                dialog.setMessage("If you don't allow the permission to access External Storage you won't be able to extract any records.");
-//                dialog.setPositiveButton("Settings", (dialog1, which) -> {
-//                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-//                            Uri.fromParts("package", getApplicationContext().getPackageName(), null));
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    startActivity(intent);
-//                });
-//                dialog.setNegativeButton("No, thanks", (dialog1, which) -> {
-//                });
-//                androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
-//                alertDialog.show();
-//            }
-//        }
-//    }
 
     /**
      * Deletes the current displayed attacks.
