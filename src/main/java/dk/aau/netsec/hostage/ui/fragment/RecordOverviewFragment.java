@@ -1,6 +1,5 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -10,11 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,7 +26,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
@@ -38,12 +33,7 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
-import androidx.work.WorkerParameters;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,7 +49,6 @@ import dk.aau.netsec.hostage.Handler;
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.logging.DaoSession;
-import dk.aau.netsec.hostage.logging.LogExport;
 import dk.aau.netsec.hostage.logging.LogSaveWorker;
 import dk.aau.netsec.hostage.logging.RecordAll;
 import dk.aau.netsec.hostage.persistence.DAO.DAOHelper;
@@ -141,11 +130,12 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private Bundle savedInstanceState;
 
 
-    public static final int filipsRequestCode = 101;
-
-    public static final int POSITION_EXPORT_FORMAT_PLAINTEXT = 0;
-    public static final int POSITION_EXPORT_FORMAT_JSON = 1;
+    public static final int EXPORT_LOGS_PLAINTEXT_REQUEST_CODE = 724;
+    public static final int EXPORT_LOGS_JSON_REQUEST_CODE = 725;
+    public static final int EXPORT_FORMAT_POSITION_PLAINTEXT = 0;
+    public static final int EXPORT_FORMAT_POSITION_JSON = 1;
     public static final String LOG_EXPORT_FORMAT = "dk.aau.netsec.hostage.logging.LOG_EXPORT_FORMAT";
+    public static final String WORKER_DATA_URI_KEY = "dk.aau.netsec.hostage.logging.WORKER_DATA_URI_KEY";
 
     /**
      * Constructor
@@ -507,25 +497,22 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 builderExport.setTitle(MainActivity.getInstance().getString(R.string.rec_choose_export_format));
                 builderExport.setItems(R.array.format, (dialog, position) -> {
 
+                    Intent saveLogsIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 
-                    Intent filipsIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                    if (position == EXPORT_FORMAT_POSITION_PLAINTEXT) {
+                        saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_PLAINTEXT));
+                        saveLogsIntent.setType("text/plain");
 
-                    filipsIntent.setType("application/json");
+                        startActivityForResult(saveLogsIntent, EXPORT_LOGS_PLAINTEXT_REQUEST_CODE);
 
-                    filipsIntent.putExtra(Intent.EXTRA_TITLE, LogExport.getFileName("file", ".json"));
-                    filipsIntent.putExtra(LOG_EXPORT_FORMAT, position);
+                    } else {
+                        saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_JSON));
+                        saveLogsIntent.setType("application/json");
 
-//                    filipsIntent.putExtra()
-                    startActivityForResult(filipsIntent, filipsRequestCode);
+                        startActivityForResult(saveLogsIntent, EXPORT_LOGS_JSON_REQUEST_CODE);
+                    }
 
 
-//				    Intent intent = new Intent(getActivity(), LogExport.class);
-//                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
-//
-//                    intent.setAction(LogExport.ACTION_EXPORT_DATABASE);
-//                    intent.putExtra(LogExport.FORMAT_EXPORT_DATABASE, position);
-//
-//                    RecordOverviewFragment.this.getActivity().startService(intent);
                 });
                 builderExport.create();
                 builderExport.show();
@@ -613,24 +600,35 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             if (resultCode == SyncUtils.SYNC_SUCCESSFUL) {
                 actualiseListViewInBackground();
             }
-        } else if (requestCode == filipsRequestCode) {
+        } else if (requestCode == EXPORT_LOGS_PLAINTEXT_REQUEST_CODE || requestCode == EXPORT_LOGS_JSON_REQUEST_CODE) {
             switch (resultCode) {
                 case AppCompatActivity.RESULT_OK:
                     if (data != null
                             && data.getData() != null) {
 
-                        int export_format = data.getIntExtra(LOG_EXPORT_FORMAT, POSITION_EXPORT_FORMAT_PLAINTEXT);
+                        int export_format;
 
-                        WorkRequest createLogWorkRequest = new OneTimeWorkRequest.Builder(LogSaveWorker.class)
-                                .setInputData(new Data.Builder()
-                                        .putString("filipsKey", "filips Awesomeeee data")
-                                        .putString("filipsHorribleUri", data.getData().toString())
-                                        .putInt(LOG_EXPORT_FORMAT, export_format)
-                                        .build())
+                        if (requestCode == EXPORT_LOGS_PLAINTEXT_REQUEST_CODE){
+                            export_format = EXPORT_FORMAT_POSITION_PLAINTEXT;
+                        }
+                        else {
+                            export_format = EXPORT_FORMAT_POSITION_JSON;
+                        }
+
+                        Data workData = new Data.Builder()
+                                .putString(WORKER_DATA_URI_KEY, data.getData().toString())
+                                .putInt(LOG_EXPORT_FORMAT, export_format)
                                 .build();
+
+                        WorkRequest createLogWorkRequest = new OneTimeWorkRequest
+                                .Builder(LogSaveWorker.class)
+                                .setInputData(workData)
+                                .build();
+
                         WorkManager.getInstance(getContext()).enqueue(createLogWorkRequest);
                     }
                     break;
+
                 case AppCompatActivity.RESULT_CANCELED:
                     break;
             }
@@ -1715,29 +1713,29 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                LogExport.exportDatabase(LogExport.formatter);
-
-            } else {
-                androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
-                dialog.setTitle("Permission Required");
-                dialog.setMessage("If you don't allow the permission to access External Storage you won't be able to extract any records.");
-                dialog.setPositiveButton("Settings", (dialog1, which) -> {
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.fromParts("package", getApplicationContext().getPackageName(), null));
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                });
-                dialog.setNegativeButton("No, thanks", (dialog1, which) -> {
-                });
-                androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
-                alertDialog.show();
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_STORAGE) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                LogExport.exportDatabase(LogExport.formatter);
+//
+//            } else {
+//                androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
+//                dialog.setTitle("Permission Required");
+//                dialog.setMessage("If you don't allow the permission to access External Storage you won't be able to extract any records.");
+//                dialog.setPositiveButton("Settings", (dialog1, which) -> {
+//                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+//                            Uri.fromParts("package", getApplicationContext().getPackageName(), null));
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    startActivity(intent);
+//                });
+//                dialog.setNegativeButton("No, thanks", (dialog1, which) -> {
+//                });
+//                androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
+//                alertDialog.show();
+//            }
+//        }
+//    }
 
     /**
      * Deletes the current displayed attacks.
