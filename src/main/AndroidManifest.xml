@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="dk.aau.netsec.hostage"
     xmlns:tools="http://schemas.android.com/tools"
+    package="dk.aau.netsec.hostage"
     android:versionCode="11"
-    android:versionName="2.3.4" >
+    android:versionName="2.3.4">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -13,20 +13,22 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
 
-    <permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" android:protectionLevel="signature"/>
+    <permission
+        android:name="android.permission.INTERACT_ACROSS_USERS_FULL"
+        android:protectionLevel="signature" />
     <!-- Required to register a SyncStatusObserver to display a "syncing..." progress indicator. -->
-    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
     <!-- Required to enable our SyncAdapter after it's created. -->
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <!-- Required because we're manually creating a new account. -->
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!--
     	<uses-permission android:name="android.permission.BLUETOOTH" />
@@ -36,7 +38,9 @@
         android:name="android.hardware.nfc"
         android:required="false" />
 
-    <uses-feature android:name="android.hardware.wifi.direct" android:required="true"/>
+    <uses-feature
+        android:name="android.hardware.wifi.direct"
+        android:required="true" />
 
     <application
         android:name="dk.aau.netsec.hostage.HostageApplication"
@@ -46,22 +50,22 @@
         android:icon="@drawable/ic_launcher"
         android:installLocation="preferExternal"
         android:label="@string/app_name"
-        android:theme="@style/Theme.App"
+        android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
-        android:vmSafeMode="true"
-        android:largeHeap="true">
+        android:theme="@style/Theme.App"
+        android:vmSafeMode="true">
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD5vUfuTVKbAmw2jMX9KTTbKGJ9LOhrPdU" />
 
         <activity
-            android:excludeFromRecents="true"
             android:name="dk.aau.netsec.hostage.ui.activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
             android:label="@string/app_name"
-            android:screenOrientation="fullSensor" >
+            android:launchMode="singleInstance"
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -70,22 +74,19 @@
         </activity>
         <activity
             android:name="dk.aau.netsec.hostage.ui.activity.ProfileEditActivity"
-            android:label="Edit Profile" >
-        </activity>
+            android:label="Edit Profile"></activity>
         <activity
             android:name="dk.aau.netsec.hostage.sync.tracing.TracingSyncActivity"
             android:label="@string/gui_tracing"
-            android:theme="@android:style/Theme.Holo.Dialog" >
-        </activity>
+            android:theme="@android:style/Theme.Holo.Dialog"></activity>
         <activity
             android:name="dk.aau.netsec.hostage.sync.bluetooth.BluetoothSyncActivity"
             android:label="@string/gui_bluetooth"
-            android:theme="@android:style/Theme.Holo.Dialog" >
-        </activity>
+            android:theme="@android:style/Theme.Holo.Dialog"></activity>
         <activity
             android:name="dk.aau.netsec.hostage.sync.nfc.NFCSyncActivity"
             android:label="@string/gui_nfc"
-            android:theme="@android:style/Theme.Dialog" >
+            android:theme="@android:style/Theme.Dialog">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
 
@@ -97,31 +98,25 @@
 
         <service
             android:name="dk.aau.netsec.hostage.Hostage"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
         <service
             android:name="dk.aau.netsec.hostage.logging.Logger"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
         <service
             android:name="dk.aau.netsec.hostage.sync.tracing.TracingSyncService"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
         <service
             android:name="dk.aau.netsec.hostage.logging.LogExport"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
 
         <service
             android:name="dk.aau.netsec.hostage.services.MultiStage"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
 
         <provider
             android:name="dk.aau.netsec.hostage.provider.HostageContentProvider"
             android:authorities="dk.aau.netsec.hostage.provider"
-            android:exported="false" >
-        </provider>
+            android:exported="false"></provider>
 
         <provider
             android:name="dk.aau.netsec.hostage.sync.android.SyncContentProvider"
@@ -139,22 +134,22 @@
 
         <receiver
             android:name="dk.aau.netsec.hostage.services.MultiStageAlarm"
-            android:enabled="true" >
-        </receiver>
+            android:enabled="true"></receiver>
 
         <activity
             android:name="dk.aau.netsec.hostage.sync.wifi_direct.ui.WiFiP2pSyncActivity"
-            android:label="@string/title_activity_p2_psync">
-        </activity>
+            android:label="@string/title_activity_p2_psync"></activity>
 
 
-        <service android:name="dk.aau.netsec.hostage.sync.android.SyncService"
+        <service
+            android:name="dk.aau.netsec.hostage.sync.android.SyncService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
 
-            <meta-data android:name="android.content.SyncAdapter"
+            <meta-data
+                android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
 
@@ -163,7 +158,8 @@
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
 
-            <meta-data android:name="android.accounts.AccountAuthenticator"
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
 
