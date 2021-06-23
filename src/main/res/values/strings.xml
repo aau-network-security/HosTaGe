@@ -319,4 +319,6 @@
     <string name="export_to_storage" translatable="false">Export to storage</string>
     <string name="synchronize" translatable="false">Synchronize</string>
     <string name="new_profile" translatable="false">New profile</string>
+    <string name="location_permission_message">If you do not allow the Location permission, you will not be able to use certain features, such as ThreatMap, Wifi Name appearance and precise attack detection.</string>
+    <string name="background_location_permission_message">If you do not allow the Background Location permission the app will not be able to access your location while it is running in the background and features such as ThreatMap and precise attack detection will not function properly.</string>
 </resources>

@@ -281,4 +281,6 @@
     <string name="nfc_enable_beam">Android Beam Aktivieren</string>
     <string name="nfc_hold_phones_together">Halten Sie Telefone zusammen, um Daten zu senden oder empfangen.</string>
     <string name="error_activating_services">Versuchen Sie es später nochmals.</string>
+    <string name="location_permission_message">Wenn Sie die Standortberechtigung nicht zulassen, können Sie bestimmte Funktionen wie ThreatMap, WiFi-Name und präzise Angriffserkennung nicht verwenden.</string>
+    <string name="background_location_permission_message">Wenn Sie die Berechtigung für den Background Location nicht zulassen, kann die App nicht auf Ihren Standort zugreifen, während sie im Hintergrund ausgeführt wird, und Funktionen wie ThreatMap und die präzise Angriffserkennung funktionieren nicht richtig.</string>
 </resources>

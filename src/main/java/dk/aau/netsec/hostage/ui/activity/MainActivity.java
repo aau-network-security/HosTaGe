@@ -887,17 +887,14 @@ public class MainActivity extends AppCompatActivity {
                     locationManager.initializeNewestLocation();
                     askBackgroundPermission();
                 } else {
-                    String message = "If you don't allow the Location permission you will not be able to access" +
-                            " certain features of the app which are ThreatMap,Wifi name appearance and precise attack detection.";
-                    denyPermissionDialog(message);
-
+                    denyPermissionDialog(getResources().getString(R.string.location_permission_message));
                 }
             }
             case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     String message = "If you don't allow the Background Location permission the app won't have your " +
                             "location when it is running on the background and the previous features won't work.";
-                    denyPermissionDialog(message);
+                    denyPermissionDialog(getResources().getString(R.string.background_location_permission_message));
                 }
             }
 
