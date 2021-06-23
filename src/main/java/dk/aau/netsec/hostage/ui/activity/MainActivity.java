@@ -230,8 +230,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        locationManager.getUpdates(60 * 1000, 3, getContext());
 
+        if (locationManager != null) {
+            locationManager.getUpdates(60 * 1000, 3, getContext());
+        }
     }
 
     /**

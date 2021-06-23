@@ -456,11 +456,16 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
         registerBroadcastReceiver();
     }
 
-	private void moveCameraToCurrentLocation(Location currentLocation){
-		//LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
-		LatLng newLocation = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
-		sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 13));
-	}
+    private void moveCameraToCurrentLocation(Location currentLocation) {
+        //LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
+        LatLng newLocation;
+        if (currentLocation == null) {
+            newLocation = new LatLng(55.65082108870564, 12.542137232882569);
+        } else {
+            newLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        }
+        sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 13));
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -485,11 +490,14 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
                 requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
 
-				return;
-			}
-			mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
-		}
-	}
+                return;
+            }
+            if (mLocationProvider != null) {
+
+                mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
+            }
+        }
+    }
 
 
     private void networkConnectionCheck() {
