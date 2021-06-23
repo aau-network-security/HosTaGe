@@ -131,8 +131,8 @@ public class MainActivity extends AppCompatActivity {
      * Hold the state of the Hostage service
      */
     private boolean mServiceBound = false;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-    private static final int LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE = 101;
+    public static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+    public static final int LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE = 101;
 
 
     /**
@@ -279,11 +279,8 @@ public class MainActivity extends AppCompatActivity {
         configureActionBar();
         loadDrawer();
         executeRoot();
-        getLocationData();
+
         loadFirstRun();
-        //Must start after the location!
-        startAndBind();
-        addProfileManager();
 
         if (savedInstanceState == null) {
             // on first time display view for first nav item
@@ -367,6 +364,11 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor1 = mSharedPreferences.edit();
                     editor1.putBoolean("isFirstEmulation", true);
                     editor1.apply();
+
+                    getLocationData();
+                    startAndBind();
+                    addProfileManager();
+
                 })
                 .setNegativeButton(getString(R.string.disagree), (dialog, id) -> {
                     getHostageService().stopListeners();
@@ -388,12 +390,12 @@ public class MainActivity extends AppCompatActivity {
     private void loadFirstRun() {
         mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
         if (mSharedPreferences.getBoolean("isFirstRun", true)) {
-            // opens navigation drawer if first run
-            mDrawerLayout.postDelayed(() -> mDrawerLayout.openDrawer(Gravity.LEFT), 1000);
-
             onFirstRun();
+        } else {
+            getLocationData();
+            startAndBind();
+            addProfileManager();
         }
-
     }
 
     private void configureActionBar() {
@@ -889,6 +891,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     denyPermissionDialog(getResources().getString(R.string.location_permission_message));
                 }
+                break;
             }
             case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
@@ -896,6 +899,7 @@ public class MainActivity extends AppCompatActivity {
                             "location when it is running on the background and the previous features won't work.";
                     denyPermissionDialog(getResources().getString(R.string.background_location_permission_message));
                 }
+                break;
             }
 
         }
