@@ -77,13 +77,30 @@ public class MyLocationManager {
 
     public MyLocationManager(Context context) {
         // Acquire a reference to the system Location Manager
+
+
         this.context = context;
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
-		if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-				&& ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-				!= PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale((MainActivity) context, Manifest.permission.ACCESS_FINE_LOCATION)||
+            ActivityCompat.shouldShowRequestPermissionRationale((MainActivity) context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(context);
+                dialog.setTitle("This app uses location");
+                dialog.setMessage("Location is needed to enable the Threat Map and other features");
+                dialog.setCancelable(true);
+                dialog.setNeutralButton("Understood", ((dialog1, which) -> {}));
+
+                dialog.setNegativeButton("No, thanks", (dialog1, which) -> {});
+
+                androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
+                alertDialog.show();
+            }
+
+            ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MainActivity.LOCATION_PERMISSION_REQUEST_CODE);
 
             return;
         }
@@ -97,6 +114,11 @@ public class MyLocationManager {
         }
         newestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
+    }
+
+    private boolean checkIfLocationPermissionsGranted(){
+//        TODO move location permissions checking code here
+        return false;
     }
 
 
@@ -123,7 +145,6 @@ public class MyLocationManager {
      * {@link MyLocationManager#newestLocation
      * newestLocation} if a hostage.location provider is enabled and available.
      */
-
     public void startUpdates(Context context) {
         boolean gpsEnabled = false;
         boolean networkEnabled = false;
