@@ -2,12 +2,15 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/panel_bg_selector"
     android:baselineAligned="false"
-    android:padding="5dp">
+    android:padding="5dp"
+    android:layout_margin="3dp">
 
     <TextView
         android:id="@+id/profile_row_item_label"
@@ -20,7 +23,8 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:textColor="?android:attr/colorForeground" />
+        android:textColor="?attr/colorOnSurface"
+        tools:text="Windows XP profile" />
 
     <TextView
         android:id="@+id/profile_row_item_text"
@@ -35,8 +39,9 @@
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
         android:singleLine="false"
-        android:textColor="#808080"
-        android:visibility="visible" />
+        android:textColor="?attr/colorOnSurface"
+        android:visibility="visible"
+        tools:text="This Profile simulates behaviour of Windows XP" />
 
     <ImageView
         android:id="@+id/profile_row_item_activated"
@@ -50,7 +55,8 @@
         android:layout_marginRight="20dp"
         android:baselineAlignBottom="false"
         android:src="@drawable/ic_action_accept"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:tint="?attr/colorOnSurface" />
 
     <ImageView
         android:id="@+id/profile_row_item_image"

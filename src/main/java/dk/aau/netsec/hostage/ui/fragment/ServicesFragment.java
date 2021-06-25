@@ -14,13 +14,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import dk.aau.netsec.hostage.Handler;
 import dk.aau.netsec.hostage.HostageApplication;
@@ -42,7 +43,7 @@ import dk.aau.netsec.hostage.ui.model.ServicesListItem;
  * Also it can de-/activate every protocol by using this switch.
  */
 public class ServicesFragment extends TrackerFragment {
-    private Switch mServicesSwitchService;
+    private SwitchMaterial mServicesSwitchService;
     private TextView mServicesTextName;
 
     private View rootView;
@@ -181,12 +182,15 @@ public class ServicesFragment extends TrackerFragment {
         mServicesSwitchService = rootView.findViewById(R.id.service_switch_connection);
 
         if (switchChangeListener == null) {
-            switchChangeListener = (buttonView, isChecked) -> {
-                try {
-                    mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            switchChangeListener = new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    try {
+                        mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
 
                 if (isChecked) { // switch activated
                     // we need a network connection, checks both types
@@ -225,14 +229,13 @@ public class ServicesFragment extends TrackerFragment {
                         MainActivity.getInstance().getHostageService().stopListeners();
                         MainActivity.getInstance().stopAndUnbind();
                     }
-                    setStateNotActive();
                 }
             };
         }
         mServicesSwitchService.setOnCheckedChangeListener(switchChangeListener);
 
         adapter = new ServicesListAdapter(getActivity().getBaseContext(), protocolList);
-        adapter.setActivity(this.getActivity(), this.mServicesSwitchService, this.switchChangeListener);
+        adapter.setActivity(this.mServicesSwitchService, this.switchChangeListener);
         list.setAdapter(adapter);
 
         registerBroadcastReceiver();

@@ -73,216 +73,217 @@ import eu.chainfire.libsuperuser.Shell;
  * @created 12.01.14 23:24
  */
 public class MainActivity extends AppCompatActivity {
-	private static WeakReference<Context> context;
+    private static WeakReference<Context> context;
 
-	private MyLocationManager locationManager;
+    private MyLocationManager locationManager;
 
-	/**
-	 * singleton instance of the MainActivity with WeakReference to avoid Memory leaks
-	 */
-	private static WeakReference<MainActivity> mActivityRef;
+    /**
+     * singleton instance of the MainActivity with WeakReference to avoid Memory leaks
+     */
+    private static WeakReference<MainActivity> mActivityRef;
 
-	/**
-	 * The currently displayed fragment
-	 */
-	public Fragment mDisplayedFragment;
+    /**
+     * The currently displayed fragment
+     */
+    public Fragment mDisplayedFragment;
 
     /**
      * The currently displayed fragment index
      */
     public int mDisplayedFragmentIndex;
 
-	/**
-	 * Holds the Hostage Service
-	 */
-	public Hostage mHoneyService;
+    /**
+     * Holds the Hostage Service
+     */
+    public Hostage mHoneyService;
 
-	/**
-	 * Manages the navigation drawer
-	 */
-	private DrawerLayout mDrawerLayout;
+    /**
+     * Manages the navigation drawer
+     */
+    private DrawerLayout mDrawerLayout;
 
-	/**
-	 * Contains the listview to be displayed in the navigation drawer
-	 */
-	private ListView mDrawerList;
+    /**
+     * Contains the listview to be displayed in the navigation drawer
+     */
+    private ListView mDrawerList;
 
-	/**
-	 * Holds the toggler for the navigation drawer in the action bar
-	 */
-	private androidx.appcompat.app.ActionBarDrawerToggle mDrawerToggle;
+    /**
+     * Holds the toggler for the navigation drawer in the action bar
+     */
+    private androidx.appcompat.app.ActionBarDrawerToggle mDrawerToggle;
 
-	/**
-	 * The text that should be displayed in the drawer toggle
-	 */
-	private CharSequence mDrawerTitle;
+    /**
+     * The text that should be displayed in the drawer toggle
+     */
+    private CharSequence mDrawerTitle;
 
-	/**
-	 * The text that should be displayed in the action bar
-	 */
-	private CharSequence mTitle;
+    /**
+     * The text that should be displayed in the action bar
+     */
+    private CharSequence mTitle;
 
-	/**
-	 * Holds the list, that should be displayed in the listview of the navigation drawer
-	 */
-	private ArrayList<DrawerListItem> mDrawerItems;
+    /**
+     * Holds the list, that should be displayed in the listview of the navigation drawer
+     */
+    private ArrayList<DrawerListItem> mDrawerItems;
 
-	/**
-	 * Hold the state of the Hostage service
-	 */
-	private boolean mServiceBound = false;
-	private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-	private static final int LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE = 101;
+    /**
+     * Hold the state of the Hostage service
+     */
+    private boolean mServiceBound = false;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+    private static final int LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE = 101;
 
 
-	/**
-	 * Connection to bind the background service
-	 *
-	 * @see Hostage
-	 */
-	private ServiceConnection mConnection = new ServiceConnection() {
-		/**
-		 * After the service is bound, check which has been clicked and start
-		 * it.
-		 *
-		 * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName,
-		 *      android.os.IBinder)
-		 */
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			mHoneyService = ((Hostage.LocalBinder) service).getService();
-			mServiceBound = true;
-		}
+    /**
+     * Connection to bind the background service
+     *
+     * @see Hostage
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+        /**
+         * After the service is bound, check which has been clicked and start
+         * it.
+         *
+         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName,
+         *      android.os.IBinder)
+         */
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mHoneyService = ((Hostage.LocalBinder) service).getService();
+            mServiceBound = true;
+        }
 
-		/**
-		 * After the service is unbound, delete reference.
-		 *
-		 * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-		 */
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			mHoneyService = null;
-			mServiceBound = false;
-		}
+        /**
+         * After the service is unbound, delete reference.
+         *
+         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mHoneyService = null;
+            mServiceBound = false;
+        }
 
-	};
+    };
 
-	/**
-	 * Holds an profile manager instance
-	 */
-	private ProfileManager mProfileManager;
+    /**
+     * Holds an profile manager instance
+     */
+    private ProfileManager mProfileManager;
 
-	/**
-	 * Holds the root fragment for our hierarchical fragment navigation
-	 */
+    /**
+     * Holds the root fragment for our hierarchical fragment navigation
+     */
     private Fragment mRootFragment;
 
-	/**
-	 * Indicates if the warning, that the application will be closed, when pressing back again
-	 */
-	private boolean mCloseWarning = false;
+    /**
+     * Indicates if the warning, that the application will be closed, when pressing back again
+     */
+    private boolean mCloseWarning = false;
 
-	/**
-	 * Hold the shared preferences for the app
-	 */
-	private SharedPreferences mSharedPreferences;
+    /**
+     * Hold the shared preferences for the app
+     */
+    private SharedPreferences mSharedPreferences;
 
-	/**
-	 * Retrieve the singleton latest instance of the activity
-	 *M
-	 * @return MainActivity - the singleton instance
-	 */
-	public static MainActivity getInstance() {
-		return mActivityRef.get();
-	}
+    /**
+     * Retrieve the singleton latest instance of the activity
+     * M
+     *
+     * @return MainActivity - the singleton instance
+     */
+    public static MainActivity getInstance() {
+        return mActivityRef.get();
+    }
 
-	/**
-	 * Retrieves the context of the application
-	 *
-	 * @return the context
-	 */
-	public static Context getContext() {
-		return context.get();
-	}
+    /**
+     * Retrieves the context of the application
+     *
+     * @return the context
+     */
+    public static Context getContext() {
+        return context.get();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onStart() {
-		super.onStart();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
         // Register syncing with android
         //SyncUtils.CreateSyncAccount(this);
 
-		if (isServiceRunning()) {
-			this.bindService();
-		}
-	}
+        if (isServiceRunning()) {
+            this.bindService();
+        }
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		if(locationManager!=null)
-			locationManager.stopUpdates();
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (locationManager != null)
+            locationManager.stopUpdates();
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		locationManager.getUpdates(60 * 1000, 3,getContext());
+    @Override
+    protected void onResume() {
+        super.onResume();
+        locationManager.getUpdates(60 * 1000, 3, getContext());
 
-	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onStop() {
-		super.onStop();
-		this.unbindService();
-		if(locationManager!=null)
-			locationManager.stopUpdates();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStop() {
+        super.onStop();
+        this.unbindService();
+        if (locationManager != null)
+            locationManager.stopUpdates();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if(locationManager!=null) {
-			locationManager.stopUpdates();
-			locationManager=null;
-		}
-		// Unbind running service
-		if (!mHoneyService.hasRunningListeners()) {
-			stopAndUnbind();
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (locationManager != null) {
+            locationManager.stopUpdates();
+            locationManager = null;
+        }
+        // Unbind running service
+        if (!mHoneyService.hasRunningListeners()) {
+            stopAndUnbind();
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         // make the main activity a singleton
-		mActivityRef  = new WeakReference<>( this);
+        mActivityRef = new WeakReference<>(this);
 
-		// sets the static context reference to the application context
-		context = new WeakReference<>(getApplicationContext());
-		setContentView(R.layout.activity_drawer_main);
+        // sets the static context reference to the application context
+        context = new WeakReference<>(getApplicationContext());
+        setContentView(R.layout.activity_drawer_main);
 
-		addAnimation();
-		// configures the action bar
-		configureActionBar();
-		loadDrawer();
-		executeRoot();
-		getLocationData();
-		loadFirstRun();
-		//Must start after the location!
-		startAndBind();
-		addProfileManager();
+        addAnimation();
+        // configures the action bar
+        configureActionBar();
+        loadDrawer();
+        executeRoot();
+        getLocationData();
+        loadFirstRun();
+        //Must start after the location!
+        startAndBind();
+        addProfileManager();
 
         if (savedInstanceState == null) {
             // on first time display view for first nav item
@@ -295,607 +296,612 @@ public class MainActivity extends AppCompatActivity {
             mDrawerList.setItemChecked(mDisplayedFragmentIndex, true);
             mDrawerList.setSelection(mDisplayedFragmentIndex);
             setTitle(mDrawerItems.get(mDisplayedFragmentIndex).text);
-			getSupportFragmentManager().popBackStack(HomeFragment.class.getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-			getSupportFragmentManager().putFragment(savedInstanceState, mRootFragment.getClass().getName(), mRootFragment);
+            getSupportFragmentManager().popBackStack(HomeFragment.class.getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getSupportFragmentManager().putFragment(savedInstanceState, mRootFragment.getClass().getName(), mRootFragment);
 
             injectFragment(mDisplayedFragment);
         }
-	}
+    }
 
-	private void executeRoot(){
-		CheckRoot checkRoot = new CheckRoot();
-		checkRoot.execute();
-	}
+    private void executeRoot() {
+        CheckRoot checkRoot = new CheckRoot();
+        checkRoot.execute();
+    }
 
-	private static void checkForRoot(){
-		if(Shell.SU.available()) {
-			Device.checkCapabilities();
-			if(Api.assertBinaries(getContext(),true)) {
-				try {
-					Api.executeCommands();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				//Device.executePortRedirectionScript(); //not working with Samsungs
-			}
-		}
-	}
+    private static void checkForRoot() {
+        if (Shell.SU.available()) {
+            Device.checkCapabilities();
+            if (Api.assertBinaries(getContext(), true)) {
+                try {
+                    Api.executeCommands();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                //Device.executePortRedirectionScript(); //not working with Samsungs
+            }
+        }
+    }
 
-	private static class CheckRoot extends AsyncTask<Void,Void,Void> {
-		@Override
-		protected Void doInBackground(Void... voids) {
-			checkForRoot();
-			return null;
-		}
-	}
+    private static class CheckRoot extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            checkForRoot();
+            return null;
+        }
+    }
 
-	private void addAnimation(){
-		// init threat indicator animation
-		ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
+    private void addAnimation() {
+        // init threat indicator animation
+        ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
 
-		// set background color
-		TypedArray arr = getTheme().obtainStyledAttributes(new int[] { android.R.color.background_light });
-		ThreatIndicatorGLRenderer.setBackgroundColor(arr.getColor(0, 0xFFFFFF));
-		arr.recycle();
-	}
+        // set background color
+        TypedArray arr = getTheme().obtainStyledAttributes(new int[]{android.R.attr.windowBackground});
+        ThreatIndicatorGLRenderer.setBackgroundColor(arr.getColor(0, 0xFFFFFF));
+        arr.recycle();
+    }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState){
+    protected void onSaveInstanceState(Bundle outState) {
         outState.putInt("mDisplayedFragmentIndex", mDisplayedFragmentIndex);
-		getSupportFragmentManager().putFragment(outState, "mRootFragment", mRootFragment);
-		getSupportFragmentManager().putFragment(outState, "mDisplayedFragment", mDisplayedFragment);
+        getSupportFragmentManager().putFragment(outState, "mRootFragment", mRootFragment);
+        getSupportFragmentManager().putFragment(outState, "mDisplayedFragment", mDisplayedFragment);
 
         super.onSaveInstanceState(outState);
     }
 
-	/**
-	 * Displays the disclaimer on first run of the application
-	 */
-	private void onFirstRun(){
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
-				.setCancelable(false)
-				.setPositiveButton(getString(R.string.agree), (dialog, id) -> {
-					// and, if the user accept, you can execute something like this:
-					// We need an Editor object to make preference changes.
-					SharedPreferences.Editor editor = mSharedPreferences.edit();
-					editor.putBoolean("isFirstRun", false);
-					editor.apply();
+    /**
+     * Displays the disclaimer on first run of the application
+     */
+    private void onFirstRun() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.agree), (dialog, id) -> {
+                    // and, if the user accept, you can execute something like this:
+                    // We need an Editor object to make preference changes.
+                    SharedPreferences.Editor editor = mSharedPreferences.edit();
+                    editor.putBoolean("isFirstRun", false);
+                    editor.apply();
 
-					// Enabled shared preferences for 'first' time non-portbinder activation
-					SharedPreferences.Editor editor1= mSharedPreferences.edit();
-					editor1.putBoolean("isFirstEmulation", true);
-					editor1.apply();
-				})
-				.setNegativeButton(getString(R.string.disagree), (dialog, id) -> {
-					getHostageService().stopListeners();
-					stopAndUnbind();
-					finish();
-				});
-		AlertDialog alert = builder.create();
-		alert.show();
-	}
+                    // Enabled shared preferences for 'first' time non-portbinder activation
+                    SharedPreferences.Editor editor1 = mSharedPreferences.edit();
+                    editor1.putBoolean("isFirstEmulation", true);
+                    editor1.apply();
+                })
+                .setNegativeButton(getString(R.string.disagree), (dialog, id) -> {
+                    getHostageService().stopListeners();
+                    stopAndUnbind();
+                    finish();
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 
-	private void addProfileManager(){
-		try {
-			mProfileManager = ProfileManager.getInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private void addProfileManager() {
+        try {
+            mProfileManager = ProfileManager.getInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	private void loadFirstRun(){
-		mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
-		if(mSharedPreferences.getBoolean("isFirstRun", true)){
-			// opens navigation drawer if first run
-			mDrawerLayout.postDelayed(() -> mDrawerLayout.openDrawer(Gravity.LEFT), 1000);
+    private void loadFirstRun() {
+        mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
+        if (mSharedPreferences.getBoolean("isFirstRun", true)) {
+            // opens navigation drawer if first run
+            mDrawerLayout.postDelayed(() -> mDrawerLayout.openDrawer(Gravity.LEFT), 1000);
 
-			onFirstRun();
-		}
+            onFirstRun();
+        }
 
-	}
+    }
 
-	private void configureActionBar(){
-		ActionBar actionBar = getSupportActionBar();
-		assert actionBar != null;
-		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_HOME_AS_UP);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeButtonEnabled(true);
-		actionBar.setDisplayShowHomeEnabled(true);
-	}
+    private void configureActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_HOME_AS_UP);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+    }
 
-	private void loadDrawer(){
-		// sets the drawer and action title to the application title
-		mTitle = mDrawerTitle = getTitle();
-		mDrawerLayout = findViewById(R.id.drawer_layout);
-		mDrawerList = findViewById(R.id.left_drawer);
+    private void loadDrawer() {
+        // sets the drawer and action title to the application title
+        mTitle = mDrawerTitle = getTitle();
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerList = findViewById(R.id.left_drawer);
 
-		// propagates the navigation drawer with items
-		mDrawerItems = new ArrayList<>();
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_overview, R.drawable.ic_menu_home));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_threat_map, R.drawable.ic_menu_mapmode));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_records, R.drawable.ic_menu_records));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_statistics, R.drawable.ic_menu_stats));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_services, R.drawable.ic_menu_set_as));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
-		mDrawerItems.add(new DrawerListItem(R.string.privacy_policy, R.drawable.ic_menu_privacy));
+        // propagates the navigation drawer with items
+        mDrawerItems = new ArrayList<>();
+        mDrawerItems.add(new DrawerListItem(R.string.drawer_overview, R.drawable.ic_menu_home));
+        mDrawerItems.add(new DrawerListItem(R.string.drawer_threat_map, R.drawable.ic_menu_mapmode));
+        mDrawerItems.add(new DrawerListItem(R.string.drawer_records, R.drawable.ic_menu_records));
+        mDrawerItems.add(new DrawerListItem(R.string.drawer_statistics, R.drawable.ic_menu_stats));
+        mDrawerItems.add(new DrawerListItem(R.string.drawer_services, R.drawable.ic_menu_set_as));
+        mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
+        mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
+        mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
+        mDrawerItems.add(new DrawerListItem(R.string.privacy_policy, R.drawable.ic_menu_privacy));
 
-		DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
+        DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
 
-		mDrawerList.setAdapter(listAdapter);
-		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerList.setAdapter(listAdapter);
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-		setmDrawerToggle();
+        setmDrawerToggle();
 
-	}
+    }
 
-	private void setmDrawerToggle(){
-		// configures the navigation drawer
-		mDrawerToggle = new androidx.appcompat.app.ActionBarDrawerToggle(this, /* host Activity */
-				mDrawerLayout, /* DrawerLayout object */
-				R.string.drawer_open, /* "open drawer" description for accessibility */
-				R.string.drawer_close /* "close drawer" description for accessibility */
-		) {
-			public void onDrawerClosed(View view) {
-				getSupportActionBar().setTitle(mTitle);
-				invalidateOptionsMenu(); // creates call to
-				// onPrepareOptionsMenu()
-			}
+    private void setmDrawerToggle() {
+        // configures the navigation drawer
+        mDrawerToggle = new androidx.appcompat.app.ActionBarDrawerToggle(this, /* host Activity */
+                mDrawerLayout, /* DrawerLayout object */
+                R.string.drawer_open, /* "open drawer" description for accessibility */
+                R.string.drawer_close /* "close drawer" description for accessibility */
+        ) {
+            public void onDrawerClosed(View view) {
+                getSupportActionBar().setTitle(mTitle);
+                invalidateOptionsMenu(); // creates call to
+                // onPrepareOptionsMenu()
+            }
 
-			public void onDrawerOpened(View drawerView) {
-				getSupportActionBar().setTitle(mDrawerTitle);
-				invalidateOptionsMenu(); // creates call to
-				// onPrepareOptionsMenu()
-			}
-		};
+            public void onDrawerOpened(View drawerView) {
+                getSupportActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to
+                // onPrepareOptionsMenu()
+            }
+        };
 
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-	}
+    }
 
-	/**
-	 * Starts an Instance of MyLocationManager to set the hostage.location within this
-	 * class.
-	 */
-	private void getLocationData() {
-		locationManager = new MyLocationManager(this);
-		locationManager.getUpdates(60 * 1000, 3,getContext());
-	}
+    /**
+     * Starts an Instance of MyLocationManager to set the hostage.location within this
+     * class.
+     */
+    private void getLocationData() {
+        locationManager = new MyLocationManager(this);
+        locationManager.getUpdates(60 * 1000, 3, getContext());
+    }
 
-	/**
-	 * Starts the hostage service and binds this activity to the service
-	 */
-	public void startAndBind() {
-		if (!isServiceRunning()) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-				getContext().startForegroundService(getServiceIntent());
-			else
-				startService(getServiceIntent());
+    /**
+     * Starts the hostage service and binds this activity to the service
+     */
+    public void startAndBind() {
+        if (!isServiceRunning()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                getContext().startForegroundService(getServiceIntent());
+            else
+                startService(getServiceIntent());
 
-		}
+        }
 
-		bindService();
-	}
+        bindService();
+    }
 
-	/**
-	 * Stops the hostage service and unbinds from the service
-	 */
-	public void stopAndUnbind() {
-		if (mHoneyService != null) {
-			unbindService();
-		}
+    /**
+     * Stops the hostage service and unbinds from the service
+     */
+    public void stopAndUnbind() {
+        if (mHoneyService != null) {
+            unbindService();
+        }
 
-		stopService(getServiceIntent());
-	}
+        stopService(getServiceIntent());
+    }
 
-	/**
-	 * Unbinds the activity from the service
-	 */
-	public void unbindService() {
-		try {
-			unbindService(mConnection);
-		} catch (IllegalArgumentException ex) {
-			ex.printStackTrace();
-		}
-	}
+    /**
+     * Unbinds the activity from the service
+     */
+    public void unbindService() {
+        try {
+            unbindService(mConnection);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+        }
+    }
 
-	/**
-	 * Binds the activity to the service
-	 */
-	public void bindService() {
-		bindService(getServiceIntent(), mConnection, BIND_AUTO_CREATE);
-		// mServiceBound = true;
-	}
+    /**
+     * Binds the activity to the service
+     */
+    public void bindService() {
+        bindService(getServiceIntent(), mConnection, BIND_AUTO_CREATE);
+        // mServiceBound = true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// toggle nav drawer on selecting action bar app icon/title
-		if (mDrawerToggle.onOptionsItemSelected(item)) {
-			return true;
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // toggle nav drawer on selecting action bar app icon/title
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
 
-		if (item.getItemId() == android.R.id.home) {
-			if (!mDrawerToggle.isDrawerIndicatorEnabled()) {
-				navigateBack();
-			}
-		}
+        if (item.getItemId() == android.R.id.home) {
+            if (!mDrawerToggle.isDrawerIndicatorEnabled()) {
+                navigateBack();
+            }
+        }
 
-		return super.onOptionsItemSelected(item);
-	}
+        return super.onOptionsItemSelected(item);
+    }
 
-	/**
-	 * Navigates up to the parent fragment of the current fragment
-	 */
-	public void navigateBack(){
-		if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment)) {
-			mDrawerToggle.setDrawerIndicatorEnabled(true);
-			return;
-		}
+    /**
+     * Navigates up to the parent fragment of the current fragment
+     */
+    public void navigateBack() {
+        if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment)) {
+            mDrawerToggle.setDrawerIndicatorEnabled(true);
+            return;
+        }
 
-		UpNavigatibleFragment upNav = (UpNavigatibleFragment) this.mDisplayedFragment;
+        UpNavigatibleFragment upNav = (UpNavigatibleFragment) this.mDisplayedFragment;
 
-		getSupportFragmentManager().popBackStackImmediate(upNav.getUpFragment().getName(), 0);
-		this.mDisplayedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
-		configureFragment();
+        getSupportFragmentManager().popBackStackImmediate(upNav.getUpFragment().getName(), 0);
+        this.mDisplayedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        configureFragment();
 
-		if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigatible()) {
-			mDrawerToggle.setDrawerIndicatorEnabled(true);
-		} else {
-			mDrawerToggle.setDrawerIndicatorEnabled(false);
-		}
-	}
+        if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigatible()) {
+            mDrawerToggle.setDrawerIndicatorEnabled(true);
+        } else {
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setTitle(CharSequence title) {
-		mTitle = title;
-		getSupportActionBar().setTitle(mTitle);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getSupportActionBar().setTitle(mTitle);
+    }
 
-	/**
-	 * When using the ActionBarDrawerToggle, you must call it during
-	 * onPostCreate() and onConfigurationChanged()...
-	 */
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		// Sync the toggle state after onRestoreInstanceState has occurred.
-		mDrawerToggle.syncState();
-	}
+    /**
+     * When using the ActionBarDrawerToggle, you must call it during
+     * onPostCreate() and onConfigurationChanged()...
+     */
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		// Pass any configuration change to the drawer toggle
-		mDrawerToggle.onConfigurationChanged(newConfig);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggle
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
 
-	/**
-	 * Displays the view for the given navigation index
-	 *
-	 * @param position the index of the navigation item
-	 */
-	public void displayView(int position) {
-		MainMenuItem menuItemPosition = MainMenuItem.create(position);
+    /**
+     * Displays the view for the given navigation index
+     *
+     * @param position the index of the navigation item
+     */
+    public void displayView(int position) {
+        MainMenuItem menuItemPosition = MainMenuItem.create(position);
 
-		// close the drawer if the to be displayed fragment is already being displayed
-		if (this.mDisplayedFragment != null && this.mDisplayedFragment.getClass() == menuItemPosition.getKlass()) {
-			mDrawerLayout.closeDrawer(mDrawerList);
-			return;
-		}
+        // close the drawer if the to be displayed fragment is already being displayed
+        if (this.mDisplayedFragment != null && this.mDisplayedFragment.getClass() == menuItemPosition.getKlass()) {
+            mDrawerLayout.closeDrawer(mDrawerList);
+            return;
+        }
 
-		Fragment fragment = null;
+        Fragment fragment = null;
 
-		try {
-			fragment = (Fragment) menuItemPosition.getKlass().newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			Log.i(menuItemPosition.getKlass().toString(), "Could not create new instance of fragment");
-		}
+        try {
+            fragment = (Fragment) menuItemPosition.getKlass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            Log.i(menuItemPosition.getKlass().toString(), "Could not create new instance of fragment");
+        }
 
-		if (fragment != null) {
-			if(position == 0 && mRootFragment == null){
-				mRootFragment = fragment;
-			}
+        if (fragment != null) {
+            if (position == 0 && mRootFragment == null) {
+                mRootFragment = fragment;
+            }
 
-			injectFragment(fragment);
+            injectFragment(fragment);
 
             mDisplayedFragmentIndex = position;
-			mDrawerList.setItemChecked(position, true);
-			mDrawerList.setSelection(position);
-			setTitle(mDrawerItems.get(position).text);
-		}
+            mDrawerList.setItemChecked(position, true);
+            mDrawerList.setSelection(position);
+            setTitle(mDrawerItems.get(position).text);
+        }
 
-		mDrawerLayout.closeDrawer(mDrawerList);
-	}
+        mDrawerLayout.closeDrawer(mDrawerList);
+    }
 
-	/**
-	 * Injects an given fragment into the application content view
-	 *
-	 * @param fragment the fragment to inject
-	 */
-	public void injectFragment(Fragment fragment) {
-		this.mCloseWarning = false;
+    /**
+     * Injects an given fragment into the application content view
+     *
+     * @param fragment the fragment to inject
+     */
+    public void injectFragment(Fragment fragment) {
+        this.mCloseWarning = false;
 
-		// set the action bar up navigation according to the nature of the given fragment
-		if (fragment instanceof UpNavigatibleFragment) {
-			UpNavigatibleFragment upFrag = (UpNavigatibleFragment) fragment;
-			if (upFrag.getUpFragment() == null) {
-				upFrag.setUpFragment(this.mDisplayedFragment.getClass());
-			}
-			if (upFrag.isUpNavigatible()) {
-				mDrawerToggle.setDrawerIndicatorEnabled(false);
-			}
-		}
+        // set the action bar up navigation according to the nature of the given fragment
+        if (fragment instanceof UpNavigatibleFragment) {
+            UpNavigatibleFragment upFrag = (UpNavigatibleFragment) fragment;
+            if (upFrag.getUpFragment() == null) {
+                upFrag.setUpFragment(this.mDisplayedFragment.getClass());
+            }
+            if (upFrag.isUpNavigatible()) {
+                mDrawerToggle.setDrawerIndicatorEnabled(false);
+            }
+        }
 
-		configureFragment(fragment);
+        configureFragment(fragment);
 
-		// exchange the existing fragment with the given one
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.replace(R.id.content_frame, fragment, fragment.getClass().getName());
-		fragmentTransaction.addToBackStack(fragment.getClass().getName());
+        // exchange the existing fragment with the given one
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment, fragment.getClass().getName());
+        fragmentTransaction.addToBackStack(fragment.getClass().getName());
 
-		fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-		fragmentTransaction.commit();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.commit();
 
-		this.mDisplayedFragment = fragment;
-	}
-
-
-	private void configureFragment() {
-		configureFragment(this.mDisplayedFragment);
-	}
-
-	/**
-	 * Configures the given fragment, e.g. fixing the screen orientation
-	 *
-	 * @param fragment the fragment to configure
-	 */
-	@SuppressLint("WrongConstant")
-	private void configureFragment(Fragment fragment) {
-		if (fragment == null)
-			return;
-
-		if (fragment instanceof HomeFragment || fragment instanceof AboutFragment) {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT | ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-		} else {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-		}
-
-		if (fragment instanceof StatisticsFragment || fragment instanceof RecordOverviewFragment) {
-
-			Intent intent = this.getIntent();
-			intent.removeExtra(LogFilter.LOG_FILTER_INTENT_KEY);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onBackPressed() {
-		if (mDisplayedFragment instanceof HomeFragment) {
-			if (this.mCloseWarning) {
-				MainActivity.getInstance().getHostageService().stopListeners();
-				MainActivity.getInstance().stopAndUnbind();
-				this.mCloseWarning = false;
-				finish();
-				System.exit(0);
-			} else {
-				Toast.makeText(this, "Press the back button again to close HosTaGe", Toast.LENGTH_SHORT).show();
-				this.mCloseWarning = true;
-			}
-		} else {
-			super.onBackPressed();
-			this.mDisplayedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
-			configureFragment();
-
-			if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigatible()) {
-				mDrawerToggle.setDrawerIndicatorEnabled(true);
-			} else {
-				mDrawerToggle.setDrawerIndicatorEnabled(false);
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean onKeyDown(int keycode, KeyEvent e) {
-		if (keycode == KeyEvent.KEYCODE_MENU) {
-			if (this.mDrawerToggle.isDrawerIndicatorEnabled()) {
-				if (this.mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
-					this.mDrawerLayout.closeDrawer(Gravity.LEFT);
-					return true;
-				}
-				this.mDrawerLayout.openDrawer(Gravity.LEFT);
-			}
-			return true;
-		}
-
-		return super.onKeyDown(keycode, e);
-	}
-
-	/**
-	 * Create a new intent intended for binding the hostage service to the activity
-	 *
-	 * @return the new service intent
-	 */
-	public Intent getServiceIntent() {
-		return new Intent(this, Hostage.class);
-	}
-
-	/**
-	 * Retrieves the currently displayed fragment
-	 *
-	 * @return the current fragment
-	 */
-	public Fragment getDisplayedFragment() {
-		return this.mDisplayedFragment;
-	}
-
-	/**
-	 * Retrieves the Hostage service instance
-	 * @return hostage service
-	 */
-	public Hostage getHostageService() {
-		return this.mHoneyService;
-	}
-
-	/**
-	 * Checks if the hostage service is bound to the activity
-	 * @return true,  if bound
-	 *         false, otherwise
-	 */
-	public boolean isServiceBound() {
-		return this.mServiceBound;
-	}
-
-	/**
-	 * Checks whether the hostage service is running
-	 * @return true,  if running
-	 *         false, otherwise
-	 */
-	public boolean isServiceRunning() {
-		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-			if (service.service.getClassName().equals(Hostage.class.getName())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Start the monitoring of the given protocols in the hostage service
-	 *
-	 * @param protocols the protocols to start
-	 */
-	public void startMonitorServices(List<String> protocols){
-		for(String protocol: protocols){
-				if(!getHostageService().isRunning(protocol)) getHostageService().startListener(protocol);
-			}
-	}
-
-	/**
-	 * Holds the index of the navigation items in an enum and also a reference to an Fragment class for each item
-	 */
-	public enum MainMenuItem {
-		HOME(0, HomeFragment.class),
-		THREAT_MAP(1, ThreatMapFragment.class),
-		RECORDS(2, RecordOverviewFragment.class),
-		STATISTICS(3, StatisticsFragment.class),
-		SERVICES(4, ServicesFragment.class),
-		PROFILE_MANAGER(5, ProfileManagerFragment.class),
-		SETTINGS(6, SettingsFragment.class),
-		APPLICATION_INFO(7, AboutFragment.class),
-		PRIVACY(8, PrivacyFragment.class);
+        this.mDisplayedFragment = fragment;
+    }
 
 
-		private int value;
-		private Class<?> klass;
+    private void configureFragment() {
+        configureFragment(this.mDisplayedFragment);
+    }
 
-		MainMenuItem(int value, Class<?> klass) {
-			this.value = value;
-			this.klass = klass;
-		}
+    /**
+     * Configures the given fragment, e.g. fixing the screen orientation
+     *
+     * @param fragment the fragment to configure
+     */
+    @SuppressLint("WrongConstant")
+    private void configureFragment(Fragment fragment) {
+        if (fragment == null)
+            return;
 
-		static public MainMenuItem create(int value) {
-			if (value < 0 || value >= MainMenuItem.values().length)
-				return MainMenuItem.HOME;
-			return MainMenuItem.values()[value];
-		}
+        if (fragment instanceof HomeFragment || fragment instanceof AboutFragment) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT | ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        }
 
-		public static boolean hasClass(Class<?> klass){
-			for(MainMenuItem m: MainMenuItem.values()){
-				if(m.getKlass().equals(klass)) return true;
-			}
+        if (fragment instanceof StatisticsFragment || fragment instanceof RecordOverviewFragment) {
 
-			return false;
-		}
+            Intent intent = this.getIntent();
+            intent.removeExtra(LogFilter.LOG_FILTER_INTENT_KEY);
+        }
+    }
 
-		public int getValue() {
-			return value;
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onBackPressed() {
+        if (mDisplayedFragment instanceof HomeFragment) {
+            if (this.mCloseWarning) {
+                MainActivity.getInstance().getHostageService().stopListeners();
+                MainActivity.getInstance().stopAndUnbind();
+                this.mCloseWarning = false;
+                finish();
+                System.exit(0);
+            } else {
+                Toast.makeText(this, "Press the back button again to close HosTaGe", Toast.LENGTH_SHORT).show();
+                this.mCloseWarning = true;
+            }
+        } else {
+            super.onBackPressed();
+            this.mDisplayedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+            configureFragment();
 
-		public Class<?> getKlass() {
-			return this.klass;
-		}
-	}
+            if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigatible()) {
+                mDrawerToggle.setDrawerIndicatorEnabled(true);
+            } else {
+                mDrawerToggle.setDrawerIndicatorEnabled(false);
+            }
+        }
+    }
 
-	/**
-	 * The listener for the navigation drawer items.
-	 */
-	private class DrawerItemClickListener implements ListView.OnItemClickListener {
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			displayView(position);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onKeyDown(int keycode, KeyEvent e) {
+        if (keycode == KeyEvent.KEYCODE_MENU) {
+            if (this.mDrawerToggle.isDrawerIndicatorEnabled()) {
+                if (this.mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
+                    this.mDrawerLayout.closeDrawer(Gravity.LEFT);
+                    return true;
+                }
+                this.mDrawerLayout.openDrawer(Gravity.LEFT);
+            }
+            return true;
+        }
 
-	private void denyPermissionDialog(String text){
-		androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
-		dialog.setTitle("Permission Required");
-		dialog.setMessage(text);
-		dialog.setPositiveButton("Settings", (dialog1, which) -> {
-			Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-					Uri.fromParts("package",getApplicationContext().getPackageName(), null));
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(intent);
-		});
-		dialog.setNegativeButton("No, thanks",(dialog1, which) -> {
-		});
-		androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
-		alertDialog.show();
-	}
+        return super.onKeyDown(keycode, e);
+    }
 
-	private void askBackgroundPermission(){
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-				ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_BACKGROUND_LOCATION}, LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
-			}
-		}
-	}
+    /**
+     * Create a new intent intended for binding the hostage service to the activity
+     *
+     * @return the new service intent
+     */
+    public Intent getServiceIntent() {
+        return new Intent(this, Hostage.class);
+    }
 
-	/**
-	 * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
-	 * @param requestCode LOCATION_PERMISSION_REQUEST_CODE
-	 * @param permissions Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
-	 * @param grantResults if the user accepts or not our permission
-	 */
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		switch(requestCode) {
-			case LOCATION_PERMISSION_REQUEST_CODE: {
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					locationManager.initializeNewestLocation();
-					askBackgroundPermission();
-				} else {
-					String message = "If you don't allow the Location permission you will not be able to access" +
-							" certain features of the app which are ThreatMap,Wifi name appearance and precise attack detection.";
-					denyPermissionDialog(message);
+    /**
+     * Retrieves the currently displayed fragment
+     *
+     * @return the current fragment
+     */
+    public Fragment getDisplayedFragment() {
+        return this.mDisplayedFragment;
+    }
 
-				}
-			}
-			case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
-				if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-					String message = "If you don't allow the Background Location permission the app won't have your " +
-							"location when it is running on the background and the previous features won't work.";
-					denyPermissionDialog(message);
-				}
-			}
+    /**
+     * Retrieves the Hostage service instance
+     *
+     * @return hostage service
+     */
+    public Hostage getHostageService() {
+        return this.mHoneyService;
+    }
 
-		}
-	}
+    /**
+     * Checks if the hostage service is bound to the activity
+     *
+     * @return true,  if bound
+     * false, otherwise
+     */
+    public boolean isServiceBound() {
+        return this.mServiceBound;
+    }
+
+    /**
+     * Checks whether the hostage service is running
+     *
+     * @return true,  if running
+     * false, otherwise
+     */
+    public boolean isServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (service.service.getClassName().equals(Hostage.class.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Start the monitoring of the given protocols in the hostage service
+     *
+     * @param protocols the protocols to start
+     */
+    public void startMonitorServices(List<String> protocols) {
+        for (String protocol : protocols) {
+            if (!getHostageService().isRunning(protocol))
+                getHostageService().startListener(protocol);
+        }
+    }
+
+    /**
+     * Holds the index of the navigation items in an enum and also a reference to an Fragment class for each item
+     */
+    public enum MainMenuItem {
+        HOME(0, HomeFragment.class),
+        THREAT_MAP(1, ThreatMapFragment.class),
+        RECORDS(2, RecordOverviewFragment.class),
+        STATISTICS(3, StatisticsFragment.class),
+        SERVICES(4, ServicesFragment.class),
+        PROFILE_MANAGER(5, ProfileManagerFragment.class),
+        SETTINGS(6, SettingsFragment.class),
+        APPLICATION_INFO(7, AboutFragment.class),
+        PRIVACY(8, PrivacyFragment.class);
+
+
+        private int value;
+        private Class<?> klass;
+
+        MainMenuItem(int value, Class<?> klass) {
+            this.value = value;
+            this.klass = klass;
+        }
+
+        static public MainMenuItem create(int value) {
+            if (value < 0 || value >= MainMenuItem.values().length)
+                return MainMenuItem.HOME;
+            return MainMenuItem.values()[value];
+        }
+
+        public static boolean hasClass(Class<?> klass) {
+            for (MainMenuItem m : MainMenuItem.values()) {
+                if (m.getKlass().equals(klass)) return true;
+            }
+
+            return false;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public Class<?> getKlass() {
+            return this.klass;
+        }
+    }
+
+    /**
+     * The listener for the navigation drawer items.
+     */
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            displayView(position);
+        }
+    }
+
+    private void denyPermissionDialog(String text) {
+        androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
+        dialog.setTitle("Permission Required");
+        dialog.setMessage(text);
+        dialog.setPositiveButton("Settings", (dialog1, which) -> {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", getApplicationContext().getPackageName(), null));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        });
+        dialog.setNegativeButton("No, thanks", (dialog1, which) -> {
+        });
+        androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+    }
+
+    private void askBackgroundPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_BACKGROUND_LOCATION}, LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
+            }
+        }
+    }
+
+    /**
+     * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
+     *
+     * @param requestCode  LOCATION_PERMISSION_REQUEST_CODE
+     * @param permissions  Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
+     * @param grantResults if the user accepts or not our permission
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.initializeNewestLocation();
+                    askBackgroundPermission();
+                } else {
+                    String message = "If you don't allow the Location permission you will not be able to access" +
+                            " certain features of the app which are ThreatMap,Wifi name appearance and precise attack detection.";
+                    denyPermissionDialog(message);
+
+                }
+            }
+            case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    String message = "If you don't allow the Background Location permission the app won't have your " +
+                            "location when it is running on the background and the previous features won't work.";
+                    denyPermissionDialog(message);
+                }
+            }
+
+        }
+    }
 
 }

@@ -10,20 +10,20 @@ import android.util.Log;
  * creates the threat indicator renderer
  */
 public class HomeGLSurfaceView extends GLSurfaceView {
-	public HomeGLSurfaceView(Context context) { // won't be called
-		super(context);
-		Log.e("gl", "called wrong constructor (w/o attributes)");
-	}
-	
-	// this constructor will be called
-	public HomeGLSurfaceView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		setEGLContextClientVersion(2); // OpenGL ES 2.0
-		// setZOrderOnTop(true);
-		// transparency
-		// setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-		// getHolder().setFormat(PixelFormat.RGBA_8888);
-		setRenderer(new ThreatIndicatorGLRenderer());
-	}
+    public HomeGLSurfaceView(Context context) { // won't be called
+        super(context);
+        Log.e("gl", "called wrong constructor (w/o attributes)");
+    }
+
+    // this constructor will be called
+    public HomeGLSurfaceView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        setEGLContextClientVersion(2); // OpenGL ES 2.0
+        // setZOrderOnTop(true);
+        // transparency
+        // setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        // getHolder().setFormat(PixelFormat.RGBA_8888);
+        setRenderer(new ThreatIndicatorGLRenderer());
+    }
 
 }

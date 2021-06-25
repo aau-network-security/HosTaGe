@@ -619,7 +619,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             adapter.setData(sectionData);
             adapter.setSectionHeader(groupTitle);
         } else {
-            adapter = new RecordListAdapter(RecordOverviewFragment.this.getApplicationContext(), groupTitle, sectionData);
+            adapter = new RecordListAdapter(groupTitle, sectionData);
         }
 
         return adapter;
