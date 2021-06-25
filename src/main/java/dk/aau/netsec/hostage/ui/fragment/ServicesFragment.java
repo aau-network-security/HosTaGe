@@ -182,15 +182,12 @@ public class ServicesFragment extends TrackerFragment {
         mServicesSwitchService = rootView.findViewById(R.id.service_switch_connection);
 
         if (switchChangeListener == null) {
-            switchChangeListener = new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    try {
-                        mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+            switchChangeListener = (buttonView, isChecked) -> {
+                try {
+                    mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 if (isChecked) { // switch activated
                     // we need a network connection, checks both types
