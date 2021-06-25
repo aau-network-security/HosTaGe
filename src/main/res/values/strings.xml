@@ -219,8 +219,8 @@
     <string name="PERFORMING_TASK_AS_CLIENT">Acting as Client.</string>
 
     <string name="ACTIONBAR_TITLE">WifiDirect Synchronization</string>
-    <string name="PROGRESS_TITLE_LOADING">Loading...</string>
-    <string name="PROGRESS_TITLE_CONNECTING">Connecting...</string>
+    <string name="PROGRESS_TITLE_LOADING">Loading…</string>
+    <string name="PROGRESS_TITLE_CONNECTING">Connecting…</string>
     <string name="PROGRESS_TITLE_SYNC">Synchronize</string>
 
 
@@ -303,6 +303,7 @@
     <string name="nfc_not_available">NFC is not available on this device</string>
     <string name="nfc_enable_beam">Enable Android Beam before synchronizing.</string>
     <string name="nfc_hold_phones_together">Hold phones together to send or receive data.</string>
+    <string name="error_activating_services">Could not activate. Please try again later.</string>
 
 
 <!-- TODO: Remove or change this placeholder text -->

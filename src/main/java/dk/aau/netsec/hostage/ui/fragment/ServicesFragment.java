@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import androidx.appcompat.app.AlertDialog;
@@ -190,38 +191,43 @@ public class ServicesFragment extends TrackerFragment {
                         e.printStackTrace();
                     }
 
-                    if (isChecked) { // switch activated
-                        // we need a network connection, checks both types
-                        if (!HelperUtils.isNetworkAvailable(getActivity())) {
-                            new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.information)
-                                    .setMessage(R.string.wifi_not_connected_msg)
-                                    .setPositiveButton(android.R.string.ok,
-                                            (dialog, which) -> {
-                                            }
-                                    )
-                                    .setIcon(android.R.drawable.ic_dialog_info)
-                                    .show();
-                            setStateNotActive();
-                            setStateNotConnected();
-                        } else { // we have a connection
-                            // activate all protocols
+
+                if (isChecked) { // switch activated
+                    // we need a network connection, checks both types
+                    if (!HelperUtils.isNetworkAvailable(getActivity())) {
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.information)
+                                .setMessage(R.string.wifi_not_connected_msg)
+                                .setPositiveButton(android.R.string.ok,
+                                        (dialog, which) -> {
+                                        }
+                                )
+                                .setIcon(android.R.drawable.ic_dialog_info)
+                                .show();
+                        setStateNotActive();
+                        setStateNotConnected();
+                    } else { // we have a connection
+                        // activate all protocols
+                        try {
                             for (String protocol : protocols) {
                                 if (MainActivity.getInstance().getHostageService() != null
                                         && !MainActivity.getInstance().getHostageService().isRunning(protocol)) {
                                     MainActivity.getInstance().getHostageService().startListener(protocol);
                                 }
                             }
-                            setStateActive();
-                        }
-                    } else { // switch deactivated
-                        if (MainActivity.getInstance().getHostageService() != null) {
-                            // why should the hostage service not be running??
-                            MainActivity.getInstance().getHostageService().stopListeners();
-                            MainActivity.getInstance().stopAndUnbind();
-                        }
-                        setStateNotActive();
 
+                            setStateActive();
+                        } catch (NullPointerException ne) {
+                            Toast.makeText(getContext(), R.string.error_activating_services, Toast.LENGTH_SHORT).show();
+                            setStateNotActive();
+                        }
+
+                    }
+                } else { // switch deactivated
+                    if (MainActivity.getInstance().getHostageService() != null) {
+                        // why should the hostage service not be running??
+                        MainActivity.getInstance().getHostageService().stopListeners();
+                        MainActivity.getInstance().stopAndUnbind();
                     }
                 }
             };
