@@ -16,6 +16,7 @@ import androidx.preference.PreferenceManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -304,6 +305,7 @@ public class SyncUtils {
 
 
         HttpPost httppost;
+//        TODO take a better look at the exceptions thrown from this flow.
         try {
             HttpClient httpClient = createHttpClient();
             // Create HttpPost
@@ -420,8 +422,11 @@ public class SyncUtils {
                     record.setWasInternalAttack(item.has("internal_attack") && item.getBoolean("internal_attack"));
 
                     syncRecords.add(record);
-                } catch(Exception e){
-                    e.printStackTrace();
+                } catch(org.json.JSONException jsonException){
+                    jsonException.printStackTrace();
+                    continue;
+                } catch (java.text.ParseException textPE){
+                    textPE.printStackTrace();
                     continue;
                 }
             }
@@ -430,8 +435,14 @@ public class SyncUtils {
             result.syncRecords = syncRecords;
 
             return result;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ClientProtocolException cpe) {
+            cpe.printStackTrace();
+            return null;
+        } catch (java.io.IOException ioException){
+            ioException.printStackTrace();
+            return null;
+        } catch (org.json.JSONException jsonException){
+            jsonException.printStackTrace();
             return null;
         }
     }
