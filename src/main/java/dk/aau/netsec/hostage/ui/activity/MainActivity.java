@@ -77,7 +77,7 @@ import eu.chainfire.libsuperuser.Shell;
 public class MainActivity extends AppCompatActivity {
     private static WeakReference<Context> context;
 
-//    private MyLocationManager locationManager;
+    //    private MyLocationManager locationManager;
     private FilipsLocationManager filipsLocationManager;
 
     /**
@@ -479,8 +479,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             filipsLocationManager.getLatestLocation();
 
-        }
-        catch (LocationException le){
+        } catch (LocationException le) {
 //            TODO handle if user does not grant location permission
             Log.e("filipko", "Location permission not granted.");
         }
@@ -918,8 +917,7 @@ public class MainActivity extends AppCompatActivity {
 
                     try {
                         filipsLocationManager.startUpdatingLocation();
-                    }
-                    catch (LocationException le){
+                    } catch (LocationException le) {
                         // TODO handle if no provider is enabled (can happen) or location permission is not granted (should not happen)
                     }
 //                    locationManager.initializeNewestLocation();

@@ -35,7 +35,7 @@ import dk.aau.netsec.hostage.protocol.SSLProtocol;
  * Creates a Socket on the port of a given protocol and listens for incoming
  * connections.<br>
  * For each connection creates a Socket and instantiate an {@link Handler}.
- * 
+ *
  * @author Mihai Plasoianu
  * @author Wulf Pfeiffer
  */
@@ -59,7 +59,8 @@ public class Listener implements Runnable {
 
     private static Semaphore mutex = new Semaphore(1); // to enable atomic section in portscan detection
 
-    private static Map<String,Integer> realPorts = new LinkedHashMap<>();
+    private static Map<String, Integer> realPorts = new LinkedHashMap<>();
+
     /**
      * Constructor for the class. Instantiate class variables.
      *
@@ -130,11 +131,11 @@ public class Listener implements Runnable {
     public void refreshHandlers() {
         for (Iterator<Handler> iterator = handlers.iterator(); iterator.hasNext(); ) {
             Handler handler = iterator.next();
-            if(handler == null){
+            if (handler == null) {
                 conReg.closeConnection();
                 socketsThread.interrupt();
                 iterator.remove();
-            }else {
+            } else {
                 if (handler.isTerminated()) {
                     conReg.closeConnection();
                     socketsThread.interrupt();
@@ -178,7 +179,7 @@ public class Listener implements Runnable {
                 addRealPorts(protocol.toString(), server.getLocalPort());
             }
             if (server == null)
-                    return false;
+                return false;
             (this.thread = new Thread(this)).start();
             return notifyUI(true);
         } catch (IOException e) {
@@ -192,9 +193,10 @@ public class Listener implements Runnable {
      * SSH 2222 (common >1024 port)
      * HTTPS 8443 (common >1024 port)
      * port "0" is the default and returns a random port.
+     *
      * @return port for unRooted phone
      */
-    private int getUnrootedPort(String protocol){
+    private int getUnrootedPort(String protocol) {
         switch (protocol) {
             case "HTTP":
                 return 8080;
@@ -206,7 +208,7 @@ public class Listener implements Runnable {
         return 0;
     }
 
-    private boolean notifyUI(boolean running){
+    private boolean notifyUI(boolean running) {
         this.running = running;
         service.notifyUI(this.getClass().getName(),
                 new String[]{service.getString(R.string.broadcast_started), protocol.toString(), Integer.toString(port)});
@@ -218,7 +220,7 @@ public class Listener implements Runnable {
      * running in and notifies the background service.
      */
     public void stop() {
-        if(stopSMB())
+        if (stopSMB())
             return;
         try {
             server.close();
@@ -229,7 +231,7 @@ public class Listener implements Runnable {
         }
     }
 
-    private boolean stopSMB(){
+    private boolean stopSMB() {
         if (protocol.toString().equals("SMB")) {
             ((SMB) protocol).stop();
             thread.interrupt();
@@ -245,7 +247,7 @@ public class Listener implements Runnable {
     private void fullHandler() throws IOException {
         if (conReg.isConnectionFree()) {
             ExecutorService threadPool = Executors.newFixedThreadPool(1);
-            if(server==null)
+            if (server == null)
                 return;
             Socket client = server.accept();
             Thread socketsThread = socketsThread(client);
@@ -254,7 +256,7 @@ public class Listener implements Runnable {
         }
     }
 
-    private Thread socketsThread(Socket client){
+    private Thread socketsThread(Socket client) {
         socketsThread = new Thread(() -> {
             try {
                 if (checkPostScanInProgressNomutex(client))
@@ -264,36 +266,36 @@ public class Listener implements Runnable {
             }
             String ip = client.getInetAddress().getHostAddress();
 
-                // the mutex should prevent multiple hostage.logging of a portscan
-                try {
-                    mutex.acquire();
-                    if (checkPostScanInProgress(client))
-                        return;
+            // the mutex should prevent multiple hostage.logging of a portscan
+            try {
+                mutex.acquire();
+                if (checkPostScanInProgress(client))
+                    return;
 
-                    if (checkRegisteredConnection(client, ip))
-                        return;
+                if (checkRegisteredConnection(client, ip))
+                    return;
 
-                    mutex.release();
-                    Thread.sleep(100); // wait to see if other listeners detected a portscan
+                mutex.release();
+                Thread.sleep(100); // wait to see if other listeners detected a portscan
 
-                    if (checkPostScanInProgressNomutex(client))
-                        return;
+                if (checkPostScanInProgressNomutex(client))
+                    return;
 
-                    if (protocol.isSecure()) {
-                        startSecureHandler(client);
-                    } else {
-                        startHandler(client);
-                    }
-                    conReg.newOpenConnection();
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (protocol.isSecure()) {
+                    startSecureHandler(client);
+                } else {
+                    startHandler(client);
                 }
+                conReg.newOpenConnection();
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         });
 
-       return socketsThread;
+        return socketsThread;
     }
 
     private boolean checkPostScanInProgress(Socket client) throws IOException {
@@ -313,7 +315,7 @@ public class Listener implements Runnable {
         return false;
     }
 
-    private boolean checkRegisteredConnection(Socket client,String ip) throws IOException {
+    private boolean checkRegisteredConnection(Socket client, String ip) throws IOException {
         if (ConnectionGuard.registerConnection(port, ip)) { // returns true when a port scan is detected
             logPortscan(client, System.currentTimeMillis());
             mutex.release();
@@ -377,11 +379,11 @@ public class Listener implements Runnable {
         // now that the record exists we can inform the ui
         // only handler informs about attacks so its name is used here
         service.notifyUI(Handler.class.getName(), new String[]{service.getString(R.string.broadcast_started), "PORTSCAN",
-                        Integer.toString(client.getPort())});
+                Integer.toString(client.getPort())});
     }
 
 
-    private AttackRecord logAttackRecord(SharedPreferences connInfo, Socket client){
+    private AttackRecord logAttackRecord(SharedPreferences connInfo, Socket client) {
         AttackRecord attackRecord = new AttackRecord(true);
 
         attackRecord.setProtocol("PORTSCAN");
@@ -396,7 +398,7 @@ public class Listener implements Runnable {
 
     }
 
-    private NetworkRecord logNetworkRecord(SharedPreferences connInfo){
+    private NetworkRecord logNetworkRecord(SharedPreferences connInfo) {
         NetworkRecord networkRecord = new NetworkRecord();
         networkRecord.setBssid(connInfo.getString(service.getString(R.string.connection_info_bssid), null));
         networkRecord.setSsid(connInfo.getString(service.getString(R.string.connection_info_ssid), null));
@@ -408,9 +410,7 @@ public class Listener implements Runnable {
             networkRecord.setLongitude(latestLocation.getLongitude());
             networkRecord.setAccuracy(latestLocation.getAccuracy());
             networkRecord.setTimestampLocation(latestLocation.getTime());
-        }
-
-        catch (LocationException le){
+        } catch (LocationException le) {
             networkRecord.setLatitude(0.0);
             networkRecord.setLongitude(0.0);
             networkRecord.setAccuracy(Float.MAX_VALUE);
@@ -420,11 +420,11 @@ public class Listener implements Runnable {
         return networkRecord;
     }
 
-    public static void addRealPorts(String protocol, Integer port){
-        realPorts.put(protocol,port);
+    public static void addRealPorts(String protocol, Integer port) {
+        realPorts.put(protocol, port);
     }
 
-    public static Map<String,Integer>  getRealPorts(){
+    public static Map<String, Integer> getRealPorts() {
         return realPorts;
     }
 

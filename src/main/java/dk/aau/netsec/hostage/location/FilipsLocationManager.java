@@ -60,23 +60,22 @@ public class FilipsLocationManager {
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 
-    public static FilipsLocationManager getLocationManagerInstance(){
+    public static FilipsLocationManager getLocationManagerInstance() {
         return mLocationManagerInstance.get();
     }
 
-    public void userHasDeniedLocation(){
+    public void userHasDeniedLocation() {
         locationPermissionDenied = true;
 
     }
 
-    public Location getLatestLocation() throws LocationException{
+    public Location getLatestLocation() throws LocationException {
         if (mLatestLocation != null) {
             return mLatestLocation;
         } else if (!locationPermissionDenied) {
             updateLocation();
             return mLatestLocation;
-        }
-        else {
+        } else {
             throw new LocationException("Location permission has not been granted");
         }
     }
@@ -112,21 +111,19 @@ public class FilipsLocationManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 //            TODO address older versions of Android
             mLocationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null, mContext.getMainExecutor(), mLocationConsumer);
-        }
-        else {
+        } else {
             try {
                 startUpdatingLocation();
-            }
-            catch (LocationException le){
+            } catch (LocationException le) {
 //                TODO handle (should not ever happen)
                 ;
             }
         }
     }
 
-    public void requestBackgroundLocation(){
+    public void requestBackgroundLocation() {
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale((MainActivity) mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION)){
+        if (ActivityCompat.shouldShowRequestPermissionRationale((MainActivity) mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
             dialog.setTitle("This app uses background location");
             dialog.setMessage("Background location is needed to enable attack data collection while the app is in the background.");
@@ -144,8 +141,7 @@ public class FilipsLocationManager {
 
             AlertDialog alertDialog = dialog.create();
             alertDialog.show();
-        }
-        else {
+        } else {
             showLocationRequestDialog(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
         }
 
@@ -185,22 +181,20 @@ public class FilipsLocationManager {
 
             AlertDialog alertDialog = dialog.create();
             alertDialog.show();
-        }
-        else {
+        } else {
             showLocationRequestDialog(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
 
     }
 
-    void showLocationRequestDialog(String locationPermissionType){
+    void showLocationRequestDialog(String locationPermissionType) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 //            TODO address older versions of Android
 
             if (locationPermissionType == Manifest.permission.ACCESS_FINE_LOCATION || locationPermissionType == Manifest.permission.ACCESS_COARSE_LOCATION) {
                 ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MainActivity.LOCATION_PERMISSION_REQUEST_CODE);
-            }
-            else if (locationPermissionType == Manifest.permission.ACCESS_BACKGROUND_LOCATION){
+            } else if (locationPermissionType == Manifest.permission.ACCESS_BACKGROUND_LOCATION) {
                 ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, MainActivity.LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
             }
         }

@@ -117,15 +117,14 @@ public class FileInject {
         record.setBssid(BSSID);
         record.setSsid(SSID);
 
-        try{
+        try {
             Location latestLocation = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
 
             record.setLatitude(latestLocation.getLatitude());
             record.setLongitude(latestLocation.getLongitude());
             record.setAccuracy(latestLocation.getAccuracy());
             record.setTimestampLocation(latestLocation.getTime());
-        }
-        catch (LocationException le){
+        } catch (LocationException le) {
             record.setLatitude(0.0);
             record.setLongitude(0.0);
             record.setAccuracy(Float.MAX_VALUE);
