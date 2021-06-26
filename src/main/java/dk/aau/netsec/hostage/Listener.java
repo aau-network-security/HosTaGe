@@ -17,8 +17,10 @@ import javax.net.ssl.SSLSocketFactory;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 
-import dk.aau.netsec.hostage.location.MyLocationManager;
+import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.AttackRecord;
 import dk.aau.netsec.hostage.logging.Logger;
 import dk.aau.netsec.hostage.logging.NetworkRecord;
@@ -398,12 +400,17 @@ public class Listener implements Runnable {
         NetworkRecord networkRecord = new NetworkRecord();
         networkRecord.setBssid(connInfo.getString(service.getString(R.string.connection_info_bssid), null));
         networkRecord.setSsid(connInfo.getString(service.getString(R.string.connection_info_ssid), null));
-        if (MyLocationManager.getNewestLocation() != null) {
-            networkRecord.setLatitude(MyLocationManager.getNewestLocation().getLatitude());
-            networkRecord.setLongitude(MyLocationManager.getNewestLocation().getLongitude());
-            networkRecord.setAccuracy(MyLocationManager.getNewestLocation().getAccuracy());
-            networkRecord.setTimestampLocation(MyLocationManager.getNewestLocation().getTime());
-        } else {
+
+        try {
+            Location latestLocation = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
+
+            networkRecord.setLatitude(latestLocation.getLatitude());
+            networkRecord.setLongitude(latestLocation.getLongitude());
+            networkRecord.setAccuracy(latestLocation.getAccuracy());
+            networkRecord.setTimestampLocation(latestLocation.getTime());
+        }
+
+        catch (LocationException le){
             networkRecord.setLatitude(0.0);
             networkRecord.setLongitude(0.0);
             networkRecord.setAccuracy(Float.MAX_VALUE);

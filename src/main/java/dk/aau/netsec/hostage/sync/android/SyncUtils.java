@@ -54,7 +54,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import dk.aau.netsec.hostage.location.MyLocationManager;
+import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.NetworkRecord;
 import dk.aau.netsec.hostage.logging.Record;
 import dk.aau.netsec.hostage.logging.RecordAll;
@@ -332,7 +333,7 @@ public class SyncUtils {
 
             String country = null;
 
-            Location location = MyLocationManager.getNewestLocation();
+            Location location = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
 
             if(location != null){
                 Geocoder geocoder = new Geocoder(context, Locale.getDefault());
@@ -443,6 +444,9 @@ public class SyncUtils {
             return null;
         } catch (org.json.JSONException jsonException){
             jsonException.printStackTrace();
+            return null;
+        } catch (LocationException le){
+            le.printStackTrace();
             return null;
         }
     }
@@ -556,12 +560,16 @@ public class SyncUtils {
         query.put("start", fromCalendar(calendar));
 
         if(fromPosition){
-            Location location = MyLocationManager.getNewestLocation();
+            try {
+                Location location = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
 
-            if(location != null) {
                 query.put("latitude", String.valueOf(location.getLatitude()));
                 query.put("longitude", String.valueOf(location.getLongitude()));
                 query.put("distance", "300");
+
+            }
+            catch (LocationException le){
+
             }
         }
 

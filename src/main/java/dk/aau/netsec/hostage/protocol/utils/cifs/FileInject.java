@@ -2,6 +2,7 @@ package dk.aau.netsec.hostage.protocol.utils.cifs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 
@@ -13,7 +14,8 @@ import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.Listener;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.commons.HelperUtils;
-import dk.aau.netsec.hostage.location.MyLocationManager;
+import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.AttackRecord;
 import dk.aau.netsec.hostage.logging.Logger;
 import dk.aau.netsec.hostage.logging.MessageRecord;
@@ -114,12 +116,16 @@ public class FileInject {
         NetworkRecord record = new NetworkRecord();
         record.setBssid(BSSID);
         record.setSsid(SSID);
-        if (MyLocationManager.getNewestLocation() != null) {
-            record.setLatitude(MyLocationManager.getNewestLocation().getLatitude());
-            record.setLongitude(MyLocationManager.getNewestLocation().getLongitude());
-            record.setAccuracy(MyLocationManager.getNewestLocation().getAccuracy());
-            record.setTimestampLocation(MyLocationManager.getNewestLocation().getTime());
-        } else {
+
+        try{
+            Location latestLocation = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
+
+            record.setLatitude(latestLocation.getLatitude());
+            record.setLongitude(latestLocation.getLongitude());
+            record.setAccuracy(latestLocation.getAccuracy());
+            record.setTimestampLocation(latestLocation.getTime());
+        }
+        catch (LocationException le){
             record.setLatitude(0.0);
             record.setLongitude(0.0);
             record.setAccuracy(Float.MAX_VALUE);

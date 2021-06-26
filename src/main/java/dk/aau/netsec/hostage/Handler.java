@@ -10,13 +10,15 @@ import java.util.UUID;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 
 import androidx.preference.PreferenceManager;
 
 import dk.aau.netsec.hostage.commons.HelperUtils;
 import dk.aau.netsec.hostage.commons.SubnetUtils;
+import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.publisher.PublishHelper;
-import dk.aau.netsec.hostage.location.MyLocationManager;
 import dk.aau.netsec.hostage.logging.AttackRecord;
 import dk.aau.netsec.hostage.logging.Logger;
 import dk.aau.netsec.hostage.logging.MessageRecord;
@@ -333,12 +335,17 @@ public class Handler implements Runnable {
 		NetworkRecord record = new NetworkRecord();
 		record.setBssid(BSSID);
 		record.setSsid(SSID);
-		if (MyLocationManager.getNewestLocation() != null) {
-			record.setLatitude(MyLocationManager.getNewestLocation().getLatitude());
-			record.setLongitude(MyLocationManager.getNewestLocation().getLongitude());
-			record.setAccuracy(MyLocationManager.getNewestLocation().getAccuracy());
-			record.setTimestampLocation(MyLocationManager.getNewestLocation().getTime());
-		} else {
+
+		try {
+			Location latestLocation = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
+//		}
+//		if (MyLocationManager.getNewestLocation() != null) {
+			record.setLatitude(latestLocation.getLatitude());
+			record.setLongitude(latestLocation.getLongitude());
+			record.setAccuracy(latestLocation.getAccuracy());
+			record.setTimestampLocation(latestLocation.getTime());
+
+		} catch (LocationException le){
 			record.setLatitude(0.0);
 			record.setLongitude(0.0);
 			record.setAccuracy(Float.MAX_VALUE);

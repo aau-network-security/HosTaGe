@@ -45,6 +45,8 @@ import java.util.List;
 
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
+import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.location.MyLocationManager;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.system.Device;
@@ -75,7 +77,8 @@ import eu.chainfire.libsuperuser.Shell;
 public class MainActivity extends AppCompatActivity {
     private static WeakReference<Context> context;
 
-    private MyLocationManager locationManager;
+//    private MyLocationManager locationManager;
+    private FilipsLocationManager filipsLocationManager;
 
     /**
      * singleton instance of the MainActivity with WeakReference to avoid Memory leaks
@@ -223,17 +226,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (locationManager != null)
-            locationManager.stopUpdates();
+//        if (locationManager != null)
+//            locationManager.stopUpdates();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (locationManager != null) {
-            locationManager.getUpdates(60 * 1000, 3, getContext());
-        }
+        Log.e("filipko", "onResume called");
+
+//        if (locationManager != null) {
+//            try {
+//                locationManager.getUpdates(60 * 1000, 3, getContext());
+//            }
+//            catch (SecurityException se){
+//                Log.e("filipko", "No location for me today");
+//            }
+//        }
     }
 
     /**
@@ -243,8 +253,8 @@ public class MainActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         this.unbindService();
-        if (locationManager != null)
-            locationManager.stopUpdates();
+//        if (locationManager != null)
+//            locationManager.stopUpdates();
     }
 
     /**
@@ -253,11 +263,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (locationManager != null) {
-            locationManager.stopUpdates();
-            locationManager = null;
-        }
-        // Unbind running service
+//        if (locationManager != null) {
+//            locationManager.stopUpdates();
+//            locationManager = null;
+//        }
+        // /Unbind running service
         if (!mHoneyService.hasRunningListeners()) {
             stopAndUnbind();
         }
@@ -465,8 +475,22 @@ public class MainActivity extends AppCompatActivity {
      * class.
      */
     private void getLocationData() {
-        locationManager = new MyLocationManager(this);
-        locationManager.getUpdates(60 * 1000, 3, getContext());
+        filipsLocationManager = new FilipsLocationManager(this);
+        try {
+            filipsLocationManager.getLatestLocation();
+
+        }
+        catch (LocationException le){
+//            TODO handle if user does not grant location permission
+            Log.e("filipko", "Location permission not granted.");
+        }
+//        locationManager = new MyLocationManager(this);
+//        try {
+//            locationManager.getUpdates(60 * 1000, 3, getContext());
+//        }
+//        catch (SecurityException se){
+//            Log.e("Filipko", "No location for me today");
+//        }
     }
 
     /**
@@ -868,13 +892,12 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    private void askBackgroundPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_BACKGROUND_LOCATION}, LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
-            }
-        }
-    }
+//    private void askBackgroundPermission() {
+//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_BACKGROUND_LOCATION}, LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
+//            }
+//        }
+//    }
 
     /**
      * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
@@ -888,18 +911,31 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case LOCATION_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    locationManager.initializeNewestLocation();
-                    askBackgroundPermission();
+
+                    filipsLocationManager.permissionGrantedCallback();
+
+                    filipsLocationManager.requestBackgroundLocation();
+
+                    try {
+                        filipsLocationManager.startUpdatingLocation();
+                    }
+                    catch (LocationException le){
+                        // TODO handle if no provider is enabled (can happen) or location permission is not granted (should not happen)
+                    }
+//                    locationManager.initializeNewestLocation();
+//                    locationManager.checkIfBackgroundLocationGranted();
                 } else {
-                    denyPermissionDialog(getResources().getString(R.string.location_permission_message));
+                    filipsLocationManager.userHasDeniedLocation();
+//                    TODO handle case if user does not grant location permission
+//                    denyPermissionDialog(getResources().getString(R.string.location_permission_message));
                 }
                 break;
             }
             case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    String message = "If you don't allow the Background Location permission the app won't have your " +
-                            "location when it is running on the background and the previous features won't work.";
-                    denyPermissionDialog(getResources().getString(R.string.background_location_permission_message));
+                    filipsLocationManager.userHasDeniedLocation();
+
+//                    denyPermissionDialog(getResources().getString(R.string.background_location_permission_message));
                 }
                 break;
             }

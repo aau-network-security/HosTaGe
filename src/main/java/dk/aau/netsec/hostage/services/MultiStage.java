@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
 
@@ -20,7 +21,8 @@ import java.util.List;
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
-import dk.aau.netsec.hostage.location.MyLocationManager;
+import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.AttackRecord;
 import dk.aau.netsec.hostage.logging.DaoSession;
 import dk.aau.netsec.hostage.logging.Logger;
@@ -139,12 +141,14 @@ public class MultiStage extends Service {
         NetworkRecord networkRecord = new NetworkRecord();
         networkRecord.setBssid(bssid);
         networkRecord.setSsid(ssid);
-        if (MyLocationManager.getNewestLocation() != null) {
-            networkRecord.setLatitude(MyLocationManager.getNewestLocation().getLatitude());
-            networkRecord.setLongitude(MyLocationManager.getNewestLocation().getLongitude());
-            networkRecord.setAccuracy(MyLocationManager.getNewestLocation().getAccuracy());
-            networkRecord.setTimestampLocation(MyLocationManager.getNewestLocation().getTime());
-        } else {
+        try{
+            Location latestLocation = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
+            networkRecord.setLatitude(latestLocation.getLatitude());
+            networkRecord.setLongitude(latestLocation.getLongitude());
+            networkRecord.setAccuracy(latestLocation.getAccuracy());
+            networkRecord.setTimestampLocation(latestLocation.getTime());
+        }
+        catch (LocationException le){
             networkRecord.setLatitude(0.0);
             networkRecord.setLongitude(0.0);
             networkRecord.setAccuracy(Float.MAX_VALUE);
