@@ -47,7 +47,6 @@ import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.location.FilipsLocationManager;
 import dk.aau.netsec.hostage.location.LocationException;
-import dk.aau.netsec.hostage.location.MyLocationManager;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.system.Device;
 import dk.aau.netsec.hostage.system.iptablesUtils.Api;

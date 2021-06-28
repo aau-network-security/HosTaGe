@@ -13,7 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.maps.LocationSource;
+
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
@@ -30,6 +37,7 @@ public class FilipsLocationManager {
     private LocationManager mLocationManager;
     private Consumer<Location> mLocationConsumer;
     private boolean locationPermissionDenied;
+    Set<LocationSource.OnLocationChangedListener> listOfListeners;
 
     private static WeakReference<FilipsLocationManager> mLocationManagerInstance;
 
@@ -39,12 +47,19 @@ public class FilipsLocationManager {
         mContext = context;
         mLocationManagerInstance = new WeakReference<>(this);
 
+        listOfListeners = new HashSet<>();
+
         mLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
 
+//                if (true) { //only for testing
                 if (isBetterLocation(location)) {
                     mLatestLocation = location;
+
+                    for (LocationSource.OnLocationChangedListener listener : listOfListeners){
+                        listener.onLocationChanged(location);
+                    }
                 }
             }
         };
@@ -55,7 +70,6 @@ public class FilipsLocationManager {
                 mLatestLocation = location;
             }
         };
-
 
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
@@ -159,6 +173,9 @@ public class FilipsLocationManager {
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermission();
         }
+        else{
+            permissionGrantedCallback();
+        }
     }
 
     private void requestLocationPermission() {
@@ -239,5 +256,22 @@ public class FilipsLocationManager {
         return accuracyDelta < 0;
     }
 
+    public void registerCustomLocationListener(LocationSource.OnLocationChangedListener listener){
+        listOfListeners.add(listener);
+    }
+
+    public void unregisterCustomLocationListener(LocationSource.OnLocationChangedListener listener){
+        try{
+            listOfListeners.remove(listener);
+        }
+        catch (NoSuchElementException nse){
+            nse.printStackTrace();
+        }
+    }
+
+//    public interface CustomLocationListener{
+//
+//        public void locationUpdated(Location location);
+//    }
 
 }

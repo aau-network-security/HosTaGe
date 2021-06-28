@@ -39,10 +39,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -52,6 +54,9 @@ import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.commons.HelperUtils;
+import dk.aau.netsec.hostage.location.CustomLocationSource;
+import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.DaoSession;
 import dk.aau.netsec.hostage.logging.RecordAll;
 import dk.aau.netsec.hostage.persistence.DAO.DAOHelper;
@@ -64,8 +69,7 @@ import dk.aau.netsec.hostage.ui.model.LogFilter;
  * <p>
  * Created by Fabio Arnold on 10.02.14.
  */
-public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback,
-        LocationListener {
+public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, LocationSource.OnLocationChangedListener {
 
     private GoogleMap sMap = null;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
@@ -73,13 +77,13 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
     private View rootView = null;
     private Thread mLoader = null;
     private HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
-    private LocationManager mLocationManager;
     private String mLocationProvider;
     private LayoutInflater inflater;
 
     // needed for LIVE threat map
     private boolean mReceiverRegistered = false;
     private BroadcastReceiver mReceiver;
+    private FilipsLocationManager mLocationManager;
 
     /**
      * if google play services aren't available an error notification will be displayed
@@ -148,27 +152,26 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
     }
 
-    /**
-     * callbacks from LocationClient
-     */
-
     @Override
-    public void onLocationChanged(Location location) {
-        sMap.animateCamera(CameraUpdateFactory.newLatLng(
-                new LatLng(location.getLatitude(), location.getLongitude())));
+    public void onLocationChanged(@NonNull  Location location) {
+        animateMapToUserLocation();
     }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-    }
+//    @Override
+//    public void locationUpdated(Location location) {
+//
+//        moveCameraToCurrentLocation(location);
+//        sMap.animateCamera(CameraUpdateFactory.newLatLng(
+//                new LatLng(location.getLatitude(), location.getLongitude())));
+//    }
 
-    @Override
-    public void onProviderEnabled(String provider) {
-    }
 
-    @Override
-    public void onProviderDisabled(String provider) {
-    }
+//    @Override
+//    public void onLocationChanged(Location location) {
+//        sMap.animateCamera(CameraUpdateFactory.newLatLng(
+//                new LatLng(location.getLatitude(), location.getLongitude())));
+//    }
+
 
 
     /**
@@ -408,18 +411,18 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
 
     private void requestPermissionUpdates() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-
-            return;
-        }
-        mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
-        sMap.setMyLocationEnabled(true);
-
-        Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        moveCameraToCurrentLocation(currentLocation);
+//        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
+//                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+//
+//            return;
+//        }
+//        mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
+//        sMap.setMyLocationEnabled(true);
+//
+//        Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//        moveCameraToCurrentLocation(currentLocation);
     }
 
     private void setInfoWindowAdapter() {
@@ -442,37 +445,68 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
                 return view;
             }
         });
-        locationChecker();
-    }
 
-    private void locationChecker() {
-        final AppCompatActivity activity = (AppCompatActivity) getActivity();
-        mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        mLocationProvider = mLocationManager.getBestProvider(criteria, false);
-        requestPermissionUpdates();
+//        locationChecker();
+
         populateMap();
         registerBroadcastReceiver();
     }
 
-    private void moveCameraToCurrentLocation(Location currentLocation) {
-        //LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
-        LatLng newLocation;
-        if (currentLocation == null) {
-            newLocation = new LatLng(55.65082108870564, 12.542137232882569);
-        } else {
-            newLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-        }
-        sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 13));
-    }
+//    private void locationChecker() {
+//        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+//        mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+//        Criteria criteria = new Criteria();
+//        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+//        mLocationProvider = mLocationManager.getBestProvider(criteria, false);
+//        requestPermissionUpdates();
+//    }
+
+//    private void moveCameraToCurrentLocation(Location currentLocation) {
+//        //LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
+//
+//
+//        LatLng newLocation;
+//        if (currentLocation == null) {
+//            newLocation = new LatLng(55.65082108870564, 12.542137232882569);
+//        } else {
+//            newLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+//        }
+//        sMap.animateCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 13));
+////        sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 13));
+//    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         sMap = googleMap;
+        sMap.setLocationSource(new CustomLocationSource(mLocationManager));
+        sMap.setMyLocationEnabled(true);
+
         sMap.getUiSettings().setZoomControlsEnabled(true);
         sMap.setOnInfoWindowClickListener(this);
         setInfoWindowAdapter();
+
+        animateMapToUserLocation();
+    }
+
+    public void animateMapToUserLocation(){
+        try {
+            Location userLocation = mLocationManager.getLatestLocation();
+
+            if (userLocation != null) {
+                LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+
+                sMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(userLatLng, 13)));
+            }
+            else{
+                //We don't have location yet, too bad let's wait a little
+                return;
+            }
+        }
+
+        catch (LocationException le){
+            le.printStackTrace();
+            //TODO handle maybe?
+        }
     }
 
     @Override
@@ -483,20 +517,37 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
             // repopulate
             populateMap();
         }
-        if (mLocationManager != null) {
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
 
-                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        mLocationManager = FilipsLocationManager.getLocationManagerInstance();
 
-                return;
-            }
-            if (mLocationProvider != null) {
-
-                mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
-            }
+        if (mLocationManager == null){
+//            TODO check if this is ok and works reliably
+            mLocationManager = new FilipsLocationManager(getContext());
         }
+
+        mLocationManager.registerCustomLocationListener(this);
+
+        try {
+            mLocationManager.startUpdatingLocation();
+        }
+        catch (LocationException le){
+            le.printStackTrace();
+            // TODO handle if user did not grant location permission
+        }
+//        if (mLocationManager != null) {
+//            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+//                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+//                    != PackageManager.PERMISSION_GRANTED) {
+//
+//                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+//
+//                return;
+//            }
+//            if (mLocationProvider != null) {
+//
+//                mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
+//            }
+//        }
     }
 
 
@@ -513,39 +564,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
                     )
                     .setIcon(android.R.drawable.ic_dialog_info).show();
         }
-
-    }
-
-    /**
-     * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
-     *
-     * @param requestCode  the code of the Permission
-     * @param permissions  Get's the location Permission.
-     * @param grantResults Takes any results.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-
-            } else {
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.getInstance(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext());
-                    dialog.setTitle("Permission Required");
-                    dialog.setCancelable(false);
-                    dialog.setMessage("You have to Allow permission to access user location");
-                    dialog.setPositiveButton("Settings", (dialog1, which) -> {
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                Uri.fromParts("package", Hostage.getContext().getPackageName(), null));
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                    });
-                    androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
-                    alertDialog.show();
-                }
-            }
-        }
     }
 
     @Override
@@ -553,17 +571,19 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
         super.onStop();
         if (mReceiver != null)
             unregisterBroadcastReceiver();
-        if (mLocationManager != null) {
-            mLocationManager.removeUpdates(this);
-        }
+//        if (mLocationManager != null) {
+//            mLocationManager.removeUpdates(this);
+//        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mLocationManager != null) {
-            mLocationManager.removeUpdates(this);
-        }
+
+        mLocationManager.unregisterCustomLocationListener(this);
+//        if (mLocationManager != null) {
+//            mLocationManager.removeUpdates(this);
+//        }
     }
 
     @Override
@@ -571,9 +591,9 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
         super.onDestroy();
         unbindDrawables(mapView);
         unregisterBroadcastReceiver();
-        if (mLocationManager != null) {
-            mLocationManager.removeUpdates(this);
-        }
+//        if (mLocationManager != null) {
+//            mLocationManager.removeUpdates(this);
+//        }
     }
 
     private void unbindDrawables(View view) {
