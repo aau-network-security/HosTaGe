@@ -19,7 +19,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 
-import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
 import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.AttackRecord;
 import dk.aau.netsec.hostage.logging.Logger;
@@ -404,7 +404,7 @@ public class Listener implements Runnable {
         networkRecord.setSsid(connInfo.getString(service.getString(R.string.connection_info_ssid), null));
 
         try {
-            Location latestLocation = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
+            Location latestLocation = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
 
             networkRecord.setLatitude(latestLocation.getLatitude());
             networkRecord.setLongitude(latestLocation.getLongitude());

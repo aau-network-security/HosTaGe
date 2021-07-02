@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
 import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.NetworkRecord;
 import dk.aau.netsec.hostage.logging.Record;
@@ -333,7 +333,7 @@ public class SyncUtils {
 
             String country = null;
 
-            Location location = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
+            Location location = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
 
             if (location != null) {
                 Geocoder geocoder = new Geocoder(context, Locale.getDefault());
@@ -562,7 +562,7 @@ public class SyncUtils {
 
         if (fromPosition) {
             try {
-                Location location = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
+                Location location = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
 
                 query.put("latitude", String.valueOf(location.getLatitude()));
                 query.put("longitude", String.valueOf(location.getLongitude()));

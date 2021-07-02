@@ -21,7 +21,7 @@ import java.util.List;
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
-import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
 import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.AttackRecord;
 import dk.aau.netsec.hostage.logging.DaoSession;
@@ -142,7 +142,7 @@ public class MultiStage extends Service {
         networkRecord.setBssid(bssid);
         networkRecord.setSsid(ssid);
         try {
-            Location latestLocation = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
+            Location latestLocation = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
             networkRecord.setLatitude(latestLocation.getLatitude());
             networkRecord.setLongitude(latestLocation.getLongitude());
             networkRecord.setAccuracy(latestLocation.getAccuracy());

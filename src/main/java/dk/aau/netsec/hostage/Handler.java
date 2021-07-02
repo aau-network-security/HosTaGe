@@ -16,7 +16,7 @@ import androidx.preference.PreferenceManager;
 
 import dk.aau.netsec.hostage.commons.HelperUtils;
 import dk.aau.netsec.hostage.commons.SubnetUtils;
-import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
 import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.publisher.PublishHelper;
 import dk.aau.netsec.hostage.logging.AttackRecord;
@@ -333,7 +333,7 @@ public class Handler implements Runnable {
         record.setSsid(SSID);
 
         try {
-            Location latestLocation = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
+            Location latestLocation = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
 //		}
 //		if (MyLocationManager.getNewestLocation() != null) {
             record.setLatitude(latestLocation.getLatitude());

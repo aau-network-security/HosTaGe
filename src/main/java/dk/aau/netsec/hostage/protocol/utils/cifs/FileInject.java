@@ -14,7 +14,7 @@ import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.Listener;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.commons.HelperUtils;
-import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
 import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.AttackRecord;
 import dk.aau.netsec.hostage.logging.Logger;
@@ -118,7 +118,7 @@ public class FileInject {
         record.setSsid(SSID);
 
         try {
-            Location latestLocation = FilipsLocationManager.getLocationManagerInstance().getLatestLocation();
+            Location latestLocation = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
 
             record.setLatitude(latestLocation.getLatitude());
             record.setLongitude(latestLocation.getLongitude());

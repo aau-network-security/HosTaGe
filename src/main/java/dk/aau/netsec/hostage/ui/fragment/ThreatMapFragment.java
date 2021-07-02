@@ -5,22 +5,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 
-import android.provider.Settings;
 import android.text.Html;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -32,7 +26,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -50,12 +43,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.commons.HelperUtils;
 import dk.aau.netsec.hostage.location.CustomLocationSource;
-import dk.aau.netsec.hostage.location.FilipsLocationManager;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
 import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.DaoSession;
 import dk.aau.netsec.hostage.logging.RecordAll;
@@ -83,7 +75,140 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
     // needed for LIVE threat map
     private boolean mReceiverRegistered = false;
     private BroadcastReceiver mReceiver;
-    private FilipsLocationManager mLocationManager;
+    private CustomLocationManager mLocationManager;
+
+    /**
+     * performs initialization
+     * checks if google play services are supported
+     * view must be removed if this object has been created once before
+     * that is why view is static
+     *
+     * @param inflater           the inflater
+     * @param container          the container
+     * @param savedInstanceState the savedInstanceState
+     * @return the view
+     */
+    @Override
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.setTitle(getResources().getString(R.string.drawer_threat_map));
+        }
+
+        rootView = inflater.inflate(R.layout.fragment_threatmap, container, false);
+        this.inflater = inflater;
+
+        if (rootView != null) {
+            ViewGroup parent = (ViewGroup) rootView.getParent();
+            if (parent != null) {
+                parent.removeView(rootView);
+            }
+        }
+
+        try {
+            if (isGooglePlay()) {
+                if (rootView != null)
+                    mapView = rootView
+                            .findViewById(R.id.threatmapfragment);
+                if (mapView != null) {
+                    mapView.onCreate(savedInstanceState);
+                    mapView.getMapAsync(this);
+                    mapView.onResume();
+                }
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.getInstance());
+                builder.setMessage(Html.fromHtml(getString(R.string.google_play_services_unavailable)))
+                        .setCancelable(false)
+                        .setPositiveButton(getString(R.string.ok), (dialog, id) -> {
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        } catch (InflateException e) {
+            // map already exists
+            e.printStackTrace();
+        }
+
+        // tell the user to enable wifi so map data can be streamed
+        networkConnectionCheck();
+
+        return rootView;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * On Resume repopulate map with attack data and register a Location Listener to start periodic
+     * location updates.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerBroadcastReceiver();
+        if (sMap != null) {
+            // repopulate
+            populateMap();
+        }
+
+        try {
+            mLocationManager = CustomLocationManager.getLocationManagerInstance(getContext());
+
+            mLocationManager.registerCustomLocationListener(this);
+        } catch (LocationException le) {
+            le.printStackTrace();
+            // TODO handle if user did not grant location permission
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * On Pause deregister Location Listener to stop receiving periodic location updates.
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        mLocationManager.unregisterCustomLocationListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mReceiver != null)
+            unregisterBroadcastReceiver();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbindDrawables(mapView);
+        unregisterBroadcastReceiver();
+    }
+
+    /**
+     * Once map is ready, make it use {@link CustomLocationSource} as the location source. Set it
+     * to track user's location and move the map position to current user location.
+     *
+     * @param googleMap
+     */
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        sMap = googleMap;
+        sMap.setLocationSource(new CustomLocationSource(mLocationManager));
+        sMap.setMyLocationEnabled(true);
+
+        sMap.getUiSettings().setZoomControlsEnabled(true);
+        sMap.setOnInfoWindowClickListener(this);
+        setInfoWindowAdapter();
+
+        animateMapToUserLocation();
+    }
 
     /**
      * if google play services aren't available an error notification will be displayed
@@ -149,109 +274,16 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
         recordOverviewFragment.setAllowBack(true);
 
         MainActivity.getInstance().injectFragment(recordOverviewFragment);
-
     }
 
+    /**
+     * When new location is received, move map position to the new location.
+     *
+     * @param location updated location
+     */
     @Override
-    public void onLocationChanged(@NonNull  Location location) {
+    public void onLocationChanged(@NonNull Location location) {
         animateMapToUserLocation();
-    }
-
-//    @Override
-//    public void locationUpdated(Location location) {
-//
-//        moveCameraToCurrentLocation(location);
-//        sMap.animateCamera(CameraUpdateFactory.newLatLng(
-//                new LatLng(location.getLatitude(), location.getLongitude())));
-//    }
-
-
-//    @Override
-//    public void onLocationChanged(Location location) {
-//        sMap.animateCamera(CameraUpdateFactory.newLatLng(
-//                new LatLng(location.getLatitude(), location.getLongitude())));
-//    }
-
-
-
-    /**
-     * helper class
-     * easier to use than LatLng
-     */
-    private class Point {
-
-        public double x, y;
-
-        public Point(double sx, double sy) {
-            x = sx;
-            y = sy;
-        }
-    }
-
-    /**
-     * helper class
-     * contains heuristic to split SSIDs by hostage.location
-     * see MAX_DISTANCE
-     */
-    private class SSIDArea {
-
-        private Point mMinimum, mMaximum;
-
-        public int numPoints;
-
-        public static final int MAX_NUM_ATTACKS = 20;
-
-        public static final float MAX_DISTANCE = 1000.0f; // 1km
-
-        public SSIDArea(LatLng initialLocation) {
-            mMinimum = new Point(initialLocation.latitude, initialLocation.longitude);
-            mMaximum = new Point(initialLocation.latitude, initialLocation.longitude);
-            numPoints = 1;
-        }
-
-        public boolean doesLocationBelongToArea(LatLng location) {
-            LatLng center = calculateCenterLocation();
-            float[] result = new float[1];
-            Location.distanceBetween(center.latitude, center.longitude, location.latitude,
-                    location.longitude, result);
-            return result[0] < MAX_DISTANCE;
-        }
-
-        public void addLocation(LatLng location) {
-            Point point = new Point(location.latitude, location.longitude);
-            if (point.x < mMinimum.x) {
-                mMinimum.x = point.x;
-            }
-            if (point.x > mMaximum.x) {
-                mMaximum.x = point.x;
-            }
-            if (point.y < mMinimum.y) {
-                mMinimum.y = point.y;
-            }
-            if (point.y > mMaximum.y) {
-                mMaximum.y = point.y;
-            }
-            numPoints++;
-        }
-
-        public LatLng calculateCenterLocation() {
-            return new LatLng(0.5 * (mMinimum.x + mMaximum.x), 0.5 * (mMinimum.y + mMaximum.y));
-        }
-
-        public float calculateRadius() {
-            float[] result = new float[1];
-            Location.distanceBetween(mMinimum.x, mMinimum.y, mMaximum.x, mMaximum.y, result);
-            return 0.5f * result[0];
-        }
-
-        public int calculateColor() {
-            int threatLevel = numPoints;
-            if (threatLevel > MAX_NUM_ATTACKS) {
-                threatLevel = MAX_NUM_ATTACKS;
-            }
-            float alpha = 1.0f - (float) (threatLevel - 1) / (float) (MAX_NUM_ATTACKS - 1);
-            return Color.argb(127, (int) (240.0 + 15.0 * alpha), (int) (80.0 + 175.0 * alpha), 60);
-        }
     }
 
     /**
@@ -349,82 +381,8 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
     }
 
     /**
-     * performs initialization
-     * checks if google play services are supported
-     * view must be removed if this object has been created once before
-     * that is why view is static
-     *
-     * @param inflater           the inflater
-     * @param container          the container
-     * @param savedInstanceState the savedInstanceState
-     * @return the view
+     * TODO write javadoc
      */
-    @Override
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-
-        final AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity != null) {
-            activity.setTitle(getResources().getString(R.string.drawer_threat_map));
-        }
-
-        rootView = inflater.inflate(R.layout.fragment_threatmap, container, false);
-        this.inflater = inflater;
-
-        if (rootView != null) {
-            ViewGroup parent = (ViewGroup) rootView.getParent();
-            if (parent != null) {
-                parent.removeView(rootView);
-            }
-        }
-
-        try {
-            if (isGooglePlay()) {
-                if (rootView != null)
-                    mapView = rootView
-                            .findViewById(R.id.threatmapfragment);
-                if (mapView != null) {
-                    mapView.onCreate(savedInstanceState);
-                    mapView.getMapAsync(this);
-                    mapView.onResume();
-                }
-            } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.getInstance());
-                builder.setMessage(Html.fromHtml(getString(R.string.google_play_services_unavailable)))
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.ok), (dialog, id) -> {
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-        } catch (InflateException e) {
-            // map already exists
-            e.printStackTrace();
-        }
-
-        // tell the user to enable wifi so map data can be streamed
-        networkConnectionCheck();
-
-        return rootView;
-    }
-
-
-    private void requestPermissionUpdates() {
-//        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
-//                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-//
-//            return;
-//        }
-//        mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
-//        sMap.setMyLocationEnabled(true);
-//
-//        Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//        moveCameraToCurrentLocation(currentLocation);
-    }
-
     private void setInfoWindowAdapter() {
         sMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
@@ -446,111 +404,35 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
             }
         });
 
-//        locationChecker();
-
         populateMap();
         registerBroadcastReceiver();
     }
 
-//    private void locationChecker() {
-//        final AppCompatActivity activity = (AppCompatActivity) getActivity();
-//        mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-//        Criteria criteria = new Criteria();
-//        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-//        mLocationProvider = mLocationManager.getBestProvider(criteria, false);
-//        requestPermissionUpdates();
-//    }
-
-//    private void moveCameraToCurrentLocation(Location currentLocation) {
-//        //LatLng tudarmstadt = new LatLng(49.86923, 8.6632768); // default hostage.location
-//
-//
-//        LatLng newLocation;
-//        if (currentLocation == null) {
-//            newLocation = new LatLng(55.65082108870564, 12.542137232882569);
-//        } else {
-//            newLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-//        }
-//        sMap.animateCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 13));
-////        sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 13));
-//    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        sMap = googleMap;
-        sMap.setLocationSource(new CustomLocationSource(mLocationManager));
-        sMap.setMyLocationEnabled(true);
-
-        sMap.getUiSettings().setZoomControlsEnabled(true);
-        sMap.setOnInfoWindowClickListener(this);
-        setInfoWindowAdapter();
-
-        animateMapToUserLocation();
-    }
-
-    public void animateMapToUserLocation(){
+    /**
+     * Move map view smoothly to a new location.
+     */
+    private void animateMapToUserLocation() {
         try {
+            // Retrieve latest location
             Location userLocation = mLocationManager.getLatestLocation();
 
-            if (userLocation != null) {
+            // If success, animate map smoothly
+            if (userLocation != null && sMap != null) {
                 LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-
                 sMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(userLatLng, 13)));
-            }
-            else{
-                //We don't have location yet, too bad let's wait a little
+
+            // Location is probably not ready yet, do nothing.
+            } else {
                 return;
             }
-        }
-
-        catch (LocationException le){
+        } catch (LocationException le) {
             le.printStackTrace();
-            //TODO handle maybe?
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        registerBroadcastReceiver();
-        if (sMap != null) {
-            // repopulate
-            populateMap();
-        }
-
-        mLocationManager = FilipsLocationManager.getLocationManagerInstance();
-
-        if (mLocationManager == null){
-//            TODO check if this is ok and works reliably
-            mLocationManager = new FilipsLocationManager(getContext());
-        }
-
-        mLocationManager.registerCustomLocationListener(this);
-
-        try {
-            mLocationManager.startUpdatingLocation();
-        }
-        catch (LocationException le){
-            le.printStackTrace();
-            // TODO handle if user did not grant location permission
-        }
-//        if (mLocationManager != null) {
-//            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-//                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-//                    != PackageManager.PERMISSION_GRANTED) {
-//
-//                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-//
-//                return;
-//            }
-//            if (mLocationProvider != null) {
-//
-//                mLocationManager.requestLocationUpdates(mLocationProvider, 0, 1000.0f, this);
-//            }
-//        }
-    }
-
-
+    /**
+     * TODO write javadoc
+     */
     private void networkConnectionCheck() {
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
 
@@ -566,36 +448,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mReceiver != null)
-            unregisterBroadcastReceiver();
-//        if (mLocationManager != null) {
-//            mLocationManager.removeUpdates(this);
-//        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        mLocationManager.unregisterCustomLocationListener(this);
-//        if (mLocationManager != null) {
-//            mLocationManager.removeUpdates(this);
-//        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unbindDrawables(mapView);
-        unregisterBroadcastReceiver();
-//        if (mLocationManager != null) {
-//            mLocationManager.removeUpdates(this);
-//        }
-    }
-
     private void unbindDrawables(View view) {
         if (view.getBackground() != null) {
             view.getBackground().setCallback(null);
@@ -607,4 +459,85 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
             ((ViewGroup) view).removeAllViews();
         }
     }
+
+    /**
+     * helper class
+     * easier to use than LatLng
+     */
+    private class Point {
+
+        public double x, y;
+
+        public Point(double sx, double sy) {
+            x = sx;
+            y = sy;
+        }
+    }
+
+    /**
+     * helper class
+     * contains heuristic to split SSIDs by hostage.location
+     * see MAX_DISTANCE
+     */
+    private class SSIDArea {
+
+        private Point mMinimum, mMaximum;
+
+        public int numPoints;
+
+        public static final int MAX_NUM_ATTACKS = 20;
+
+        public static final float MAX_DISTANCE = 1000.0f; // 1km
+
+        public SSIDArea(LatLng initialLocation) {
+            mMinimum = new Point(initialLocation.latitude, initialLocation.longitude);
+            mMaximum = new Point(initialLocation.latitude, initialLocation.longitude);
+            numPoints = 1;
+        }
+
+        public boolean doesLocationBelongToArea(LatLng location) {
+            LatLng center = calculateCenterLocation();
+            float[] result = new float[1];
+            Location.distanceBetween(center.latitude, center.longitude, location.latitude,
+                    location.longitude, result);
+            return result[0] < MAX_DISTANCE;
+        }
+
+        public void addLocation(LatLng location) {
+            Point point = new Point(location.latitude, location.longitude);
+            if (point.x < mMinimum.x) {
+                mMinimum.x = point.x;
+            }
+            if (point.x > mMaximum.x) {
+                mMaximum.x = point.x;
+            }
+            if (point.y < mMinimum.y) {
+                mMinimum.y = point.y;
+            }
+            if (point.y > mMaximum.y) {
+                mMaximum.y = point.y;
+            }
+            numPoints++;
+        }
+
+        public LatLng calculateCenterLocation() {
+            return new LatLng(0.5 * (mMinimum.x + mMaximum.x), 0.5 * (mMinimum.y + mMaximum.y));
+        }
+
+        public float calculateRadius() {
+            float[] result = new float[1];
+            Location.distanceBetween(mMinimum.x, mMinimum.y, mMaximum.x, mMaximum.y, result);
+            return 0.5f * result[0];
+        }
+
+        public int calculateColor() {
+            int threatLevel = numPoints;
+            if (threatLevel > MAX_NUM_ATTACKS) {
+                threatLevel = MAX_NUM_ATTACKS;
+            }
+            float alpha = 1.0f - (float) (threatLevel - 1) / (float) (MAX_NUM_ATTACKS - 1);
+            return Color.argb(127, (int) (240.0 + 15.0 * alpha), (int) (80.0 + 175.0 * alpha), 60);
+        }
+    }
+
 }
