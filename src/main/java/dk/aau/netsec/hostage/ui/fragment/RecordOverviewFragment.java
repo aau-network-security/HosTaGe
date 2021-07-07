@@ -492,6 +492,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
                     RecordOverviewFragment.this.getActivity().startService(intent);
                 });
+				builderExport.setIcon(R.drawable.ic_baseline_save_24);
 				builderExport.create();
 				builderExport.show();
 
