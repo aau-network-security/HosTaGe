@@ -407,14 +407,14 @@ public class MainActivity extends AppCompatActivity {
 
 		// propagates the navigation drawer with items
 		mDrawerItems = new ArrayList<>();
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_overview, R.drawable.ic_menu_home));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_threat_map, R.drawable.ic_menu_mapmode));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_records, R.drawable.ic_menu_records));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_statistics, R.drawable.ic_menu_stats));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_services, R.drawable.ic_menu_set_as));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
-		mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_overview, R.drawable.ic_home));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_threat_map, R.drawable.ic_threat_map));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_records, R.drawable.ic_records));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_statistics, R.drawable.ic_statistics));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_services, R.drawable.ic_services));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_profiles));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_settings));
+		mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_about));
 
 		DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
 
