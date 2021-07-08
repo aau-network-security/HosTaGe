@@ -1,7 +1,7 @@
 ![alt text](https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/ic_launcher.png "Logo Title Text 1")
 
-![alt text](https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/gsoc.png "GSoC")
-![alt text](https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/bh_eu_2020.jpg "Blackhat")
+![alt text](https://github.com/aau-network-security/HosTaGe/blob/ver-2.3.4/jekyll/gsoc.png "GSoC")
+![alt text](https://github.com/aau-network-security/HosTaGe/blob/ver-2.3.4/jekyll/bh_eu_2020.jpg "Blackhat")
 
 
 HosTaGe - Honeypot-To-Go
