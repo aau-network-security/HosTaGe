@@ -1,6 +1,6 @@
 ![alt text](https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/ic_launcher.png  "Logo Title Text 1")
 
-![alt text](https://github.com/aau-network-security/HosTaGe/blob/ver-2.3.4/jekyll/gsoc.png "GSoC"){:height="50%" width="50%"}
+![alt text](https://github.com/aau-network-security/HosTaGe/blob/ver-2.3.4/jekyll/gsoc.png&s=200 "GSoC")
 ![alt text](https://github.com/aau-network-security/HosTaGe/blob/ver-2.3.4/jekyll/bh_eu_2020.jpg "Blackhat")
 
 
