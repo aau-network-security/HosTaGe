@@ -8,41 +8,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:283609891050:android:c9df120509b30ca36e9793",
-        "android_client_info": {
-          "package_name": "de.tudarmstadt.informatik.hostage"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "283609891050-36dl28rq07gt758o64dotvfceotf9deg.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD0RyNSaOfTPFui8xfnibzPI8qt0bklFXQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "283609891050-36dl28rq07gt758o64dotvfceotf9deg.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:283609891050:android:e30069f416053d0f6e9793",
         "android_client_info": {
           "package_name": "dk.aau.netsec.hostage"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "283609891050-6n077vjif0t40i4lnno35lhafrir2kt1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dk.aau.netsec.hostage",
+            "certificate_hash": "eff2e4f53a06fd5f3a5074df5250d7b757af784e"
+          }
+        },
         {
           "client_id": "283609891050-36dl28rq07gt758o64dotvfceotf9deg.apps.googleusercontent.com",
           "client_type": 3
