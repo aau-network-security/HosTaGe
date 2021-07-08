@@ -1,17 +1,22 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.system.Device;
+import dk.aau.netsec.hostage.system.PcapWriter;
+
+import static dk.aau.netsec.hostage.system.PcapWriter.on;
 
 /**
  * @author Alexander Brakowski
@@ -24,6 +29,9 @@ public class SettingsFragment extends UpNavigatibleFragment {
 	private ViewGroup container;
 	private Bundle savedInstanceState;
 	FragmentManager manager;
+	Button enable;
+	Button stop;
+	PcapWriter pcapWriter;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
@@ -34,6 +42,8 @@ public class SettingsFragment extends UpNavigatibleFragment {
 		v = inflater.inflate(R.layout.fragment_settings, container, false);
 
 		TextView rootedText = v.findViewById(R.id.settings_device_rooted);
+
+		initPcap();
 
 		if (Device.isRooted()) {
 			rootedText.setText(R.string.yes);
@@ -46,10 +56,17 @@ public class SettingsFragment extends UpNavigatibleFragment {
 		return v;
 	}
 
+	private void initPcap(){
+		pcapWriter = new PcapWriter(v);
+		pcapWriter.initializeButtons();
+		enable = pcapWriter.getEnabledButton();
+		stop = pcapWriter.getStopButton();
+	}
+
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		manager = this.getFragmentManager();
+		manager = getFragmentManager();
 		manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
 	}
 
@@ -74,18 +91,10 @@ public class SettingsFragment extends UpNavigatibleFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		onCreateView(inflater,container,savedInstanceState);
-		manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		if(v!=null) {
-			unbindDrawables(v);
-			v = null;
-			removeSettingsFragment();
-		}
+		if(on)
+			enable.setPressed(true);
+		else
+			stop.setPressed(true);
 	}
 
 	private void unbindDrawables(View view) {

@@ -2,9 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dk.aau.netsec.hostage"
     xmlns:tools="http://schemas.android.com/tools"
-    android:versionCode="10"
-    android:versionName="2.0.0" >
-
+    android:versionCode="11"
+    android:versionName="2.3.4" >
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -15,6 +14,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.NFC" />
@@ -48,6 +48,7 @@
         android:installLocation="preferExternal"
         android:label="@string/app_name"
         android:theme="@style/Theme.App"
+        android:requestLegacyExternalStorage="true"
         android:vmSafeMode="true"
         android:largeHeap="true">
 

@@ -157,8 +157,6 @@ public class MyLocationManager {
 
 	}
 
-
-
 	/**
 	 * Stop updating the hostage.location.
 	 */

@@ -1,8 +1,10 @@
 package dk.aau.netsec.hostage.publisher;
 
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
+import androidx.preference.PreferenceManager;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -24,12 +26,14 @@ public class PublishHelper {
     private int attackRecordLimit=999;
     LogFilter filter = null;
     JSONHelper jsonHelper = new JSONHelper();
-    private String host = "";
+    private String host = "130.225.57.113";
     private int port = 20000;
-    private String ident = "";
-    private String secret = "";
-    private String channel = "";
+    private String ident = "hostage";
+    private String secret = "xbI6272cUN6-cVzpUPElVKHXJlTG3aZ!";
+    private String channel = "hostage";
 
+    private static final String PERSIST_FILENAME = "publish.json";
+    File hpfeedsFile = new File("/data/data/" + MainActivity.getContext().getPackageName() + "/" + PERSIST_FILENAME);
 
     public PublishHelper(){
         this.dbSession = HostageApplication.getInstances().getDaoSession();
@@ -62,7 +66,7 @@ public class PublishHelper {
      * Persists the record in a JSON file.
      */
     private void persistRecord(){
-        jsonHelper.jsonWriter(getLastInsertedRecords());
+        jsonHelper.jsonWriter(getLastInsertedRecords(),hpfeedsFile);
     }
 
     /**
@@ -75,7 +79,7 @@ public class PublishHelper {
      */
     private void publisher() throws Hpfeeds.ReadTimeOutException, Hpfeeds.EOSException, Hpfeeds.InvalidStateException, Hpfeeds.LargeMessageException, IOException {
         Publisher publisher = new Publisher();
-        String initialConfigurationUrl = jsonHelper.getFilePath();
+        String initialConfigurationUrl = jsonHelper.getFilePath(hpfeedsFile);
         publisher.setCommand(host,port,ident,secret,channel,initialConfigurationUrl);
         publisher.publishFile();
     }

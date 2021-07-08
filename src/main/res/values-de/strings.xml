@@ -277,4 +277,8 @@
     <string name="multistage_summary">Aktivieren Mehrstufige Angriff Detection Service</string>
     <string name="portbinder_tutorial">Videoanleitung</string>
     <string name="service">Dienste</string>
+    <string name="nfc_not_available">NFC ist nicht verfügbar</string>
+    <string name="nfc_enable_beam">Android Beam Aktivieren</string>
+    <string name="nfc_hold_phones_together">Halten Sie Telefone zusammen, um Daten zu senden oder empfangen.</string>
+    <string name="error_activating_services">Versuchen Sie es später nochmals.</string>
 </resources>

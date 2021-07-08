@@ -3,7 +3,6 @@ package dk.aau.netsec.hostage.ui.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
+
+import androidx.fragment.app.DialogFragment;
+
 import java.util.ArrayList;
 
 import dk.aau.netsec.hostage.R;

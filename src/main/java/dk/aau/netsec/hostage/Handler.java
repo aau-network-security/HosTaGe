@@ -10,8 +10,8 @@ import java.util.UUID;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 import dk.aau.netsec.hostage.commons.HelperUtils;
 import dk.aau.netsec.hostage.commons.SubnetUtils;
@@ -237,7 +237,7 @@ public class Handler implements Runnable {
 	 * @return Unique integer attack ID
 	 */
 	private synchronized void getAndIncrementAttackID(SharedPreferences pref) {
-		Editor editor = pref.edit();
+		SharedPreferences.Editor editor = pref.edit();
 		attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
 		editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
 		editor.apply();

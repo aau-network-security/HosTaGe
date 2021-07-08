@@ -1,4 +1,8 @@
-![alt text](https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/ic_launcher.png "Logo Title Text 1")
+![alt text](https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/ic_launcher.png  "Logo Title Text 1")
+
+[<img src="https://github.com/aau-network-security/HosTaGe/blob/ver-2.3.4/jekyll/gsoc.png" width="250" height="200">](https://www.honeynet.org/2020/09/29/gsoc-2020-project-summary-hostage/) [<img src="https://github.com/aau-network-security/HosTaGe/blob/ver-2.3.4/jekyll/bh_eu_2020.jpg" width="400" height="200">](https://www.youtube.com/watch?v=uMR76HTm9M0)
+
+
 
 
 HosTaGe - Honeypot-To-Go

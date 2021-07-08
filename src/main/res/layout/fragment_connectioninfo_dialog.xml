@@ -19,14 +19,14 @@
 					android:text="@string/ssid"
 					android:id="@+id/textView1" android:layout_column="0"
 					android:layout_margin="4dp"
-					android:textColor="@color/dim_gray"
+					android:textColor="?attr/colorOnBackground"
 					android:textStyle="bold"/>
 			<TextView
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
 					android:textAppearance="?android:attr/textAppearanceMedium"
 					android:id="@+id/connectioninfo_ssid_value" android:layout_column="1"
-					android:textColor="@color/dim_gray"
+					android:textColor="?attr/colorOnBackground"
 					android:layout_margin="4dp" android:gravity="right"/>
 		</TableRow>
 		<TableRow
@@ -39,14 +39,14 @@
 					android:text="@string/bssid"
 					android:id="@+id/txtP2PSubheader" android:layout_column="0"
 					android:layout_margin="4dp"
-					android:textColor="@color/dim_gray"
+					android:textColor="?attr/colorOnBackground"
 					android:textStyle="bold"/>
 			<TextView
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
 					android:textAppearance="?android:attr/textAppearanceMedium"
 					android:id="@+id/connectioninfo_bssid_value" android:layout_column="1"
-					android:textColor="@color/dim_gray"
+					android:textColor="?attr/colorOnBackground"
 					android:layout_margin="4dp" android:gravity="right"/>
 		</TableRow>
 		<TableRow
@@ -59,14 +59,14 @@
 					android:text="@string/internal_ip"
 					android:id="@+id/textView3" android:layout_column="0"
 					android:layout_margin="4dp"
-					android:textColor="@color/dim_gray"
+					android:textColor="?attr/colorOnBackground"
 					android:textStyle="bold"/>
 			<TextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textAppearance="?android:attr/textAppearanceMedium"
 					android:id="@+id/connectioninfo_internalip_value" android:layout_column="1"
-					android:textColor="@color/dim_gray"
+					android:textColor="?attr/colorOnBackground"
 					android:layout_margin="4dp" android:gravity="right"/>
 		</TableRow>
 		<TableRow
@@ -79,14 +79,14 @@
 					android:text="@string/external_ip"
 					android:id="@+id/record_details_text_bssid" android:layout_column="0"
 					android:layout_margin="4dp"
-					android:textColor="@color/dim_gray"
+					android:textColor="?attr/colorOnBackground"
 					android:textStyle="bold"/>
 			<TextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textAppearance="?android:attr/textAppearanceMedium"
 					android:id="@+id/connectioninfo_externalip_value" android:layout_column="1"
-					android:textColor="@color/dim_gray"
+					android:textColor="?attr/colorOnBackground"
 					android:layout_margin="4dp" android:gravity="right"/>
 		</TableRow>
 	</TableLayout>

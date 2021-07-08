@@ -9,9 +9,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
-import com.fortysevendeg.android.swipelistview.BaseSwipeListViewListener;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,199 +24,156 @@ import dk.aau.netsec.hostage.model.Profile;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.activity.ProfileEditActivity;
-import dk.aau.netsec.hostage.ui.adapter.ProfileManagerListAdapter;
-import dk.aau.netsec.hostage.ui.swipelist.SwipeListView;
+import dk.aau.netsec.hostage.ui.adapter.ProfileRecyclerAdapter;
+import dk.aau.netsec.hostage.ui.helper.SwipeToEditCallback;
 
 /**
- * Displays a list of all available profiles and allows invocation of the edit activity for an profile
+ * Displays a list of all available profiles and allows invocation of the edit activity for a profile
  *
  * @author Alexander Brakowski
  * @created 14.01.14 15:05
  */
-public class ProfileManagerFragment extends TrackerFragment {
-	/**
-	 * The adapter for the profile list
-	 */
-	private ProfileManagerListAdapter mAdapter;
-	/**
-	 * Holds the shared preferences for the app
-	 */
-	private SharedPreferences mSharedPreferences;
+public class ProfileManagerFragment extends TrackerFragment implements ProfileRecyclerAdapter.OnProfileClickedListener {
 
-	public ProfileManagerFragment(){}
+    public ProfileManagerFragment() {
+    }
 
-	/**
-	 * Holds the listview for the profile list
-	 */
-	private SwipeListView list;
+    RecyclerView recyclerView;
+    ProfileRecyclerAdapter profileRecyclerAdapter;
+    ProfileManager profileManager;
 
-	private View rootView;
-	private LayoutInflater inflater;
-	private ViewGroup container;
-	private Bundle savedInstanceState;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-	    super.onCreateView(inflater, container, savedInstanceState);
-	    getActivity().setTitle(getResources().getString(R.string.drawer_profile_manager));
+        super.onCreateView(inflater, container, savedInstanceState);
 
-		// show action bar menu items
-		setHasOptionsMenu(true);
+        getActivity().setTitle(getResources().getString(R.string.drawer_profile_manager));
 
-		this.inflater=inflater;
-		this.container=container;
-		this.savedInstanceState=savedInstanceState;
+        // show action bar menu items
+        setHasOptionsMenu(true);
 
-		// inflate the view
-        rootView = inflater.inflate(R.layout.fragment_profile_manager, container, false);
-	    list = rootView.findViewById(R.id.profile_manager_listview);
+        // inflate the view
+        View rootView = inflater.inflate(R.layout.fragment_profile_manager, container, false);
+        recyclerView = rootView.findViewById(R.id.profile_manager_recycler_view);
 
-		ProfileManager pmanager = null;
-		try {
-			pmanager = ProfileManager.getInstance();
-			pmanager.loadData();
+        // Get ProfileManager instance
+        profileManager = null;
+        try {
+            profileManager = ProfileManager.getInstance();
+            profileManager.loadData();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-	    String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
-	    mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
+        String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
+        /**
+         * Holds the shared preferences for the app
+         */
+        SharedPreferences mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
 
-		List<Profile> strList = null;
-		try {
-			strList = new LinkedList<>(pmanager.getProfilesList());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        /**
+         * Get list of profiles to be displayed in the recyclerview
+         */
+        List<Profile> strList = null;
+        try {
+            assert profileManager != null;
+            strList = new LinkedList<>(profileManager.getProfilesList());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		// show an help item in the listview to indicate, that the items in the list are swipeable
-		assert strList != null;
-		if(!strList.isEmpty() && !mSharedPreferences.getBoolean("dismissedProfileSwipeHelp", false)){
-		    Profile tProfile = new Profile();
-		    tProfile.mShowTooltip = true;
+//        TODO re-add hint (was disabled during RecyclerView implementation
+//		// show an help item in the listview to indicate, that the items in the list are swipeable
+//		assert strList != null;
+//		if(!strList.isEmpty() && !mSharedPreferences.getBoolean("dismissedProfileSwipeHelp", false)){
+//		    Profile tProfile = new Profile();
+//		    tProfile.mShowTooltip = true;
+//
+//			strList.add(1, tProfile);
+//	    }
 
-			strList.add(1, tProfile);
-	    }
+        //Get a ProfileRecyclerAdapter and assign it to ProfileManager
+        profileRecyclerAdapter = new ProfileRecyclerAdapter(strList, this);
+        profileManager.setProfileListAdapter(profileRecyclerAdapter);
 
-		mAdapter = new ProfileManagerListAdapter(getActivity(), strList, list);
-		pmanager.setProfileListAdapter(mAdapter);
+        //Initialize RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
+        recyclerView.setAdapter(profileRecyclerAdapter);
 
-        list.setAdapter(mAdapter);
+        /**
+         * Implement Swipe-to-edit functionality (swipe left to launch a ProfileEditFragment)
+         */
+        SwipeToEditCallback swipeHandler = new SwipeToEditCallback(container.getContext()) {
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int itemPosition = viewHolder.getAdapterPosition();
+                profileRecyclerAdapter.editProfile(container.getContext(),
+                        profileRecyclerAdapter.getItem(itemPosition));
+            }
+        };
 
-		// add open and close actions to the items of the list view
-		ProfileManager finalPmanager = pmanager;
-		List<Profile> finalStrList = strList;
-		list.setSwipeListViewListener(new BaseSwipeListViewListener() {
-			@Override
-			public void onOpened(int position, boolean toRight){
-				Profile profile = mAdapter.getItem(position);
-				assert profile != null;
-				if(profile.mShowTooltip){
-					mAdapter.remove(profile);
-					finalStrList.remove(profile);
-					list.dismiss(position);
-
-					mSharedPreferences.edit().putBoolean("dismissedProfileSwipeHelp", true).apply();
-				}
-			}
-
-			@Override
-			public void onClickFrontView(int position) {
-				// active the pressed profile
-				Profile profile = mAdapter.getItem(position);
-				assert profile != null;
-				if(profile.mShowTooltip) return;
-
-				try {
-					finalPmanager.activateProfile(profile);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				mAdapter.notifyDataSetChanged();
-			}
-		});
+        // Create and attach Swipe-to-edit handler to recyclerview
+        ItemTouchHelper helper = new ItemTouchHelper(swipeHandler);
+        helper.attachToRecyclerView(recyclerView);
 
         return rootView;
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onResume() {
-		super.onResume();
-		onCreateView(inflater,container,savedInstanceState);
-		list.closeOpenedItems();
-		mAdapter.notifyDataSetChanged();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		// Inflate the menu items for use in the action bar
-		inflater.inflate(R.menu.profile_manager_actions, menu);
-	}
+        //Refresh recyclerAdapter to remove graphics possibly left after a swipe.
+        profileRecyclerAdapter.notifyDataSetChanged();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.profile_manager_action_add) {
-			Intent intent = new Intent(getActivity(), ProfileEditActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			getActivity().startActivity(intent);
-			return true;
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu items for use in the action bar
+        inflater.inflate(R.menu.profile_manager_actions, menu);
+    }
 
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.profile_manager_action_add) {
+            Intent intent = new Intent(getActivity(), ProfileEditActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getActivity().startActivity(intent);
+            return true;
+        }
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		if(rootView!=null) {
-			unbindDrawables(rootView);
-			rootView=null;
-		}
-	}
+        return false;
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
-		if(rootView!=null) {
-			unbindDrawables(rootView);
-			rootView=null;
-		}
-	}
+    /***
+     * Activate profile if it has been clicked.
+     *
+     * @param position position of the clicked Profile within profileRecyclerAdapter
+     */
+    @Override
+    public void onClicked(int position) {
+        try {
+            profileManager.activateProfile(profileRecyclerAdapter.getItem(position));
 
-	@Override
-	public void onStop() {
-		super.onStop();
-		if(rootView!=null) {
-			unbindDrawables(rootView);
-			rootView=null;
-		}
-	}
+            //Refresh view to display checkmark next to profile
+            profileRecyclerAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	private void unbindDrawables(View view) {
-		if (view.getBackground() != null) {
-			view.getBackground().setCallback(null);
-		}
-		if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
-			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-				unbindDrawables(((ViewGroup) view).getChildAt(i));
-			}
-			((ViewGroup) view).removeAllViews();
-		}
-	}
 }

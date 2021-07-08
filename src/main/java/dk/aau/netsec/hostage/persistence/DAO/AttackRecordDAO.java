@@ -1,7 +1,9 @@
 package dk.aau.netsec.hostage.persistence.DAO;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
+
 import org.greenrobot.greendao.query.QueryBuilder;
 import java.util.ArrayList;
 import java.util.Collections;

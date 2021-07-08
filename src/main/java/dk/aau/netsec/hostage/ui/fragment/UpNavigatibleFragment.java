@@ -1,6 +1,7 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
-import android.app.Fragment;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * @author Alexander Brakowski
