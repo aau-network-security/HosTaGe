@@ -35,6 +35,9 @@ import dk.aau.netsec.hostage.services.MultiStageAlarm;
 public class PreferenceHostageFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener,PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 	private static final int REQUEST_CODE_ALERT_RINGTONE = 1111;
 	public static final String FRAGMENT_TAG = "my_preference_fragment";
+	public static final String PREFERENCE_KEY_MULTISTAGE = "pref_multistage";
+	public static final String PREFERENCE_KEY_HPFEEDS= "pref_hpfeeds_server";
+
 	/**
 	 * Contains preferences for which to display a preview of the value in the summary
 	 */
@@ -177,53 +180,42 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
 		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 	}
 
-	@Override
-	public void onStop() {
-		super.onStop();
-		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		updatePreferenceSummary(key);
-		CheckBoxPreference checkboxPrefMultiStage = (CheckBoxPreference)getPreferenceManager().findPreference("pref_multistage");
-		CheckBoxPreference checkboxPrefHpfeeds = (CheckBoxPreference)getPreferenceManager().findPreference("pref_hpfeeds_server");
-		if(checkboxPrefMultiStage !=null)
-			checkMultistage(checkboxPrefMultiStage);
-		if(checkboxPrefHpfeeds !=null)
-			checkHpfeeds(checkboxPrefHpfeeds);
+
+		if (key.equals(PREFERENCE_KEY_MULTISTAGE)){
+			checkMultistage();
+		}
+		else if (key.equals(PREFERENCE_KEY_HPFEEDS)){
+			checkHpfeeds();
+		}
 	}
 
-	private void checkMultistage(CheckBoxPreference checkboxPrefMultiStage){
-		if(checkboxPrefMultiStage.isChecked() && !enabledMultistage)
+	private void checkMultistage(){
+		CheckBoxPreference checkboxPrefMultiStage = (CheckBoxPreference)getPreferenceManager().findPreference(PREFERENCE_KEY_MULTISTAGE);
+		if(checkboxPrefMultiStage.isChecked()) {
 			confirmMultistage(checkboxPrefMultiStage).create().show();
-		checkboxPrefMultiStage.setOnPreferenceChangeListener(((preference, newValue) -> {
-			boolean myValue = (Boolean) newValue;
-			if (!myValue) {
-				stopMultiStage();
-				enabledMultistage = false;
-			}
-			return true;
-		}));
-
+		}
+		else{
+			stopMultiStage();
+			enabledMultistage = false;
+		}
 	}
 
-	private void checkHpfeeds(CheckBoxPreference checkboxPrefHpfeeds){
+	private void checkHpfeeds(){
+		CheckBoxPreference checkboxPrefHpfeeds = (CheckBoxPreference)getPreferenceManager().findPreference(PREFERENCE_KEY_HPFEEDS);
+
 		if(checkboxPrefHpfeeds.isChecked() && !enabledHpfeeds)
 			confirmHpfeeds(checkboxPrefHpfeeds).create().show();
 	}
 
 	private MaterialAlertDialogBuilder confirmMultistage(CheckBoxPreference checkboxPrefMultiStage){
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+//		TODO extract strings
 		builder.setTitle("Attention");
 		builder.setMessage("if you enable this service,it may use a lot of memory and drain your battery faster.");
 		builder.setPositiveButton("Enable", (dialog, which) -> {
@@ -240,6 +232,7 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
 
 	private MaterialAlertDialogBuilder confirmHpfeeds(CheckBoxPreference checkboxPrefHpFeeds){
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+//		TODO extract strings
 		builder.setTitle("GDPR Disclaimer");
 		builder.setMessage("The data collected from HosTaGe attack records will be stored for Advanced Collaborative Threat Intelligence. GDPR sensitive data include but are not limited to the public IP address of the publishing HosTaGe device. Please note that the physical geographical location of the participating HosTaGe publisher can be determined with the public IP address. Furthermore, hpfeeds include the IP address and the ports of the attack sources. Exclusive access to the hpfeeds repository is provided only with an internal review process.\n" +
 				"\n" +
@@ -283,7 +276,7 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
 
 
 	public void stopMultiStage() {
-		Context context =Hostage.getContext();
+		Context context = Hostage.getContext();
 		alarm.cancelAlarm(context);
 	}
 
