@@ -158,6 +158,7 @@ public final class Api {
             }
             copyRawFile(ctx, resId, f);
             return true;
+            //TODO should not catch generic exception
         } catch (Exception e) {
             Log.e(TAG, "installBinary failed: " + e.getLocalizedMessage());
             return false;
@@ -221,9 +222,11 @@ public final class Api {
         InputStream is = MainActivity.getInstance().getAssets().open("payload/commands.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         String line;
+
+        remountSystem();
         while ((line = br.readLine()) != null) {
             if(line.length() > 0) {
-                remountSystem();
+
                 runCommands("su -c "+line);
             }
         }
@@ -342,6 +345,7 @@ public final class Api {
             Log.i(TAG, "Setting OUTPUT to Accept State");
             cmds.add("-P OUTPUT ACCEPT");
 
+            //TODO should not catch generic exception
         } catch (Exception e) {
             Log.e(e.getClass().getName(), e.getMessage(), e);
         }
@@ -394,6 +398,7 @@ public final class Api {
             Log.i(TAG, "Using applySaved4IptablesRules");
             callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, cmds,false);
             return true;
+            //TODO should not catch generic exception
         } catch (Exception e) {
             Log.d(TAG, "Exception while applying rules: " + e.getMessage());
             applyDefaultChains(ctx, callback);
@@ -410,6 +415,7 @@ public final class Api {
             Log.i(TAG, "Using applySavedIp6tablesRules");
             callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, cmds,true);
             return true;
+            //TODO should not catch generic exception
         } catch (Exception e) {
             Log.d(TAG, "Exception while applying rules: " + e.getMessage());
             applyDefaultChains(ctx, callback);
@@ -446,6 +452,7 @@ public final class Api {
             }
 
             return true;
+            //TODO should not catch generic exception
         } catch (Exception e) {
             Log.e(TAG,e.getMessage(),e);
             return false;
@@ -623,6 +630,7 @@ public final class Api {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             encodeStr = Base64.encodeToString(cipher.doFinal(dataBytes), base64Mode);
 
+            //TODO should not catch generic exception
         } catch (Exception e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
@@ -650,6 +658,7 @@ public final class Api {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] dataBytesDecrypted = (cipher.doFinal(dataBytes));
             decryptStr = new String(dataBytesDecrypted);
+            //TODO should not catch generic exception
         } catch (Exception e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
