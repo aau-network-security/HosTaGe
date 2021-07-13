@@ -341,7 +341,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
     }
 
     /**
-     * Returns PlotComparisonItems for attacks per bssid.
+     * Returns PlotComparisionItems for attacks per bssid.
      * @param filter (LogFilter) filter object
      *
      * @return ArrayList<PlotComparisonItem>
@@ -379,7 +379,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
     }
 
     /**
-     * Returns PlotComparisonItems for attacks per bssid.
+     * Returns PlotComparisionItems for attacks per bssid.
      * @param filter (LogFilter) filter object
      *
      * @return ArrayList<PlotComparisonItem>

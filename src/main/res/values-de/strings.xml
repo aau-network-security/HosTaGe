@@ -116,7 +116,7 @@
     <string name="general">Allgemein</string>
     <string name="select_icon">W&#228;hle Icon</string>
     <string name="delete_profile">Profil l&#252;schen</string>
-    <string name="really_want_delete_profile">Willst du dieses Profil wirklich l&#252;schen?</string>
+    <string name="really_want_delete_profiel">Willst du dieses Profil wirklich l&#252;schen?</string>
     <string name="discard">Verwerfen</string>
     <string name="save">Speichern</string>
     <string name="rec_protocol">Protokoll</string>
@@ -192,7 +192,7 @@
     <string name="Change_Device_Name">Ger&#228;tename &#228;ndern</string>
     <string name="Device_Name">Ger&#228;tename</string>
     <string name="Device_Status">Ger&#228;testatus</string>
-    <string name="Wifi_Direct_Not_supported">Das Ger&#228;t unterst&#252;tzt kein Wifi Direct.</string>
+    <string name="Wifi_Direct_Not_suppported">Das Ger&#228;t unterst&#252;tzt kein Wifi Direct.</string>
     <string name="Available_Devices">Vorhandene Ger&#228;te</string>
     <string name="Looking_For_Devices_Progress_Title">Suche andere Ger&#228;te.</string>
 

@@ -170,7 +170,7 @@ android {
     compileSdkVersion 30
     defaultConfig {
         versionCode 11
-        versionName "2.3.4"
+        versionName "2.4"
         minSdkVersion 24
         targetSdkVersion 30
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

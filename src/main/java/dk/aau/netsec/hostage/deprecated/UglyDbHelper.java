@@ -928,7 +928,7 @@ public class UglyDbHelper extends SQLiteOpenHelper {
 	}
 
 	public void updateNetworkInformation(ArrayList<HashMap<String, Object>> networkInformation) {
-		Log.i("DatabaseHandler", "Starts updating");
+		Log.i("DatabaseHandler", "Starte updating");
 		for (HashMap<String, Object> values : networkInformation) {
 			updateNetworkInformation(values);
 		}

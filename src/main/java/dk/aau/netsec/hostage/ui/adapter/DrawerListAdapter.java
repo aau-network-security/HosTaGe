@@ -34,7 +34,7 @@ public class DrawerListAdapter extends ArrayAdapter<DrawerListItem> {
 	/**
 	 * Create the list adapter
 	 *
-	 * @param context the context needed for resource retrieval
+	 * @param context the context needed for resource retieval
 	 * @param objects all the items that should be displayed in the list
 	 */
     public DrawerListAdapter(Context context, List<DrawerListItem> objects) {
