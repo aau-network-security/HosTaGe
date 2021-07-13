@@ -8,11 +8,11 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
 
         classpath 'com.google.gms:google-services:4.3.8' //added gms support
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.6.1'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.0'
     }
 }
 apply plugin: 'com.android.application'
@@ -31,7 +31,7 @@ allprojects {
 }
 dependencies {
     //firebase
-    implementation 'com.google.firebase:firebase-crashlytics:18.0.0'
+    implementation 'com.google.firebase:firebase-crashlytics:18.0.1'
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
     implementation 'com.google.firebase:firebase-core:19.0.0'
     //google api
@@ -50,13 +50,15 @@ dependencies {
 
     //COAP
     //implementation 'com.mbed.java-coap:coap-core:5.0.0' //original package
-    implementation files('libs/coap-core-5.1.0-SNAPSHOT.jar') //forked repo https://github.com/irinil/java-coap
+    implementation files('libs/coap-core-5.1.0-SNAPSHOT.jar')
+    //forked repo https://github.com/irinil/java-coap
 
     //AMQP
     // https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
     implementation group: 'com.rabbitmq', name: 'amqp-client', version: '5.12.0'
 
-    implementation files('libs/qpid-broker-core-9.0.0-SNAPSHOT.jar') //forked repo https://github.com/irinil/qpid-broker-j
+    implementation files('libs/qpid-broker-core-9.0.0-SNAPSHOT.jar')
+    //forked repo https://github.com/irinil/qpid-broker-j
     //implementation group: 'org.apache.qpid', name: 'qpid-broker-core', version: '8.0.0' //default package doesn't support android.
     // https://mvnrepository.com/artifact/javax.naming/jndi
     implementation files('libs/jndi-1.2.1.jar');
@@ -88,12 +90,16 @@ dependencies {
     implementation 'eu.chainfire:libsuperuser:1.0.0.201704021214'
 
     //RootTools Library
-    implementation 'com.github.Stericson:RootShell:1.6' //RootTolls depends on RootShell and it's not correctly setUped for the jitpack
-    implementation ('com.github.Stericson:RootTools:5.0') {//Refer to https://github.com/Stericson/RootTools/issues/65
+    implementation 'com.github.Stericson:RootShell:1.6'
+    //RootTolls depends on RootShell and it's not correctly setUped for the jitpack
+    implementation('com.github.Stericson:RootTools:5.0') {
+//Refer to https://github.com/Stericson/RootTools/issues/65
         exclude group: 'com.github.Stericson'
     }
 
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+
+    implementation "androidx.work:work-runtime:2.6.0-beta01"
 
     //androidX legacy support
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -120,7 +126,7 @@ dependencies {
     implementation 'com.jaredrummler:android-device-names:2.0.0'
 
     //materialDesign
-    implementation 'com.google.android.material:material:1.4.0-beta01'
+    implementation 'com.google.android.material:material:1.4.0-rc01'
 
     //leakcanary
     //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
@@ -133,8 +139,8 @@ dependencies {
     testImplementation "org.mockito:mockito-core:3.10.0"
     implementation 'androidx.annotation:annotation:1.0.0'
 
-    androidTestImplementation 'androidx.test:rules:1.4.0-beta01'
-    androidTestImplementation 'androidx.test:runner:1.4.0-beta01'
+    androidTestImplementation 'androidx.test:rules:1.4.0-beta02'
+    androidTestImplementation 'androidx.test:runner:1.4.0-beta02'
 
     // Optional -- UI testing with Espresso
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -148,10 +154,10 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.4.1'
 }
 
-greendao{
+greendao {
     schemaVersion 1
     //generateTests true
-   // targetGenDir "src/db/"
+    // targetGenDir "src/db/"
 }
 //The first is for the conflict of common apache libraries between moquette and VirusTotalApi
 //The second one is for the conflict with an older version of deprecated slf4j
@@ -161,12 +167,12 @@ configurations {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     defaultConfig {
         versionCode 13
         versionName "2.4"
         minSdkVersion 24
-        targetSdkVersion 29
+        targetSdkVersion 30
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 

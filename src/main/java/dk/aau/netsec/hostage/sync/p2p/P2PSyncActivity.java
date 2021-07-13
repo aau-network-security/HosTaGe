@@ -1,6 +1,7 @@
 package dk.aau.netsec.hostage.sync.p2p;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -44,6 +45,8 @@ import java.util.List;
 
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.DaoSession;
 import dk.aau.netsec.hostage.logging.SyncData;
 import dk.aau.netsec.hostage.logging.SyncInfo;
@@ -101,15 +104,13 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
         mTxtP2PNotAvailable = findViewById(R.id.txtP2PNotAvailable);
     }
 
+    @SuppressLint("MissingPermission")
     public void discoverPeers() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        try {
+            //Retrieving latest location will trigger location permission request, if needed.
+            CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
+        } catch (LocationException le) {
+            le.printStackTrace();
             return;
         }
         mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
@@ -271,20 +272,18 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
         closeConnection();
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final WifiP2pDevice device = (WifiP2pDevice) this.mLstP2PDevices.getAdapter().getItem(position);
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        try {
+            //Retrieving latest location will trigger location permission request, if needed.
+            CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
+        } catch (LocationException le) {
+            le.printStackTrace();
             return;
         }
         mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
@@ -307,17 +306,17 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
         mInfo = info;
         //if(mOtherDevice == null) return;
 
-        if(info.groupFormed && info.isGroupOwner){
+        if (info.groupFormed && info.isGroupOwner) {
             Log.i("server", "I am the group owner!");
             WifiP2pDevice connectedPeer = getConnectedPeer();
-            if(connectedPeer != null && mInfo != null){
+            if (connectedPeer != null && mInfo != null) {
                 Log.i("peers", mInfo.groupFormed + " - " + mInfo.isGroupOwner);
                 Log.i("server", "Starting async server!");
                 serverAsync = new ServerAsyncTask(this, OWNER_SERVER_PORT, synchronizer);
                 serverAsync.execute();
             }
             //new ClientAsyncTask(this, mOtherDevice.deviceAddress, CLIENT_SERVER_PORT).execute();
-        } else if(info.groupFormed){
+        } else if (info.groupFormed) {
             //new ServerAsyncTask(this, CLIENT_SERVER_PORT).execute();
             Log.i("client", "Starting async client!");
             clientAsync = new ClientAsyncTask(this, mInfo.groupOwnerAddress.getHostAddress(), OWNER_SERVER_PORT, synchronizer);
@@ -325,7 +324,7 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
         }
     }
 
-    public void sendDatabase(boolean isOwner){
+    public void sendDatabase(boolean isOwner) {
 
     }
 
@@ -339,6 +338,7 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
      */
     private class WiFiPeerListAdapter extends ArrayAdapter<WifiP2pDevice> {
         private List<WifiP2pDevice> items;
+
         /**
          * @param context
          * @param textViewResourceId
@@ -349,6 +349,7 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
             super(context, textViewResourceId, objects);
             items = objects;
         }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = convertView;
@@ -560,7 +561,6 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
                 oos.reset();
 
 
-
                 publishProgress(4);
 
                 // --- 3. Receive sync data
@@ -579,7 +579,7 @@ public class P2PSyncActivity extends Activity implements WifiP2pManager.GroupInf
                 oos.close();
                 socket.close();
             } catch (IOException e) {
-                if(tryNum >= 5) {
+                if (tryNum >= 5) {
                     return -1;
                 }
 

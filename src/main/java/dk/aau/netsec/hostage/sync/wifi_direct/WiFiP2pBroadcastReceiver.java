@@ -1,6 +1,7 @@
 package dk.aau.netsec.hostage.sync.wifi_direct;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,8 @@ import androidx.core.app.ActivityCompat;
 import java.util.ArrayList;
 import java.util.List;
 
+import dk.aau.netsec.hostage.location.CustomLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 /**
@@ -85,6 +88,7 @@ public class WiFiP2pBroadcastReceiver extends BroadcastReceiver implements WifiP
      * @see android.content.BroadcastReceiver#onReceive(android.content.Context,
      * android.content.Intent)
      */
+    @SuppressLint("MissingPermission")
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -101,14 +105,11 @@ public class WiFiP2pBroadcastReceiver extends BroadcastReceiver implements WifiP
             // REQUEST THE LIST OF DEVICES
             Log.d("DEBUG_WiFiP2p", "BroadcastReceiver - P2P peers changed.");
             if (manager != null) {
-                if (ActivityCompat.checkSelfPermission(MainActivity.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+                try{
+                    //Retrieving latest location will trigger location permission request, if needed.
+                    CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
+                } catch (LocationException le){
+                    le.printStackTrace();
                     return;
                 }
                 manager.requestPeers(channel, this);
@@ -191,20 +192,19 @@ public class WiFiP2pBroadcastReceiver extends BroadcastReceiver implements WifiP
      * Connects to the given device.
      * @param device
      */
+    @SuppressLint("MissingPermission")
     public void connect(WifiP2pDevice device) {
         if (device != null) {
             WifiP2pConfig config = new WifiP2pConfig();
             config.deviceAddress = device.deviceAddress;
             config.wps.setup = WpsInfo.PBC;
             isConnecting = true;
-            if (ActivityCompat.checkSelfPermission(MainActivity.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+
+            // Request latest location. This may trigger a location permission request.
+            try{
+                CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
+            } catch (LocationException le){
+                le.printStackTrace();
                 return;
             }
             manager.connect(channel, config, new WifiP2pManager.ActionListener() {
@@ -311,16 +311,18 @@ public class WiFiP2pBroadcastReceiver extends BroadcastReceiver implements WifiP
     /**
      * Discover other devices.
      * The WiFiP2pBroadcastListener will inform about any change.
+     *
+     * Retrieve latest location from {@link CustomLocationManager}. If location has not been granted,
+     * this will trigger a location permission request, which is needed for the discoverPeers()
+     * method call.
      */
+    @SuppressLint("MissingPermission")
     public void discoverDevices() {
-        if (ActivityCompat.checkSelfPermission(MainActivity.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        try {
+            CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
+
+        } catch (LocationException le){
+            le.printStackTrace();
             return;
         }
         manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {

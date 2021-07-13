@@ -424,8 +424,7 @@ public class ProfileManager {
      * @param profile the profile to activate
      * @param persist indicates if the profile should be persisted after activating
      */
-//	TODO specify what exception might get thrown?
-    public void activateProfile(Profile profile, boolean persist) throws Exception {
+    public void activateProfile(Profile profile, boolean persist) {
         if (profile.equals(this.mCurrentActivatedProfile) || (mCurrentActivatedProfile != null && profile.mId == mCurrentActivatedProfile.mId))
             return;
 
