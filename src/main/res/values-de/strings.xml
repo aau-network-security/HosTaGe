@@ -281,4 +281,8 @@
     <string name="nfc_enable_beam">Android Beam Aktivieren</string>
     <string name="nfc_hold_phones_together">Halten Sie Telefone zusammen, um Daten zu senden oder empfangen.</string>
     <string name="error_activating_services">Versuchen Sie es später nochmals.</string>
+    <string name="enable">Aktivieren</string>
+    <string name="warning">Warnung</string>
+    <string name="data_disclaimer">Datenschutzhinweis</string>
+    <string name="multistage_warning">Dieses Service kann viel Arbeitsspeicher verbrauchen und Ihren Batterie möglicherweise schneller entladen.</string>
 </resources>

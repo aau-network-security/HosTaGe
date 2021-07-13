@@ -216,9 +216,9 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
 	private MaterialAlertDialogBuilder confirmMultistage(CheckBoxPreference checkboxPrefMultiStage){
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
 //		TODO extract strings
-		builder.setTitle("Attention");
-		builder.setMessage("if you enable this service,it may use a lot of memory and drain your battery faster.");
-		builder.setPositiveButton("Enable", (dialog, which) -> {
+		builder.setTitle(R.string.warning);
+		builder.setMessage(R.string.multistage_warning);
+		builder.setPositiveButton(R.string.enable, (dialog, which) -> {
 			startMultiStage();
 			enabledMultistage = true;
 		});
@@ -232,12 +232,12 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
 
 	private MaterialAlertDialogBuilder confirmHpfeeds(CheckBoxPreference checkboxPrefHpFeeds){
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+		builder.setTitle(R.string.data_disclaimer);
 //		TODO extract strings
-		builder.setTitle("GDPR Disclaimer");
 		builder.setMessage("The data collected from HosTaGe attack records will be stored for Advanced Collaborative Threat Intelligence. GDPR sensitive data include but are not limited to the public IP address of the publishing HosTaGe device. Please note that the physical geographical location of the participating HosTaGe publisher can be determined with the public IP address. Furthermore, hpfeeds include the IP address and the ports of the attack sources. Exclusive access to the hpfeeds repository is provided only with an internal review process.\n" +
 				"\n" +
 				"By enabling hpfeeds, the user of this app agrees to send Aalborg University (Denmark) attack data and provides his consent to use this data to process threat intelligence. The user has the right to ask for the deletion of the data published by him/her. Please contact hostage@es.aau.dk for queries and more information.");
-		builder.setPositiveButton("Enable", (dialog, which) -> {
+		builder.setPositiveButton(R.string.enable, (dialog, which) -> {
 			enabledHpfeeds = true;
 		});
 		builder.setNegativeButton(R.string.close, (dialog, which) -> {
