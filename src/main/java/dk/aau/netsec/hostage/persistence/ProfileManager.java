@@ -540,18 +540,19 @@ public class ProfileManager {
         addNuclearPlantProfile();
         addModbusMasterProfile();
         //addSNMPProfile();
-        addParanoidProfile();
+        addVigilantProfile();
         addMQTTBrokerProfile();
         addMQTTSensorProfile();
         addSmokeSensorProfile();
         addArduinoProfile();
+        addWaterPlantProfile();
 
         persistData();
     }
 
     private void addWindowsSevenProfile() {
         Profile windowsSeven = new Profile(
-                0,
+                27,
                 "Windows 7",
                 MainActivity.getInstance().getString(R.string.profile_seven_desc),
                 R.drawable.ic_profile_vista,
@@ -566,7 +567,7 @@ public class ProfileManager {
 
     private void addWindowsXPProfile() {
         Profile windowsXP = new Profile(
-                1,
+                28,
                 "Windows XP",
                 MainActivity.getInstance().getString(R.string.profile_xp_desc),
                 R.drawable.ic_profile_xp,
@@ -582,7 +583,7 @@ public class ProfileManager {
 
     private void addServerHTTPProfile() {
         Profile serverHTTP = new Profile(
-                2,
+                19,
                 "Web Server Apache",
                 MainActivity.getInstance().getString(R.string.profile_webserv_apache_desc),
                 R.drawable.ic_profile_apache,
@@ -599,7 +600,7 @@ public class ProfileManager {
 
     private void addServerWebProfile() {
         Profile serverWeb = new Profile(
-                3,
+                20,
                 "Web Server IIS",
                 MainActivity.getInstance().getString(R.string.profile_webserv_iis_desc),
                 R.drawable.ic_profile_apache,
@@ -616,7 +617,7 @@ public class ProfileManager {
 
     private void addUnixMachineProfile() {
         Profile unixMachine = new Profile(
-                4,
+                21,
                 "\"Hardened\" Linux system ",
                 MainActivity.getInstance().getString(R.string.profile_linux_hard_desc),
                 R.drawable.ic_profile_unix,
@@ -631,7 +632,7 @@ public class ProfileManager {
 
     private void addLinuxMachineProfile() {
         Profile linuxMachine = new Profile(
-                5,
+                22,
                 "Linux system",
                 MainActivity.getInstance().getString(R.string.profile_linux_desc),
                 R.drawable.ic_profile_linux,
@@ -650,7 +651,7 @@ public class ProfileManager {
 
     private void addVoipServer() {
         Profile voipServer = new Profile(
-                6,
+                23,
                 "VOIP Server",
                 MainActivity.getInstance().getString(R.string.profile_voip_desc),
                 R.drawable.ic_profile_asterisks,
@@ -665,7 +666,7 @@ public class ProfileManager {
 
     private void addRandomProfile() {
         Profile randomProfile = new Profile(
-                7,
+                30,
                 "Random",
                 MainActivity.getInstance().getString(R.string.profile_random_desc),
                 R.drawable.ic_launcher,
@@ -693,6 +694,10 @@ public class ProfileManager {
         nuclearPlant.mActiveProtocols.put("TELNET", true);
         nuclearPlant.mActiveProtocols.put("S7COMM", true);
         nuclearPlant.mActiveProtocols.put("SMTP", true);
+
+        //Activate as default profile
+        nuclearPlant.mActivated = true;
+        this.activateProfile(nuclearPlant, false);
 
         this.addProfile(nuclearPlant, false);
     }
@@ -746,27 +751,20 @@ public class ProfileManager {
         this.addProfile(SNMPProfile, false);
     }
 
-    private void addParanoidProfile() {
-        Profile paranoidProfile = new Profile(
-                12,
-                "Paranoid",
-                MainActivity.getInstance().getString(R.string.profile_paranoid_desc),
-                R.drawable.ic_profile_paranoid,
+    private void addVigilantProfile() {
+        Profile vigilantProfile = new Profile(
+                29,
+                "Vigilant",
+                MainActivity.getInstance().getString(R.string.profile_vigilant_desc),
+                R.drawable.ic_profile_vigilant,
                 false
         );
 
         for (String protocol : MainActivity.getContext().getResources().getStringArray(R.array.protocols)) {
-            paranoidProfile.mActiveProtocols.put(protocol, true);
+            vigilantProfile.mActiveProtocols.put(protocol, true);
         }
 
-        //TODO look here
-        paranoidProfile.mActivated = true;
-
-        this.addProfile(paranoidProfile, false);
-
-        mIncrementValue = 8;
-
-        this.activateProfile(paranoidProfile, false);
+        this.addProfile(vigilantProfile, false);
     }
 
     private void addMQTTBrokerProfile() {
