@@ -9,6 +9,10 @@ import android.net.wifi.WifiManager;
 
 import androidx.preference.PreferenceManager;
 
+import org.alfresco.jlan.server.config.InvalidConfigurationException;
+import org.alfresco.jlan.server.core.DeviceContextException;
+
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -78,7 +82,7 @@ public class SMB implements Protocol {
         try {
             mCifsServer = new CifsServer(this, fileInject);
             mCifsServer.run();
-        } catch (Exception e) {
+        } catch (InvalidConfigurationException | DeviceContextException | IOException e) {
             e.printStackTrace();
         }
     }

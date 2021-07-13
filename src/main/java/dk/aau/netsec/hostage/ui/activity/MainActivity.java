@@ -380,11 +380,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addProfileManager() {
-        try {
-            mProfileManager = ProfileManager.getInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mProfileManager = ProfileManager.getInstance();
     }
 
     private void loadFirstRun() {

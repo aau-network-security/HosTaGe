@@ -167,11 +167,7 @@ public class MultiStage extends Service {
     private void sortListIPs() {
         if (!recordArray.isEmpty())
             Collections.sort(recordArray, (one, other) -> {
-                try {
-                    return one.getRemoteIP().compareTo(other.getRemoteIP());
-                } catch (Exception e) {
-                    return 0;
-                }
+                return one.getRemoteIP().compareTo(other.getRemoteIP());
             });
 
     }
@@ -183,31 +179,26 @@ public class MultiStage extends Service {
         int prevlport = 0;
         int prevrport = 0;
         String prevLocalIP = "";
-        try {
-            if (recordArray.size() != 0) {
-                for (RecordAll tmp : recordArray) {
+        if (recordArray.size() != 0) {
+            for (RecordAll tmp : recordArray) {
 
-                    if ((prevRemoteIP.equals(tmp.getRemoteIP()) && !prevProt.equals(tmp.getProtocol()) && !prevProt.contentEquals("MULTISTAGE"))) {
+                if ((prevRemoteIP.equals(tmp.getRemoteIP()) && !prevProt.equals(tmp.getProtocol()) && !prevProt.contentEquals("MULTISTAGE"))) {
 
-                        b.add(new Stackbean(prevRemoteIP, prevLocalIP, prevProt, prevrport, prevlport, bssid, ssid));
-                        b.add(new Stackbean(tmp.getRemoteIP(), tmp.getLocalIP(), tmp.getProtocol(), tmp.getRemotePort(), tmp.getLocalPort(), tmp.getBssid(), tmp.getSsid()));         //,tmp.getLocalPort(),tmp.getRemotePort()));
-                    }
-                    prevRemoteIP = tmp.getRemoteIP();
-                    prevProt = tmp.getProtocol();
-                    prevrport = tmp.getRemotePort();
-                    prevlport = tmp.getLocalPort();
-                    externalIP = tmp.getExternalIP();
-                    bssid = tmp.getBssid();
-                    ssid = tmp.getSsid();
-                    prevLocalIP = tmp.getLocalIP();
-
+                    b.add(new Stackbean(prevRemoteIP, prevLocalIP, prevProt, prevrport, prevlport, bssid, ssid));
+                    b.add(new Stackbean(tmp.getRemoteIP(), tmp.getLocalIP(), tmp.getProtocol(), tmp.getRemotePort(), tmp.getLocalPort(), tmp.getBssid(), tmp.getSsid()));         //,tmp.getLocalPort(),tmp.getRemotePort()));
                 }
-            }
+                prevRemoteIP = tmp.getRemoteIP();
+                prevProt = tmp.getProtocol();
+                prevrport = tmp.getRemotePort();
+                prevlport = tmp.getLocalPort();
+                externalIP = tmp.getExternalIP();
+                bssid = tmp.getBssid();
+                ssid = tmp.getSsid();
+                prevLocalIP = tmp.getLocalIP();
 
-            return b;
-        } catch (Exception e) {
-            e.printStackTrace();
+            }
         }
+
         return b;
     }
 

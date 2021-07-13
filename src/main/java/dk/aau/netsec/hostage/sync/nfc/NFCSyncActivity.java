@@ -16,6 +16,7 @@
 
 package dk.aau.netsec.hostage.sync.nfc;
 
+//TODO format file
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -61,13 +62,13 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 	TextView mInfoText;
 	private static final int MESSAGE_SENT = 0x1;
 	private static final int MESSAGE_RECEIVED = 0x3;
-	
+
 
 	private final Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case MESSAGE_SENT:				
+			case MESSAGE_SENT:
 				runOnUiThread(new Runnable() {
 					public void run() {
 		            	Toast.makeText(NFCSyncActivity.this, "Data sent!", Toast.LENGTH_LONG).show();
@@ -79,12 +80,12 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 					public void run() {
 		            	Toast.makeText(NFCSyncActivity.this, "Data received!", Toast.LENGTH_LONG).show();
 					}
-		        });				
+		        });
 				break;
 			}
 		}
 	};
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -118,14 +119,14 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 		ArrayList<NetworkRecord> localNetworkInformation = daoHelper.getNetworkRecordDAO().getNetworkInformation();
 		HashMap<String, Long> devices_local = daoHelper.getSyncDeviceDAO().getSyncDeviceHashMap();
 		ArrayList<SyncInfoRecord> syncInfo = daoHelper.getSyncInfoRecordDAO().getSyncInfo();
-		
+
 		NdefMessage msg = null;
 		try {
 			NdefRecord netData = NdefRecord.createMime("application/dk.aau.netsec.hostage.", serialize(localNetworkInformation));
 			NdefRecord deviceData = NdefRecord.createMime("application/dk.aau.netsec.hostage.", serialize(devices_local));
 			NdefRecord syncData = NdefRecord.createMime("application/dk.aau.netsec.hostage.", serialize(syncInfo));
 			msg = new NdefMessage(netData, deviceData, syncData);
-					
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -154,30 +155,30 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 	public void onResume() {
 		super.onResume();
 		IntentFilter[] mIntentFilters = null;
-			
-	    PendingIntent mPendingIntent = PendingIntent.getActivity(this, 0, 
+
+	    PendingIntent mPendingIntent = PendingIntent.getActivity(this, 0,
 	    		new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
- 
+
         // set an intent filter for all MIME data
         IntentFilter ndefIntent = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         try {
             ndefIntent.addDataType("*/*");
             mIntentFilters = new IntentFilter[] { ndefIntent };
-        } catch (Exception e) {
+        } catch (IntentFilter.MalformedMimeTypeException e) {
             Log.e("TagDispatch", e.toString());
         }
- 
+
         String[][] mNFCTechLists = new String[][] { new String[] { NfcF.class.getName() } };
-        
+
         if (mNfcAdapter != null)
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, mIntentFilters, mNFCTechLists);
-	
+
 		// Check to see that the Activity started due to an Android Beam
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
 			processIntent(getIntent());
-		}		
+		}
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -201,26 +202,26 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 			HashMap<String, Long> devices_remote = (HashMap<String, Long>) deserialize(msg.getRecords()[1].getPayload());
 			HashMap<String, Long> devices_local = daoHelper.getSyncDeviceDAO().getSyncDeviceHashMap();
 			ArrayList<SyncInfoRecord> syncInfo = (ArrayList<SyncInfoRecord>) deserialize(msg.getRecords()[2].getPayload());
-			
+
 			long tracing_timestamp = 0;
 			if(devices_local.containsKey(TracingSyncService.REMOTE_DEVICE))
 				tracing_timestamp = devices_local.get(TracingSyncService.REMOTE_DEVICE);
-				
+
 			for(Iterator<String> i = devices_remote.keySet().iterator(); i.hasNext(); ){
 				String key = i.next();
-				if((devices_local.containsKey(key) && devices_local.get(key) >= devices_remote.get(key)) 
+				if((devices_local.containsKey(key) && devices_local.get(key) >= devices_remote.get(key))
 				    || (tracing_timestamp > devices_remote.get(key))){
 					i.remove();
 				}
 			}
-			
+
 			for ( Iterator<SyncInfoRecord> i = syncInfo.iterator(); i.hasNext(); ){
 				SyncInfoRecord info = i.next();
 				if(!devices_remote.containsKey(info.getDeviceID())){
 					i.remove();
-				}				    
-			}	
-			
+				}
+			}
+
 			daoHelper.getSyncDeviceDAO().updateSyncDevices(devices_remote);
 			daoHelper.getSyncInfoRecordDAO().updateSyncInfo(syncInfo);
 			daoHelper.getNetworkRecordDAO().updateNetworkInformation(remoteNetworkInformation);
@@ -231,7 +232,7 @@ public class NFCSyncActivity extends Activity implements CreateNdefMessageCallba
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
 		ByteArrayInputStream in = new ByteArrayInputStream(data);
 		ObjectInputStream is = new ObjectInputStream(in);

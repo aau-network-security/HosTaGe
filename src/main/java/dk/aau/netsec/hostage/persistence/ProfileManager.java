@@ -87,7 +87,7 @@ public class ProfileManager {
      *
      * @return the singleton instance
      */
-    public static ProfileManager getInstance() throws Exception {
+    public static ProfileManager getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ProfileManager();
         }
@@ -142,7 +142,7 @@ public class ProfileManager {
      * The profiles were serialized into JSON and persisted into the android private file.
      * See {@see ProfileManager#persistData}.
      */
-    public void loadData() throws Exception {
+    public void loadData() {
         try {
             if (loadDefaulData())
                 return;
@@ -186,11 +186,7 @@ public class ProfileManager {
 
     private void fillDefaultData() {
         if (mProfiles.size() == 0) {
-            try {
-                this.fillWithDefaultData();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            this.fillWithDefaultData();
         }
 
         if (this.mRandomProfile != null) {
@@ -199,7 +195,7 @@ public class ProfileManager {
     }
 
 
-    private void loadJson(JSONArray arr) throws Exception {
+    private void loadJson(JSONArray arr) throws JSONException {
         for (int i = 0; i < arr.length(); i++) {
             JSONObject obj = arr.getJSONObject(i);
 
@@ -253,7 +249,7 @@ public class ProfileManager {
      *
      * @return a list that holds all the profiles
      */
-    public List<Profile> getProfilesList() throws Exception {
+    public List<Profile> getProfilesList() {
         return new ArrayList<Profile>(getProfilesCollection());
     }
 
@@ -262,7 +258,7 @@ public class ProfileManager {
      *
      * @return a collection of all the profiles
      */
-    public Collection<Profile> getProfilesCollection() throws Exception {
+    public Collection<Profile> getProfilesCollection() {
         if (mProfiles.size() == 0 || mProfiles == null) {
             this.loadData();
         }
@@ -330,7 +326,7 @@ public class ProfileManager {
      * @param id the id of the profile
      * @return the profile
      */
-    public Profile getProfile(int id) throws Exception {
+    public Profile getProfile(int id) {
         if (mProfiles.size() == 0) {
             loadData();
         }
@@ -381,7 +377,7 @@ public class ProfileManager {
      *
      * @param profile the profile to delete
      */
-    public void deleteProfile(Profile profile) throws Exception {
+    public void deleteProfile(Profile profile) {
         if (this.mProfiles.containsKey(profile.mId)) {
             Profile p = getProfile(profile.mId);
             this.mProfiles.remove(profile.mId);
@@ -414,7 +410,7 @@ public class ProfileManager {
      *
      * @param profile the profile to active
      */
-    public void activateProfile(Profile profile) throws Exception {
+    public void activateProfile(Profile profile) {
         this.activateProfile(profile, true);
     }
 
@@ -532,7 +528,7 @@ public class ProfileManager {
     /**
      * Fills the profiles manager with default profiles
      */
-    public void fillWithDefaultData() throws Exception {
+    public void fillWithDefaultData() {
         addWindowsSevenProfile();
         addWindowsXPProfile();
         addServerHTTPProfile();
@@ -750,7 +746,7 @@ public class ProfileManager {
         this.addProfile(SNMPProfile, false);
     }
 
-    private void addParanoidProfile() throws Exception {
+    private void addParanoidProfile() {
         Profile paranoidProfile = new Profile(
                 12,
                 "Paranoid",
@@ -763,7 +759,9 @@ public class ProfileManager {
             paranoidProfile.mActiveProtocols.put(protocol, true);
         }
 
+        //TODO look here
         paranoidProfile.mActivated = true;
+
         this.addProfile(paranoidProfile, false);
 
         mIncrementValue = 8;

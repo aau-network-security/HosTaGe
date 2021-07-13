@@ -19,6 +19,7 @@ import dk.aau.netsec.hostage.commons.HelperUtils;
 import static dk.aau.netsec.hostage.system.iptablesUtils.Api.remountSystem;
 import static dk.aau.netsec.hostage.system.iptablesUtils.Api.runCommand;
 
+//TODO format file
 public class PcapWriter {
    private Button enable;
    private Button stop;
@@ -91,16 +92,9 @@ public class PcapWriter {
         String fileName = new SimpleDateFormat("yyyyMMddHHmmss'.pcap'").format(new Date());
         String command = "su -c tcpdump -i any -s 65535 -w /sdcard/"+fileName;
 
-        try {
-            //remountSystem();
-            runCommand(command);
-            Log.d("DEBUG", "PCAP Writer Started");
-
-        } catch (Exception pcape) {
-            pcape.printStackTrace();
-            Log.d("ERROR", "PCAP Error:"+pcape);
-        }
-
+        //remountSystem();
+        runCommand(command);
+        Log.d("DEBUG", "PCAP Writer Started");
     }
 
     private static void stopTcpdumpPcap(){

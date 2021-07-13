@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import dk.aau.netsec.hostage.ui.model.ExpandableListItem;
-
+//TODO format file
 
 /**
  * Created by Julien on 06.02.14.
@@ -49,13 +49,8 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int section, int row) {
-        try {
-            return this._sectionTitleToChildData.get(this._sectionHeader.get(section))
-                    .get(row);
-        }catch (Exception e){
-            return this._sectionTitleToChildData.get(this._sectionHeader.get(0))
-                    .get(0);
-        }
+        return this._sectionTitleToChildData.get(this._sectionHeader.get(section))
+                .get(row);
     }
 
     @Override
@@ -79,12 +74,8 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
     public int getChildrenCount(int section) {
         if(this._sectionTitleToChildData.size() == 0) return 0;
 
-        try {
-            return this._sectionTitleToChildData.get(this._sectionHeader.get(section))
-                    .size();
-        }catch (Exception e){
-            return this._sectionTitleToChildData.get(this._sectionHeader.get(0)).size();
-        }
+        return this._sectionTitleToChildData.get(this._sectionHeader.get(section))
+                .size();
     }
 
     @Override
@@ -111,11 +102,7 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(this.getSectionLayoutID(), null);
         }
-        try {
-            this.configureSectionHeaderView(convertView, section);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        this.configureSectionHeaderView(convertView, section);
 
         return convertView;
     }
@@ -127,11 +114,7 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
      * @return {@link ExpandableListItem ExpandableListItem}
      */
     public ExpandableListItem getDataForRow(int section, int row){
-        try {
-            return this._sectionTitleToChildData.get(this._sectionHeader.get(section)).get(row);
-        }catch (Exception e){
-            return this._sectionTitleToChildData.get(this._sectionHeader.get(0)).get(0);
-        }
+        return this._sectionTitleToChildData.get(this._sectionHeader.get(section)).get(row);
     }
 
 

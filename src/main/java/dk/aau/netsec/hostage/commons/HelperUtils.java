@@ -2,6 +2,7 @@ package dk.aau.netsec.hostage.commons;
 
 import org.apache.http.HttpVersion;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
@@ -18,12 +19,19 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
@@ -56,6 +64,7 @@ import static android.content.ContentValues.TAG;
  */
 public final class HelperUtils {
 
+//    TODO format file
 	//Getter and setters for detection of file injection
 
 	public static String filePath;
@@ -257,7 +266,7 @@ public final class HelperUtils {
 					params, registry);
 
 			return new DefaultHttpClient(ccm, params);
-		} catch (Exception e) {
+		} catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | KeyManagementException | UnrecoverableKeyException e) {
 			e.printStackTrace();
 			return new DefaultHttpClient();
 		}
@@ -283,7 +292,7 @@ public final class HelperUtils {
 			// Execute HttpPost
 			httpclient.execute(httppost);
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}

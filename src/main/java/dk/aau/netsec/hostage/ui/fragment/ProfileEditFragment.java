@@ -31,7 +31,7 @@ import java.util.Objects;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.model.Profile;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
-
+//TODO format file
 
 /**
  * Creates an preference screen to edit an profile
@@ -73,18 +73,12 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
 		doneButton.setOnClickListener(v -> {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity());
 			ProfileManager pmanager = null;
-			try {
-				pmanager = ProfileManager.getInstance();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+
+			pmanager = ProfileManager.getInstance();
 
 			Profile profile = null;
-			try {
-				profile = getProfile();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+
+			profile = getProfile();
 
 			boolean createNew = false;
 
@@ -153,11 +147,7 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         Profile profile = null;
-        try {
-            profile = getProfile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		profile = getProfile();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit();
 
         String pname = "",
@@ -244,7 +234,7 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
 	 * Retrieve the given profile from the intent
 	 * @return the profile
 	 */
-	public Profile getProfile() throws Exception {
+	public Profile getProfile() {
 		ProfileManager pmanager = ProfileManager.getInstance();
 
 		Intent intent = getActivity().getIntent();

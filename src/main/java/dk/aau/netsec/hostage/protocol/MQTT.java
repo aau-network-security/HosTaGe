@@ -20,6 +20,7 @@ import io.moquette.broker.config.MemoryConfig;
 
 import static com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance;
 
+//TODO format file
 public class MQTT implements Protocol {
 
     private static final String TAG = "MQTT" ;
@@ -144,14 +145,9 @@ public class MQTT implements Protocol {
      * Stops the broker and closes the port
      */
     public static void brokerStop(){
-        try {
-            if(brokerStarted) {
-                broker.stopServer();
-                brokerStarted = false;
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
+        if(brokerStarted) {
+            broker.stopServer();
+            brokerStarted = false;
         }
     }
 

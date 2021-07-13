@@ -54,7 +54,7 @@ import dk.aau.netsec.hostage.ui.popup.AbstractPopupItem;
 import dk.aau.netsec.hostage.ui.popup.SimplePopupItem;
 import dk.aau.netsec.hostage.ui.popup.SimplePopupTable;
 import dk.aau.netsec.hostage.ui.popup.SplitPopupItem;
-
+//TODO format file
 /**
  * Created by Julien on 16.02.14.
  */
@@ -1609,27 +1609,18 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * @return String date format is localised*/
     @SuppressLint("SimpleDateFormat")
     private String getDateAsDayString(long timeStamp) {
-        try {
-            Date netDate = (new Date(timeStamp));
-            DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(this.getActivity());
-            return dateFormat.format(netDate);
-            //return dateFormat.format(netDate);
-        } catch (Exception ex) {
-            return "xx";
-        }
+        Date netDate = (new Date(timeStamp));
+        DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(this.getActivity());
+        return dateFormat.format(netDate);
     }
 
     /**Returns a date as a formated string
      * @param timeStamp date
      * @return String date format (H:mm  dd/MM/yyyy)*/
     private String getDateAsString(long timeStamp) {
-        try {
-            DateFormat sdf = new SimpleDateFormat("H:mm  dd.MM.yyyy");
-            Date netDate = (new Date(timeStamp));
-            return sdf.format(netDate);
-        } catch (Exception ex) {
-            return "xx";
-        }
+        DateFormat sdf = new SimpleDateFormat("H:mm  dd.MM.yyyy");
+        Date netDate = (new Date(timeStamp));
+        return sdf.format(netDate);
     }
 
     /**

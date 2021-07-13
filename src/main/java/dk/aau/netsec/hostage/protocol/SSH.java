@@ -21,6 +21,7 @@ import de.tudarmstadt.informatik.hostage.ssh.util.TypesReader;
 import de.tudarmstadt.informatik.hostage.ssh.util.TypesWriter;
 import dk.aau.netsec.hostage.wrapper.Packet;
 
+//TODO format file
 /**
  * SSH protocol. Implementation of RFC documents 4250, 4251, 4252, 4253, 4254.
  * It can handle the following requests: Server Protocol, Key Exchange Init,
@@ -360,7 +361,7 @@ public class SSH implements Protocol {
 					km.initial_iv_client_to_server, false);
 			macEncryption = new MAC("hmac-sha1",
 					km.integrity_key_server_to_client);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 

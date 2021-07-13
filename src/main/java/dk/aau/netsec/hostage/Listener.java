@@ -344,7 +344,7 @@ public class Listener implements Runnable {
      * @param client The socket with the accepted connection.
      * @throws Exception
      */
-    private void startHandler(Socket client) throws Exception {
+    private void startHandler(Socket client) throws IllegalAccessException, InstantiationException {
         handlers.add(newInstance(service, this, protocol.toString().equals("CIFS") ? protocol : protocol.getClass().newInstance(), client));
     }
 
@@ -354,7 +354,7 @@ public class Listener implements Runnable {
      * @param client The socket with the accepted connection.
      * @throws Exception
      */
-    private void startSecureHandler(Socket client) throws Exception {
+    private void startSecureHandler(Socket client) throws InstantiationException, IllegalAccessException, IOException {
         SSLContext sslContext = ((SSLProtocol) protocol).getSSLContext();
         SSLSocketFactory factory = sslContext.getSocketFactory();
         SSLSocket sslClient = (SSLSocket) factory.createSocket(client, null, client.getPort(), false);

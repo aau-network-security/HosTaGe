@@ -26,7 +26,7 @@ import dk.aau.netsec.hostage.ui.model.LogFilter;
 
 import static dk.aau.netsec.hostage.persistence.DAO.SyncDeviceDAO.thisDevice;
 
-
+//TODO format file
 public class AttackRecordDAO extends  DAO {
     private DaoSession daoSession;
     private Context context;
@@ -282,12 +282,9 @@ public class AttackRecordDAO extends  DAO {
         int result = 0;
         if(BSSID != null) {
             QueryBuilder<AttackRecord> qb = recordDao.queryBuilder().where(AttackRecordDao.Properties.Bssid.eq(BSSID));
-            try {
-                result = qb.list().size();
-                return result;
-            }catch (Exception e){
-                return  0;
-            }
+
+            result = qb.list().size();
+            return result;
         }
 
         return  0;
@@ -299,13 +296,8 @@ public class AttackRecordDAO extends  DAO {
         QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
         qb.where(AttackRecordDao.Properties.Bssid.eq(BSSID),AttackRecordDao.Properties.Protocol.eq(protocol));
 
-        try {
-            int result = (int) qb.count();
-            return result;
-        }catch (Exception e){
-            return  0;
-        }
-
+        int result = (int) qb.count();
+        return result;
     }
 
     private void setMaxIDinDevices( ){
@@ -669,13 +661,8 @@ public class AttackRecordDAO extends  DAO {
     public AttackRecord getMatchingAttackRecord(MessageRecord record){
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
         QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
-        try {
-            qb.where(AttackRecordDao.Properties.Attack_id.eq(record.getAttack_id()));
-            return qb.list().get(0);
-
-        }catch (Exception e){
-            return new AttackRecord();
-        }
+        qb.where(AttackRecordDao.Properties.Attack_id.eq(record.getAttack_id()));
+        return qb.list().get(0);
 
     }
 

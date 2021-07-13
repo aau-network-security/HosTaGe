@@ -13,7 +13,7 @@ import dk.aau.netsec.hostage.logging.MessageRecordDao;
 import dk.aau.netsec.hostage.logging.Record;
 import dk.aau.netsec.hostage.ui.model.LogFilter;
 
-
+// TODO format file
 public class MessageRecordDAO extends DAO {
 
     private DaoSession daoSession;
@@ -152,12 +152,7 @@ public class MessageRecordDAO extends DAO {
                 MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp()));
         qb.offset(offset).limit(limit);
 
-        try {
-            list = (ArrayList<MessageRecord>) qb.list();
-        } catch (Exception e) {
-            list = getAllMessageRecordsLimit(offset,limit);
-            return list;
-        }
+        list = (ArrayList<MessageRecord>) qb.list();
 
         return list;
     }
@@ -181,15 +176,8 @@ public class MessageRecordDAO extends DAO {
         qb.and(MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
                 MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp()));
         qb.orderDesc(MessageRecordDao.Properties.Id);
-        try {
-            list = (ArrayList<MessageRecord>) qb.list();
-        } catch (Exception e) {
-            QueryBuilder<MessageRecord> queryBuilder = recordDao.queryBuilder();
-            queryBuilder.orderDesc(MessageRecordDao.Properties.Id);
-            list =(ArrayList<MessageRecord>) queryBuilder.list();
 
-            return list;
-        }
+        list = (ArrayList<MessageRecord>) qb.list();
 
         return list;
     }
@@ -210,11 +198,8 @@ public class MessageRecordDAO extends DAO {
 
         qb.and(MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
                 MessageRecordDao.Properties.Timestamp.gt(filter.getAboveTimestamp()));
-        try {
-            list = (ArrayList<MessageRecord>) qb.list();
-        } catch (Exception e) {
-            return list;
-        }
+
+        list = (ArrayList<MessageRecord>) qb.list();
 
         return list;
 

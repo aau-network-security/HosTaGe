@@ -1,8 +1,16 @@
 package dk.aau.netsec.hostage.protocol;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 
 import javax.net.ssl.KeyManagerFactory;
@@ -11,12 +19,12 @@ import javax.net.ssl.SSLContext;
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
-
+//TODO format file
 /**
  * HTTPS protocol. Extends HTTP. Implementation of RFC document 2818. It can handle the
  * following requests: GET, HEAD, TRACE, POST, DELETE. For all other requests
  * '400 Bad Request' will be replied.
- * 
+ *
  * @author Wulf Pfeiffer
  */
 public class HTTPS extends HTTP implements SSLProtocol {
@@ -37,7 +45,7 @@ public class HTTPS extends HTTP implements SSLProtocol {
 			sslContext = SSLContext.getInstance("TLSv1.2");
 			sslContext.init(getKeyManager().getKeyManagers(), null, null);
 			sslContext.createSSLEngine();
-		} catch (Exception e) {
+		} catch (KeyManagementException | NoSuchAlgorithmException | GooglePlayServicesNotAvailableException | GooglePlayServicesRepairableException e) {
 			e.printStackTrace();
 		}
 		return sslContext;
@@ -57,7 +65,7 @@ public class HTTPS extends HTTP implements SSLProtocol {
 			keyStore.load(Hostage.getContext().getAssets().open(keyStoreName), keyStorePassword);
 			keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			keyManagerFactory.init(keyStore, keyStorePassword);
-		} catch (Exception e) {
+		} catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException| UnrecoverableKeyException e) {
 			e.printStackTrace();
 		}
 

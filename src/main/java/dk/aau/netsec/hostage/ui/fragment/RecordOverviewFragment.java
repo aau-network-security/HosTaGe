@@ -993,12 +993,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      */
     private String getDateAsString(long timeStamp) {
         Date date = (new Date(timeStamp));
-        try {
-            DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
-            return formatter.format(date);
-        } catch (Exception ex) {
-            return "---";
-        }
+
+        DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
+        return formatter.format(date);
     }
 
     /**
@@ -1029,24 +1026,19 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * @return String date format is localised
      */
     private String getDateAsDayString(long timestamp) {
-        try {
-            Date netDate = (new Date(timestamp));
-            String dateString;
+        Date netDate = (new Date(timestamp));
+        String dateString;
 
-            long date = this.dayMilliseconds(timestamp);
+        long date = this.dayMilliseconds(timestamp);
 
-            if (this.todayMilliseconds() == date) {
-                dateString = TODAY;
-            } else if (this.yesterdayMilliseconds() == date) {
-                dateString = YESTERDAY;
-            } else {
-                dateString = localisedDateFormatter.format(netDate);
-            }
-            return dateString;
-
-        } catch (Exception ex) {
-            return "---";
+        if (this.todayMilliseconds() == date) {
+            dateString = TODAY;
+        } else if (this.yesterdayMilliseconds() == date) {
+            dateString = YESTERDAY;
+        } else {
+            dateString = localisedDateFormatter.format(netDate);
         }
+        return dateString;
     }
 
     /**
@@ -1151,14 +1143,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * @return String date format is localised
      */
     private String getDateAsMonthString(long timeStamp) {
-        try {
-            Date netDate = (new Date(timeStamp));
-            return groupingDateFormatter.format(netDate);
-        } catch (Exception ex) {
-            return "xx";
-        }
+        Date netDate = (new Date(timeStamp));
+        return groupingDateFormatter.format(netDate);
     }
-
 
     /*****************************
      *

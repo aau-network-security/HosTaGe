@@ -15,6 +15,7 @@ import dk.aau.netsec.hostage.protocol.utils.coapUtils.COAPHandler;
 import dk.aau.netsec.hostage.protocol.utils.coapUtils.smokeSensor.SmokeSensorProfile;
 import dk.aau.netsec.hostage.wrapper.Packet;
 
+//TODO format file
 public class COAP implements Protocol {
     private final static String defaultAddress="0.0.0.0";//change to your IP.
     private final static int defaultPort = 5683;
@@ -30,16 +31,16 @@ public class COAP implements Protocol {
     }
     private final static CoapServer server = CoapServer.builder().transport(address,defaultPort).build();
 
-    public COAP() throws Exception {
+    public COAP() throws IOException{
         if(!serverStarted)
             startServerMode();
     }
 
-    private boolean enabledProfile() throws Exception {
+    private boolean enabledProfile() {
         return ProfileManager.getInstance().getCurrentActivatedProfile().mId == 15;
     }
 
-    private void startServerMode() throws Exception {
+    private void startServerMode() throws IOException {
         SmokeSensorProfile profile = new SmokeSensorProfile();
         if(enabledProfile())
             startServerProfile(profile.getTemperature(),profile.getAbnormality());

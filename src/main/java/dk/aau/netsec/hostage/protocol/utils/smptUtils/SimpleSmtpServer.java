@@ -17,6 +17,7 @@
  */
 package dk.aau.netsec.hostage.protocol.utils.smptUtils;
 
+//TODO format file
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -165,7 +166,7 @@ final class SimpleSmtpServer implements AutoCloseable {
 					}
 				}
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			// SocketException expected when stopping the server
 			if (!stopped) {
 				e.printStackTrace();

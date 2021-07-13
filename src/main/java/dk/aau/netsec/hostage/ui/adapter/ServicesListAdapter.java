@@ -23,7 +23,7 @@ import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.model.ServicesListItem;
 
-
+//TODO format file
 /**
  * @author Daniel Lazar
  * @created 06.02.14.
@@ -98,20 +98,14 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
         setRealPortListening(holder,item);
         holder.activated.setTag(item);
 
-        try {
-            this.updateStatus(item, holder);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.updateStatus(item, holder);
 
         holder.activated.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
                     ServicesListItem item1 = (ServicesListItem) buttonView.getTag();
-                    try {
-                        mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+
+                    mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
+
                     if (isChecked && !HelperUtils.isNetworkAvailable(parent.getContext())) {
                         if(!MainActivity.getInstance().getHostageService().hasRunningListeners()) {
                             new AlertDialog.Builder(parent.getContext())
@@ -184,7 +178,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      * @param item   ServiceListItem which has information about current item, e.g. protocol, activated, attacks
      * @param holder ViewHolder which represents the item in the View
      */
-    private void updateStatus(ServicesListItem item, ViewHolder holder) throws Exception {
+    private void updateStatus(ServicesListItem item, ViewHolder holder) {
 		boolean serviceIsActive = false;
 		// determine if service is active
         if (MainActivity.getInstance().getHostageService().isRunning(item.protocol)) {
@@ -219,7 +213,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
     }
 
     @Deprecated
-    private boolean addGhostStatus(ServicesListItem item) throws Exception {
+    private boolean addGhostStatus(ServicesListItem item) {
         if(item.protocol.equals("GHOST")) {
             mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
             mGhostPorts = mProfile.getGhostPorts();

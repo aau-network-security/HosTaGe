@@ -40,14 +40,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
@@ -159,8 +165,7 @@ public final class Api {
             }
             copyRawFile(ctx, resId, f);
             return true;
-            //TODO should not catch generic exception
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             Log.e(TAG, "installBinary failed: " + e.getLocalizedMessage());
             return false;
         }
@@ -328,33 +333,27 @@ public final class Api {
         }
         List<String> cmds = new ArrayList<>();
 
-        try {
-            // prevent data leaks due to incomplete rules
-            Log.i(TAG, "Setting OUTPUT to Drop");
-            cmds.add("-P OUTPUT DROP");
+        // prevent data leaks due to incomplete rules
+        Log.i(TAG, "Setting OUTPUT to Drop");
+        cmds.add("-P OUTPUT DROP");
 
-            for (String s : staticChains) {
-                cmds.add("#NOCHK# -N " + CHAIN_NAME + s);
-                cmds.add("-F " + CHAIN_NAME + s);
-            }
-            cmds.add("#NOCHK# -D OUTPUT -j " + CHAIN_NAME);
-            cmds.add("-I OUTPUT 1 -j " + CHAIN_NAME);
-
-            for (final String itf : ITFS_WIFI) {
-                cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-wifi");
-            }
-
-            for (final String itf : ITFS_3G) {
-                cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-3g");
-            }
-
-            Log.i(TAG, "Setting OUTPUT to Accept State");
-            cmds.add("-P OUTPUT ACCEPT");
-
-            //TODO should not catch generic exception
-        } catch (Exception e) {
-            Log.e(e.getClass().getName(), e.getMessage(), e);
+        for (String s : staticChains) {
+            cmds.add("#NOCHK# -N " + CHAIN_NAME + s);
+            cmds.add("-F " + CHAIN_NAME + s);
         }
+        cmds.add("#NOCHK# -D OUTPUT -j " + CHAIN_NAME);
+        cmds.add("-I OUTPUT 1 -j " + CHAIN_NAME);
+
+        for (final String itf : ITFS_WIFI) {
+            cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-wifi");
+        }
+
+        for (final String itf : ITFS_3G) {
+            cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-3g");
+        }
+
+        Log.i(TAG, "Setting OUTPUT to Accept State");
+        cmds.add("-P OUTPUT ACCEPT");
 
         iptablesCommands(cmds, out, ipv6);
         return true;
@@ -636,8 +635,7 @@ public final class Api {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             encodeStr = Base64.encodeToString(cipher.doFinal(dataBytes), base64Mode);
 
-            //TODO should not catch generic exception
-        } catch (Exception e) {
+        } catch (IOException | InvalidKeySpecException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
         return encodeStr;
@@ -665,7 +663,7 @@ public final class Api {
             byte[] dataBytesDecrypted = (cipher.doFinal(dataBytes));
             decryptStr = new String(dataBytesDecrypted);
             //TODO should not catch generic exception
-        } catch (Exception e) {
+        } catch (InvalidKeyException | UnsupportedEncodingException |NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
         return decryptStr;

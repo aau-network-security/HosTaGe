@@ -37,6 +37,7 @@ import java.util.List;
 import dk.aau.netsec.hostage.protocol.utils.snmpUtils.MOTableBuilder;
 import dk.aau.netsec.hostage.wrapper.Packet;
 
+//TODO format file
 /**
  * Created by root on 06.07.15.
  */
@@ -66,7 +67,7 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 
         try {
             setUp();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -141,11 +142,9 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 
     public void start() throws IOException{
         init();
-        try {
-            setUp();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        setUp();
+
             // This method reads some old config from a file and causes
             // unexpected behavior.
             // loadConfig(ImportModes.REPLACE_CREATE);
@@ -180,7 +179,7 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 
     // standard in RFC-1213
     static final OID interfacesTable = new OID(".1.3.6.1.2.1.2.2.1");
-    public static void setUp () throws Exception {
+    public static void setUp () throws IOException {
         SNMP agent = new SNMP("0.0.0.0/161");
         agent.start();
 

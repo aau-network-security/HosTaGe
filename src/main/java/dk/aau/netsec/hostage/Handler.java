@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 import java.util.UUID;
 
@@ -211,7 +212,7 @@ public class Handler implements Runnable {
                 out = client.getOutputStream();
                 talkToClient(in, out);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         uploadHpfeeds();
@@ -253,7 +254,7 @@ public class Handler implements Runnable {
     private void setSoTimeout(Socket client) {
         try {
             client.setSoTimeout(TIMEOUT);
-        } catch (Exception e) {
+        } catch (SocketException e) {
             e.printStackTrace();
         }
     }
