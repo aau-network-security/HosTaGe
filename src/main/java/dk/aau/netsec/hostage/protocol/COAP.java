@@ -15,13 +15,13 @@ import dk.aau.netsec.hostage.protocol.utils.coapUtils.COAPHandler;
 import dk.aau.netsec.hostage.protocol.utils.coapUtils.smokeSensor.SmokeSensorProfile;
 import dk.aau.netsec.hostage.wrapper.Packet;
 
-//TODO format file
 public class COAP implements Protocol {
-    private final static String defaultAddress="0.0.0.0";//change to your IP.
+    private final static String defaultAddress = "0.0.0.0";//change to your IP.
     private final static int defaultPort = 5683;
-    private int port=5683;
+    private int port = 5683;
     private static boolean serverStarted = false; //prevents the server from starting multiple times from the threads
-    private static InetAddress address=null;
+    private static InetAddress address = null;
+
     static {
         try {
             address = InetAddress.getByName(defaultAddress);
@@ -29,10 +29,11 @@ public class COAP implements Protocol {
             e.printStackTrace();
         }
     }
-    private final static CoapServer server = CoapServer.builder().transport(address,defaultPort).build();
 
-    public COAP() throws IOException{
-        if(!serverStarted)
+    private final static CoapServer server = CoapServer.builder().transport(address, defaultPort).build();
+
+    public COAP() throws IOException {
+        if (!serverStarted)
             startServerMode();
     }
 
@@ -42,8 +43,8 @@ public class COAP implements Protocol {
 
     private void startServerMode() throws IOException {
         SmokeSensorProfile profile = new SmokeSensorProfile();
-        if(enabledProfile())
-            startServerProfile(profile.getTemperature(),profile.getAbnormality());
+        if (enabledProfile())
+            startServerProfile(profile.getTemperature(), profile.getAbnormality());
         else
             startServer();
     }
@@ -65,7 +66,7 @@ public class COAP implements Protocol {
      */
     @Override
     public void setPort(int port) {
-        this.port=port;
+        this.port = port;
     }
 
     /**
@@ -88,6 +89,7 @@ public class COAP implements Protocol {
     public boolean isSecure() {
         return false;
     }
+
     /**
      * Determines the next response.
      *
@@ -122,35 +124,38 @@ public class COAP implements Protocol {
 
     /**
      * Starts the CoAP server.
+     *
      * @throws IOException
      */
     public CoapServer startServer() throws IOException {
-        server.addRequestHandler("/*",new COAPHandler());
+        server.addRequestHandler("/*", new COAPHandler());
         server.start();
-        serverStarted=true;
+        serverStarted = true;
 
         return server;
     }
 
     /**
      * Starts the CoAP server for a Profile.
+     *
      * @throws IOException
      */
-    public CoapServer startServerProfile(String temperature,String abnormality) throws IOException {
-        server.addRequestHandler("/temp",new COAPHandler(temperature));
-        server.addRequestHandler("/abnormality",new COAPHandler(abnormality));
+    public CoapServer startServerProfile(String temperature, String abnormality) throws IOException {
+        server.addRequestHandler("/temp", new COAPHandler(temperature));
+        server.addRequestHandler("/abnormality", new COAPHandler(abnormality));
         server.start();
-        serverStarted=true;
+        serverStarted = true;
 
         return server;
     }
 
     /**
      * Returns a simple CoAP client.
+     *
      * @param serverAddress the server address with the port.
-     * @param server the server instance.
+     * @param server        the server instance.
      */
-    public CoapClient getSimpleClient(InetSocketAddress serverAddress, CoapServer server){
+    public CoapClient getSimpleClient(InetSocketAddress serverAddress, CoapServer server) {
         CoapClient client = CoapClientBuilder.clientFor(serverAddress, server);
 
         return client;
@@ -159,8 +164,8 @@ public class COAP implements Protocol {
     /**
      * Stops the server and closes the port
      */
-    public static void serverStop(){
-        if(serverStarted) {
+    public static void serverStop() {
+        if (serverStarted) {
             server.stop();
             serverStarted = false;
         }

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import dk.aau.netsec.hostage.ui.model.ExpandableListItem;
-//TODO format file
 
 /**
  * Created by Julien on 06.02.14.
@@ -25,8 +24,9 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Constructor
+     *
      * @param listSectionHeaders the section title
-     * @param dataMapping {@link ExpandableListItem ExpandableListItem} the data to visualise
+     * @param dataMapping        {@link ExpandableListItem ExpandableListItem} the data to visualise
      */
     public ExpandableListAdapter(List<String> listSectionHeaders,
                                  HashMap<String, ArrayList<ExpandableListItem>> dataMapping) {
@@ -34,16 +34,19 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
         this._sectionTitleToChildData = dataMapping;
     }
 
-    public void setData(HashMap<String, ArrayList<ExpandableListItem>> dataMapping){
+    public void setData(HashMap<String, ArrayList<ExpandableListItem>> dataMapping) {
         this._sectionTitleToChildData = dataMapping;
     }
-    public HashMap<String, ArrayList<ExpandableListItem>> getData(){
+
+    public HashMap<String, ArrayList<ExpandableListItem>> getData() {
         return this._sectionTitleToChildData;
     }
-    public void setSectionHeader(List<String> listSectionHeaders){
+
+    public void setSectionHeader(List<String> listSectionHeaders) {
         this._sectionHeader = listSectionHeaders;
     }
-    public List<String> getSectionHeaders(){
+
+    public List<String> getSectionHeaders() {
         return this._sectionHeader;
     }
 
@@ -72,7 +75,7 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int section) {
-        if(this._sectionTitleToChildData.size() == 0) return 0;
+        if (this._sectionTitleToChildData.size() == 0) return 0;
 
         return this._sectionTitleToChildData.get(this._sectionHeader.get(section))
                 .size();
@@ -109,34 +112,40 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Return the {@link ExpandableListItem ExpandableListItem} for the given index path
+     *
      * @param section int
-     * @param row int
+     * @param row     int
      * @return {@link ExpandableListItem ExpandableListItem}
      */
-    public ExpandableListItem getDataForRow(int section, int row){
+    public ExpandableListItem getDataForRow(int section, int row) {
         return this._sectionTitleToChildData.get(this._sectionHeader.get(section)).get(row);
     }
 
 
     /**
      * Configure the items root view in here
-     * @param cell View, the root view
+     *
+     * @param cell    View, the root view
      * @param section int
-     * @param row int
+     * @param row     int
      */
     public abstract void configureCellView(View cell, int section, int row);
+
     public abstract void configureSectionHeaderView(View sectionHeader, int section);
 
     /**
      * Returns the section header layout id.
-    * @return R.layout.list_section
-    * */
-    public abstract  int getSectionLayoutID();
+     *
+     * @return R.layout.list_section
+     */
+    public abstract int getSectionLayoutID();
+
     /**
      * Return the  root view layout id.
+     *
      * @return R.layout.list_cell
-     * */
-    public abstract  int getCellLayoutID();
+     */
+    public abstract int getCellLayoutID();
 
 
     @Override

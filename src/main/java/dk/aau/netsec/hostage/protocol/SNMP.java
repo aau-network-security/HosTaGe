@@ -37,18 +37,21 @@ import java.util.List;
 import dk.aau.netsec.hostage.protocol.utils.snmpUtils.MOTableBuilder;
 import dk.aau.netsec.hostage.wrapper.Packet;
 
-//TODO format file
 /**
  * Created by root on 06.07.15.
  */
-    public class SNMP extends BaseAgent implements Protocol {
+public class SNMP extends BaseAgent implements Protocol {
     private int port = 161;
 
     @Override
-    public int getPort() { return port; }
+    public int getPort() {
+        return port;
+    }
 
     @Override
-    public void setPort(int port){ this.port = port;}
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     @Override
     public boolean isClosed() {
@@ -88,15 +91,15 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 
     public SNMP(String address) throws IOException {
 
-            super(new File("conf.agent"), new File("bootCounter.agent"),
-                    new CommandProcessor(
-                            new OctetString(MPv3.createLocalEngineID())));
-            this.address = address;
-        }
+        super(new File("conf.agent"), new File("bootCounter.agent"),
+                new CommandProcessor(
+                        new OctetString(MPv3.createLocalEngineID())));
+        this.address = address;
+    }
 
     @Override
     protected void addCommunities(SnmpCommunityMIB snmpCommunityMIB) {
-            Variable[] com2sec = new Variable[]{
+        Variable[] com2sec = new Variable[]{
                 new OctetString("public"),
                 new OctetString("cpublic"), // security name
                 getAgent().getContextEngineID(), // local engine ID
@@ -107,15 +110,17 @@ import dk.aau.netsec.hostage.wrapper.Packet;
         };
 
         MOTableRow row = snmpCommunityMIB.getSnmpCommunityEntry().createRow(
-            new OctetString("public2public").toSubIndex(true), com2sec);
-            snmpCommunityMIB.getSnmpCommunityEntry().addRow((SnmpCommunityMIB.SnmpCommunityEntryRow) row);
+                new OctetString("public2public").toSubIndex(true), com2sec);
+        snmpCommunityMIB.getSnmpCommunityEntry().addRow((SnmpCommunityMIB.SnmpCommunityEntryRow) row);
     }
 
     @Override
-    protected void addNotificationTargets(SnmpTargetMIB snmpTargetMIB, SnmpNotificationMIB snmpNotificationMIB) {}
+    protected void addNotificationTargets(SnmpTargetMIB snmpTargetMIB, SnmpNotificationMIB snmpNotificationMIB) {
+    }
 
     @Override
-    protected void addUsmUser(USM usm) {}
+    protected void addUsmUser(USM usm) {
+    }
 
     @Override
     protected void addViews(VacmMIB vacmMIB) {
@@ -131,23 +136,25 @@ import dk.aau.netsec.hostage.wrapper.Packet;
     }
 
     @Override
-    protected void registerManagedObjects() {}
+    protected void registerManagedObjects() {
+    }
 
     @Override
-    protected void unregisterManagedObjects() {}
+    protected void unregisterManagedObjects() {
+    }
 
     public SNMP() {
         super("");
     }
 
-    public void start() throws IOException{
+    public void start() throws IOException {
         init();
 
         setUp();
 
-            // This method reads some old config from a file and causes
-            // unexpected behavior.
-            // loadConfig(ImportModes.REPLACE_CREATE);
+        // This method reads some old config from a file and causes
+        // unexpected behavior.
+        // loadConfig(ImportModes.REPLACE_CREATE);
         addShutdownHook();
         getServer().addContext(new OctetString("public"));
         finishInit();
@@ -172,14 +179,15 @@ import dk.aau.netsec.hostage.wrapper.Packet;
         }
     }
 
-    public void unregisterManagedObject(MOGroup moGroup){
+    public void unregisterManagedObject(MOGroup moGroup) {
         moGroup.unregisterMOs(server, getContext(moGroup));
     }
 
 
     // standard in RFC-1213
     static final OID interfacesTable = new OID(".1.3.6.1.2.1.2.2.1");
-    public static void setUp () throws IOException {
+
+    public static void setUp() throws IOException {
         SNMP agent = new SNMP("0.0.0.0/161");
         agent.start();
 
@@ -201,7 +209,7 @@ import dk.aau.netsec.hostage.wrapper.Packet;
                 .addRowValue(new OctetString("00:00:00:00:01"))
                 .addRowValue(new Integer32(1500))
                 .addRowValue(new Integer32(1500))
-    //next row
+                //next row
                 .addRowValue(new Integer32(2))
                 .addRowValue(new OctetString("eth0"))
                 .addRowValue(new Integer32(24))
@@ -211,11 +219,11 @@ import dk.aau.netsec.hostage.wrapper.Packet;
                 .addRowValue(new Integer32(1500))
                 .addRowValue(new Integer32(1500));
 
-            agent.registerManagedObject(builder.build());
+        agent.registerManagedObject(builder.build());
 
-            // Setup the client to use our newly started agent
-            //client = new SimpleSnmpClient("udp:127.0.0.1/2001");
-        }
+        // Setup the client to use our newly started agent
+        //client = new SimpleSnmpClient("udp:127.0.0.1/2001");
     }
+}
 
 

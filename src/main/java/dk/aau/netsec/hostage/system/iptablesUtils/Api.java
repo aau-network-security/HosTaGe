@@ -403,7 +403,6 @@ public final class Api {
             Log.i(TAG, "Using applySaved4IptablesRules");
             callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, cmds, false);
             return true;
-            //TODO should not catch generic exception
         } catch (Exception e) {
             Log.d(TAG, "Exception while applying rules: " + e.getMessage());
             applyDefaultChains(ctx, callback);
@@ -420,7 +419,6 @@ public final class Api {
             Log.i(TAG, "Using applySavedIp6tablesRules");
             callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, cmds, true);
             return true;
-            //TODO should not catch generic exception
         } catch (Exception e) {
             Log.d(TAG, "Exception while applying rules: " + e.getMessage());
             applyDefaultChains(ctx, callback);
@@ -457,7 +455,6 @@ public final class Api {
             }
 
             return true;
-            //TODO should not catch generic exception
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
             return false;
@@ -662,7 +659,6 @@ public final class Api {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] dataBytesDecrypted = (cipher.doFinal(dataBytes));
             decryptStr = new String(dataBytesDecrypted);
-            //TODO should not catch generic exception
         } catch (InvalidKeyException | UnsupportedEncodingException |NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
