@@ -163,17 +163,12 @@ configurations {
 android {
     compileSdkVersion 29
     defaultConfig {
-        versionCode 11
+        versionCode 13
         versionName "2.4"
         minSdkVersion 24
         targetSdkVersion 29
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        javaCompileOptions {
-            annotationProcessorOptions {
-                includeCompileClasspath true
-            }
-        }
 
         //   signingConfig signingConfigs.config
 
@@ -185,7 +180,6 @@ android {
     }
 
     dexOptions {
-        incremental true
         preDexLibraries = false
         javaMaxHeapSize "4g"
     }
