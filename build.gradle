@@ -169,7 +169,7 @@ configurations {
 android {
     compileSdkVersion 30
     defaultConfig {
-        versionCode 11
+        versionCode 13
         versionName "2.4"
         minSdkVersion 24
         targetSdkVersion 30

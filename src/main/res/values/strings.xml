@@ -319,6 +319,10 @@
     <string name="export_to_storage" translatable="false">Export to storage</string>
     <string name="synchronize" translatable="false">Synchronize</string>
     <string name="new_profile" translatable="false">New profile</string>
+    <string name="enable">Enable</string>
+    <string name="warning">Warning</string>
+    <string name="data_disclaimer">Data Privacy Disclaimer</string>
+    <string name="multistage_warning">Enabling this service may use a lot of memory and may drain your battery faster.</string>
     <string name="uses_location">This app uses Location</string>
     <string name="uses_location_reason">"Location is needed to enable accurate attack data collection."</string>
     <string name="uses_background_location">This app uses Background Location</string>
