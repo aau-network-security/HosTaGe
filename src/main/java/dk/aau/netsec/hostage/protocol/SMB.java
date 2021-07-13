@@ -3,6 +3,7 @@ package dk.aau.netsec.hostage.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 
@@ -15,7 +16,8 @@ import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.Listener;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.commons.HelperUtils;
-import dk.aau.netsec.hostage.location.MyLocationManager;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.AttackRecord;
 import dk.aau.netsec.hostage.logging.Logger;
 import dk.aau.netsec.hostage.logging.MessageRecord;
@@ -30,6 +32,7 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 /**
  * HostageV3
  * ================
+ *
  * @author Alexander Brakowski
  * @author Daniel Lazar
  */
@@ -49,7 +52,7 @@ public class SMB implements Protocol {
 
     private boolean logged;
 
-    public Listener getListener(){
+    public Listener getListener() {
         return mListener;
     }
 
@@ -80,11 +83,11 @@ public class SMB implements Protocol {
         }
     }
 
-    public void stop(){
+    public void stop() {
         mCifsServer.stop();
     }
 
-    public int getLocalIp(){
+    public int getLocalIp() {
         WifiManager wifi = (WifiManager) MainActivity.getContext().getSystemService(Context.WIFI_SERVICE);
         DhcpInfo dhcp = wifi.getDhcpInfo();
 
@@ -128,12 +131,15 @@ public class SMB implements Protocol {
         NetworkRecord record = new NetworkRecord();
         record.setBssid(BSSID);
         record.setSsid(SSID);
-        if (MyLocationManager.getNewestLocation() != null) {
-            record.setLatitude(MyLocationManager.getNewestLocation().getLatitude());
-            record.setLongitude(MyLocationManager.getNewestLocation().getLongitude());
-            record.setAccuracy(MyLocationManager.getNewestLocation().getAccuracy());
-            record.setTimestampLocation(MyLocationManager.getNewestLocation().getTime());
-        } else {
+
+        try {
+            Location latestLocation = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
+
+            record.setLatitude(latestLocation.getLatitude());
+            record.setLongitude(latestLocation.getLongitude());
+            record.setAccuracy(latestLocation.getAccuracy());
+            record.setTimestampLocation(latestLocation.getTime());
+        } catch (LocationException le) {
             record.setLatitude(0.0);
             record.setLongitude(0.0);
             record.setAccuracy(Float.MAX_VALUE);
@@ -142,8 +148,8 @@ public class SMB implements Protocol {
         return record;
     }
 
-    public void log(MessageRecord.TYPE type, String packet, int localPort, InetAddress remoteIP, int remotePort){
-        if(!logged){
+    public void log(MessageRecord.TYPE type, String packet, int localPort, InetAddress remoteIP, int remotePort) {
+        if (!logged) {
             Logger.log(Hostage.getContext(), createNetworkRecord());
             Logger.log(Hostage.getContext(), createAttackRecord(localPort, remoteIP, remotePort));
             logged = true;
@@ -152,13 +158,18 @@ public class SMB implements Protocol {
             Logger.log(Hostage.getContext(), createMessageRecord(type, packet));
         }
     }
+
     private int port = 1025;
 
     @Override
-    public int getPort() { return port; }
+    public int getPort() {
+        return port;
+    }
 
     @Override
-    public void setPort(int port){ this.port = port;}
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     @Override
     public boolean isClosed() {
@@ -180,7 +191,7 @@ public class SMB implements Protocol {
         return TALK_FIRST.CLIENT;
     }
 
-    public String toString(){
+    public String toString() {
         return "SMB";
     }
 }

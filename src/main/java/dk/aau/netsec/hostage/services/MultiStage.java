@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
 
@@ -20,7 +21,8 @@ import java.util.List;
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
-import dk.aau.netsec.hostage.location.MyLocationManager;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.AttackRecord;
 import dk.aau.netsec.hostage.logging.DaoSession;
 import dk.aau.netsec.hostage.logging.Logger;
@@ -49,8 +51,8 @@ public class MultiStage extends Service {
     private DAOHelper daoHelper;
     Notification notification;
     NotificationManager manager;
-    private static int offset=0;
-    private int limit=50;
+    private static int offset = 0;
+    private int limit = 50;
     private int size;
     List<RecordAll> recordArray = new ArrayList<>();
 
@@ -68,13 +70,12 @@ public class MultiStage extends Service {
         super.onCreate();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             dbSession = HostageApplication.getInstances().getDaoSession();
-            daoHelper = new DAOHelper(dbSession,this);
+            daoHelper = new DAOHelper(dbSession, this);
             startCustomForeground();
             fetchData();
-        }
-        else {
+        } else {
             dbSession = HostageApplication.getInstances().getDaoSession();
-            daoHelper = new DAOHelper(dbSession,this);
+            daoHelper = new DAOHelper(dbSession, this);
             startForeground(1, new Notification());
             fetchData();
         }
@@ -90,7 +91,7 @@ public class MultiStage extends Service {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         manager.cancel(1);
         stopForeground(true);
         stopSelf();
@@ -115,17 +116,18 @@ public class MultiStage extends Service {
 
     /**
      * Packing the attack record
+     *
      * @param type
      * @param message
      * @param remoteip the remote IP
-     * @param localip the local IP
+     * @param localip  the local IP
      * @param protocol is always MULTISTAGE
-     * @param rport the remote port
-     * @param lport the local port
-     * @param bssid Basic service set identifier
-     * @param ssid Service set identifier-Name of the Wifi Network
+     * @param rport    the remote port
+     * @param lport    the local port
+     * @param bssid    Basic service set identifier
+     * @param ssid     Service set identifier-Name of the Wifi Network
      */
-    public void log(MessageRecord.TYPE type, String message,String externalIP, String remoteip, String localip, String protocol, int rport, int lport, String bssid, String ssid) {
+    public void log(MessageRecord.TYPE type, String message, String externalIP, String remoteip, String localip, String protocol, int rport, int lport, String bssid, String ssid) {
         AttackRecord attackRecord = new AttackRecord(true);
 
         attackRecord.setProtocol("MULTISTAGE");
@@ -139,12 +141,13 @@ public class MultiStage extends Service {
         NetworkRecord networkRecord = new NetworkRecord();
         networkRecord.setBssid(bssid);
         networkRecord.setSsid(ssid);
-        if (MyLocationManager.getNewestLocation() != null) {
-            networkRecord.setLatitude(MyLocationManager.getNewestLocation().getLatitude());
-            networkRecord.setLongitude(MyLocationManager.getNewestLocation().getLongitude());
-            networkRecord.setAccuracy(MyLocationManager.getNewestLocation().getAccuracy());
-            networkRecord.setTimestampLocation(MyLocationManager.getNewestLocation().getTime());
-        } else {
+        try {
+            Location latestLocation = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
+            networkRecord.setLatitude(latestLocation.getLatitude());
+            networkRecord.setLongitude(latestLocation.getLongitude());
+            networkRecord.setAccuracy(latestLocation.getAccuracy());
+            networkRecord.setTimestampLocation(latestLocation.getTime());
+        } catch (LocationException le) {
             networkRecord.setLatitude(0.0);
             networkRecord.setLongitude(0.0);
             networkRecord.setAccuracy(Float.MAX_VALUE);
@@ -161,19 +164,19 @@ public class MultiStage extends Service {
 
     }
 
-    private void sortListIPs(){
-        if(!recordArray.isEmpty())
+    private void sortListIPs() {
+        if (!recordArray.isEmpty())
             Collections.sort(recordArray, (one, other) -> {
                 try {
                     return one.getRemoteIP().compareTo(other.getRemoteIP());
-                }catch (Exception e){
-                    return  0;
+                } catch (Exception e) {
+                    return 0;
                 }
             });
 
     }
 
-    private ArrayList<Stackbean> addRecordsToStackBean(){
+    private ArrayList<Stackbean> addRecordsToStackBean() {
         ArrayList<Stackbean> b = new ArrayList<>();
         String prevRemoteIP = "";
         String prevProt = "";
@@ -202,29 +205,29 @@ public class MultiStage extends Service {
             }
 
             return b;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return b;
     }
 
-    public void createMultistageRecord(ArrayList<Stackbean> b){
+    public void createMultistageRecord(ArrayList<Stackbean> b) {
         if (b.size() != 0) {
             StringBuilder message = new StringBuilder();
             for (Stackbean tmp : b) {
 
                 message.append("\nMulti Stage Attack Detected!\n" + "IP:").append(tmp.getRemoteIp()).append("\nProtocol:").append(tmp.getProtocol());
 
-                stackRemoteIP=tmp.getRemoteIp();
-                stackLocalIp=tmp.getLocalip();
-                stackProtocol=tmp.getProtocol();
-                stackRport=tmp.getRemotePort();
-                stackLport=tmp.getLocalPort();
-                stackbssid=tmp.getBSSID();
+                stackRemoteIP = tmp.getRemoteIp();
+                stackLocalIp = tmp.getLocalip();
+                stackProtocol = tmp.getProtocol();
+                stackRport = tmp.getRemotePort();
+                stackLport = tmp.getLocalPort();
+                stackbssid = tmp.getBSSID();
                 stackssid = tmp.getSSID();
             }
-            log(MessageRecord.TYPE.RECEIVE, message.toString(),externalIP,
-                    stackRemoteIP, stackLocalIp, stackProtocol,stackRport, stackLport,stackbssid, stackssid);
+            log(MessageRecord.TYPE.RECEIVE, message.toString(), externalIP,
+                    stackRemoteIP, stackLocalIp, stackProtocol, stackRport, stackLport, stackbssid, stackssid);
             b.clear();
             message.setLength(0);
 
@@ -236,7 +239,7 @@ public class MultiStage extends Service {
      * Custom foreground for background service
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void startCustomForeground(){
+    private void startCustomForeground() {
         String NOTIFICATION_CHANNEL_ID = "Try";
         String channelName = "BackgroundService";
         NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
@@ -246,7 +249,7 @@ public class MultiStage extends Service {
         assert manager != null;
         manager.createNotificationChannel(chan);
 
-        Notification.Builder notificationBuilder = new Notification.Builder(this,NOTIFICATION_CHANNEL_ID);
+        Notification.Builder notificationBuilder = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID);
         notificationBuilder.setContentTitle("MultiStage").setContentText("MultiStage running...").setSmallIcon(R.drawable.ic_launcher);
 
         notification = notificationBuilder.setOngoing(true)

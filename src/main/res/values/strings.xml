@@ -319,4 +319,8 @@
     <string name="export_to_storage" translatable="false">Export to storage</string>
     <string name="synchronize" translatable="false">Synchronize</string>
     <string name="new_profile" translatable="false">New profile</string>
+    <string name="uses_location">This app uses Location</string>
+    <string name="uses_location_reason">"Location is needed to enable accurate attack data collection."</string>
+    <string name="uses_background_location">This app uses Background Location</string>
+    <string name="uses_background_location_reason">"Background location is needed to enable attack data collection while the app is in the background."</string>
 </resources>

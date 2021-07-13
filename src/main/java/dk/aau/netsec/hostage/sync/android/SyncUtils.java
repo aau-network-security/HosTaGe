@@ -16,6 +16,7 @@ import androidx.preference.PreferenceManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -53,7 +54,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import dk.aau.netsec.hostage.location.MyLocationManager;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.NetworkRecord;
 import dk.aau.netsec.hostage.logging.Record;
 import dk.aau.netsec.hostage.logging.RecordAll;
@@ -117,7 +119,7 @@ public class SyncUtils {
             // Recommend a schedule for automatic synchronization. The system may modify this based
             // on other scheduled syncs and network utilization.
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-            long syncFrequency = pref.getInt("pref_sync_frequency", 5*60); // default is 5min
+            long syncFrequency = pref.getInt("pref_sync_frequency", 5 * 60); // default is 5min
             ContentResolver.addPeriodicSync(
                     account, CONTENT_AUTHORITY, new Bundle(), SYNC_FREQUENCY);
             preferences.edit().putLong(PREF_SYNC_INTERNAL_FREQUENCY, SYNC_FREQUENCY).commit();
@@ -132,11 +134,11 @@ public class SyncUtils {
             preferences.edit().putBoolean(PREF_SETUP_COMPLETE, true).commit();
         }
 
-        if(setupComplete){
+        if (setupComplete) {
             long syncFrequency = Long.valueOf(preferences.getString(PREF_SYNC_FREQUENCY, "" + SYNC_FREQUENCY_MINUTES)) * SYNC_FREQUENCY_UNIT;
             long internalFrequency = preferences.getLong(PREF_SYNC_INTERNAL_FREQUENCY, SYNC_FREQUENCY);
 
-            if(syncFrequency != internalFrequency){
+            if (syncFrequency != internalFrequency) {
                 ContentResolver.removePeriodicSync(account, CONTENT_AUTHORITY, new Bundle());
                 ContentResolver.addPeriodicSync(account, CONTENT_AUTHORITY, new Bundle(), syncFrequency);
 
@@ -157,15 +159,15 @@ public class SyncUtils {
     }
 
 
-    public static String getProtocolFromInt(int p){
-        for(Map.Entry<String, Integer> entry: protocolsTypeMap.entrySet()){
-            if(entry.getValue() == p) return entry.getKey();
+    public static String getProtocolFromInt(int p) {
+        for (Map.Entry<String, Integer> entry : protocolsTypeMap.entrySet()) {
+            if (entry.getValue() == p) return entry.getKey();
         }
 
         return "UNKNOWN";
     }
 
-    public static void appendRecordToStringWriter(Record record, Writer stream){
+    public static void appendRecordToStringWriter(Record record, Writer stream) {
         try {
             stream.append(
                     "{" +
@@ -184,7 +186,7 @@ public class SyncUtils {
                             "\"type\":" + (protocolsTypeMap.containsKey(record.getProtocol()) ? protocolsTypeMap.get(record.getProtocol()) : 0) + "," +
                             "\"log\":\"" + record.getProtocol() + "\"," +
                             "\"md5sum\":\"\"," +
-                            "\"date\":" + (int)(record.getTimestamp() / 1000) + "," +
+                            "\"date\":" + (int) (record.getTimestamp() / 1000) + "," +
                             "\"bssid\":\"" + record.getBssid() + "\"," +
                             "\"ssid\":\"" + record.getSsid() + "\"," +
                             "\"device\":\"" + record.getDevice() + "\"," +
@@ -198,7 +200,7 @@ public class SyncUtils {
         }
     }
 
-    public static void appendRecordToStringWriter(RecordAll record, Writer stream){
+    public static void appendRecordToStringWriter(RecordAll record, Writer stream) {
         try {
             stream.append(
                     "{" +
@@ -217,7 +219,7 @@ public class SyncUtils {
                             "\"type\":" + (protocolsTypeMap.containsKey(record.getProtocol()) ? protocolsTypeMap.get(record.getProtocol()) : 0) + "," +
                             "\"log\":\"" + record.getProtocol() + "\"," +
                             "\"md5sum\":\"\"," +
-                            "\"date\":" + (int)(record.getTimestamp() / 1000) + "," +
+                            "\"date\":" + (int) (record.getTimestamp() / 1000) + "," +
                             "\"bssid\":\"" + record.getBssid() + "\"," +
                             "\"ssid\":\"" + record.getSsid() + "\"," +
                             "\"device\":\"" + record.getDevice() + "\"," +
@@ -232,7 +234,7 @@ public class SyncUtils {
     }
 
     @Deprecated
-    public static boolean uploadRecordsToServer(String entity, String serverAddress){
+    public static boolean uploadRecordsToServer(String entity, String serverAddress) {
         HttpPost httppost;
         try {
             HttpClient httpClient = createHttpClient();
@@ -246,7 +248,7 @@ public class SyncUtils {
             // Execute HttpPost
             HttpResponse response = httpClient.execute(httppost);
 
-            if(response.getStatusLine().getStatusCode() >= 400 && response.getStatusLine().getStatusCode() < 600){
+            if (response.getStatusLine().getStatusCode() >= 400 && response.getStatusLine().getStatusCode() < 600) {
                 return false;
             }
             Log.i("TracingSyncService", "Status Code: " + response.getStatusLine().getStatusCode());
@@ -257,7 +259,7 @@ public class SyncUtils {
         return true;
     }
 
-    public static <T> T downloadFromServer(String address, Class<T> klass){
+    public static <T> T downloadFromServer(String address, Class<T> klass) {
         HttpGet httpget;
 
         try {
@@ -269,7 +271,7 @@ public class SyncUtils {
             HttpResponse response = httpClient.execute(httpget);
             Log.i("downloadFromServer", "Status Code: " + response.getStatusLine().getStatusCode());
 
-            if(response.getStatusLine().getStatusCode() >= 400 && response.getStatusLine().getStatusCode() < 600){
+            if (response.getStatusLine().getStatusCode() >= 400 && response.getStatusLine().getStatusCode() < 600) {
                 return klass.newInstance();
             }
 
@@ -280,7 +282,7 @@ public class SyncUtils {
         }
     }
 
-    public static String readResponseToString(HttpResponse response){
+    public static String readResponseToString(HttpResponse response) {
         StringBuilder builder = new StringBuilder();
 
         try {
@@ -297,13 +299,14 @@ public class SyncUtils {
         return builder.toString();
     }
 
-    public static SyncData getSyncDataFromTracing(Context context, Synchronizer synchronizer, long fromTime){
+    public static SyncData getSyncDataFromTracing(Context context, Synchronizer synchronizer, long fromTime) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String serverAddress = pref.getString("pref_upload_server", "https://www.tracingmonitor.org");
         //String serverAddress = pref.getString("pref_upload_server", "https://ssi.cased.de");
 
 
         HttpPost httppost;
+//        TODO take a better look at the exceptions thrown from this flow.
         try {
             HttpClient httpClient = createHttpClient();
             // Create HttpPost
@@ -312,7 +315,7 @@ public class SyncUtils {
             SyncInfo info = synchronizer.getSyncInfo();
 
             JSONArray deviceMap = new JSONArray();
-            for(Map.Entry<String, Long> entry: info.deviceMap.entrySet()){
+            for (Map.Entry<String, Long> entry : info.deviceMap.entrySet()) {
                 JSONObject m = new JSONObject();
                 m.put("sync_id", entry.getValue());
                 m.put("device", entry.getKey());
@@ -330,25 +333,26 @@ public class SyncUtils {
 
             String country = null;
 
-            Location location = MyLocationManager.getNewestLocation();
+            Location location = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
 
-            if(location != null){
+            if (location != null) {
                 Geocoder geocoder = new Geocoder(context, Locale.getDefault());
                 List<Address> fromLocation = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
-                if(fromLocation.size() > 0){
+                if (fromLocation.size() > 0) {
                     Address address = fromLocation.get(0);
                     country = address.getCountryCode();
                 }
             }
 
-            if(country == null){
+            if (country == null) {
                 // We could not get the gps coordinates, try to retrieve the country code from the SIM card
-                TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+                TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
                 country = tm.getNetworkCountryIso();
             }
 
-            if(country == null || country.trim().isEmpty()) country = Locale.getDefault().getCountry();
+            if (country == null || country.trim().isEmpty())
+                country = Locale.getDefault().getCountry();
 
             condition.put("country", country);
 
@@ -364,7 +368,7 @@ public class SyncUtils {
             // Execute HttpPost
             HttpResponse response = httpClient.execute(httppost);
             Log.i("TracingSyncService", "Status Code: " + response.getStatusLine().getStatusCode());
-            if(response.getStatusLine().getStatusCode() >= 400 && response.getStatusLine().getStatusCode() < 600){
+            if (response.getStatusLine().getStatusCode() >= 400 && response.getStatusLine().getStatusCode() < 600) {
                 return null;
             }
 
@@ -374,7 +378,7 @@ public class SyncUtils {
             // ensure, that the received data is an array
             try {
                 syncData = new JSONArray(responseBody);
-            } catch (JSONException ex){
+            } catch (JSONException ex) {
                 ex.printStackTrace();
                 return null;
             }
@@ -384,7 +388,7 @@ public class SyncUtils {
 
             SyncData result = new SyncData();
 
-            for(int i=0; i<syncData.length(); i++){
+            for (int i = 0; i < syncData.length(); i++) {
                 try {
                     JSONObject item = syncData.getJSONObject(i);
                     JSONObject src = item.getJSONObject("src");
@@ -395,7 +399,7 @@ public class SyncUtils {
 
                     Calendar date = toCalendar(item.getString("date"));
 
-                    if(!networkRecordMap.containsKey(item.getString("bssid"))){
+                    if (!networkRecordMap.containsKey(item.getString("bssid"))) {
                         NetworkRecord networkRecord = new NetworkRecord();
                         networkRecord.setAccuracy(0);
                         networkRecord.setBssid(item.getString("bssid"));
@@ -420,8 +424,11 @@ public class SyncUtils {
                     record.setWasInternalAttack(item.has("internal_attack") && item.getBoolean("internal_attack"));
 
                     syncRecords.add(record);
-                } catch(Exception e){
-                    e.printStackTrace();
+                } catch (org.json.JSONException jsonException) {
+                    jsonException.printStackTrace();
+                    continue;
+                } catch (java.text.ParseException textPE) {
+                    textPE.printStackTrace();
                     continue;
                 }
             }
@@ -430,8 +437,17 @@ public class SyncUtils {
             result.syncRecords = syncRecords;
 
             return result;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ClientProtocolException cpe) {
+            cpe.printStackTrace();
+            return null;
+        } catch (java.io.IOException ioException) {
+            ioException.printStackTrace();
+            return null;
+        } catch (org.json.JSONException jsonException) {
+            jsonException.printStackTrace();
+            return null;
+        } catch (LocationException le) {
+            le.printStackTrace();
             return null;
         }
     }
@@ -444,10 +460,10 @@ public class SyncUtils {
         }
     }
 
-    public static String[] convertMapToStringArray(Map<String, String> map){
+    public static String[] convertMapToStringArray(Map<String, String> map) {
         String[] array = new String[map.size() * 2];
         int i = 0;
-        for(Map.Entry<String, String> entry: map.entrySet()){
+        for (Map.Entry<String, String> entry : map.entrySet()) {
             array[i] = entry.getKey();
             array[i + 1] = entry.getValue();
             i += 2;
@@ -456,15 +472,15 @@ public class SyncUtils {
         return array;
     }
 
-    public static String buildUrlFromBase(String baseUrl, String... query){
+    public static String buildUrlFromBase(String baseUrl, String... query) {
         StringBuilder sb = new StringBuilder(baseUrl);
 
-        if(query.length >= 2){
+        if (query.length >= 2) {
             sb.append("?");
         }
 
-        for(int i=0; i<query.length - 2; i+=2){
-            if(i > 0){
+        for (int i = 0; i < query.length - 2; i += 2) {
+            if (i > 0) {
                 sb.append("&");
             }
 
@@ -477,22 +493,22 @@ public class SyncUtils {
         return sb.toString();
     }
 
-    public static String buildUrlFromBase(String baseUrl, Map<String, String> query){
+    public static String buildUrlFromBase(String baseUrl, Map<String, String> query) {
         return buildUrlFromBase(baseUrl, convertMapToStringArray(query));
     }
 
-    public static String buildUrl(String protocol, String domain, int port, String path, String ... query){
+    public static String buildUrl(String protocol, String domain, int port, String path, String... query) {
         return buildUrlFromBase(
                 String.format("%s://%s:%d/%s", urlEncodeUTF8(protocol), urlEncodeUTF8(domain), port, path),
                 query
         );
     }
 
-    public static String buildUrl(String protocol, String domain, int port, String path, Map<String, String> query){
+    public static String buildUrl(String protocol, String domain, int port, String path, Map<String, String> query) {
         return buildUrl(protocol, domain, port, path, convertMapToStringArray(query));
     }
 
-    public static List<String[]> getCountriesFromServer(String serverAddress){
+    public static List<String[]> getCountriesFromServer(String serverAddress) {
         List<String[]> ret = new ArrayList<String[]>();
         JSONArray array = downloadFromServer(serverAddress + "/get_countries", JSONArray.class);
 
@@ -501,7 +517,7 @@ public class SyncUtils {
                 JSONObject ob = array.getJSONObject(i);
                 ret.add(new String[]{ob.getString("cc"), ob.getString("country")});
             }
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -531,7 +547,7 @@ public class SyncUtils {
         return calendar;
     }
 
-    public static JSONArray retrieveNewAttacks(Context context, boolean fromPosition){
+    public static JSONArray retrieveNewAttacks(Context context, boolean fromPosition) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String serverAddress = pref.getString("pref_download_server", "https://www.tracingmonitor.org");
         //String serverAddress = pref.getString("pref_download_server", "http://ssi.cased.de/api");
@@ -544,13 +560,16 @@ public class SyncUtils {
         Map<String, String> query = new HashMap<String, String>();
         query.put("start", fromCalendar(calendar));
 
-        if(fromPosition){
-            Location location = MyLocationManager.getNewestLocation();
+        if (fromPosition) {
+            try {
+                Location location = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
 
-            if(location != null) {
                 query.put("latitude", String.valueOf(location.getLatitude()));
                 query.put("longitude", String.valueOf(location.getLongitude()));
                 query.put("distance", "300");
+
+            } catch (LocationException le) {
+
             }
         }
 
