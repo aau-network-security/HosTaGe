@@ -332,7 +332,7 @@ public class HTTP implements Protocol {
 					}
 					in.close();
 					client.close();
-				} catch (Exception e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			return sb.toString();

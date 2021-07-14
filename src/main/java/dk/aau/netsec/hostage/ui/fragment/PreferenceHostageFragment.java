@@ -214,7 +214,6 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
 
     private MaterialAlertDialogBuilder confirmMultistage(CheckBoxPreference checkboxPrefMultiStage) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
-//		TODO extract strings
         builder.setTitle(R.string.warning);
         builder.setMessage(R.string.multistage_warning);
         builder.setPositiveButton(R.string.enable, (dialog, which) -> {

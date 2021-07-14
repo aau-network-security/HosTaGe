@@ -24,9 +24,10 @@ public class MQTTListener extends Listener {
     private Thread brokerThread;
     private ConnectionRegister conReg;
     private boolean running = false;
-    private int mqttport =1883;
+    private int mqttport = 1883;
 
     private static Semaphore mutex = new Semaphore(1);
+
     /**
      * Constructor for the class. Instantiate class variables.
      *
@@ -59,11 +60,11 @@ public class MQTTListener extends Listener {
     public void refreshHandlers() {
         for (Iterator<Handler> iterator = handlers.iterator(); iterator.hasNext(); ) {
             Handler handler = iterator.next();
-            if(handler == null){
+            if (handler == null) {
                 conReg.closeConnection();
                 brokerThread.interrupt();
                 iterator.remove();
-            }else {
+            } else {
                 if (handler.isTerminated()) {
                     conReg.closeConnection();
                     brokerThread.interrupt();
@@ -98,7 +99,7 @@ public class MQTTListener extends Listener {
         return notifyUI(true);
     }
 
-    private boolean notifyUI(boolean running){
+    private boolean notifyUI(boolean running) {
         this.running = running;
         getService().notifyUI(this.getClass().getName(),
                 new String[]{getService().getString(R.string.broadcast_started), super.getProtocolName(), Integer.toString(super.getPort())});
@@ -106,20 +107,22 @@ public class MQTTListener extends Listener {
     }
 
     @Override
-    public void stop() { stopMqttBroker();}
+    public void stop() {
+        stopMqttBroker();
+    }
 
-    public void stopMqttBroker(){
-        if(super.getPort() == mqttport) {
+    public void stopMqttBroker() {
+        if (super.getPort() == mqttport) {
             MQTT.brokerStop();
-            if(brokerThread!=null)
+            if (brokerThread != null)
                 brokerThread.interrupt();
-            if(thread!=null)
+            if (thread != null)
                 thread.interrupt();
             notifyUI(false);
         }
     }
 
-    private void fullHandler() throws Exception {
+    private void fullHandler() throws InterruptedException {
         if (conReg.isConnectionFree()) {
             ExecutorService threadPool = Executors.newCachedThreadPool();
 
@@ -131,8 +134,8 @@ public class MQTTListener extends Listener {
         }
     }
 
-    private Thread brokerThread(){
-        brokerThread =  new Thread(new Runnable() {
+    private Thread brokerThread() {
+        brokerThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -150,11 +153,11 @@ public class MQTTListener extends Listener {
                         return;
 
                     isTopicPublished();
-                    if(MQTTHandler.isAnAttackOngoing()) {
+                    if (MQTTHandler.isAnAttackOngoing()) {
                         startHandler();
                         conReg.newOpenConnection();
                     }
-                } catch (Exception e) {
+                } catch (InterruptedException | IOException | IllegalAccessException | InstantiationException e) {
                     e.printStackTrace();
                 }
             }
@@ -164,31 +167,27 @@ public class MQTTListener extends Listener {
 
     }
 
-    private void startsMonitoringProfile() throws Exception {
-        if(ProfileManager.getInstance().getCurrentActivatedProfile().mId == 14){
+    private void startsMonitoringProfile() throws InterruptedException {
+        if (ProfileManager.getInstance().getCurrentActivatedProfile().mId == 14) {
             Timer timer = scheduleMonitorSensorProfile();
             TimeUnit.SECONDS.sleep(5); //this method is on the loop, so it is necessary to wait until it stops.
             timer.cancel();
         }
     }
 
-    private Timer scheduleMonitorSensorProfile(){
+    private Timer scheduleMonitorSensorProfile() {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                try {
-                    monitorSensorProfile();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                monitorSensorProfile();
             }
-            }, 3000, 4000 );//milliseconds
+        }, 3000, 4000);//milliseconds
 
         return timer;
     }
 
-    private void monitorSensorProfile() throws Exception {
+    private void monitorSensorProfile() {
         SensorProfile sensorProfile = new SensorProfile();
         sensorProfile.startSensor();
     }
@@ -206,8 +205,8 @@ public class MQTTListener extends Listener {
         return new Handler(service, listener, protocol);
     }
 
-    private void startHandler() throws Exception {
-        if(handlers.isEmpty())
+    private void startHandler() throws IllegalAccessException, InstantiationException {
+        if (handlers.isEmpty())
             handlers.add(newInstance(getService(), this, super.getProtocol().toString().equals("CIFS") ? super.getProtocol() : super.getProtocol().getClass().newInstance()));
     }
 

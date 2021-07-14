@@ -1,11 +1,7 @@
 package dk.aau.netsec.hostage.ui.adapter;
 
-import java.util.List;
-import java.util.Map;
-
 import android.app.AlertDialog;
 import android.content.Context;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +11,9 @@ import android.widget.TextView;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.util.List;
+import java.util.Map;
+
 import dk.aau.netsec.hostage.Listener;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.commons.HelperUtils;
@@ -22,7 +21,6 @@ import dk.aau.netsec.hostage.model.Profile;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.model.ServicesListItem;
-
 
 /**
  * @author Daniel Lazar
@@ -66,7 +64,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      *
      * @param position    current position in list
      * @param convertView convert view
-     * @param parent the parent view group
+     * @param parent      the parent view group
      * @return rootView
      */
     @Override
@@ -95,25 +93,19 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
         }
 
         holder.protocolName.setText(item.protocol);
-        setRealPortListening(holder,item);
+        setRealPortListening(holder, item);
         holder.activated.setTag(item);
 
-        try {
-            this.updateStatus(item, holder);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.updateStatus(item, holder);
 
         holder.activated.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
                     ServicesListItem item1 = (ServicesListItem) buttonView.getTag();
-                    try {
-                        mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+
+                    mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
+
                     if (isChecked && !HelperUtils.isNetworkAvailable(parent.getContext())) {
-                        if(!MainActivity.getInstance().getHostageService().hasRunningListeners()) {
+                        if (!MainActivity.getInstance().getHostageService().hasRunningListeners()) {
                             new AlertDialog.Builder(parent.getContext())
                                     .setTitle(R.string.information)
                                     .setMessage(R.string.wifi_not_connected_msg)
@@ -139,7 +131,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
                                     checkButton(buttonView);
                                 }
                             } else {
-                                if(!buttonView.isChecked()) {
+                                if (!buttonView.isChecked()) {
                                     buttonView.setChecked(true);
                                 }
                             }
@@ -151,8 +143,8 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
     }
 
     @Deprecated
-    private void enableGhostProtocol( ServicesListItem item1,CompoundButton buttonView){
-        if(item1.protocol.equals("GHOST")) {
+    private void enableGhostProtocol(ServicesListItem item1, CompoundButton buttonView) {
+        if (item1.protocol.equals("GHOST")) {
             if (mProfile.mGhostActive) {
                 mGhostPorts = mProfile.getGhostPorts();
 
@@ -173,9 +165,12 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
         }
     }
 
-    private void checkButton(CompoundButton buttonView){
-        if(!buttonView.isChecked()) { buttonView.setChecked(true); }
-        else if (buttonView.isChecked()) { buttonView.setChecked(false);}
+    private void checkButton(CompoundButton buttonView) {
+        if (!buttonView.isChecked()) {
+            buttonView.setChecked(true);
+        } else if (buttonView.isChecked()) {
+            buttonView.setChecked(false);
+        }
     }
 
     /**
@@ -184,43 +179,44 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      * @param item   ServiceListItem which has information about current item, e.g. protocol, activated, attacks
      * @param holder ViewHolder which represents the item in the View
      */
-    private void updateStatus(ServicesListItem item, ViewHolder holder) throws Exception {
-		boolean serviceIsActive = false;
-		// determine if service is active
+    private void updateStatus(ServicesListItem item, ViewHolder holder) {
+        boolean serviceIsActive = false;
+        // determine if service is active
         if (MainActivity.getInstance().getHostageService().isRunning(item.protocol)) {
-			serviceIsActive = true;
-		}
-		if (serviceIsActive){
-			if(!holder.activated.isChecked()) {
-				holder.activated.setChecked(true);
-			}
+            serviceIsActive = true;
+        }
+        if (serviceIsActive) {
+            if (!holder.activated.isChecked()) {
+                holder.activated.setChecked(true);
+            }
 
-			if (item.attacks == 0) {
-				setBackground(holder, R.drawable.services_circle_green);
-			} else { // attacks > 0 (will never be negative)
-				if (MainActivity.getInstance().getHostageService().hasProtocolActiveAttacks(item.protocol)) {
-					setBackground(holder, R.drawable.services_circle_red);
-				} else {
-					setBackground(holder, R.drawable.services_circle_yellow); }
-			}
-		} else {
-			if(holder.activated.isChecked()) {
-				holder.activated.setChecked(false);
-			}
-			if (item.attacks > 0) {
-				setBackground(holder, R.drawable.services_circle_yellow);
-			} else {
-				setBackground(holder, R.drawable.services_circle);
-			}
-		}
+            if (item.attacks == 0) {
+                setBackground(holder, R.drawable.services_circle_green);
+            } else { // attacks > 0 (will never be negative)
+                if (MainActivity.getInstance().getHostageService().hasProtocolActiveAttacks(item.protocol)) {
+                    setBackground(holder, R.drawable.services_circle_red);
+                } else {
+                    setBackground(holder, R.drawable.services_circle_yellow);
+                }
+            }
+        } else {
+            if (holder.activated.isChecked()) {
+                holder.activated.setChecked(false);
+            }
+            if (item.attacks > 0) {
+                setBackground(holder, R.drawable.services_circle_yellow);
+            } else {
+                setBackground(holder, R.drawable.services_circle);
+            }
+        }
 
         holder.recordedAttacks
                 .setText(String.format(MainActivity.getContext().getResources().getString(R.string.recorded_attacks) + "  %d", Integer.valueOf(item.attacks)));
     }
 
     @Deprecated
-    private boolean addGhostStatus(ServicesListItem item) throws Exception {
-        if(item.protocol.equals("GHOST")) {
+    private boolean addGhostStatus(ServicesListItem item) {
+        if (item.protocol.equals("GHOST")) {
             mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
             mGhostPorts = mProfile.getGhostPorts();
             for (Integer port : mGhostPorts) {
@@ -239,24 +235,24 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
      * @param holder   ViewHolder which represents the item in the View
      * @param drawable int which represents the ID of the drawable we want to display, e.g. on a present attack it should be R.drawable.services_circle_red
      */
-	private void setBackground(ViewHolder holder, int drawable) {
-	    holder.circle.setBackground(MainActivity.getInstance().getResources().getDrawable(drawable));
+    private void setBackground(ViewHolder holder, int drawable) {
+        holder.circle.setBackground(MainActivity.getInstance().getResources().getDrawable(drawable));
     }
 
     /**
      * Adds the real port number in every item of the list
      */
-    private void setRealPortListening(ViewHolder holder,ServicesListItem item){
-        Map<String,Integer> ports = Listener.getRealPorts();
+    private void setRealPortListening(ViewHolder holder, ServicesListItem item) {
+        Map<String, Integer> ports = Listener.getRealPorts();
         String protocol = item.protocol;
-        if(ports.containsKey(protocol)){
+        if (ports.containsKey(protocol)) {
             int realPort = ports.entrySet().stream()
                     .filter(e -> e.getKey().equals(protocol))
                     .map(Map.Entry::getValue)
                     .findFirst().get();
 
             holder.port.setText(String.format(MainActivity.getContext().getResources().getString(R.string.open_ports) + "  %d", realPort));
-        }else {
+        } else {
             holder.port.setText(String.format(MainActivity.getContext().getResources().getString(R.string.open_ports) + "  %d", item.port));
         }
     }

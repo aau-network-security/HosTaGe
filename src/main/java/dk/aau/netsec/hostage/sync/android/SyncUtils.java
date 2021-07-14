@@ -41,8 +41,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -252,7 +258,7 @@ public class SyncUtils {
                 return false;
             }
             Log.i("TracingSyncService", "Status Code: " + response.getStatusLine().getStatusCode());
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
@@ -276,7 +282,7 @@ public class SyncUtils {
             }
 
             return klass.getConstructor(klass).newInstance(readResponseToString(response));
-        } catch (Exception e) {
+        } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             return null;
         }
@@ -517,7 +523,7 @@ public class SyncUtils {
                 JSONObject ob = array.getJSONObject(i);
                 ret.add(new String[]{ob.getString("cc"), ob.getString("country")});
             }
-        } catch (Exception e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -595,7 +601,7 @@ public class SyncUtils {
             ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
 
             return new DefaultHttpClient(ccm, params);
-        } catch (Exception e) {
+        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | KeyManagementException | UnrecoverableKeyException e) {
             e.printStackTrace();
             return new DefaultHttpClient();
         }

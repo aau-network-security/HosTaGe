@@ -183,11 +183,8 @@ public class ServicesFragment extends TrackerFragment {
 
         if (switchChangeListener == null) {
             switchChangeListener = (buttonView, isChecked) -> {
-                try {
-                    mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
+                mProfile = ProfileManager.getInstance().getCurrentActivatedProfile();
 
                 if (isChecked) { // switch activated
                     // we need a network connection, checks both types

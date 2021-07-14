@@ -215,7 +215,7 @@
 	<string name="profile_linux_hard_desc">Dieses Profil immitiert ein Linux System, bei welchem nur SSH aktiv ist</string>
 	<string name="profile_voip_desc">Dieses Profil immitiert einen VOIP Server, welcher das SIP Protokoll &#252;berwacht</string>
     <string name="profile_random_desc">In diesem Profil werden zuf&#228;llige Protokolle aktiviert</string>
-    <string name="profile_paranoid_desc">Dieses Profil aktiviert alle Protokolle</string>
+    <string name="profile_vigilant_desc">Dieses Profil aktiviert alle Protokolle</string>
     <string name="profile_help_swipe">Swipe von der linken oder rechten Seite um alle Aktionen zu zeigen</string>
     <string name="profile_monitor_ghost">&#220;berwache GHOST</string>
     <string name="profile_activate_ghost">Aktiviere GHOST &#220;berwachung</string>

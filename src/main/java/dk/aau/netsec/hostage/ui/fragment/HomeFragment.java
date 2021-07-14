@@ -117,11 +117,9 @@ public class HomeFragment extends Fragment {
 
 
         mConnectionInfo = getActivity().getSharedPreferences(getActivity().getString(R.string.connection_info), Context.MODE_PRIVATE);
-        try {
-            mProfileManager = ProfileManager.getInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        mProfileManager = ProfileManager.getInstance();
+
         this.inflater = inflater;
         this.container = container;
         this.savedInstanceState = savedInstanceState;
@@ -375,25 +373,22 @@ public class HomeFragment extends Fragment {
                         noConnectionAlertDialog();
                     } else { // network available
                         boolean protocolActivated = false;
-                        try {
-                            if (ProfileManager.getInstance().getCurrentActivatedProfile() == null) {
-                                MainActivity.getInstance().startMonitorServices(Arrays.asList(
-                                        getResources().getStringArray(R.array.protocols)));
-                            } else {
-                                ProfileManager profileManager = ProfileManager.getInstance();
 
-                                if (profileManager.isRandomActive()) {
-                                    profileManager.randomizeProtocols(profileManager.getRandomProfile());
-                                }
-                                Profile currentProfile = profileManager.getCurrentActivatedProfile();
-                                List<String> protocols = currentProfile.getActiveProtocols();
-                                if (protocols.size() > 0) {
-                                    MainActivity.getInstance().startMonitorServices(protocols);
-                                    protocolActivated = true;
-                                }
+                        if (ProfileManager.getInstance().getCurrentActivatedProfile() == null) {
+                            MainActivity.getInstance().startMonitorServices(Arrays.asList(
+                                    getResources().getStringArray(R.array.protocols)));
+                        } else {
+                            ProfileManager profileManager = ProfileManager.getInstance();
+
+                            if (profileManager.isRandomActive()) {
+                                profileManager.randomizeProtocols(profileManager.getRandomProfile());
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            Profile currentProfile = profileManager.getCurrentActivatedProfile();
+                            List<String> protocols = currentProfile.getActiveProtocols();
+                            if (protocols.size() > 0) {
+                                MainActivity.getInstance().startMonitorServices(protocols);
+                                protocolActivated = true;
+                            }
                         }
 
                         if (protocolActivated) {

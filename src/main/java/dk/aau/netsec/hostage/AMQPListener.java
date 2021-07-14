@@ -165,7 +165,7 @@ public class AMQPListener extends Listener {
         return new Handler(service, listener, protocol);
     }
 
-    private void startHandler() throws Exception {
+    private void startHandler() throws IllegalAccessException, InstantiationException{
         if(handlers.isEmpty())
             handlers.add(newInstance(getService(), this, super.getProtocol().toString().equals("CIFS") ? super.getProtocol() : super.getProtocol().getClass().newInstance()));
     }

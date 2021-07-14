@@ -1,5 +1,6 @@
 package dk.aau.netsec.hostage;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -10,10 +11,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.alfresco.jlan.smb.nt.LoadException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Notification;
@@ -100,7 +103,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
 				String str = EntityUtils.toString(entity);
 				JSONObject json_data = new JSONObject(str);
 				ipAddress = json_data.getString("ip");
-			} catch (Exception e) {
+			} catch (IOException | JSONException e) {
 				e.printStackTrace();
 			}
 			return ipAddress;
@@ -716,7 +719,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
         for (String protocol : protocols) {
             try {
                 implementedProtocols.add((Protocol) Class.forName(String.format("%s.%s", packageName, protocol)).newInstance());
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
