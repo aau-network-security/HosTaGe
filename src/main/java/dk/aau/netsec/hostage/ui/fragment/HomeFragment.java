@@ -424,7 +424,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadAttackListener() {
-        String ssid = mConnectionInfo.getString(getString(R.string.connection_info_ssid), "");
+        String ssid = mConnectionInfo.getString(MainActivity.getContext().getString(R.string.connection_info_ssid), "");
         if (!ssid.isEmpty()) {
             ArrayList<String> ssids = new ArrayList<>();
             ssids.add(ssid);
