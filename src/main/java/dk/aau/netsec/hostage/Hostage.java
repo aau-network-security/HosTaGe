@@ -72,534 +72,520 @@ import static dk.aau.netsec.hostage.commons.HelperUtils.getBSSID;
  */
 public class Hostage extends Service implements LocationSource.OnLocationChangedListener {
 
-	private HashMap<String, Boolean> mProtocolActiveAttacks;
-	private DaoSession dbSession;
-	public static int prefix;
-	boolean activeHandlers = false;
-	boolean bssidSeen = false;
-	boolean listening = false;
+    private HashMap<String, Boolean> mProtocolActiveAttacks;
+    private DaoSession dbSession;
+    public static int prefix;
+    boolean activeHandlers = false;
+    boolean bssidSeen = false;
+    boolean listening = false;
 
-	public class LocalBinder extends Binder {
-		public Hostage getService() {
-			return Hostage.this;
-		}
-	}
+    public class LocalBinder extends Binder {
+        public Hostage getService() {
+            return Hostage.this;
+        }
+    }
 
-	/**
-	 * Task to find out the external IP.
-	 * 
-	 */
-	private class SetExternalIPTask extends AsyncTask<String, Void, String> {
-		@Override
-		protected String doInBackground(String... url) {
-			String ipAddress = null;
-			try {
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpGet httpget = new HttpGet(url[0]);
-				HttpResponse response;
-				response = httpclient.execute(httpget);
-				HttpEntity entity = response.getEntity();
-				entity.getContentLength();
-				String str = EntityUtils.toString(entity);
-				JSONObject json_data = new JSONObject(str);
-				ipAddress = json_data.getString("ip");
-			} catch (IOException | JSONException e) {
-				e.printStackTrace();
-			}
-			return ipAddress;
-		}
+    /**
+     * Task to find out the external IP.
+     */
+    private class SetExternalIPTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... url) {
+            String ipAddress = null;
+            try {
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpGet httpget = new HttpGet(url[0]);
+                HttpResponse response;
+                response = httpclient.execute(httpget);
+                HttpEntity entity = response.getEntity();
+                entity.getContentLength();
+                String str = EntityUtils.toString(entity);
+                JSONObject json_data = new JSONObject(str);
+                ipAddress = json_data.getString("ip");
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+            return ipAddress;
+        }
 
-		@Override
-		protected void onPostExecute(String result) {
-			connectionInfoEditor.putString(getString(R.string.connection_info_external_ip), result);
-			connectionInfoEditor.commit();
-			notifyUI(this.getClass().getName(), new String[] { getString(R.string.broadcast_connectivity) });
-		}
-	}
+        @Override
+        protected void onPostExecute(String result) {
+            connectionInfoEditor.putString(getString(R.string.connection_info_external_ip), result);
+            connectionInfoEditor.commit();
+            notifyUI(this.getClass().getName(), new String[]{getString(R.string.broadcast_connectivity)});
+        }
+    }
 
-	private static class FindPrefix extends AsyncTask<String, String, Integer> {
-		@Override
-		protected Integer doInBackground(String... strings) {
-			try {
-				return HelperUtils.getPrefix(strings);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			return 24;
-		}
+    private static class FindPrefix extends AsyncTask<String, String, Integer> {
+        @Override
+        protected Integer doInBackground(String... strings) {
+            try {
+                return HelperUtils.getPrefix(strings);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            return 24;
+        }
 
-		@Override
-		protected void onPostExecute(Integer result) {
-			prefix = result;
-		}
-	}
+        @Override
+        protected void onPostExecute(Integer result) {
+            prefix = result;
+        }
+    }
 
 
-	private static class ImplementProtocols extends AsyncTask<Void,Void,LinkedList<Protocol>>{
+    private static class ImplementProtocols extends AsyncTask<Void, Void, LinkedList<Protocol>> {
 
-		@Override
-		protected LinkedList<Protocol> doInBackground(Void... voids) {
-			return getImplementedProtocols();
-		}
+        @Override
+        protected LinkedList<Protocol> doInBackground(Void... voids) {
+            return getImplementedProtocols();
+        }
 
-		@Override
-		protected void onPostExecute(LinkedList<Protocol> result) {
-			implementedProtocols = result;
-		}
-	}
+        @Override
+        protected void onPostExecute(LinkedList<Protocol> result) {
+            implementedProtocols = result;
+        }
+    }
 
-	private static WeakReference<Context> context;
+    private static WeakReference<Context> context;
 
-	/**
-	 * Returns the application context.
-	 * 
-	 * @return context.
-	 */
-	public static Context getContext() {
-		return context.get();
-	}
+    /**
+     * Returns the application context.
+     *
+     * @return context.
+     */
+    public static Context getContext() {
+        return context.get();
+    }
 
-	private static LinkedList<Protocol> implementedProtocols;
-	private CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<Listener>();
-	private SharedPreferences connectionInfo;
-	private Editor connectionInfoEditor;
-	private final IBinder mBinder = new LocalBinder();
+    private static LinkedList<Protocol> implementedProtocols;
+    private CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<Listener>();
+    private SharedPreferences connectionInfo;
+    private Editor connectionInfoEditor;
+    private final IBinder mBinder = new LocalBinder();
 
-	/**
-	 * Receiver for connectivity change broadcast.
-	 * 
-	 * @see MainActivity #BROADCAST
-	 */
-	private BroadcastReceiver netReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String bssid_old = connectionInfo.getString(getString(R.string.connection_info_bssid), "");
-			String bssid_new;
-			if (HelperUtils.isCellurarConnected(context)){
-				bssid_new = HelperUtils.getNetworkClass(context);
-			}
-			else {
-				 bssid_new = getBSSID(context);
-			}
-			if (bssid_new == null || !bssid_new.equals(bssid_old)) {
-				deleteConnectionData();
-				updateConnectionInfo();
-				notifyUI(this.getClass().getName(), new String[] { getString(R.string.broadcast_connectivity) });
-			}
-		}
-	};
+    /**
+     * Receiver for connectivity change broadcast.
+     *
+     * @see MainActivity #BROADCAST
+     */
+    private BroadcastReceiver netReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String bssid_old = connectionInfo.getString(getString(R.string.connection_info_bssid), "");
+            String bssid_new;
+            if (HelperUtils.isCellurarConnected(context)) {
+                bssid_new = HelperUtils.getNetworkClass(context);
+            } else {
+                bssid_new = getBSSID(context);
+            }
+            if (bssid_new == null || !bssid_new.equals(bssid_old)) {
+                deleteConnectionData();
+                updateConnectionInfo();
+                notifyUI(this.getClass().getName(), new String[]{getString(R.string.broadcast_connectivity)});
+            }
+        }
+    };
 
-	public List<Listener> getListeners() {
-		return listeners;
-	}
+    public List<Listener> getListeners() {
+        return listeners;
+    }
 
-	/**
-	 * Determines the number of active connections for a protocol running on its
-	 * default port.
-	 * 
-	 * @param protocolName
-	 *            The protocol name
-	 * @return Number of active connections
-	 */
-	public int getNumberOfActiveConnections(String protocolName) {
-		int port = getDefaultPort(protocolName);
-		return getNumberOfActiveConnections(protocolName, port);
-	}
+    /**
+     * Determines the number of active connections for a protocol running on its
+     * default port.
+     *
+     * @param protocolName The protocol name
+     * @return Number of active connections
+     */
+    public int getNumberOfActiveConnections(String protocolName) {
+        int port = getDefaultPort(protocolName);
+        return getNumberOfActiveConnections(protocolName, port);
+    }
 
-	/**
-	 * Determines the number of active connections for a protocol running on the
-	 * given port.
-	 * 
-	 * @param protocolName
-	 *            The protocol name
-	 * @param port
-	 *            Specific port
-	 * @return Number of active connections
-	 */
-	public int getNumberOfActiveConnections(String protocolName, int port) {
-		for (Listener listener : listeners) {
-			if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
-				return listener.getHandlerCount();
-			}
-		}
-		return 0;
-	}
+    /**
+     * Determines the number of active connections for a protocol running on the
+     * given port.
+     *
+     * @param protocolName The protocol name
+     * @param port         Specific port
+     * @return Number of active connections
+     */
+    public int getNumberOfActiveConnections(String protocolName, int port) {
+        for (Listener listener : listeners) {
+            if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
+                return listener.getHandlerCount();
+            }
+        }
+        return 0;
+    }
 
-	/**
-	 * Determines if there any listener is currently running.
-	 * 
-	 * @return True if there is a running listener, else false.
-	 */
-	public boolean hasRunningListeners() {
-		for (Listener listener : listeners) {
-			if (listener.isRunning())
-				return true;
-		}
-		return false;
-	}
+    /**
+     * Determines if there any listener is currently running.
+     *
+     * @return True if there is a running listener, else false.
+     */
+    public boolean hasRunningListeners() {
+        for (Listener listener : listeners) {
+            if (listener.isRunning())
+                return true;
+        }
+        return false;
+    }
 
-	/**
-	 * Determines if a protocol with the given name is running on its default
-	 * port.
-	 * 
-	 * @param protocolName
-	 *            The protocol name
-	 * @return True if protocol is running, else false.
-	 */
-	public boolean isRunning(String protocolName) {
-		int port = getDefaultPort(protocolName);
-		return isRunning(protocolName, port);
-	}
+    /**
+     * Determines if a protocol with the given name is running on its default
+     * port.
+     *
+     * @param protocolName The protocol name
+     * @return True if protocol is running, else false.
+     * @throws NullPointerException if default ports are not initialised yet
+     */
+    public boolean isRunning(String protocolName) throws NullPointerException {
+        int port = getDefaultPort(protocolName);
+        return isRunning(protocolName, port);
+    }
 
-	public boolean isRunningAnyPort(String protocolName){
-		for(Listener listener: listeners){
-			if(listener.getProtocolName().equals(protocolName)){
-				if(listener.isRunning()) return true;
-			}
-		}
+    public boolean isRunningAnyPort(String protocolName) {
+        for (Listener listener : listeners) {
+            if (listener.getProtocolName().equals(protocolName)) {
+                if (listener.isRunning()) return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Determines if a protocol with the given name is running on the given
-	 * port.
-	 * 
-	 * @param protocolName
-	 *            The protocol name
-	 * @param port
-	 *            Specific port
-	 * @return True if protocol is running, else false.
-	 */
-	public boolean isRunning(String protocolName, int port) {
-		for (Listener listener : listeners) {
-			if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
-				return listener.isRunning();
-			}
-		}
-		return false;
-	}
+    /**
+     * Determines if a protocol with the given name is running on the given
+     * port.
+     *
+     * @param protocolName The protocol name
+     * @param port         Specific port
+     * @return True if protocol is running, else false.
+     */
+    public boolean isRunning(String protocolName, int port) {
+        for (Listener listener : listeners) {
+            if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
+                return listener.isRunning();
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Notifies the GUI about a event.
-	 * 
-	 * @param sender
-	 *            Source where the event took place.
-	 * @param values
-	 *            Detailed information about the event.
-	 */
-	public synchronized void notifyUI(String sender, String[] values) {
-		createNotification();
-		// Send Notification
-		if (sender.equals(Handler.class.getName()) && values[0].equals(getString(R.string.broadcast_started))) {
-			this.mProtocolActiveAttacks.put(values[1], true);
-			attackNotification();
-		}
-		informUI(sender,values);
-	}
+    /**
+     * Notifies the GUI about a event.
+     *
+     * @param sender Source where the event took place.
+     * @param values Detailed information about the event.
+     */
+    public synchronized void notifyUI(String sender, String[] values) {
+        createNotification();
+        // Send Notification
+        if (sender.equals(Handler.class.getName()) && values[0].equals(getString(R.string.broadcast_started))) {
+            this.mProtocolActiveAttacks.put(values[1], true);
+            attackNotification();
+        }
+        informUI(sender, values);
+    }
 
-	private void informUI(String sender, String[] values){
-		// Inform UI of Preference Change
-		Intent intent = new Intent(getString(R.string.broadcast));
-		intent.putExtra("SENDER", sender);
-		intent.putExtra("VALUES", values);
-		Log.i("Sender", sender);
-		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-	}
+    private void informUI(String sender, String[] values) {
+        // Inform UI of Preference Change
+        Intent intent = new Intent(getString(R.string.broadcast));
+        intent.putExtra("SENDER", sender);
+        intent.putExtra("VALUES", values);
+        Log.i("Sender", sender);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return mBinder;
-	}
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
-		context = new WeakReference<>(getApplicationContext());
-		loadConnectionInfoEditor();
-		loadProtocols();
-		mProtocolActiveAttacks = new HashMap<>();
-		createNotification();
-		registerNetReceiver();
-		loadConnectionInfo();
-	}
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        context = new WeakReference<>(getApplicationContext());
+        loadConnectionInfoEditor();
+        loadProtocols();
+        mProtocolActiveAttacks = new HashMap<>();
+        createNotification();
+        registerNetReceiver();
+        loadConnectionInfo();
+    }
 
-	private void loadConnectionInfo(){
-		updateConnectionInfo();
-	}
+    private void loadConnectionInfo() {
+        updateConnectionInfo();
+    }
 
-	private void loadConnectionInfoEditor(){
-		connectionInfo = getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
-		connectionInfoEditor = connectionInfo.edit();
-		connectionInfoEditor.apply();
-	}
+    private void loadConnectionInfoEditor() {
+        connectionInfo = getSharedPreferences(getString(R.string.connection_info), Context.MODE_PRIVATE);
+        connectionInfoEditor = connectionInfo.edit();
+        connectionInfoEditor.apply();
+    }
 
-	private void loadProtocols(){
-		ImplementProtocols implementProtocols = new ImplementProtocols();
-		implementProtocols.execute();
-	}
+    private void loadProtocols() {
+        ImplementProtocols implementProtocols = new ImplementProtocols();
+        implementProtocols.execute();
+    }
 
-	@Override
-	public void onDestroy() {
-		cancelNotification();
-		unregisterNetReceiver();
-		super.onDestroy();
-	}
+    @Override
+    public void onDestroy() {
+        cancelNotification();
+        unregisterNetReceiver();
+        super.onDestroy();
+    }
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		// We want this service to continue running until it is explicitly
-		// stopped, so return sticky.
-		//startMultiStage(); The method moved in PreferenceHostageFragment class along with stopMultiStage().
-		return START_STICKY;
-	}
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // We want this service to continue running until it is explicitly
+        // stopped, so return sticky.
+        //startMultiStage(); The method moved in PreferenceHostageFragment class along with stopMultiStage().
+        return START_STICKY;
+    }
 
-	/**
-	 * Starts the listener for the specified protocol. Creates a new
-	 * HoneyService if no matching HoneyListener is found.
-	 * 
-	 * @param protocolName
-	 *            Name of the protocol that should be started.
-	 */
-	public boolean startListener(String protocolName) {
-		return startListener(protocolName, getDefaultPort(protocolName));
-	}
+    /**
+     * Starts the listener for the specified protocol. Creates a new
+     * HoneyService if no matching HoneyListener is found.
+     *
+     * @param protocolName Name of the protocol that should be started.
+     *
+     * @throws NullPointerException getDefaultPort takes a while to initialise on application start
+     * and may throw a NullPointerException
+     */
+    public boolean startListener(String protocolName) throws NullPointerException {
+        return startListener(protocolName, getDefaultPort(protocolName));
+    }
 
-	/**
-	 * Starts the listener for the specified protocol and port. Creates a new
-	 * HoneyService if no matching HoneyListener is found.
-	 * 
-	 * @param protocolName
-	 *            Name of the protocol that should be started.
-	 * @param port
-	 *            The port number in which the listener should run.
-	 */
-	public boolean startListener(String protocolName, int port) {
-		try {
-			CustomLocationManager.getLocationManagerInstance(getContext()).registerCustomLocationListener(this);
-		}
-		catch (LocationException le){
-			// Location updating could not be started.
-			le.printStackTrace();
-		}
+    /**
+     * Starts the listener for the specified protocol and port. Creates a new
+     * HoneyService if no matching HoneyListener is found.
+     *
+     * @param protocolName Name of the protocol that should be started.
+     * @param port         The port number in which the listener should run.
+     */
+    public boolean startListener(String protocolName, int port) {
+        try {
+            CustomLocationManager.getLocationManagerInstance(getContext()).registerCustomLocationListener(this);
+        } catch (LocationException le) {
+            // Location updating could not be started.
+            le.printStackTrace();
+        }
 
-		for (Listener listener : listeners) {
-			if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
-				if (!listener.isRunning()) {
-					if (listener.start()) {
-						return true;
-					}
-					Toast.makeText(getApplicationContext(), protocolName + " SERVICE COULD NOT BE STARTED!", Toast.LENGTH_SHORT).show();
-					return false;
-				}
+        for (Listener listener : listeners) {
+            if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
+                if (!listener.isRunning()) {
+                    if (listener.start()) {
+                        return true;
+                    }
+                    Toast.makeText(getApplicationContext(), protocolName + " SERVICE COULD NOT BE STARTED!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
 
-			}
-		}
-		Listener listener = createListener(protocolName, port);
-		if (listener != null) {
-			if (listener.start()) {
-				return true;
-			}
-		}
+            }
+        }
+        Listener listener = createListener(protocolName, port);
+        if (listener != null) {
+            if (listener.start()) {
+                return true;
+            }
+        }
 
-		Toast.makeText(getApplicationContext(), protocolName + " SERVICE COULD NOT BE STARTED!", Toast.LENGTH_SHORT).show();
-		return false;
-	}
+        Toast.makeText(getApplicationContext(), protocolName + " SERVICE COULD NOT BE STARTED!", Toast.LENGTH_SHORT).show();
+        return false;
+    }
 
-	/**
-	 * Starts all listeners which are not already running.
-	 */
-	public void startListeners() {
-		for (Listener listener : listeners) {
-			if (!listener.isRunning()) {
-				listener.start();
-			}
-		}
-		// Toast.makeText(getApplicationContext(), "SERVICES STARTED!",
-		// Toast.LENGTH_SHORT).show();
-	}
+    /**
+     * Starts all listeners which are not already running.
+     */
+    public void startListeners() {
+        for (Listener listener : listeners) {
+            if (!listener.isRunning()) {
+                listener.start();
+            }
+        }
+        // Toast.makeText(getApplicationContext(), "SERVICES STARTED!",
+        // Toast.LENGTH_SHORT).show();
+    }
 
-	/**
-	 * Stops the listener for the specified protocol.
-	 * 
-	 * @param protocolName
-	 *            Name of the protocol that should be stopped.
-	 */
-	public void stopListener(String protocolName) {
-		stopListener(protocolName, getDefaultPort(protocolName));
-	}
+    /**
+     * Stops the listener for the specified protocol.
+     *
+     * @param protocolName Name of the protocol that should be stopped.
+     */
+    public void stopListener(String protocolName) {
+        stopListener(protocolName, getDefaultPort(protocolName));
+    }
 
-	/**
-	 * Stops the listener for the specified protocol.
-	 * 
-	 * @param protocolName
-	 *            Name of the protocol that should be stopped.
-	 * @param port
-	 *            The port number in which the listener is running.
-	 */
-	public void stopListener(String protocolName, int port) {
-		for (Listener listener : listeners) {
-			if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
-				if (listener.isRunning()) {
-					listener.stop();
-					mProtocolActiveAttacks.remove(protocolName);
-				}
-			}
-		}
-		// Toast.makeText(getApplicationContext(), protocolName +
-		// " SERVICE STOPPED!", Toast.LENGTH_SHORT).show();
-	}
-	
+    /**
+     * Stops the listener for the specified protocol.
+     *
+     * @param protocolName Name of the protocol that should be stopped.
+     * @param port         The port number in which the listener is running.
+     */
+    public void stopListener(String protocolName, int port) {
+        for (Listener listener : listeners) {
+            if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
+                if (listener.isRunning()) {
+                    listener.stop();
+                    mProtocolActiveAttacks.remove(protocolName);
+                }
+            }
+        }
+        // Toast.makeText(getApplicationContext(), protocolName +
+        // " SERVICE STOPPED!", Toast.LENGTH_SHORT).show();
+    }
 
-	public void stopListenerAllPorts(String protocolName){
-		try {
-			CustomLocationManager.getLocationManagerInstance(null).unregisterCustomLocationListener(this);
-		} catch (LocationException le){
-			le.printStackTrace();
-		}
 
-		for(Listener listener: listeners){
-			if(listener.getProtocolName().equals(protocolName)){
-				if(listener.isRunning()){
-					listener.stop();
-					mProtocolActiveAttacks.remove(protocolName);
-				}
-			}
-		}
-	}
-	/**
-	 * Stops all running listeners.
-	 */
-	public void stopListeners() {
-		try {
-			CustomLocationManager.getLocationManagerInstance(null).unregisterCustomLocationListener(this);
-		} catch (LocationException le) {
-			le.printStackTrace();
-		}
+    public void stopListenerAllPorts(String protocolName) {
+        try {
+            CustomLocationManager.getLocationManagerInstance(null).unregisterCustomLocationListener(this);
+        } catch (LocationException le) {
+            le.printStackTrace();
+        }
 
-		for (Listener listener : listeners) {
-			if (listener.isRunning()) {
-				listener.stop();
-				mProtocolActiveAttacks.remove(listener.getProtocolName());
-			}
-		}
-		// Toast.makeText(getApplicationContext(), "SERVICES STOPPED!",
-		// Toast.LENGTH_SHORT).show();
-	}
+        for (Listener listener : listeners) {
+            if (listener.getProtocolName().equals(protocolName)) {
+                if (listener.isRunning()) {
+                    listener.stop();
+                    mProtocolActiveAttacks.remove(protocolName);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Updates the notification when a attack is registered.
-	 */
-	private void attackNotification() {
-		SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-		String strRingtonePreference = defaultPref.getString("pref_notification_sound", "content://settings/system/notification_sound");
+    /**
+     * Stops all running listeners.
+     */
+    public void stopListeners() {
+        try {
+            CustomLocationManager.getLocationManagerInstance(null).unregisterCustomLocationListener(this);
+        } catch (LocationException le) {
+            le.printStackTrace();
+        }
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			CharSequence name = "Under Attack";
-			int importance = NotificationManager.IMPORTANCE_DEFAULT;
-			NotificationChannel channel = new NotificationChannel("32",name,importance);
-			channel.setDescription("this");
-			NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        for (Listener listener : listeners) {
+            if (listener.isRunning()) {
+                listener.stop();
+                mProtocolActiveAttacks.remove(listener.getProtocolName());
+            }
+        }
+        // Toast.makeText(getApplicationContext(), "SERVICES STOPPED!",
+        // Toast.LENGTH_SHORT).show();
+    }
 
-			mNotificationManager.createNotificationChannel(channel);
-			Notification.Builder notificationBuilder = new Notification.Builder(this,"32");
-			notificationBuilder.setContentTitle(getString(R.string.app_name)).setTicker(getString(R.string.honeypot_live_threat))
-					.setContentText(getString(R.string.honeypot_live_threat)).setSmallIcon(R.drawable.ic_service_red).setAutoCancel(true).setWhen(System.currentTimeMillis())
-					.setSound(Uri.parse(strRingtonePreference));
+    /**
+     * Updates the notification when a attack is registered.
+     */
+    private void attackNotification() {
+        SharedPreferences defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String strRingtonePreference = defaultPref.getString("pref_notification_sound", "content://settings/system/notification_sound");
 
-			if (defaultPref.getBoolean("pref_vibration", false)) {
-				channel.setVibrationPattern(new long[] { 100, 200, 100, 200 });
-			}else{
-				channel.setVibrationPattern(new long[]{ 0 });
-			}
-			channel.enableVibration(true);
-			Notification notification = notificationBuilder.setOngoing(true)
-					.build();
-			startForeground(2, notification);
-		}
-	}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Under Attack";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("32", name, importance);
+            channel.setDescription("this");
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-	/**
-	 * Cancels the Notification
-	 */
-	private void cancelNotification() {
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.cancel(1);
-	}
+            mNotificationManager.createNotificationChannel(channel);
+            Notification.Builder notificationBuilder = new Notification.Builder(this, "32");
+            notificationBuilder.setContentTitle(getString(R.string.app_name)).setTicker(getString(R.string.honeypot_live_threat))
+                    .setContentText(getString(R.string.honeypot_live_threat)).setSmallIcon(R.drawable.ic_service_red).setAutoCancel(true).setWhen(System.currentTimeMillis())
+                    .setSound(Uri.parse(strRingtonePreference));
 
-	/**
-	 * Creates a HoneyListener for a given protocol on a specific port. After
-	 * creation the HoneyListener is not started. Checks if the protocol is
-	 * implemented first.
-	 * 
-	 * @param protocolName
-	 *            Name of the protocol
-	 * @param port
-	 *            Port on which to start the HoneyListener
-	 * @return Returns the created HoneyListener, if creation failed returns
-	 *         null.
-	 */
-	private Listener createListener(String protocolName, int port) {
-		for (Protocol protocol : implementedProtocols) {
-			if (protocolName.equals(protocol.toString())) {
-				if(protocolName.equals("MQTT")) {
-					return addMQTTListener(protocol, port);
-				}
-				if(protocolName.equals("COAP")) {
-					return addCOAPListener(protocol, port);
-				}
-				if(protocolName.equals("AMQP")){
-					return addAMQPListener(protocol,port);
-				}
-				Listener listener = new Listener(this, protocol, port);
-				listeners.add(listener);
-				return listener;
-			}
-		}
-		return null;
-	}
+            if (defaultPref.getBoolean("pref_vibration", false)) {
+                channel.setVibrationPattern(new long[]{100, 200, 100, 200});
+            } else {
+                channel.setVibrationPattern(new long[]{0});
+            }
+            channel.enableVibration(true);
+            Notification notification = notificationBuilder.setOngoing(true)
+                    .build();
+            startForeground(2, notification);
+        }
+    }
 
-	private MQTTListener addMQTTListener(Protocol protocolName, int port){
-		MQTTListener listener = new MQTTListener(this, protocolName, port);
-		listeners.add(listener);
-		return listener;
-	}
+    /**
+     * Cancels the Notification
+     */
+    private void cancelNotification() {
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(1);
+    }
 
-	private COAPListener addCOAPListener(Protocol protocolName, int port){
-		COAPListener listener = new COAPListener(this, protocolName, port);
-		listeners.add(listener);
-		return listener;
-	}
+    /**
+     * Creates a HoneyListener for a given protocol on a specific port. After
+     * creation the HoneyListener is not started. Checks if the protocol is
+     * implemented first.
+     *
+     * @param protocolName Name of the protocol
+     * @param port         Port on which to start the HoneyListener
+     * @return Returns the created HoneyListener, if creation failed returns
+     * null.
+     */
+    private Listener createListener(String protocolName, int port) {
+        for (Protocol protocol : implementedProtocols) {
+            if (protocolName.equals(protocol.toString())) {
+                if (protocolName.equals("MQTT")) {
+                    return addMQTTListener(protocol, port);
+                }
+                if (protocolName.equals("COAP")) {
+                    return addCOAPListener(protocol, port);
+                }
+                if (protocolName.equals("AMQP")) {
+                    return addAMQPListener(protocol, port);
+                }
+                Listener listener = new Listener(this, protocol, port);
+                listeners.add(listener);
+                return listener;
+            }
+        }
+        return null;
+    }
 
-	private AMQPListener addAMQPListener(Protocol protocolName, int port){
-		AMQPListener listener = new AMQPListener(this, protocolName, port);
-		listeners.add(listener);
-		return listener;
-	}
+    private MQTTListener addMQTTListener(Protocol protocolName, int port) {
+        MQTTListener listener = new MQTTListener(this, protocolName, port);
+        listeners.add(listener);
+        return listener;
+    }
 
-	/**
-	 * Creates a Notification in the notification bar.
-	 */
-	private synchronized void createNotification() {
-		if (MainActivity.getInstance() == null) {
-			return; // prevent NullPointerException
-		}
+    private COAPListener addCOAPListener(Protocol protocolName, int port) {
+        COAPListener listener = new COAPListener(this, protocolName, port);
+        listeners.add(listener);
+        return listener;
+    }
 
-		checkNetworkPreviousInfection();
+    private AMQPListener addAMQPListener(Protocol protocolName, int port) {
+        AMQPListener listener = new AMQPListener(this, protocolName, port);
+        listeners.add(listener);
+        return listener;
+    }
 
-		PendingIntent resultPendingIntent = intentNotificationGenerator();
+    /**
+     * Creates a Notification in the notification bar.
+     */
+    private synchronized void createNotification() {
+        if (MainActivity.getInstance() == null) {
+            return; // prevent NullPointerException
+        }
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			CharSequence name = "Under Attack";
-			int importance = NotificationManager.IMPORTANCE_DEFAULT;
-			NotificationChannel channel = new NotificationChannel("42",name,importance);
-			channel.setDescription("this");
+        checkNetworkPreviousInfection();
 
-			NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        PendingIntent resultPendingIntent = intentNotificationGenerator();
 
-			mNotificationManager.createNotificationChannel(channel);
-			Notification.Builder notificationBuilder = new Notification.Builder(this,"42");
-			notificationBuilder.setContentTitle(getString(R.string.app_name)).setWhen(System.currentTimeMillis());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Under Attack";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("42", name, importance);
+            channel.setDescription("this");
+
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            mNotificationManager.createNotificationChannel(channel);
+            Notification.Builder notificationBuilder = new Notification.Builder(this, "42");
+            notificationBuilder.setContentTitle(getString(R.string.app_name)).setWhen(System.currentTimeMillis());
             notificationIconBuilder(listening, activeHandlers, bssidSeen, notificationBuilder);
             notificationBuilder.setContentIntent(resultPendingIntent);
 
@@ -689,11 +675,11 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
      * @return Returns the default port number, if the protocol is implemented.
      * Else returns -1.
      * @throws NullPointerException gets thrown if {@link ImplementProtocols} has not yet been
-     * initialized.
+     *                              initialized.
      */
-    private int getDefaultPort(String protocolName) throws NullPointerException{
-        if (implementedProtocols == null){
-            throw new NullPointerException();
+    private int getDefaultPort(String protocolName) throws NullPointerException {
+        if (implementedProtocols == null) {
+            throw new NullPointerException("Implemented Protocols are null (probably not initialised yet).");
         }
         for (Protocol protocol : implementedProtocols) {
             if (protocolName.equals(protocol.toString())) {
@@ -842,15 +828,15 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
         editor.apply();
     }
 
-	/**
-	 * Mandatory implementation of the {@link com.google.android.gms.maps.LocationSource.OnLocationChangedListener}
-	 *
-	 * The listener must be implemented so that the location is periodically refreshed. The updated
-	 * location is accessed individually by the respective Listener using the {@link CustomLocationManager#getLatestLocation()}
-	 * method.
-	 */
-	@Override
-	public void onLocationChanged(@NonNull Location location) {
-		// Do nothing
-	}
+    /**
+     * Mandatory implementation of the {@link com.google.android.gms.maps.LocationSource.OnLocationChangedListener}
+     * <p>
+     * The listener must be implemented so that the location is periodically refreshed. The updated
+     * location is accessed individually by the respective Listener using the {@link CustomLocationManager#getLatestLocation()}
+     * method.
+     */
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        // Do nothing
+    }
 }
