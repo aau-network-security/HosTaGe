@@ -29,7 +29,7 @@
 			android:id="@+id/record_conversation_info"
 			android:layout_alignParentTop="true"
 			android:layout_toRightOf="@+id/record_conversation_type"
-			android:textColor="@color/dark_grey"/>
+		/>
 
 	<TextView
 			android:layout_width="match_parent"
@@ -59,14 +59,12 @@
 			android:text="@string/text_packet"
 			android:textSize="12sp"
 			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textColor="@color/dark_cyan"
 			android:id="@+id/text_id_received"
 			android:layout_gravity="bottom"
 			android:gravity="center"
 			style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
 		<Button android:layout_width="56dp"
-			android:textColor="@color/dark_red"
 			android:layout_height="40dp"
 			android:text="@string/hex_packet"
 			android:textSize="12sp"

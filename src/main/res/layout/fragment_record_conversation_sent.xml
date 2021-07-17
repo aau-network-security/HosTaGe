@@ -6,7 +6,7 @@
                 android:layout_weight="7.93"
                 android:padding="10dp"
                 android:layout_marginTop="2dp"
-                android:background="@color/bright_grey">
+                >
 
 	<TextView
 			android:layout_width="wrap_content"
@@ -15,7 +15,6 @@
 			android:text="@string/record_details_sent"
 			android:id="@+id/record_conversation_type"
 			android:background="@drawable/records_detail_send_indicator"
-			android:textColor="#FFFFFFFF"
 			android:paddingTop="2dp"
 			android:paddingRight="5dp"
 			android:paddingBottom="2dp"
@@ -31,7 +30,6 @@
 			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:text=""
 			android:id="@+id/record_conversation_info"
-			android:textColor="@color/dark_grey"
 			android:layout_alignTop="@+id/record_conversation_type"
 			android:layout_toLeftOf="@+id/record_conversation_type"
 			android:gravity="right"/>
@@ -66,14 +64,12 @@
 			android:text="@string/text_packet"
 			android:textSize="12sp"
 			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textColor="@color/dark_cyan"
 			android:id="@+id/text_id_sent"
 			android:layout_gravity="bottom"
 			android:gravity="center"
 			style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
 		<Button android:layout_width="56dp"
-			android:textColor="@color/dark_red"
 			android:layout_height="40dp"
 			android:text="@string/hex_packet"
 			android:textSize="12sp"

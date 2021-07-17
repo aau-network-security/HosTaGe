@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -41,6 +43,7 @@
             android:layout_marginLeft="15dp"
             android:layout_weight="1"
             android:text="@string/monitor_current_connection"
+            android:textColor="?attr/colorOnBackground"
             android:textStyle="bold" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
@@ -91,7 +94,9 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="21dp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="26sp" />
+                android:textSize="26sp"
+                android:textColor="?attr/colorOnBackground"
+                tools:text="HomeWifi" />
 
             <ImageView
                 android:id="@+id/home_button_connection_info"
@@ -111,7 +116,7 @@
             android:layout_marginTop="10dp"
             android:text="@string/insecure"
             android:textAppearance="@android:style/TextAppearance.Holo.Small"
-            android:textColor="@color/holo_red"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="13sp" />
 
         <TextView
@@ -119,8 +124,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:textColor="@color/holo_red"
-            android:textSize="11sp" />
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="12sp"
+            tools:text="3 attacks recorded" />
 
         <RelativeLayout
             android:id="@+id/home_profile_details"
@@ -135,7 +141,8 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
                 android:text="@string/active_profile"
-                android:textSize="11sp"
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnBackground"
                 android:textStyle="bold" />
 
             <TextView
@@ -144,7 +151,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/home_text_profile_header"
                 android:layout_centerHorizontal="true"
-                android:textSize="11sp" />
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnBackground"
+                tools:text="Windows XP" />
 
             <ImageView
                 android:id="@+id/home_image_profile"

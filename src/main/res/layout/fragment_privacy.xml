@@ -11,7 +11,6 @@
         android:layout_width="158dp"
         android:layout_height="39dp"
         android:text="@string/Privacy_Policy"
-        android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
         tools:layout_editor_absoluteX="23dp"
