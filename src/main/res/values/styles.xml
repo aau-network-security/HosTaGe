@@ -11,10 +11,16 @@
         <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="colorOnBackground">@color/colorOnBackground</item>
         <item name="android:colorAccent">@color/colorPrimary</item>
-
     </style>
 
-    <style name="FilipsAlertDialog" parent="Base.V14.Theme.MaterialComponents.Light.Dialog.Bridge">
+    <style name="CustomDateTimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
+        <item name="colorBackgroundFloating">@color/colorSurface</item>
+        <item name="colorAccent">@color/colorPrimaryVariant</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryVariant</item>
+        <item name="colorPrimary">@color/colorPrimaryVariant</item>
+    </style>
+
+    <style name="CustomAlertDialog" parent="Base.V14.Theme.MaterialComponents.Light.Dialog.Bridge">
         <item name="colorSurface">@color/colorSurface</item>
         <item name="colorOnPrimary">@color/colorPrimaryVariant</item>
         <item name="android:textColor">@color/colorOnSurface</item>
@@ -28,7 +34,6 @@
         <item name="android:focusable">true</item>
         <item name="android:orientation">horizontal</item>
     </style>
-
 
     <style name="DoneBarActionButtonText">
         <item name="android:layout_height">wrap_content</item>

@@ -45,7 +45,7 @@ import dk.aau.netsec.hostage.persistence.DAO.DAOHelper;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.adapter.StatisticListAdapter;
 import dk.aau.netsec.hostage.ui.dialog.ChecklistDialog;
-import dk.aau.netsec.hostage.ui.dialog.DateTimeDialogFragment;
+import dk.aau.netsec.hostage.ui.dialog.DateTimePickerDialog;
 import dk.aau.netsec.hostage.ui.helper.ColorSequenceGenerator;
 import dk.aau.netsec.hostage.ui.model.LogFilter;
 import dk.aau.netsec.hostage.ui.model.PlotComparisonItem;
@@ -57,7 +57,7 @@ import dk.aau.netsec.hostage.ui.popup.SplitPopupItem;
 /**
  * Created by Julien on 16.02.14.
  */
-public class StatisticsFragment extends TrackerFragment implements ChecklistDialog.ChecklistDialogListener, DateTimeDialogFragment.DateTimeDialogFragmentListener {
+public class StatisticsFragment extends TrackerFragment implements ChecklistDialog.ChecklistDialogListener, DateTimePickerDialog.DateTimeSelected {
     static final String FILTER_MENU_TITLE_BSSID = "BSSID";
     static final String FILTER_MENU_TITLE_ESSID = "ESSID";
     static final String FILTER_MENU_TITLE_PROTOCOLS = MainActivity.getContext().getString(R.string.stats_protocols);
@@ -724,9 +724,9 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             SplitPopupItem sItem = (SplitPopupItem) item;
             this.wasBelowTimePicker = sItem.wasRightTouch;
             if (this.wasBelowTimePicker) {
-                this.openTimestampToFilterDialog();
+                DateTimePickerDialog.showDateTimePicker(this, getContext(), false);
             } else {
-                this.openTimestampFromFilterDialog();
+                DateTimePickerDialog.showDateTimePicker(this, getContext(), true);
             }
             return;
         }
@@ -827,31 +827,6 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     }
 
     /**
-     * Opens a minimal timestamp dialog.
-     **/
-    private void openTimestampFromFilterDialog() {
-        this.wasBelowTimePicker = false;
-        DateTimeDialogFragment newFragment = new DateTimeDialogFragment(this.getActivity());
-        newFragment.setDateChangeListener(this);
-        newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_TIMESTAMP_ABOVE);
-
-        if (this.filter.aboveTimestamp != Long.MIN_VALUE)
-            newFragment.setDate(this.filter.aboveTimestamp);
-    }
-
-    /**
-     * Opens the maximal timestamp dialog.
-     */
-    private void openTimestampToFilterDialog() {
-        this.wasBelowTimePicker = true;
-        DateTimeDialogFragment newFragment = new DateTimeDialogFragment(this.getActivity());
-        newFragment.setDateChangeListener(this);
-        newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_TIMESTAMP_BELOW);
-        if (this.filter.belowTimestamp != Long.MAX_VALUE)
-            newFragment.setDate(this.filter.belowTimestamp);
-    }
-
-    /**
      * Returns all essids
      * If the current plot is a bar graph, it just return all possible essids for the selected protocol
      *
@@ -916,30 +891,6 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             i++;
         }
         return selected;
-    }
-
-    /**
-     * Will be called if the user selects an date on the timestamp dialog
-     */
-    public void onDateTimePickerPositiveClick(DateTimeDialogFragment dialog) {
-        if (this.wasBelowTimePicker) {
-            this.filter.setBelowTimestamp(dialog.getDate());
-        } else {
-            this.filter.setAboveTimestamp(dialog.getDate());
-        }
-        this.actualiseCurrentPlot();
-    }
-
-    /**
-     * Will be called if the user cancels an date selection on the timestamp dialog
-     */
-    public void onDateTimePickerNegativeClick(DateTimeDialogFragment dialog) {
-        if (this.wasBelowTimePicker) {
-            this.filter.setBelowTimestamp(Long.MAX_VALUE);
-        } else {
-            this.filter.setAboveTimestamp(Long.MIN_VALUE);
-        }
-        this.actualiseCurrentPlot();
     }
 
     /*
@@ -1860,6 +1811,21 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         }
     }
 
+    /**
+     * TODO write javadoc
+     *
+     * @param date
+     * @param filterFrom
+     */
+    @Override
+    public void dateTimeSelected(Calendar date, boolean filterFrom) {
+        if (filterFrom) {
+            filter.setAboveTimestamp(date.getTimeInMillis());
+        } else {
+            filter.setBelowTimestamp(date.getTimeInMillis());
+        }
+        actualiseCurrentPlot();
+    }
 
     @Override
     public void onDestroyView() {

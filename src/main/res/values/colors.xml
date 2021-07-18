@@ -4,7 +4,7 @@
     <color name="colorPrimaryVariant">#9a0007</color>
     <color name="colorOnPrimary">#ffffff</color>
     <color name="colorSurface">#f0f0f0f0</color>
-    <color name="colorOnSurface">#808080</color>
+    <color name="colorOnSurface">#000000</color>
     <color name="colorOnBackground">#808080</color>
 
     <!--    TODO replace with theme specific colour-->

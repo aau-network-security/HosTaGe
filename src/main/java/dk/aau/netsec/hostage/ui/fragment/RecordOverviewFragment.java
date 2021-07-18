@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,7 +23,6 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -56,7 +54,7 @@ import dk.aau.netsec.hostage.sync.android.SyncUtils;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.adapter.RecordListAdapter;
 import dk.aau.netsec.hostage.ui.dialog.ChecklistDialog;
-import dk.aau.netsec.hostage.ui.dialog.DateTimeDialogFragment;
+import dk.aau.netsec.hostage.ui.dialog.DateTimePickerDialog;
 import dk.aau.netsec.hostage.ui.model.ExpandableListItem;
 import dk.aau.netsec.hostage.ui.model.LogFilter;
 import dk.aau.netsec.hostage.ui.popup.AbstractPopupItem;
@@ -65,7 +63,7 @@ import dk.aau.netsec.hostage.ui.popup.SimplePopupTable;
 import dk.aau.netsec.hostage.ui.popup.SplitPopupItem;
 
 
-public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimeDialogFragment.DateTimeDialogFragmentListener {
+public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimePickerDialog.DateTimeSelected {
     static final String FILTER_MENU_TITLE_BSSID = MainActivity.getContext().getString(R.string.BSSID);
     static final String FILTER_MENU_TITLE_ESSID = MainActivity.getContext().getString(R.string.ESSID);
     static final String FILTER_MENU_TITLE_IPS = MainActivity.getContext().getString(R.string.RecordIP);
@@ -396,9 +394,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if (item instanceof SplitPopupItem) {
             SplitPopupItem splitItem = (SplitPopupItem) item;
             if (splitItem.wasRightTouch) {
-                this.openTimestampToFilterDialog();
+                DateTimePickerDialog.showDateTimePicker(this, getContext(), false);
             } else {
-                this.openTimestampFromFilterDialog();
+                DateTimePickerDialog.showDateTimePicker(this, getContext(), true);
             }
             return;
         }
@@ -424,10 +422,10 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 this.actualiseListViewInBackground();
             }
             if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_BELOW)) {
-                this.openTimestampToFilterDialog();
+                DateTimePickerDialog.showDateTimePicker(this, getContext(), false);
             }
             if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_ABOVE)) {
-                this.openTimestampFromFilterDialog();
+                DateTimePickerDialog.showDateTimePicker(this, getContext(), true);
             }
         }
         //return super.onOptionsItemSelected(item);
@@ -617,6 +615,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
             // Handle result from export file location picker
         } else if (requestCode == EXPORT_LOGS_PLAINTEXT_REQUEST_CODE || requestCode == EXPORT_LOGS_JSON_REQUEST_CODE) {
+
             switch (resultCode) {
                 case AppCompatActivity.RESULT_OK:
                     if (data != null
@@ -842,7 +841,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if (loader != null && loader.isAlive()) loader.interrupt();
         loader = null;
         setListViewFooter();
-        this.actualiseFilterButton();
+        actualiseFilterButton();
 
         loader = new Thread(new Runnable() {
             @Override
@@ -1226,27 +1225,23 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_PROTOCOLS);
     }
 
-    /**
-     * opens the timestamp filter dialog (minimal timestamp required)
-     */
-    private void openTimestampFromFilterDialog() {
-        this.wasBelowTimePicker = false;
-        DateTimeDialogFragment newFragment = new DateTimeDialogFragment(this.getActivity());
-        newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_SORTING);
-        if (this.filter.aboveTimestamp != Long.MIN_VALUE)
-            newFragment.setDate(this.filter.aboveTimestamp);
-    }
 
     /**
-     * opens time timestamp filter dialog (maximal timestamp required)
+     * TODO write javadoc
+     *
+     * @param date
+     * @param filterFrom
      */
-    private void openTimestampToFilterDialog() {
-        this.wasBelowTimePicker = true;
-        DateTimeDialogFragment newFragment = new DateTimeDialogFragment(this.getActivity());
-        newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_SORTING);
-        if (this.filter.belowTimestamp != Long.MAX_VALUE)
-            newFragment.setDate(this.filter.belowTimestamp);
+    @Override
+    public void dateTimeSelected(Calendar date, boolean filterFrom) {
+        if (filterFrom) {
+            filter.setAboveTimestamp(date.getTimeInMillis());
+        } else {
+            filter.setBelowTimestamp(date.getTimeInMillis());
+        }
+        actualiseListViewInBackground();
     }
+
 
     /**
      * opens the sorting dialog
@@ -1595,42 +1590,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         titles.add(FILTER_MENU_TITLE_TIMESTAMP_BELOW);
         if (this.filter.isSet()) titles.add(FILTER_MENU_TITLE_REMOVE);
         return titles;
-    }
-
-    /*****************************
-     *
-     *          Listener Actions
-     *
-     * ***************************/
-
-    /**
-     * Will be called if the users selects a timestamp.
-     *
-     * @param dialog {@link DateTimeDialogFragment DateTimeDialogFragment }
-     */
-    public void onDateTimePickerPositiveClick(DateTimeDialogFragment dialog) {
-        if (this.wasBelowTimePicker) {
-            this.filter.setBelowTimestamp(dialog.getDate());
-        } else {
-            this.filter.setAboveTimestamp(dialog.getDate());
-        }
-        this.actualiseListViewInBackground();
-        this.actualiseFilterButton();
-    }
-
-    /**
-     * Will be called if the users cancels a timestamp selection.
-     *
-     * @param dialog {@link DateTimeDialogFragment DateTimeDialogFragment }
-     */
-    public void onDateTimePickerNegativeClick(DateTimeDialogFragment dialog) {
-        if (this.wasBelowTimePicker) {
-            this.filter.setBelowTimestamp(Long.MAX_VALUE);
-        } else {
-            this.filter.setAboveTimestamp(Long.MIN_VALUE);
-        }
-        this.actualiseListViewInBackground();
-        this.actualiseFilterButton();
     }
 
     /**
