@@ -394,9 +394,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if (item instanceof SplitPopupItem) {
             SplitPopupItem splitItem = (SplitPopupItem) item;
             if (splitItem.wasRightTouch) {
-                DateTimePickerDialog.showDateTimePicker(this, getContext(), false);
+                DateTimePickerDialog.showDateTimePicker(getContext(), false, this);
             } else {
-                DateTimePickerDialog.showDateTimePicker(this, getContext(), true);
+                DateTimePickerDialog.showDateTimePicker(getContext(), true, this);
             }
             return;
         }
@@ -422,10 +422,10 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 this.actualiseListViewInBackground();
             }
             if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_BELOW)) {
-                DateTimePickerDialog.showDateTimePicker(this, getContext(), false);
+                DateTimePickerDialog.showDateTimePicker(getContext(), false, this);
             }
             if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_ABOVE)) {
-                DateTimePickerDialog.showDateTimePicker(this, getContext(), true);
+                DateTimePickerDialog.showDateTimePicker(getContext(), true, this);
             }
         }
         //return super.onOptionsItemSelected(item);
@@ -1227,10 +1227,11 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
 
     /**
-     * TODO write javadoc
+     * Callback to filter data after the user has selected filtering date and time.
      *
-     * @param date
-     * @param filterFrom
+     * @param date       Date and time value the user has selected in the Date/Time picker dialog.
+     * @param filterFrom Flag indicating whether this represents a <i>before</i> or <i>after</i>
+     *                   filter
      */
     @Override
     public void dateTimeSelected(Calendar date, boolean filterFrom) {

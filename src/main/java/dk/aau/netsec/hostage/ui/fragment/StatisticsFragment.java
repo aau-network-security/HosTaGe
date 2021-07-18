@@ -277,8 +277,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             }
         }
 
-        this.legendListView = rootView.findViewById(R.id.legend_list_view);
-        this.legendListView.setOnItemClickListener((adapterView, view, i, l) -> StatisticsFragment.this.userTappedOnLegendItem(i));
+        legendListView = rootView.findViewById(R.id.legend_list_view);
+        legendListView.setOnItemClickListener((adapterView, view, i, l) -> StatisticsFragment.this.userTappedOnLegendItem(i));
         rootView.setWillNotDraw(false);
 
         ImageButton visualButton = rootView.findViewById(R.id.plot_data_button);
@@ -397,7 +397,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * Actualises the list view. Therefore it requiers the "currentData".
      */
     public void actualiseLegendList() {
-        StatisticListAdapter adapter = new StatisticListAdapter(this.getApplicationContext(), this.currentData);
+        StatisticListAdapter adapter = new StatisticListAdapter(getApplicationContext(), currentData);
         if (this.currentPlotView instanceof LineGraph) {
             adapter.setValueFormatter(item -> String.format("%.02f", item.getValue2()) + " %" + " " + "(" + (item.getValue1().intValue()) + ")");
         } else {
@@ -406,27 +406,27 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
                 return "" + v;
             });
         }
-        this.legendListView.setAdapter(adapter);
+        legendListView.setAdapter(adapter);
 
-        TextView tableHeaderTitleView = this.rootView.findViewById(R.id.table_header_title_textview);
-        TextView tableHeaderValueView = this.rootView.findViewById(R.id.table_header_value_textview);
-        if (this.currentPlotView instanceof LineGraph) {
+        TextView tableHeaderTitleView = rootView.findViewById(R.id.table_header_title_textview);
+        TextView tableHeaderValueView = rootView.findViewById(R.id.table_header_value_textview);
+        if (currentPlotView instanceof LineGraph) {
             tableHeaderTitleView.setText(FILTER_MENU_TITLE_ESSID);
             tableHeaderValueView.setText(TABLE_HEADER_VALUE_TITLE_ATTACKS_PERCENTAGE);
         }
-        if (this.currentPlotView instanceof PieGraph) {
+        if (currentPlotView instanceof PieGraph) {
             tableHeaderTitleView.setText(FILTER_MENU_TITLE_PROTOCOL);
             tableHeaderValueView.setText(TABLE_HEADER_VALUE_TITLE_ATTACKS_COUNT);
         }
         if (this.currentPlotView instanceof BarGraph) {
             tableHeaderValueView.setText(TABLE_HEADER_VALUE_TITLE_ATTACKS_COUNT);
-            if (this.selectedCompareData.equals(COMPARE_TITLE_AttacksPerBSSID)) {
+            if (selectedCompareData.equals(COMPARE_TITLE_AttacksPerBSSID)) {
                 tableHeaderTitleView.setText(FILTER_MENU_TITLE_BSSID);
             } else {
                 tableHeaderTitleView.setText(FILTER_MENU_TITLE_ESSID);
             }
         }
-        if (this.currentData == null || this.currentData.isEmpty()) {
+        if (currentData == null || currentData.isEmpty()) {
             tableHeaderTitleView.setText("");
             tableHeaderValueView.setText("");
         }
@@ -724,9 +724,9 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             SplitPopupItem sItem = (SplitPopupItem) item;
             this.wasBelowTimePicker = sItem.wasRightTouch;
             if (this.wasBelowTimePicker) {
-                DateTimePickerDialog.showDateTimePicker(this, getContext(), false);
+                DateTimePickerDialog.showDateTimePicker(getContext(), false, this);
             } else {
-                DateTimePickerDialog.showDateTimePicker(this, getContext(), true);
+                DateTimePickerDialog.showDateTimePicker(getContext(), true, this);
             }
             return;
         }
@@ -1812,10 +1812,11 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     }
 
     /**
-     * TODO write javadoc
+     * Callback to filter data after the user has selected filtering date and time.
      *
-     * @param date
-     * @param filterFrom
+     * @param date       Date and time value the user has selected in the Date/Time picker dialog.
+     * @param filterFrom Flag indicating whether this represents a <i>before</i> or <i>after</i>
+     *                   filter
      */
     @Override
     public void dateTimeSelected(Calendar date, boolean filterFrom) {

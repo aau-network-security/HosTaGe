@@ -6,13 +6,17 @@ import android.content.Context;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
+import androidx.annotation.NonNull;
+
 import java.util.Calendar;
 
 import dk.aau.netsec.hostage.R;
-import dk.aau.netsec.hostage.ui.fragment.RecordOverviewFragment;
 
 /**
- * TODO write javadoc
+ * This class contains a single static method to display date and time picker.
+ * <p>
+ * It also defines a callback interface to pass the value back to the filter when the user selects
+ * date and time.
  *
  * @author Filip Adamik
  * Created on 18/07/2021
@@ -20,11 +24,20 @@ import dk.aau.netsec.hostage.ui.fragment.RecordOverviewFragment;
 public class DateTimePickerDialog {
 
     /**
-     * TODO write javadoc
+     * Display data and time picker flow. First, a date picker is displayed. After the user selects
+     * a date and confirms, a time picker is displayed. The selected date and time is passed to the
+     * implementation of the {@link DateTimeSelected} interface, which is passed as a method
+     * argument.
+     * <p>
+     * The selected date and time is only passed on if the user selected both date and time. If the
+     * user cancels the operation before selecting a time, nothing is passed on.
      *
-     * @return
+     * @param context    Application context
+     * @param filterFrom A flag that is passed back in the callback, indicating whether this was
+     *                   triggerred from the <i>before</i> or <i>after</i> filter.
+     * @param callback   The interface implementation where the date and time value is passed.
      */
-    public static void showDateTimePicker(DateTimeSelected callback, Context context, boolean filterFrom) {
+    public static void showDateTimePicker(@NonNull Context context, boolean filterFrom, @NonNull DateTimeSelected callback) {
         Calendar date;
 
         final Calendar currentDate = Calendar.getInstance();
@@ -48,6 +61,6 @@ public class DateTimePickerDialog {
     }
 
     public interface DateTimeSelected {
-        void dateTimeSelected(Calendar date, boolean filterFrom);
+        void dateTimeSelected(@NonNull Calendar date, boolean filterFrom);
     }
 }
