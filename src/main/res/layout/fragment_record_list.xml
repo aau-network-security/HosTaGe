@@ -16,7 +16,6 @@
         android:id="@+id/loglistview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/linearLayout"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
@@ -31,53 +30,53 @@
 
     </ExpandableListView>
 
-    <RelativeLayout
-        android:id="@+id/linearLayout"
-        style="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:alpha="0.8"
-        android:orientation="horizontal">
+<!--    <RelativeLayout-->
+<!--        android:id="@+id/linearLayout"-->
+<!--        style="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse"-->
+<!--        android:layout_width="fill_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentStart="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:alpha="0.8"-->
+<!--        android:orientation="horizontal">-->
 
-        <ImageButton
-            android:id="@+id/SortButton"
-            style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="end"
-            android:src="@drawable/ic_sort_by_size" />
+<!--        <ImageButton-->
+<!--            android:id="@+id/SortButton"-->
+<!--            style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentTop="true"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_gravity="end"-->
+<!--            android:src="@drawable/ic_sort_by_size" />-->
 
-        <ImageButton
-            android:id="@+id/FilterButton"
-            style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/GroupButton"
-            android:src="@drawable/ic_filter" />
+<!--        <ImageButton-->
+<!--            android:id="@+id/FilterButton"-->
+<!--            style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentTop="true"-->
+<!--            android:layout_toStartOf="@+id/GroupButton"-->
+<!--            android:src="@drawable/ic_filter" />-->
 
-        <ImageButton
-            android:id="@+id/DeleteButton"
-            style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/FilterButton"
-            android:src="@drawable/ic_action_discard" />
+<!--        <ImageButton-->
+<!--            android:id="@+id/DeleteButton"-->
+<!--            style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentTop="true"-->
+<!--            android:layout_toStartOf="@+id/FilterButton"-->
+<!--            android:src="@drawable/ic_action_discard" />-->
 
-        <ImageButton
-            android:id="@+id/GroupButton"
-            style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/SortButton"
-            android:src="@drawable/ic_device_access_storage" />
-    </RelativeLayout>
+<!--        <ImageButton-->
+<!--            android:id="@+id/GroupButton"-->
+<!--            style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentTop="true"-->
+<!--            android:layout_toStartOf="@+id/SortButton"-->
+<!--            android:src="@drawable/ic_device_access_storage" />-->
+<!--    </RelativeLayout>-->
 
 
 </RelativeLayout>

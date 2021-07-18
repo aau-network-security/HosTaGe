@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
 import androidx.work.Data;
@@ -126,6 +128,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private LayoutInflater inflater;
     private ViewGroup container;
     private Bundle savedInstanceState;
+    private Menu optionsMenu;
 
 
     public static final int EXPORT_LOGS_PLAINTEXT_REQUEST_CODE = 724;
@@ -161,7 +164,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         setUpDatabase();
         getFilter();
         initializeViews(inflater, container, savedInstanceState);
-        addButtons();
+//        addButtons();
         this.registerBroadcastReceiver();
 
         return rootView;
@@ -189,40 +192,40 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
     }
 
-    private void addButtons() {
-        addDeleteButton();
-        addFilterButton();
-        addSortButton();
-        addGroupButton();
-    }
+//    private void addButtons() {
+//        addDeleteButton();
+//        addFilterButton();
+//        addSortButton();
+//        addGroupButton();
+//    }
 
-    private void addDeleteButton() {
-        ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
-        deleteButton.setOnClickListener(v -> RecordOverviewFragment.this.openDeleteFilteredAttacksDialog());
-        deleteButton.setVisibility(this.showFilterButton ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    private void addFilterButton() {
-        ImageButton filterButton = rootView.findViewById(R.id.FilterButton);
-        filterButton.setOnClickListener(RecordOverviewFragment.this::openFilterPopupMenuOnView);
-        filterButton.setVisibility(this.showFilterButton ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    private void addSortButton() {
-        ImageButton sortButton = rootView.findViewById(R.id.SortButton);
-        sortButton.setOnClickListener(v -> {
-            // Open SortMenu
-            RecordOverviewFragment.this.openSortingDialog();
-        });
-    }
-
-    private void addGroupButton() {
-        ImageButton groupButton = rootView.findViewById(R.id.GroupButton);
-        groupButton.setOnClickListener(v -> {
-            // Open SortMenu
-            RecordOverviewFragment.this.openGroupingDialog();
-        });
-    }
+//    private void addDeleteButton() {
+//        ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
+//        deleteButton.setOnClickListener(v -> RecordOverviewFragment.this.openDeleteFilteredAttacksDialog());
+//        deleteButton.setVisibility(this.showFilterButton ? View.VISIBLE : View.INVISIBLE);
+//    }
+//
+//    private void addFilterButton() {
+//        ImageButton filterButton = rootView.findViewById(R.id.FilterButton);
+//        filterButton.setOnClickListener(RecordOverviewFragment.this::openFilterPopupMenuOnView);
+//        filterButton.setVisibility(this.showFilterButton ? View.VISIBLE : View.INVISIBLE);
+//    }
+//
+//    private void addSortButton() {
+//        ImageButton sortButton = rootView.findViewById(R.id.SortButton);
+//        sortButton.setOnClickListener(v -> {
+//            // Open SortMenu
+//            RecordOverviewFragment.this.openSortingDialog();
+//        });
+//    }
+//
+//    private void addGroupButton() {
+//        ImageButton groupButton = rootView.findViewById(R.id.GroupButton);
+//        groupButton.setOnClickListener(v -> {
+//            // Open SortMenu
+//            RecordOverviewFragment.this.openGroupingDialog();
+//        });
+//    }
 
     private void initializeViews(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (this.groupingKey == null)
@@ -483,6 +486,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu items for use in the action bar
         inflater.inflate(R.menu.records_overview_actions, menu);
+
+        optionsMenu = menu;
     }
 
     /**
@@ -493,40 +498,53 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-//			case R.id.records_action_synchronize:
-//				return synchronizeMenu(item);
 
-            // Process click on log save button.
-            case R.id.records_action_export:
+        // Process click on log save button.
+        if (item.getItemId() == R.id.records_action_export) {
 
-                // Show export format selection dialog
-                AlertDialog.Builder builderExport = new AlertDialog.Builder(getActivity());
-                builderExport.setTitle(MainActivity.getInstance().getString(R.string.rec_choose_export_format));
-                builderExport.setItems(R.array.format, (dialog, position) -> {
+            // Show export format selection dialog
+            AlertDialog.Builder builderExport = new AlertDialog.Builder(getActivity());
+            builderExport.setTitle(MainActivity.getInstance().getString(R.string.rec_choose_export_format));
+            builderExport.setItems(R.array.format, (dialog, position) -> {
 
-                    Intent saveLogsIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                Intent saveLogsIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 
-                    // Start file destination selection activity for plaintext file
-                    if (position == EXPORT_FORMAT_POSITION_PLAINTEXT) {
-                        saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_PLAINTEXT));
-                        saveLogsIntent.setType("text/plain");
+                // Start file destination selection activity for plaintext file
+                if (position == EXPORT_FORMAT_POSITION_PLAINTEXT) {
+                    saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_PLAINTEXT));
+                    saveLogsIntent.setType("text/plain");
 
-                        startActivityForResult(saveLogsIntent, EXPORT_LOGS_PLAINTEXT_REQUEST_CODE);
+                    startActivityForResult(saveLogsIntent, EXPORT_LOGS_PLAINTEXT_REQUEST_CODE);
 
-                        // Start file destination selection activity for JSON file
-                    } else {
-                        saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_JSON));
-                        saveLogsIntent.setType("application/json");
+                    // Start file destination selection activity for JSON file
+                } else {
+                    saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_JSON));
+                    saveLogsIntent.setType("application/json");
 
-                        startActivityForResult(saveLogsIntent, EXPORT_LOGS_JSON_REQUEST_CODE);
-                    }
+                    startActivityForResult(saveLogsIntent, EXPORT_LOGS_JSON_REQUEST_CODE);
+                }
 
-                });
-                builderExport.create();
-                builderExport.show();
+            });
+            builderExport.create();
+            builderExport.show();
 
-                return true;
+            return true;
+        } else if (item.getItemId() == R.id.records_action_filter) {
+            openFilterPopupMenuOnView(rootView);
+
+            return true;
+        } else if (item.getItemId() == R.id.records_action_discard) {
+            openDeleteFilteredAttacksDialog();
+
+            return true;
+        } else if (item.getItemId() == R.id.records_action_sort) {
+            openSortingDialog();
+
+            return true;
+        } else if (item.getItemId() == R.id.records_action_group) {
+            openGroupingDialog();
+
+            return true;
         }
 
         return false;
@@ -897,7 +915,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         }
         RecordListAdapter adapter = (RecordListAdapter) RecordOverviewFragment.this.expListView.getExpandableListAdapter();
 
-        if (this.getFilterButton().getVisibility() == View.VISIBLE && this.filter.isSet()) {
+        if (this.filter.isSet()) {
             this.noDataNotificationToast.setText(R.string.no_data_notification);
         } else {
             this.noDataNotificationToast.setText(R.string.no_data_notification_no_filter);
@@ -1656,17 +1674,38 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * Paints the filter button if the current filter object is set.
      */
     private void actualiseFilterButton() {
-        if (this.filter.isSet()) {
-            ImageButton filterButton = this.getFilterButton();
-            if (filterButton != null) {
-                filterButton.setImageResource(R.drawable.ic_filter_pressed);
-                filterButton.invalidate();
-            }
+        if (optionsMenu == null) {
+            return;
         } else {
-            ImageButton filterButton = this.getFilterButton();
-            if (filterButton != null) {
-                filterButton.setImageResource(R.drawable.ic_filter);
-                filterButton.invalidate();
+            MenuItem filterItem = optionsMenu.findItem(R.id.records_action_filter);
+
+
+            if (filterItem.getIcon() != null) {
+
+                if (filter.isSet()) {
+
+                    Drawable filterIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_filter);
+                    filterIcon.setTint(getResources().getColor(R.color.colorPrimaryVariant));
+                    filterItem.setIcon(filterIcon);
+
+//                ImageButton filterButton = getFilterButton();
+//                if (filterButton != null) {
+//                    filterButton.setImageResource(R.drawable.ic_filter_pressed);
+//                    filterButton.invalidate();
+//                }
+                } else {
+                    Drawable filterIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_filter);
+
+                    filterIcon.setTintList(null);
+                    filterItem.setIcon(R.drawable.ic_filter);
+//                ImageButton filterButton = this.getFilterButton();
+//                if (filterButton != null) {
+//                    filterButton.setImageResource(R.drawable.ic_filter);
+//                    filterButton.invalidate();
+//                }
+                }
+
+                onPrepareOptionsMenu(optionsMenu);
             }
         }
     }

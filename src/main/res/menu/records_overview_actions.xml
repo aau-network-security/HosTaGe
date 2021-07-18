@@ -1,14 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/records_action_export"
-	      android:icon="@drawable/ic_action_save"
-	      android:title="@string/export_to_storage"
-		  app:showAsAction="always" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/records_action_export"
+        android:icon="@drawable/ic_action_save"
+        android:title="@string/export_to_storage"
+        app:showAsAction="always" />
 
-<!--	<item android:id="@+id/records_action_synchronize"-->
-<!--	      android:icon="@drawable/ic_action_import_export"-->
-<!--	      android:title="@string/synchronize"-->
-<!--		  app:showAsAction="ifRoom" />-->
+    <item
+        android:id="@+id/records_action_filter"
+        android:icon="@drawable/ic_filter"
+        android:title="@string/rec_filter_by"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/records_action_group"
+        android:icon="@drawable/ic_device_access_storage"
+        android:title="@string/rec_group_by"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/records_action_sort"
+        android:icon="@drawable/ic_sort_by_size"
+        android:title="@string/rec_sortby"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/records_action_discard"
+        android:icon="@drawable/ic_action_discard"
+        android:title="@string/delete"
+        app:showAsAction="ifRoom" />
+
+    <!--	<item android:id="@+id/records_action_synchronize"-->
+    <!--	      android:icon="@drawable/ic_action_import_export"-->
+    <!--	      android:title="@string/synchronize"-->
+    <!--		  app:showAsAction="ifRoom" />-->
 </menu>
