@@ -1678,7 +1678,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             return;
         } else {
             MenuItem filterItem = optionsMenu.findItem(R.id.records_action_filter);
-
+            if (filterItem == null){
+                return;
+            }
 
             if (filterItem.getIcon() != null) {
 
@@ -1688,21 +1690,11 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                     filterIcon.setTint(getResources().getColor(R.color.colorPrimaryVariant));
                     filterItem.setIcon(filterIcon);
 
-//                ImageButton filterButton = getFilterButton();
-//                if (filterButton != null) {
-//                    filterButton.setImageResource(R.drawable.ic_filter_pressed);
-//                    filterButton.invalidate();
-//                }
                 } else {
                     Drawable filterIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_filter);
 
                     filterIcon.setTintList(null);
                     filterItem.setIcon(R.drawable.ic_filter);
-//                ImageButton filterButton = this.getFilterButton();
-//                if (filterButton != null) {
-//                    filterButton.setImageResource(R.drawable.ic_filter);
-//                    filterButton.invalidate();
-//                }
                 }
 
                 onPrepareOptionsMenu(optionsMenu);

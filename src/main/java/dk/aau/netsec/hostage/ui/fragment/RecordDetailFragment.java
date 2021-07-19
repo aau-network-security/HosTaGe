@@ -10,6 +10,7 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +73,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	private TextView mRecordDetailsTextBssid;
 	private TextView mRecordDetailsTextRemoteip;
 	private TextView mRecordDetailsTextProtocol;
-	private ImageButton mRecordDeleteButton;
 	private Button textButton;
 	private Button hexButton;
 	private LayoutInflater inflater;
@@ -161,7 +161,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		mRecordDetailsTextBssid = view.findViewById(R.id.record_details_text_bssid);
 		mRecordDetailsTextRemoteip = view.findViewById(R.id.record_details_text_remoteip);
 		mRecordDetailsTextProtocol = view.findViewById(R.id.record_details_text_protocol);
-		mRecordDeleteButton = view.findViewById(R.id.DeleteButton);
 	}
 
 
@@ -204,8 +203,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 			addConversationText(row,from,to,r);
 		}
-
-		addDeleteButton();
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
@@ -261,16 +258,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		});
 	}
 
-	private void addDeleteButton(){
-		mRecordDeleteButton.setOnClickListener(v -> {
-			Activity activity = getActivity();
-			if (activity == null) {
-				return;
-			}
-			deleteDialog();
-		});
-	}
-
 	private void deleteDialog(){
 		new AlertDialog.Builder(getActivity())
 				.setTitle(android.R.string.dialog_alert_title)
@@ -287,27 +274,20 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		// Inflate the menu items for use in the action bar
-		if (mRecord.getProtocol().contains("HTTP")){
-			inflater.inflate(R.menu.records_detail_actions, menu);
-		}
-		else if (mRecord.getProtocol().contains("MODBUS")){
-			inflater.inflate(R.menu.records_detail_actions, menu);
-		}
-		else if (mRecord.getProtocol().contains("MULTISTAGE")){
-			inflater.inflate(R.menu.records_detail_actions, menu);
-		}
-		else if (mRecord.getProtocol().contains("SMB")){
-			inflater.inflate(R.menu.records_detail_actions, menu);
-		}
-		else if (mRecord.getProtocol().contains("S7COMM")){
-			inflater.inflate(R.menu.records_detail_actions, menu);
-		}
+		inflater.inflate(R.menu.records_detail_actions, menu);
+
 	}
 
-	//TODO Disabled for PlayStoreRelease
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    if (item.getItemId() == R.id.records_detail_discard){
+	        deleteDialog();
+
+	        return true;
+        }
 //		if (item.getItemId() == R.id.bro_sig) {
+//
+//            //TODO Disabled for PlayStoreRelease
 //			AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
 //			builder.setTitle(MainActivity.getInstance().getString(R.string.bro_signature));
 //			builder.setMessage(MainActivity.getInstance().getString(R.string.bro_message));
@@ -328,8 +308,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 //
 //			return true;
 //		}
-//		return false;
-//	}
+		return false;
+	}
 
 
 	public int protocol2Port(String protocol){
