@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<!--    Red variant-->
     <color name="colorPrimary">#d32f2f</color>
     <color name="colorPrimaryVariant">#9a0007</color>
+
+<!--    AAU blue inspired-->
+<!--    <color name="colorPrimary">#4e417f</color>-->
+<!--    <color name="colorPrimaryVariant">#211a52</color>-->
+
+<!--    Blue variant-->
+<!--    <color name="colorPrimary">#1565c0</color>-->
+<!--    <color name="colorPrimaryVariant">#003c8f</color>-->
+
+<!--Dark Green-->
+<!--    <color name="colorPrimary">#2e7d32</color>-->
+<!--    <color name="colorPrimaryVariant">#005005</color>-->
+
     <color name="colorOnPrimary">#ffffff</color>
     <color name="colorSurface">#f0f0f0f0</color>
     <color name="colorOnSurface">#000000</color>
