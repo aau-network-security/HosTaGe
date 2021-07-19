@@ -10,7 +10,7 @@
     {
       "type": "SINGLE",
       "filters": [],
-      "versionCode": 11,
+      "versionCode": 13,
       "versionName": "2.4",
       "outputFile": "HosTaGe-release.apk"
     }

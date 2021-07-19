@@ -51,15 +51,12 @@ public class PrivacyFragment extends Fragment {
             e.printStackTrace();
         }
 
-        String policyText  = "<h1>Privacy Policy - HosTaGe</h1>\n" +
-                "<p>Last updated: March 01, 2021</p>\n" +
+        String policyText  =    "<p>Last updated: July 20, 2021</p>\n" +
                 "<!DOCTYPE html>\n" +
                 "    <html>\n" +
                 "    <head>\n" +
                 "      <meta charset='utf-8'>\n" +
                 "      <meta name='viewport' content='width=device-width'>\n" +
-                "      <title>Privacy Policy</title>\n" +
-                "      <style> body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding:1em; } </style>\n" +
                 "    </head>\n" +
                 "    <body>\n" +
                 "    <strong>Privacy Policy</strong> <p>\n" +
@@ -77,15 +74,28 @@ public class PrivacyFragment extends Fragment {
                 "                  policy. The Personal Information that we collect is\n" +
                 "                  used for providing and improving the Service. We will not use or share your information with\n" +
                 "                  anyone except as described in this Privacy Policy.\n" +
+                "                 </p> <p>\n" +
+                "                  The users can consent for the following:\n" +
+                "                  <ul> \n "+
+                "                   <li> The right to be forgotten – to get your data deleted. The right to have incorrect data corrected. </li> \n "+
+                "                   <li> The right to know what data a controller have on you. </li> \n "+
+                "                   <li> The right to have your data shared with another organization, if requested be the subject. </li> \n "+
+                "                   <li> The right to not be profiled, the right to object.</li> \n "+
+                "                  </ul> \n "+
                 "                </p> <p>\n" +
                 "                  The terms used in this Privacy Policy have the same meanings\n" +
                 "                  as in our Terms and Conditions, which is accessible at\n" +
                 "                  HosTaGe unless otherwise defined in this Privacy Policy.\n" +
+                "                  The Privacy Policy of Aalborg University can be accessed at https://www.en.aau.dk/privacy-policy-cookies#370625\n"+
                 "                </p> <p><strong>Information Collection and Use</strong></p> <p>\n" +
                 "                  For a better experience, while using our Service, we\n" +
                 "                  may require you to provide us with certain personally\n" +
                 "                  identifiable information. The information that\n" +
                 "                  we request will be retained by us and used as described in this privacy policy.\n" +
+                "                </p> <div><p>\n" +
+                "                    On app startup, we ask for user consent for accessing the location permission. \n" +
+                "                    This information is required to access the network related information, necessary for the app main functionality.\n" +
+                "                  </p> <p>\n" +
                 "                </p> <div><p>\n" +
                 "                    The app does use third party services that may collect\n" +
                 "                    information used to identify you.\n" +
@@ -101,7 +111,7 @@ public class PrivacyFragment extends Fragment {
                 "                  (“IP”) address, device name, operating system version, the\n" +
                 "                  configuration of the app when utilizing our Service,\n" +
                 "                  the time and date of your use of the Service, and other\n" +
-                "                  statistics.\n" +
+                "                  statistics. The logs will be purged periodically every 3 months.\n" +
                 "                </p> <p><strong>Cookies</strong></p> <p>\n" +
                 "                  Cookies are files with a small amount of data that are\n" +
                 "                  commonly used as anonymous unique identifiers. These are sent\n" +
@@ -118,7 +128,7 @@ public class PrivacyFragment extends Fragment {
                 "                </p> <p><strong>Service Providers</strong></p> <p>\n" +
                 "                  We may employ third-party companies and\n" +
                 "                  individuals due to the following reasons:\n" +
-                "                </p> <ul><li>To facilitate our Service;</li> <li>To provide the Service on our behalf;</li> <li>To perform Service-related services; or</li> <li>To assist us in analyzing how our Service is used.</li></ul> <p>\n" +
+                "                </p> <ul><li>To facilitate our Service;(Google Services for hosting the app information)</li> <li>To provide the Service on our behalf;</li> <li>To perform Service-related services; or</li> <li>To assist us in analyzing how our Service is used.</li></ul> <p>\n" +
                 "                  We want to inform users of this Service\n" +
                 "                  that these third parties have access to your Personal\n" +
                 "                  Information. The reason is to perform the tasks assigned to\n" +
@@ -159,7 +169,14 @@ public class PrivacyFragment extends Fragment {
                 "                </p> <p>This policy is effective as of 2021-03-08</p> <p><strong>Contact Us</strong></p> <p>\n" +
                 "                  If you have any questions or suggestions about our\n" +
                 "                  Privacy Policy, do not hesitate to contact us at hostage@es.aau.dk.\n" +
-                "                </p> <p>This privacy policy page was created at <a href=\"https://privacypolicytemplate.net\" target=\"_blank\" rel=\"noopener noreferrer\">privacypolicytemplate.net </a>and modified/generated by <a href=\"https://app-privacy-policy-generator.nisrulz.com/\" target=\"_blank\" rel=\"noopener noreferrer\">App Privacy Policy Generator</a></p>\n" +
+                "Data subjects have the right to submit a complaint about how their personal data is processed\n"+
+                "to the Danish Data Protection Agency at dt@datatilsynet.dk or by post to Datatilsynet/the \n"+
+                "Danish Data Protection Agency, Borgergade 28, 5., 1300 Copenhagen K.\n"+
+                "Please contact our Data Protection Officer if you have any question about the processing of \n"+
+                "your personal data at dpo@aau.dk\n"+
+                "However, before contacting the Danish Data Protection Agency, we recommend that you \n"+
+                "contact Aalborg University’s data protection officer who may be able to solve the matter.\n"+
+                "\n"+
                 "    </body>\n" +
                 "    </html>\n" +
                 "      ";
