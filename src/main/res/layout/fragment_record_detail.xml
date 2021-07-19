@@ -2,170 +2,169 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
-    >
-<ScrollView android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/scrollView"
-            android:fillViewport="true"
-	>
+    android:layout_height="match_parent">
 
-	<LinearLayout
-		android:orientation="vertical"
-				  android:layout_width="match_parent"
-				  android:layout_height="wrap_content"
-				  android:measureWithLargestChild="false"
-				  android:baselineAligned="true"
-				  android:id="@+id/linearLayout3">
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-		<LinearLayout
-			android:orientation="vertical"
-					  android:layout_width="match_parent"
-					  android:layout_height="wrap_content"
-					  android:measureWithLargestChild="false"
-					  android:baselineAligned="true"
-					  android:id="@+id/record_overview_conversation">
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="true"
+            android:measureWithLargestChild="false"
+            android:orientation="vertical">
 
-		<RelativeLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:background="@drawable/panel_bg_selector"
-				android:layout_margin="5dp"
-				android:paddingBottom="10dp"
-				android:paddingLeft="10dp"
-				android:paddingTop="5dp"
-				android:paddingRight="10dp"
-				>
+            <LinearLayout
+                android:id="@+id/record_overview_conversation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="true"
+                android:measureWithLargestChild="false"
+                android:orientation="vertical">
 
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceSmall"
-					android:text="@string/RecordAttackType"
-					android:textAllCaps="true"
-					android:id="@+id/textView4"
-					android:gravity="center"
-					android:layout_alignParentTop="true"
-					android:layout_alignParentLeft="true"
-					android:layout_alignParentStart="true"
-					android:layout_alignBottom="@+id/record_details_text_attack_type"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/panel_bg_selector"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="10dp">
 
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:id="@+id/record_details_text_attack_type"
-					android:layout_toRightOf="@+id/textView7"
-					android:layout_marginLeft="27dp"/>
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/record_details_text_attack_type"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center"
+                        android:text="@string/RecordAttackType"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceSmall"
-					android:text="@string/RecordSSID"
-					android:textAllCaps="true"
-					android:id="@+id/textView2"
-					android:layout_alignTop="@+id/record_details_text_ssid"
-					android:layout_alignParentLeft="true"
-					android:layout_alignParentStart="true"
-					android:layout_alignBottom="@+id/record_details_text_ssid"
-					android:gravity="center"/>
+                    <TextView
+                        android:id="@+id/record_details_text_attack_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="27dp"
+                        android:layout_toRightOf="@+id/textView7"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-			<TextView
-					android:id="@+id/record_details_text_ssid"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:layout_below="@+id/record_details_text_attack_type"
-					android:layout_alignLeft="@+id/record_details_text_attack_type"
-					android:layout_alignStart="@+id/record_details_text_attack_type"/>
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/record_details_text_ssid"
+                        android:layout_alignBottom="@+id/record_details_text_ssid"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:gravity="center"
+                        android:text="@string/RecordSSID"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceSmall"
-					android:text="@string/RecordBSSID"
-					android:textAllCaps="true"
-					android:id="@+id/textView3"
-					android:layout_alignTop="@+id/record_details_text_bssid"
-					android:layout_alignParentLeft="true"
-					android:layout_alignParentStart="true"
-					android:layout_alignBottom="@+id/record_details_text_bssid"
-					android:gravity="center"/>
+                    <TextView
+                        android:id="@+id/record_details_text_ssid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/record_details_text_attack_type"
+                        android:layout_alignStart="@+id/record_details_text_attack_type"
+                        android:layout_alignLeft="@+id/record_details_text_attack_type"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-			<TextView
-					android:id="@+id/record_details_text_bssid"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:layout_below="@+id/record_details_text_ssid"
-					android:layout_alignLeft="@+id/record_details_text_ssid"
-					android:layout_alignStart="@+id/record_details_text_ssid"/>
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/record_details_text_bssid"
+                        android:layout_alignBottom="@+id/record_details_text_bssid"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:gravity="center"
+                        android:text="@string/RecordBSSID"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceSmall"
-					android:text="@string/record_details_remote_ip"
-					android:textAllCaps="true"
-					android:id="@+id/textView7"
-					android:gravity="center"
-					android:layout_alignTop="@+id/record_details_text_remoteip"
-					android:layout_alignBottom="@+id/record_details_text_remoteip"/>
+                    <TextView
+                        android:id="@+id/record_details_text_bssid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/record_details_text_ssid"
+                        android:layout_alignStart="@+id/record_details_text_ssid"
+                        android:layout_alignLeft="@+id/record_details_text_ssid"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-			<TextView
-					android:id="@+id/record_details_text_remoteip"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:layout_alignLeft="@+id/record_details_text_bssid"
-					android:layout_alignStart="@+id/record_details_text_bssid"
-					android:layout_below="@+id/record_details_text_bssid"
-					android:layout_alignParentRight="true"
-					android:layout_alignParentEnd="true"/>
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/record_details_text_remoteip"
+                        android:layout_alignBottom="@+id/record_details_text_remoteip"
+                        android:gravity="center"
+                        android:text="@string/record_details_remote_ip"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="match_parent"
-					android:textAppearance="?android:attr/textAppearanceSmall"
-					android:text="@string/RecordProtocol"
-					android:id="@+id/textView5"
-					android:textAllCaps="true"
-					android:layout_gravity="right|center"
-					android:textAlignment="gravity"
-					android:gravity="center_vertical"
-					android:layout_alignTop="@+id/record_details_text_protocol"
-					android:layout_alignParentLeft="true"
-					android:layout_alignParentStart="true"
-					android:layout_alignBottom="@+id/record_details_text_protocol"/>
+                    <TextView
+                        android:id="@+id/record_details_text_remoteip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/record_details_text_bssid"
+                        android:layout_alignStart="@+id/record_details_text_bssid"
+                        android:layout_alignLeft="@+id/record_details_text_bssid"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:textAllCaps="true"
-					android:id="@+id/record_details_text_protocol"
-					android:gravity="center_horizontal"
-					android:layout_below="@+id/record_details_text_remoteip"
-					android:layout_alignLeft="@+id/record_details_text_remoteip"
-					android:layout_alignStart="@+id/record_details_text_remoteip"/>
+                    <TextView
+                        android:id="@+id/textView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignTop="@+id/record_details_text_protocol"
+                        android:layout_alignBottom="@+id/record_details_text_protocol"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_gravity="right|center"
+                        android:gravity="center_vertical"
+                        android:text="@string/RecordProtocol"
+                        android:textAlignment="gravity"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-		</RelativeLayout>
+                    <TextView
+                        android:id="@+id/record_details_text_protocol"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/record_details_text_remoteip"
+                        android:layout_alignStart="@+id/record_details_text_remoteip"
+                        android:layout_alignLeft="@+id/record_details_text_remoteip"
+                        android:gravity="center_horizontal"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-		<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceSmall"
-				android:text="@string/record_details_conversation"
-				android:textAllCaps="true"
-				android:id="@+id/textView9"
-				android:layout_marginStart="10dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginBottom="20dp"/>
+                </RelativeLayout>
 
-	</LinearLayout>
-	</LinearLayout>
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="@string/record_details_conversation"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
-</ScrollView>
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

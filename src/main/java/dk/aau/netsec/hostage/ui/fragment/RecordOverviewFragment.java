@@ -1678,7 +1678,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
             return;
         } else {
             MenuItem filterItem = optionsMenu.findItem(R.id.records_action_filter);
-            if (filterItem == null){
+            if (filterItem == null) {
                 return;
             }
 
