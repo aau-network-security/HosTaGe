@@ -203,7 +203,7 @@
 
     <string name="CONNECTION_LOST_MESSAGE">Connection lost permanently, please enable wifi direct.</string>
     <string name="COULD_NOT_CONNECT_MESSAGE">Could not connect to device. Retry.</string>
-    <string name="Privacy_Policy" translatable="false">Privacy Policy</string>
+    <string name="Privacy_Policy" translatable="false">Privacy Policy - HosTaGe</string>
 
 
     <string name="SYNCHRONIZATION_COMPLETE_MESSAGE">Synchronization complete.</string>
