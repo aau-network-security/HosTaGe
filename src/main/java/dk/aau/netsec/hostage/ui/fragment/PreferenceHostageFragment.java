@@ -68,7 +68,6 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         // these preferences are all text preferences
         final String[] textPreferences = new String[]{
-                "pref_external_location",
                 "pref_max_connections",
                 "pref_timeout",
                 "pref_sleeptime",
@@ -78,7 +77,6 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
         };
 
         mPrefValuePreviewSet = new HashSet<>();
-        mPrefValuePreviewSet.add("pref_external_location");
 
         setPreferencesFromResource(R.xml.settings_preferences, rootKey);
 
