@@ -354,16 +354,17 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
 		return START_STICKY;
 	}
 
-	/**
-	 * Starts the listener for the specified protocol. Creates a new
-	 * HoneyService if no matching HoneyListener is found.
-	 * 
-	 * @param protocolName
-	 *            Name of the protocol that should be started.
-	 */
-	public boolean startListener(String protocolName) {
-		return startListener(protocolName, getDefaultPort(protocolName));
-	}
+    /**
+     * Starts the listener for the specified protocol. Creates a new
+     * HoneyService if no matching HoneyListener is found.
+     *
+     * @param protocolName Name of the protocol that should be started.
+     * @throws NullPointerException getDefaultPort takes a while to initialise on application start
+     *                              and may throw a NullPointerException
+     */
+    public boolean startListener(String protocolName) throws NullPointerException {
+        return startListener(protocolName, getDefaultPort(protocolName));
+    }
 
 	/**
 	 * Starts the listener for the specified protocol and port. Creates a new
@@ -691,9 +692,9 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
      * @throws NullPointerException gets thrown if {@link ImplementProtocols} has not yet been
      * initialized.
      */
-    private int getDefaultPort(String protocolName) throws NullPointerException{
-        if (implementedProtocols == null){
-            throw new NullPointerException();
+    private int getDefaultPort(String protocolName) throws NullPointerException {
+        if (implementedProtocols == null) {
+            throw new NullPointerException("Implemented Protocols are null (probably not initialised yet).");
         }
         for (Protocol protocol : implementedProtocols) {
             if (protocolName.equals(protocol.toString())) {
@@ -701,6 +702,10 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
             }
         }
         return -1;
+    }
+
+    public boolean isImplementedProtocolsReady() {
+        return implementedProtocolsReady;
     }
 
     /**
