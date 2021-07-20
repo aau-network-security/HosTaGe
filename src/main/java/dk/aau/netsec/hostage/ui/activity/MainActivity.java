@@ -597,6 +597,13 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = null;
 
         try {
+            if (menuItemPosition.getKlass() == ServicesFragment.class && !mHoneyService.isImplementedProtocolsReady()){
+
+                mDrawerLayout.closeDrawer(mDrawerList);
+                Toast.makeText(mHoneyService, "Services are not ready yet, please try in a few seconds", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             fragment = (Fragment) menuItemPosition.getKlass().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             Log.i(menuItemPosition.getKlass().toString(), "Could not create new instance of fragment");
@@ -786,10 +793,17 @@ public class MainActivity extends AppCompatActivity {
      * @param protocols the protocols to start
      */
     public void startMonitorServices(List<String> protocols) {
-        for (String protocol : protocols) {
-            if (!getHostageService().isRunning(protocol))
-                getHostageService().startListener(protocol);
+        if (mHoneyService.isImplementedProtocolsReady()) {
+            for (String protocol : protocols) {
+                if (!getHostageService().isRunning(protocol))
+
+                    getHostageService().startListener(protocol);
+            }
+        } else {
+//                    TODO extract string
+            Toast.makeText(mHoneyService, "Services are not ready yet, please try in a few seconds", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     /**
