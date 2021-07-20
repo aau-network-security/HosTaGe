@@ -335,8 +335,7 @@ public class Handler implements Runnable {
 
         try {
             Location latestLocation = CustomLocationManager.getLocationManagerInstance(null).getLatestLocation();
-//		}
-//		if (MyLocationManager.getNewestLocation() != null) {
+
             record.setLatitude(latestLocation.getLatitude());
             record.setLongitude(latestLocation.getLongitude());
             record.setAccuracy(latestLocation.getAccuracy());
