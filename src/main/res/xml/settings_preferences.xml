@@ -155,24 +155,6 @@
 						android:title="@string/pref_portscan_timeout"
 						android:summary="@string/pref_portscan_timeout_summary" />
 			</androidx.preference.PreferenceCategory>
-            <androidx.preference.PreferenceCategory
-				android:title="@string/pref_location_settings"
-				app:iconSpaceReserved="false">
-                <androidx.preference.EditTextPreference
-					app:iconSpaceReserved="false"
-                    android:key="pref_location_time"
-                    android:defaultValue="@string/pref_location_time_default"
-                    android:summary="@string/pref_location_time_summary"
-                    android:title="@string/pref_location_time" />
-
-                <androidx.preference.EditTextPreference
-					app:iconSpaceReserved="false"
-                    android:key="pref_location_retries"
-                    android:defaultValue="@string/pref_location_retries_default"
-                    android:title="@string/pref_location_retries"
-					android:summary="@string/pref_location_retries_summary" />
-
-            </androidx.preference.PreferenceCategory>
 		</androidx.preference.PreferenceScreen>
 	</androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

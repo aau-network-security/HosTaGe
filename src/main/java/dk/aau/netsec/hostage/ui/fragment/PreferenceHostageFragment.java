@@ -71,8 +71,6 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
                 "pref_max_connections",
                 "pref_timeout",
                 "pref_sleeptime",
-                "pref_location_time",
-                "pref_location_retries",
                 "pref_portscan_timeout"
         };
 
