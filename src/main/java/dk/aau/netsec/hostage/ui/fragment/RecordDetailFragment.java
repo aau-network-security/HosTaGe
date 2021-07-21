@@ -505,6 +505,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		long tsLong = System.currentTimeMillis() / 1000;
 		String ts = Long.toString(tsLong);
 		String fileName = protocol+"Bro_Policy"+ts+".bro";
+//		TODO adjust this since storage setting has been removed
 		String externalLocation = pref.getString("pref_external_location", "");
 		String root = Environment.getExternalStorageDirectory().toString();
 
@@ -534,6 +535,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		Long tsLong = System.currentTimeMillis() / 1000;
 		String ts = tsLong.toString();
 		String fileName = protocol+"Bro_Sig"+ts+".sig";
+//		TODO adjust this, since storage setting has been removed
 		String externalLocation = pref.getString("pref_external_location", "");
 		String root = Environment.getExternalStorageDirectory().toString();
 
