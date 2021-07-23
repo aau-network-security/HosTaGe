@@ -1,7 +1,6 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -192,12 +190,12 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
             if (r.getStringMessageType() != null && r.getStringMessageType().equals(MessageRecord.TYPE.SEND.name())) {
                 row = mInflater.inflate(R.layout.fragment_record_conversation_sent, null);
-                textButton = (Button) row.findViewById(R.id.text_id_sent);
-                hexButton = (Button) row.findViewById(R.id.hex_id_sent);
+                textButton = row.findViewById(R.id.text_id_sent);
+                hexButton = row.findViewById(R.id.hex_id_sent);
             } else {
                 row = mInflater.inflate(R.layout.fragment_record_conversation_received, null);
-                textButton = (Button) row.findViewById(R.id.text_id_received);
-                hexButton = (Button) row.findViewById(R.id.hex_id_received);
+                textButton = row.findViewById(R.id.text_id_received);
+                hexButton = row.findViewById(R.id.hex_id_received);
 
                 String tmp = from;
                 from = to;
@@ -499,6 +497,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
         long tsLong = System.currentTimeMillis() / 1000;
         String ts = Long.toString(tsLong);
         String fileName = protocol + "Bro_Policy" + ts + ".bro";
+//		TODO adjust this since storage setting has been removed
         String externalLocation = pref.getString("pref_external_location", "");
         String root = Environment.getExternalStorageDirectory().toString();
 
@@ -516,6 +515,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
 
         } else {
+//TODO extract string
             Toast.makeText(this.getActivity(), "Could not write to SD Card", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -528,9 +528,9 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
         Long tsLong = System.currentTimeMillis() / 1000;
         String ts = tsLong.toString();
         String fileName = protocol + "Bro_Sig" + ts + ".sig";
+//		TODO adjust this, since storage setting has been removed
         String externalLocation = pref.getString("pref_external_location", "");
         String root = Environment.getExternalStorageDirectory().toString();
-
 
         if (root != null && isExternalStorageWritable()) {
             File dir = new File(root + externalLocation);
@@ -543,8 +543,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
             sig.close();
             Toast.makeText(this.getActivity().getApplicationContext(), "Signature file:" + fileName + "created", Toast.LENGTH_LONG).show();
 
-
         } else {
+//            TODO extract string
             Toast.makeText(this.getActivity(), "Could not write to SD Card", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -553,6 +553,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
     private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
+
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 

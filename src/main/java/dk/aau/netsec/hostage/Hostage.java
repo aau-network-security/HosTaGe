@@ -74,6 +74,9 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
 
     private HashMap<String, Boolean> mProtocolActiveAttacks;
     private DaoSession dbSession;
+
+    static boolean implementedProtocolsReady;
+
     public static int prefix;
     boolean activeHandlers = false;
     boolean bssidSeen = false;
@@ -144,6 +147,8 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
         @Override
         protected void onPostExecute(LinkedList<Protocol> result) {
             implementedProtocols = result;
+
+            implementedProtocolsReady = true;
         }
     }
 
@@ -158,7 +163,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
         return context.get();
     }
 
-    private static LinkedList<Protocol> implementedProtocols;
+    static LinkedList<Protocol> implementedProtocols;
     private CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<Listener>();
     private SharedPreferences connectionInfo;
     private Editor connectionInfoEditor;
@@ -350,9 +355,13 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
      * HoneyService if no matching HoneyListener is found.
      *
      * @param protocolName Name of the protocol that should be started.
-     *
+     *                     <<<<<<< HEAD
      * @throws NullPointerException getDefaultPort takes a while to initialise on application start
-     * and may throw a NullPointerException
+     *                              and may throw a NullPointerException
+     *                              =======
+     * @throws NullPointerException getDefaultPort takes a while to initialise on application start
+     *                              and may throw a NullPointerException
+     *                              >>>>>>> ver-2.4(major)
      */
     public boolean startListener(String protocolName) throws NullPointerException {
         return startListener(protocolName, getDefaultPort(protocolName));
@@ -687,6 +696,10 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
             }
         }
         return -1;
+    }
+
+    public boolean isImplementedProtocolsReady() {
+        return implementedProtocolsReady;
     }
 
     /**

@@ -1,5 +1,7 @@
 package dk.aau.netsec.hostage.location;
 
+import androidx.annotation.Nullable;
+
 /**
  * Custom exception related to Location issues of the {@link CustomLocationManager}
  *
@@ -14,7 +16,7 @@ public class LocationException extends Exception {
      * @param message Exception message. Typically a lacking location permission or inactive
      *                location provider.
      */
-    public LocationException(String message) {
+    public LocationException(@Nullable String message) {
         super(message);
     }
 }

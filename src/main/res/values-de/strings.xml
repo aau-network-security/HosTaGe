@@ -248,7 +248,6 @@
     <string name="portbinder_website">Website besuchen</string>
     <string name="pref_portscan_timeout_summary">Sollte der maximalen Dauer eines Portscans in Sekunden entsprechen</string>
     <string name="record_details_confirm_delete">Wollen sie diesen Angriff wirklich löschen?</string>
-    <string name="pref_location_retries_summary">Maximale Anzahl an Versuchen</string>
     <string name="pref_max_connections_summary">Maximale Anzahl an Gleichzeitigen Verbindungen pro Protokol</string>
     <string name="subnet_mask">Subnetzmaske</string>
     <string name="uninstall_porthack">Portbinder deinstallieren</string>

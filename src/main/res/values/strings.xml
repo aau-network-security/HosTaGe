@@ -41,9 +41,9 @@
     <string name="confirm_msg">This automated installer fetches the appropriate Portbinder binary and installs in a hostage.location within the device.\n\nThis automated process will CHANGE some folder permissions to work. Proceed on your own risk.\n\nConfirm to proceed with automated installation of Portbinder?</string>
     <string name="help_me">Just Help Me!</string>
 
-	<string name="honeypot_not_monitoring">Zzz...</string>
+	<string name="honeypot_not_monitoring">Zzz…</string>
 	<string name="honeypot_no_threat">Looks safe!</string>
-	<string name="honeypot_past_threat">This doesn\'t look safe...</string>
+	<string name="honeypot_past_threat">This doesn\'t look safe…</string>
 	<string name="honeypot_live_threat">Under attack!!!</string>
 
     <string name="hostage_not_monitoring">HosTaGe is not active.</string>
@@ -203,7 +203,7 @@
 
     <string name="CONNECTION_LOST_MESSAGE">Connection lost permanently, please enable wifi direct.</string>
     <string name="COULD_NOT_CONNECT_MESSAGE">Could not connect to device. Retry.</string>
-    <string name="Privacy_Policy" translatable="false">Privacy Policy</string>
+    <string name="Privacy_Policy" translatable="false">Privacy Policy - HosTaGe</string>
 
 
     <string name="SYNCHRONIZATION_COMPLETE_MESSAGE">Synchronization complete.</string>

@@ -8,10 +8,11 @@
 
     <TextView
         android:id="@+id/textView6"
-        android:layout_width="158dp"
-        android:layout_height="39dp"
+        android:layout_width="343dp"
+        android:layout_height="48dp"
         android:text="@string/Privacy_Policy"
-        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:textSize="24sp"
         android:textStyle="bold"
         tools:layout_editor_absoluteX="23dp"
         tools:layout_editor_absoluteY="28dp" />

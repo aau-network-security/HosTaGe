@@ -119,10 +119,11 @@ public class CustomLocationManager {
      * If a location permission has previously been denied, it throws a {@link LocationException}
      * <p>
      * If the user has granted a location permission, but no previous location exists, this method
-     * may temporarily return null, in order not to hang while fresh location is retrieved.
+     * will throw.
      *
-     * @return Latest available location. Can return null if location is not ready yet.
-     * @throws LocationException if Location permission was denied by the user.
+     * @return Latest available location. Throws, if location is not available yet.
+     * @throws LocationException if Location permission was denied by the user, or if location
+     *                           is not available yet.
      */
     @Nullable
     public Location getLatestLocation() throws LocationException {
@@ -130,7 +131,7 @@ public class CustomLocationManager {
             return mLatestLocation;
         } else if (!locationPermissionDenied) {
             updateLocation();
-            return mLatestLocation;
+            throw new LocationNotYetAvailableException("Location permission was granted, but location is not available yet");
         } else {
             throw new LocationException("Location permission has not been granted");
         }
