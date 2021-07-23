@@ -82,7 +82,6 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
     boolean bssidSeen = false;
     boolean listening = false;
 
-
     public class LocalBinder extends Binder {
         public Hostage getService() {
             return Hostage.this;
@@ -148,6 +147,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
         @Override
         protected void onPostExecute(LinkedList<Protocol> result) {
             implementedProtocols = result;
+
             implementedProtocolsReady = true;
         }
     }
@@ -355,8 +355,13 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
      * HoneyService if no matching HoneyListener is found.
      *
      * @param protocolName Name of the protocol that should be started.
+     *                     <<<<<<< HEAD
      * @throws NullPointerException getDefaultPort takes a while to initialise on application start
      *                              and may throw a NullPointerException
+     *                              =======
+     * @throws NullPointerException getDefaultPort takes a while to initialise on application start
+     *                              and may throw a NullPointerException
+     *                              >>>>>>> ver-2.4(major)
      */
     public boolean startListener(String protocolName) throws NullPointerException {
         return startListener(protocolName, getDefaultPort(protocolName));

@@ -9,8 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,8 +25,8 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
 import androidx.work.Data;
@@ -56,7 +56,7 @@ import dk.aau.netsec.hostage.sync.android.SyncUtils;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.adapter.RecordListAdapter;
 import dk.aau.netsec.hostage.ui.dialog.ChecklistDialog;
-import dk.aau.netsec.hostage.ui.dialog.DateTimeDialogFragment;
+import dk.aau.netsec.hostage.ui.dialog.DateTimePickerDialog;
 import dk.aau.netsec.hostage.ui.model.ExpandableListItem;
 import dk.aau.netsec.hostage.ui.model.LogFilter;
 import dk.aau.netsec.hostage.ui.popup.AbstractPopupItem;
@@ -65,7 +65,7 @@ import dk.aau.netsec.hostage.ui.popup.SimplePopupTable;
 import dk.aau.netsec.hostage.ui.popup.SplitPopupItem;
 
 
-public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimeDialogFragment.DateTimeDialogFragmentListener {
+public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimePickerDialog.DateTimeSelected {
     static final String FILTER_MENU_TITLE_BSSID = MainActivity.getContext().getString(R.string.BSSID);
     static final String FILTER_MENU_TITLE_ESSID = MainActivity.getContext().getString(R.string.ESSID);
     static final String FILTER_MENU_TITLE_IPS = MainActivity.getContext().getString(R.string.RecordIP);
@@ -128,6 +128,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private LayoutInflater inflater;
     private ViewGroup container;
     private Bundle savedInstanceState;
+    private Menu optionsMenu;
 
 
     public static final int EXPORT_LOGS_PLAINTEXT_REQUEST_CODE = 724;
@@ -163,7 +164,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         setUpDatabase();
         getFilter();
         initializeViews(inflater, container, savedInstanceState);
-        addButtons();
+//        addButtons();
         this.registerBroadcastReceiver();
 
         return rootView;
@@ -191,40 +192,40 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
     }
 
-    private void addButtons() {
-        addDeleteButton();
-        addFilterButton();
-        addSortButton();
-        addGroupButton();
-    }
+//    private void addButtons() {
+//        addDeleteButton();
+//        addFilterButton();
+//        addSortButton();
+//        addGroupButton();
+//    }
 
-    private void addDeleteButton() {
-        ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
-        deleteButton.setOnClickListener(v -> RecordOverviewFragment.this.openDeleteFilteredAttacksDialog());
-        deleteButton.setVisibility(this.showFilterButton ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    private void addFilterButton() {
-        ImageButton filterButton = rootView.findViewById(R.id.FilterButton);
-        filterButton.setOnClickListener(RecordOverviewFragment.this::openFilterPopupMenuOnView);
-        filterButton.setVisibility(this.showFilterButton ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    private void addSortButton() {
-        ImageButton sortButton = rootView.findViewById(R.id.SortButton);
-        sortButton.setOnClickListener(v -> {
-            // Open SortMenu
-            RecordOverviewFragment.this.openSortingDialog();
-        });
-    }
-
-    private void addGroupButton() {
-        ImageButton groupButton = rootView.findViewById(R.id.GroupButton);
-        groupButton.setOnClickListener(v -> {
-            // Open SortMenu
-            RecordOverviewFragment.this.openGroupingDialog();
-        });
-    }
+//    private void addDeleteButton() {
+//        ImageButton deleteButton = rootView.findViewById(R.id.DeleteButton);
+//        deleteButton.setOnClickListener(v -> RecordOverviewFragment.this.openDeleteFilteredAttacksDialog());
+//        deleteButton.setVisibility(this.showFilterButton ? View.VISIBLE : View.INVISIBLE);
+//    }
+//
+//    private void addFilterButton() {
+//        ImageButton filterButton = rootView.findViewById(R.id.FilterButton);
+//        filterButton.setOnClickListener(RecordOverviewFragment.this::openFilterPopupMenuOnView);
+//        filterButton.setVisibility(this.showFilterButton ? View.VISIBLE : View.INVISIBLE);
+//    }
+//
+//    private void addSortButton() {
+//        ImageButton sortButton = rootView.findViewById(R.id.SortButton);
+//        sortButton.setOnClickListener(v -> {
+//            // Open SortMenu
+//            RecordOverviewFragment.this.openSortingDialog();
+//        });
+//    }
+//
+//    private void addGroupButton() {
+//        ImageButton groupButton = rootView.findViewById(R.id.GroupButton);
+//        groupButton.setOnClickListener(v -> {
+//            // Open SortMenu
+//            RecordOverviewFragment.this.openGroupingDialog();
+//        });
+//    }
 
     private void initializeViews(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (this.groupingKey == null)
@@ -396,9 +397,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if (item instanceof SplitPopupItem) {
             SplitPopupItem splitItem = (SplitPopupItem) item;
             if (splitItem.wasRightTouch) {
-                this.openTimestampToFilterDialog();
+                DateTimePickerDialog.showDateTimePicker(getContext(), false, this);
             } else {
-                this.openTimestampFromFilterDialog();
+                DateTimePickerDialog.showDateTimePicker(getContext(), true, this);
             }
             return;
         }
@@ -424,10 +425,10 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 this.actualiseListViewInBackground();
             }
             if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_BELOW)) {
-                this.openTimestampToFilterDialog();
+                DateTimePickerDialog.showDateTimePicker(getContext(), false, this);
             }
             if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_ABOVE)) {
-                this.openTimestampFromFilterDialog();
+                DateTimePickerDialog.showDateTimePicker(getContext(), true, this);
             }
         }
         //return super.onOptionsItemSelected(item);
@@ -485,6 +486,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu items for use in the action bar
         inflater.inflate(R.menu.records_overview_actions, menu);
+
+        optionsMenu = menu;
     }
 
     /**
@@ -495,40 +498,53 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-//			case R.id.records_action_synchronize:
-//				return synchronizeMenu(item);
 
-            // Process click on log save button.
-            case R.id.records_action_export:
+        // Process click on log save button.
+        if (item.getItemId() == R.id.records_action_export) {
 
-                // Show export format selection dialog
-                AlertDialog.Builder builderExport = new AlertDialog.Builder(getActivity());
-                builderExport.setTitle(MainActivity.getInstance().getString(R.string.rec_choose_export_format));
-                builderExport.setItems(R.array.format, (dialog, position) -> {
+            // Show export format selection dialog
+            AlertDialog.Builder builderExport = new AlertDialog.Builder(getActivity());
+            builderExport.setTitle(MainActivity.getInstance().getString(R.string.rec_choose_export_format));
+            builderExport.setItems(R.array.format, (dialog, position) -> {
 
-                    Intent saveLogsIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                Intent saveLogsIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 
-                    // Start file destination selection activity for plaintext file
-                    if (position == EXPORT_FORMAT_POSITION_PLAINTEXT) {
-                        saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_PLAINTEXT));
-                        saveLogsIntent.setType("text/plain");
+                // Start file destination selection activity for plaintext file
+                if (position == EXPORT_FORMAT_POSITION_PLAINTEXT) {
+                    saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_PLAINTEXT));
+                    saveLogsIntent.setType("text/plain");
 
-                        startActivityForResult(saveLogsIntent, EXPORT_LOGS_PLAINTEXT_REQUEST_CODE);
+                    startActivityForResult(saveLogsIntent, EXPORT_LOGS_PLAINTEXT_REQUEST_CODE);
 
-                        // Start file destination selection activity for JSON file
-                    } else {
-                        saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_JSON));
-                        saveLogsIntent.setType("application/json");
+                    // Start file destination selection activity for JSON file
+                } else {
+                    saveLogsIntent.putExtra(Intent.EXTRA_TITLE, LogSaveWorker.getFileName(EXPORT_FORMAT_POSITION_JSON));
+                    saveLogsIntent.setType("application/json");
 
-                        startActivityForResult(saveLogsIntent, EXPORT_LOGS_JSON_REQUEST_CODE);
-                    }
+                    startActivityForResult(saveLogsIntent, EXPORT_LOGS_JSON_REQUEST_CODE);
+                }
 
-                });
-                builderExport.create();
-                builderExport.show();
+            });
+            builderExport.create();
+            builderExport.show();
 
-                return true;
+            return true;
+        } else if (item.getItemId() == R.id.records_action_filter) {
+            openFilterPopupMenuOnView(rootView);
+
+            return true;
+        } else if (item.getItemId() == R.id.records_action_discard) {
+            openDeleteFilteredAttacksDialog();
+
+            return true;
+        } else if (item.getItemId() == R.id.records_action_sort) {
+            openSortingDialog();
+
+            return true;
+        } else if (item.getItemId() == R.id.records_action_group) {
+            openGroupingDialog();
+
+            return true;
         }
 
         return false;
@@ -617,6 +633,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
             // Handle result from export file location picker
         } else if (requestCode == EXPORT_LOGS_PLAINTEXT_REQUEST_CODE || requestCode == EXPORT_LOGS_JSON_REQUEST_CODE) {
+
             switch (resultCode) {
                 case AppCompatActivity.RESULT_OK:
                     if (data != null
@@ -842,7 +859,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if (loader != null && loader.isAlive()) loader.interrupt();
         loader = null;
         setListViewFooter();
-        this.actualiseFilterButton();
+        actualiseFilterButton();
 
         loader = new Thread(new Runnable() {
             @Override
@@ -898,7 +915,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         }
         RecordListAdapter adapter = (RecordListAdapter) RecordOverviewFragment.this.expListView.getExpandableListAdapter();
 
-        if (this.getFilterButton().getVisibility() == View.VISIBLE && this.filter.isSet()) {
+        if (this.filter.isSet()) {
             this.noDataNotificationToast.setText(R.string.no_data_notification);
         } else {
             this.noDataNotificationToast.setText(R.string.no_data_notification_no_filter);
@@ -1226,27 +1243,24 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_PROTOCOLS);
     }
 
-    /**
-     * opens the timestamp filter dialog (minimal timestamp required)
-     */
-    private void openTimestampFromFilterDialog() {
-        this.wasBelowTimePicker = false;
-        DateTimeDialogFragment newFragment = new DateTimeDialogFragment(this.getActivity());
-        newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_SORTING);
-        if (this.filter.aboveTimestamp != Long.MIN_VALUE)
-            newFragment.setDate(this.filter.aboveTimestamp);
-    }
 
     /**
-     * opens time timestamp filter dialog (maximal timestamp required)
+     * Callback to filter data after the user has selected filtering date and time.
+     *
+     * @param date       Date and time value the user has selected in the Date/Time picker dialog.
+     * @param filterFrom Flag indicating whether this represents a <i>before</i> or <i>after</i>
+     *                   filter
      */
-    private void openTimestampToFilterDialog() {
-        this.wasBelowTimePicker = true;
-        DateTimeDialogFragment newFragment = new DateTimeDialogFragment(this.getActivity());
-        newFragment.show(this.getActivity().getFragmentManager(), FILTER_MENU_TITLE_SORTING);
-        if (this.filter.belowTimestamp != Long.MAX_VALUE)
-            newFragment.setDate(this.filter.belowTimestamp);
+    @Override
+    public void dateTimeSelected(Calendar date, boolean filterFrom) {
+        if (filterFrom) {
+            filter.setAboveTimestamp(date.getTimeInMillis());
+        } else {
+            filter.setBelowTimestamp(date.getTimeInMillis());
+        }
+        actualiseListViewInBackground();
     }
+
 
     /**
      * opens the sorting dialog
@@ -1597,42 +1611,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         return titles;
     }
 
-    /*****************************
-     *
-     *          Listener Actions
-     *
-     * ***************************/
-
-    /**
-     * Will be called if the users selects a timestamp.
-     *
-     * @param dialog {@link DateTimeDialogFragment DateTimeDialogFragment }
-     */
-    public void onDateTimePickerPositiveClick(DateTimeDialogFragment dialog) {
-        if (this.wasBelowTimePicker) {
-            this.filter.setBelowTimestamp(dialog.getDate());
-        } else {
-            this.filter.setAboveTimestamp(dialog.getDate());
-        }
-        this.actualiseListViewInBackground();
-        this.actualiseFilterButton();
-    }
-
-    /**
-     * Will be called if the users cancels a timestamp selection.
-     *
-     * @param dialog {@link DateTimeDialogFragment DateTimeDialogFragment }
-     */
-    public void onDateTimePickerNegativeClick(DateTimeDialogFragment dialog) {
-        if (this.wasBelowTimePicker) {
-            this.filter.setBelowTimestamp(Long.MAX_VALUE);
-        } else {
-            this.filter.setAboveTimestamp(Long.MIN_VALUE);
-        }
-        this.actualiseListViewInBackground();
-        this.actualiseFilterButton();
-    }
-
     /**
      * Will be called if the users clicks the positiv button on a ChechlistDialog.
      *
@@ -1696,17 +1674,30 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * Paints the filter button if the current filter object is set.
      */
     private void actualiseFilterButton() {
-        if (this.filter.isSet()) {
-            ImageButton filterButton = this.getFilterButton();
-            if (filterButton != null) {
-                filterButton.setImageResource(R.drawable.ic_filter_pressed);
-                filterButton.invalidate();
-            }
+        if (optionsMenu == null) {
+            return;
         } else {
-            ImageButton filterButton = this.getFilterButton();
-            if (filterButton != null) {
-                filterButton.setImageResource(R.drawable.ic_filter);
-                filterButton.invalidate();
+            MenuItem filterItem = optionsMenu.findItem(R.id.records_action_filter);
+            if (filterItem == null) {
+                return;
+            }
+
+            if (filterItem.getIcon() != null) {
+
+                if (filter.isSet()) {
+
+                    Drawable filterIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_filter);
+                    filterIcon.setTint(getResources().getColor(R.color.colorPrimaryVariant));
+                    filterItem.setIcon(filterIcon);
+
+                } else {
+                    Drawable filterIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_filter);
+
+                    filterIcon.setTintList(null);
+                    filterItem.setIcon(R.drawable.ic_filter);
+                }
+
+                onPrepareOptionsMenu(optionsMenu);
             }
         }
     }

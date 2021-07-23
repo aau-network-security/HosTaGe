@@ -1,41 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:minWidth="230dp"
-		>
+    android:orientation="vertical">
 
     <TextView
+        android:id="@+id/title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:gravity="top"
-        android:id="@+id/title_text_view"
-        android:textColor="@android:color/holo_blue_bright"
-        android:textStyle="bold" android:textAlignment="inherit" android:paddingLeft="20dp"
-        android:paddingTop="10dp" android:paddingRight="20dp" android:paddingBottom="10dp"/>
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp"
+        android:textAlignment="inherit"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold" />
 
-	<View
-			android:layout_width="fill_parent"
-			android:layout_height="2dp"
-			android:background="@android:color/holo_blue_bright"
-			/>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimary" />
 
     <ScrollView
+        android:id="@+id/item_scrollview"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/item_scrollview">
+        android:layout_height="wrap_content">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="vertical"
+        <LinearLayout
+            android:id="@+id/item_scroll_layout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/item_scroll_layout"
-            >
+            android:orientation="vertical">
 
         </LinearLayout>
-        </ScrollView>
+    </ScrollView>
 
 </LinearLayout>

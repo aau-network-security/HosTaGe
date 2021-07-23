@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/statistics_action_export"
+        android:icon="@drawable/ic_sort_by_size"
+        android:title="@string/stats_visualize"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/statistics_action_filter"
+        android:icon="@drawable/ic_filter"
+        android:title="@string/rec_filter_by"
+        app:showAsAction="always" />
+
+</menu>

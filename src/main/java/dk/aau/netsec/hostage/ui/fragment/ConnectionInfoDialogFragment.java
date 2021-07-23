@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,9 +47,7 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 					getString(R.string.connection_info_external_ip), "");
 		}
 
-		// inflate the layout with a dark theme
-		Context context = new ContextThemeWrapper(getActivity(), android.R.style.Theme_Holo);
-		LayoutInflater localInflater = getActivity().getLayoutInflater().cloneInContext(context);
+		LayoutInflater localInflater = getActivity().getLayoutInflater();
 		view = localInflater.inflate(R.layout.fragment_connectioninfo_dialog, null);
 
 		// assign values in layout
@@ -61,7 +58,6 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 			((TextView)view.findViewById(R.id.connectioninfo_externalip_value)).setText(externalIP);
 		}
 
-
 		return getConnectionInfoDialog(ssid).create();
 	}
 
@@ -69,7 +65,7 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
 		// capture the SSID for the button action
 		final String filterSSID = ssid;
 		// build the actual dialog
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), R.style.CustomAlertDialog);
 
 		builder.setView(view);
 		builder.setTitle(R.string.title_connection_info);

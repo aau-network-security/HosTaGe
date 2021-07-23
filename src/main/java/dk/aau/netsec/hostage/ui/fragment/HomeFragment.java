@@ -187,11 +187,12 @@ public class HomeFragment extends Fragment {
     }
 
     public void setStateNotActive(boolean initial) {
-        mHomeTextName.setTextColor(getActivity().getColor(R.color.light_grey));
-        mHomeTextSecurity.setTextColor(getActivity().getColor(R.color.light_grey));
-        mHomeTextAttacks.setTextColor(getActivity().getColor(R.color.light_grey));
-        mHomeTextProfile.setTextColor(getActivity().getColor(R.color.light_grey));
-        mHomeTextProfileHeader.setTextColor(getActivity().getColor(R.color.light_grey));
+//        TODO adapt colour theming
+//        mHomeTextName.setTextColor(getActivity().getColor(R.color.light_grey));
+//        mHomeTextSecurity.setTextColor(getActivity().getColor(R.color.light_grey));
+//        mHomeTextAttacks.setTextColor(getActivity().getColor(R.color.light_grey));
+//        mHomeTextProfile.setTextColor(getActivity().getColor(R.color.light_grey));
+//        mHomeTextProfileHeader.setTextColor(getActivity().getColor(R.color.light_grey));
 
         if (!initial) {
             ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);

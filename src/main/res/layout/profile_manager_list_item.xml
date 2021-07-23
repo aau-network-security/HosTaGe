@@ -10,20 +10,20 @@
     android:background="@drawable/panel_bg_selector"
     android:baselineAligned="false"
     android:padding="5dp"
-    android:layout_margin="3dp">
+    android:layout_margin="3dp"
+    android:elevation="@dimen/cardview_default_elevation">
 
     <TextView
         android:id="@+id/profile_row_item_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/profile_row_item_image"
+        android:layout_toEndOf="@+id/profile_row_item_image"
         android:gravity="center_vertical"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:textColor="?attr/colorOnSurface"
         tools:text="Windows XP profile" />
 
     <TextView
@@ -32,14 +32,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/profile_row_item_label"
         android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/profile_row_item_activated"
+        android:layout_toStartOf="@+id/profile_row_item_activated"
         android:paddingLeft="16dp"
         android:paddingTop="10dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
         android:singleLine="false"
-        android:textColor="?attr/colorOnSurface"
         android:visibility="visible"
         tools:text="This Profile simulates behaviour of Windows XP" />
 
@@ -49,14 +47,13 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/profile_row_badges_container"
         android:layout_alignTop="@+id/profile_row_item_label"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:baselineAlignBottom="false"
         android:src="@drawable/ic_action_accept"
         android:visibility="visible"
-        android:tint="?attr/colorOnSurface" />
+        app:tint="?attr/colorOnSurface" />
 
     <ImageView
         android:id="@+id/profile_row_item_image"
@@ -64,7 +61,6 @@
         android:layout_height="48dp"
         android:layout_above="@+id/profile_row_item_text"
         android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
         android:scaleType="centerInside"
         android:src="@drawable/ic_launcher" />
 
@@ -74,21 +70,20 @@
         android:layout_height="fill_parent"
         android:layout_below="@+id/profile_row_item_text"
         android:layout_alignParentEnd="false"
-        android:layout_alignParentRight="true"
         android:orientation="horizontal"
         android:padding="10dp"
         f:horizontalSpacing="10dip"
         f:verticalSpacing="10dip">
 
-<!--        Tentatively removing this TODO test to see if if's necessary-->
-<!--        <TextView-->
-<!--            android:id="@+id/record_details_text_ssid"-->
-<!--            style="@style/ProfileManagerListBadge"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center_vertical"-->
-<!--            android:layout_marginLeft="10dp"-->
-<!--            android:textAppearance="?android:attr/textAppearanceSmall" />-->
+        <!--        Tentatively removing this TODO test to see if if's necessary-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/record_details_text_ssid"-->
+        <!--            style="@style/ProfileManagerListBadge"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="center_vertical"-->
+        <!--            android:layout_marginLeft="10dp"-->
+        <!--            android:textAppearance="?android:attr/textAppearanceSmall" />-->
     </dk.aau.netsec.hostage.ui.layouts.FlowLayout>
 
 </RelativeLayout>
