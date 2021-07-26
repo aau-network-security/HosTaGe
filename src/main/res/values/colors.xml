@@ -27,5 +27,6 @@
     <color name="holo_red">#FFF44444</color>
     <color name="holo_dark_green">#ff669900</color>
     <color name="holo_yellow">#FFBB33</color>
+    <color name="black">#000000</color>
 
 </resources>
