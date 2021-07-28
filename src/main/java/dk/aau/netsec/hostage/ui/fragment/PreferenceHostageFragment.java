@@ -284,6 +284,7 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
             alarm.onReceive(context, intent);
             alarm.setAlarm(context);
         } else {
+//                TODO maybe replace with Snackbar
             Toast.makeText(context, "Alarm is null", Toast.LENGTH_SHORT).show();
         }
     }

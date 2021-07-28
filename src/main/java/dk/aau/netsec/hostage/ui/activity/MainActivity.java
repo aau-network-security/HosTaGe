@@ -12,14 +12,10 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.drawable.ColorDrawable;
-import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -28,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -38,7 +33,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gms.maps.LocationSource;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -598,10 +593,10 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = null;
 
         try {
-            if (menuItemPosition.getKlass() == ServicesFragment.class && !mHoneyService.isImplementedProtocolsReady()){
+            if (menuItemPosition.getKlass() == ServicesFragment.class && !mHoneyService.isImplementedProtocolsReady()) {
 
                 mDrawerLayout.closeDrawer(mDrawerList);
-                Toast.makeText(mHoneyService, "Services are not ready yet, please try in a few seconds", Toast.LENGTH_SHORT).show();
+                Snackbar.make(mDrawerLayout, R.string.services_unavailable, Snackbar.LENGTH_LONG).show();
                 return;
             }
 
@@ -700,7 +695,8 @@ public class MainActivity extends AppCompatActivity {
                 finish();
                 System.exit(0);
             } else {
-                Toast.makeText(this, "Press the back button again to close HosTaGe", Toast.LENGTH_SHORT).show();
+
+                Snackbar.make(mDisplayedFragment.getView(), R.string.close_app_warning, Snackbar.LENGTH_SHORT).show();
                 this.mCloseWarning = true;
             }
         } else {
@@ -801,8 +797,7 @@ public class MainActivity extends AppCompatActivity {
                     getHostageService().startListener(protocol);
             }
         } else {
-//                    TODO extract string
-            Toast.makeText(mHoneyService, "Services are not ready yet, please try in a few seconds", Toast.LENGTH_SHORT).show();
+            Snackbar.make(MainActivity.getInstance().getDisplayedFragment().getView(), R.string.services_unavailable, Snackbar.LENGTH_SHORT).show();
         }
 
     }

@@ -23,7 +23,6 @@ import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -33,6 +32,8 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -92,7 +93,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     public String groupingKey;
     private ExpandableListView expListView;
     private ProgressBar spinner;
-    private Toast noDataNotificationToast;
+    private Snackbar noDataNotificationSnackbar;
 
     private DaoSession dbSession;
     private DAOHelper daoHelper;
@@ -910,18 +911,18 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * Shows a small toast if the data to show is empty (no records).
      */
     private void showEmptyDataNotification() {
-        if (RecordOverviewFragment.this.noDataNotificationToast == null) {
-            RecordOverviewFragment.this.noDataNotificationToast = Toast.makeText(getApplicationContext(), R.string.no_data_notification, Toast.LENGTH_SHORT);
+        if (RecordOverviewFragment.this.noDataNotificationSnackbar == null) {
+            RecordOverviewFragment.this.noDataNotificationSnackbar = Snackbar.make(rootView, R.string.no_data_notification, Snackbar.LENGTH_LONG);
         }
         RecordListAdapter adapter = (RecordListAdapter) RecordOverviewFragment.this.expListView.getExpandableListAdapter();
 
         if (this.filter.isSet()) {
-            this.noDataNotificationToast.setText(R.string.no_data_notification);
+            this.noDataNotificationSnackbar.setText(R.string.no_data_notification);
         } else {
-            this.noDataNotificationToast.setText(R.string.no_data_notification_no_filter);
+            this.noDataNotificationSnackbar.setText(R.string.no_data_notification_no_filter);
         }
         if (adapter == null || adapter.getData().isEmpty())
-            RecordOverviewFragment.this.noDataNotificationToast.show();
+            RecordOverviewFragment.this.noDataNotificationSnackbar.show();
 
     }
 
