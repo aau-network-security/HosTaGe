@@ -8,7 +8,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:7.0.0'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
 
         classpath 'com.google.gms:google-services:4.3.8' //added gms support
@@ -185,10 +185,6 @@ android {
         }
     }
 
-    dexOptions {
-        preDexLibraries = false
-        javaMaxHeapSize "4g"
-    }
     sourceSets {
 
         // Move the build types to build-types/<type>

@@ -34,14 +34,14 @@ import com.google.android.material.snackbar.Snackbar;
  * @modified Shreyas Srinivasa
  */
 public class SettingsFragment extends UpNavigatibleFragment {
-	private View v;
-	private LayoutInflater inflater;
-	private ViewGroup container;
-	private Bundle savedInstanceState;
-	FragmentManager manager;
-	Button enable;
-	Button stop;
-	PcapWriter pcapWriter;
+    private View v;
+    private LayoutInflater inflater;
+    private ViewGroup container;
+    private Bundle savedInstanceState;
+    FragmentManager manager;
+    Button enable;
+    Button stop;
+    PcapWriter pcapWriter;
 
     PcapStorageManager pcapStorageManager;
 
@@ -55,18 +55,18 @@ public class SettingsFragment extends UpNavigatibleFragment {
         getActivity().setTitle(getResources().getString(R.string.drawer_settings));
         v = inflater.inflate(R.layout.fragment_settings, container, false);
 
-		TextView rootedText = v.findViewById(R.id.settings_device_rooted);
+        TextView rootedText = v.findViewById(R.id.settings_device_rooted);
 
 //        initPcap();
         pcapStorageManager = PcapStorageManager.getPcapStorageManagerInstance(getContext());
 
-		if (Device.isRooted()) {
-			rootedText.setText(R.string.yes);
-			rootedText.setTextColor(getResources().getColor(R.color.holo_dark_green));
-		} else {
-			rootedText.setText(R.string.no);
-			rootedText.setTextColor(getResources().getColor(R.color.holo_red));
-		}
+        if (Device.isRooted()) {
+            rootedText.setText(R.string.yes);
+            rootedText.setTextColor(getResources().getColor(R.color.holo_dark_green));
+        } else {
+            rootedText.setText(R.string.no);
+            rootedText.setTextColor(getResources().getColor(R.color.holo_red));
+        }
 
         CheckBox pcapCheckbox = v.findViewById(R.id.pcap_checkbox);
         pcapCheckbox.setChecked(pcapStorageManager.retrievePcapLogSetting());
@@ -162,50 +162,50 @@ public class SettingsFragment extends UpNavigatibleFragment {
 //        stop = pcapWriter.getStopButton();
 //    }
 
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-		manager = getFragmentManager();
-		manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
-	}
+        manager = getFragmentManager();
+        manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
+    }
 
-	private void removeSettingsFragment(){
-		Fragment fragment = manager.findFragmentById(R.id.settings_fragment_container);
-		FragmentTransaction fragmentTransaction = manager.beginTransaction();
-		fragmentTransaction.remove(fragment);
-		fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
-	}
+    private void removeSettingsFragment() {
+        Fragment fragment = manager.findFragmentById(R.id.settings_fragment_container);
+        FragmentTransaction fragmentTransaction = manager.beginTransaction();
+        fragmentTransaction.remove(fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		if(v!=null){
-			unbindDrawables(v);
-			v=null;
-			removeSettingsFragment();
-		}
-	}
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (v != null) {
+            unbindDrawables(v);
+            v = null;
+            removeSettingsFragment();
+        }
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		if(on)
-			enable.setPressed(true);
-		else
-			stop.setPressed(true);
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
+//        if (on)
+//            enable.setPressed(true);
+//        else
+//            stop.setPressed(true);
+    }
 
-	private void unbindDrawables(View view) {
-		if (view.getBackground() != null) {
-			view.getBackground().setCallback(null);
-		}
-		if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
-			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-				unbindDrawables(((ViewGroup) view).getChildAt(i));
-			}
-			((ViewGroup) view).removeAllViews();
-		}
-	}
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }
+    }
 
 }
