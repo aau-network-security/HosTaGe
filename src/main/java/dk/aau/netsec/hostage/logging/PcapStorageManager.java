@@ -96,6 +96,12 @@ public class PcapStorageManager {
     public void selectLocation(Fragment fragment){
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
 
+        intent.addFlags(
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                        | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+
         // Optionally, specify a URI for the directory that should be opened in
         // the system file picker when it loads.
 //        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uriToLoad);
@@ -103,8 +109,11 @@ public class PcapStorageManager {
         fragment.startActivityForResult(intent, ACTION_PICK_FOLDER);
     }
 
-    public void locationSelected(Uri location, boolean enableLog){
-        if (pcapLocationWritable(location)){
+    public void locationSelected(Uri location, boolean enableLog) {
+        if (pcapLocationWritable(location)) {
+            context.getContentResolver().takePersistableUriPermission(location,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
             setStorageLocation(location);
 
             if (enableLog) {
