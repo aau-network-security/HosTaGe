@@ -1,50 +1,75 @@
 package dk.aau.netsec.hostage.logging;
 
+import static dk.aau.netsec.hostage.system.iptablesUtils.Api.runCommand;
+import static dk.aau.netsec.hostage.system.iptablesUtils.Api.runCommandWithHandle;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.documentfile.provider.DocumentFile;
-import androidx.fragment.app.Fragment;
+import androidx.loader.content.AsyncTaskLoader;
 import androidx.preference.PreferenceManager;
+
+import org.apache.http.client.fluent.Async;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import dk.aau.netsec.hostage.system.PcapWriter;
+import dk.aau.netsec.hostage.system.PcapCapture;
+import dk.aau.netsec.hostage.ui.fragment.SettingsFragment;
 
 /**
+ * TODO write javadoc
+ *
  * @author Filip Adamik
  * Created on 28/07/2021
  */
 public class PcapStorageManager {
 
-    private static final String PREF_PCAP_LOG_KEY = "pref_pcap_log_setting";
-    private static final String PREF_PCAP_LOCATION_KEY = "pref_pcap_location_setting";
-
     public static int ACTION_PICK_FOLDER_AND_ENABLE = 6666;
     public static int ACTION_PICK_FOLDER = 6667;
 
-    Uri mStorageLocation;
+    private static final String PREF_PCAP_LOG_KEY = "pref_pcap_log_setting";
+    private static final String PREF_PCAP_LOCATION_KEY = "pref_pcap_location_setting";
 
-    static WeakReference<PcapStorageManager> pcapStorageManagerInstance;
+    private Uri mStorageLocation;
+    private PcapCapture pcapCapture;
+
+    private static WeakReference<PcapStorageManager> pcapStorageManagerInstance;
 
     Context context;
     boolean pcapLogEnabled;
 
+    /**
+     * TODO write javadoc
+     *
+     * @param context
+     */
     private PcapStorageManager(Context context) {
         this.context = context;
 
         pcapStorageManagerInstance = new WeakReference<>(this);
 
+        retrievePcapLogEnabled();
+        retrieveStorageLocation();
     }
 
+    /**
+     * TODO write javadoc
+     *
+     * @param context
+     * @return
+     */
     @NonNull
     public static PcapStorageManager getPcapStorageManagerInstance(@NonNull Context context) {
         if (pcapStorageManagerInstance == null || pcapStorageManagerInstance.get() == null) {
@@ -54,46 +79,14 @@ public class PcapStorageManager {
         }
     }
 
-    public boolean retrievePcapLogSetting() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 
-        pcapLogEnabled = sharedPref.getBoolean(PREF_PCAP_LOG_KEY, false);
-
-        return pcapLogEnabled;
-    }
-
-    void setPcapLogSetting(boolean pcapLogEnabled) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(PREF_PCAP_LOG_KEY, pcapLogEnabled);
-        editor.apply();
-
-        this.pcapLogEnabled = pcapLogEnabled;
-    }
-
-    public void enablePcapLogging(Fragment fragment) {
-
-        retrieveStorageLocation();
-
-        if (mStorageLocation == null || !pcapLocationWritable(mStorageLocation)) {
-
-            // Choose a directory using the system's file picker.
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-
-            // Optionally, specify a URI for the directory that should be opened in
-            // the system file picker when it loads.
-//        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uriToLoad);
-
-            fragment.startActivityForResult(intent, ACTION_PICK_FOLDER_AND_ENABLE);
-
-        } else {
-
-            setPcapLogSetting(true);
-            startPcapLoggingForRealNow();
-        }
-    }
-
-    public void selectLocation(Fragment fragment){
+    /**
+     * TODO write javadoc
+     *
+     * @param fragment
+     * @param enableAfterwards
+     */
+    private void launchFolderPicker(SettingsFragment fragment, boolean enableAfterwards) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
 
         intent.addFlags(
@@ -102,45 +95,18 @@ public class PcapStorageManager {
                         | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
                         | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
 
-        // Optionally, specify a URI for the directory that should be opened in
-        // the system file picker when it loads.
-//        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uriToLoad);
+        int request_code = enableAfterwards ? ACTION_PICK_FOLDER_AND_ENABLE : ACTION_PICK_FOLDER;
 
-        fragment.startActivityForResult(intent, ACTION_PICK_FOLDER);
+        fragment.startActivityForResult(intent, request_code);
     }
 
-    public void locationSelected(Uri location, boolean enableLog) {
-        if (pcapLocationWritable(location)) {
-            context.getContentResolver().takePersistableUriPermission(location,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-            setStorageLocation(location);
-
-            if (enableLog) {
-                setPcapLogSetting(true);
-
-                startPcapLoggingForRealNow();
-            }
-        }
-
-    }
-
-    void startPcapLoggingForRealNow(){
-        PcapWriter.PcapCapture pcapCapture = new PcapWriter.PcapCapture(mStorageLocation);
-        pcapCapture.execute();
-    }
-
-
-    public void disablePcapLogging() {
-
-        setPcapLogSetting(false);
-
-        PcapWriter.stopTcpdumpPcap();
-//        Toast.makeText(context, "BAAAAARRR", Toast.LENGTH_SHORT).show();
-    }
-
-
-    public boolean pcapLocationWritable(Uri locationUri) {
+    /**
+     * TODO write javadoc
+     *
+     * @param locationUri
+     * @return
+     */
+    private boolean pcapLocationWritable(Uri locationUri) {
 
         DocumentFile dirFile = DocumentFile.fromTreeUri(context, locationUri);
         Log.d("filipko", "Can write is: " + dirFile.canWrite());
@@ -148,7 +114,164 @@ public class PcapStorageManager {
         return dirFile.canWrite();
     }
 
-    public void writeTestFile(Uri locationUri){
+    /**
+     * TODO write javadoc
+     */
+    private void startPcapLogging() {
+        pcapCapture = new PcapCapture(context, mStorageLocation);
+        pcapCapture.execute();
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    private void stopPcapLogging() {
+        if (pcapCapture != null) {
+            pcapCapture.stopTcpdumpPcap();
+        }
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @param pcapLogState
+     */
+    private void setPcapLogState(boolean pcapLogState) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(PREF_PCAP_LOG_KEY, pcapLogState);
+        editor.apply();
+
+        this.pcapLogEnabled = pcapLogState;
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    private void retrievePcapLogEnabled() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+
+        pcapLogEnabled = sharedPref.getBoolean(PREF_PCAP_LOG_KEY, false);
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @param folderLocation
+     */
+    private void setStorageLocation(Uri folderLocation) {
+        mStorageLocation = folderLocation;
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(PREF_PCAP_LOCATION_KEY, folderLocation.toString());
+        editor.apply();
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    private void retrieveStorageLocation() {
+        if (mStorageLocation == null) {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+            String uriString = sharedPref.getString(PREF_PCAP_LOCATION_KEY, null);
+
+            if (uriString != null) {
+
+                Log.d("filipko", "Location retrieved: " + uriString);
+
+                mStorageLocation = Uri.parse(uriString);
+            }
+        }
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @param fragment
+     */
+    public void enablePcapLogging(SettingsFragment fragment) {
+
+        if (mStorageLocation == null || !pcapLocationWritable(mStorageLocation)) {
+            launchFolderPicker(fragment, true);
+
+        } else {
+            setPcapLogState(true);
+            startPcapLogging();
+
+            fragment.setPcapChecked();
+        }
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @param fragment
+     */
+    public void selectLocation(SettingsFragment fragment) {
+        launchFolderPicker(fragment, false);
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @param location
+     * @param enablePcap
+     */
+    public void locationSelected(Uri location, boolean enablePcap) {
+        if (pcapLocationWritable(location)) {
+            context.getContentResolver().takePersistableUriPermission(location,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            setStorageLocation(location);
+
+            if (enablePcap) {
+                setPcapLogState(true);
+
+                startPcapLogging();
+            }
+        }
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    public void disablePcapLogging() {
+        setPcapLogState(false);
+
+        stopPcapLogging();
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @return
+     */
+    public boolean isPcapLogEnabled() {
+        return pcapLogEnabled;
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @return
+     */
+    public String getStorageLocationPath() {
+        retrieveStorageLocation();
+
+        if (mStorageLocation != null) {
+            String filipsId = DocumentsContract.getTreeDocumentId(mStorageLocation);
+            int colonPos = filipsId.indexOf(":");
+            filipsId = filipsId.substring(colonPos + 1);
+
+            return filipsId;
+        }
+
+        return null;
+    }
+
+    //    ONLY FOR TESTING! (delete for release)
+    public void writeTestFile(Uri locationUri) {
 
         DocumentFile dirFile = DocumentFile.fromTreeUri(context, locationUri);
 
@@ -180,43 +303,5 @@ public class PcapStorageManager {
 //        Log.d("filipko", otherId);
 
 
-    }
-
-    void retrieveStorageLocation() {
-        if (mStorageLocation == null) {
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-            String uriString = sharedPref.getString(PREF_PCAP_LOCATION_KEY, null);
-
-            if (uriString != null) {
-
-                Log.d("filipko", "Location retrieved: " + uriString);
-
-                mStorageLocation = Uri.parse(uriString);
-            }
-        }
-
-    }
-
-    void setStorageLocation(Uri folderLocation) {
-        mStorageLocation = folderLocation;
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(PREF_PCAP_LOCATION_KEY, folderLocation.toString());
-        editor.apply();
-    }
-
-    public String getStorageLocationPath(){
-        retrieveStorageLocation();
-
-        if (mStorageLocation != null){
-            String filipsId = DocumentsContract.getTreeDocumentId(mStorageLocation);
-            int colonPos = filipsId.indexOf(":");
-            filipsId = filipsId.substring(colonPos + 1);
-
-            return filipsId;
-        }
-
-        return null;
     }
 }

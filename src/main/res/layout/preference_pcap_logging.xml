@@ -5,10 +5,10 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/pcap_setting_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:id="@+id/pcap_setting_layout">
+        android:gravity="center_vertical">
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -20,27 +20,26 @@
             android:paddingBottom="16dp">
 
             <TextView
-                android:id="@+id/filipstitle"
+                android:id="@+id/pcap_log_toggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
-                android:textColor="@color/colorOnSurface"
-
                 android:singleLine="true"
-                android:text="Enable PCAP Logging" />
+
+                android:text="@string/pcap_log_setting_name"
+                android:textColor="@color/colorOnSurface" />
 
             <TextView
-                android:id="@+id/enable_pcap_summary"
+                android:id="@+id/pcap_log_summary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/filipstitle"
-                android:layout_alignStart="@id/filipstitle"
-                android:layout_alignLeft="@id/filipstitle"
+                android:layout_below="@id/pcap_log_toggle"
+                android:layout_alignStart="@id/pcap_log_toggle"
+                android:layout_alignLeft="@id/pcap_log_toggle"
                 android:layout_gravity="start"
                 android:maxLines="10"
                 android:text="Specify location below"
                 android:textAlignment="viewStart" />
-
 
         </RelativeLayout>
 
@@ -65,10 +64,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/pcap_location_preference"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:id="@+id/location_selector">
+        android:gravity="center_vertical">
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -80,31 +79,27 @@
             android:paddingBottom="16dp">
 
             <TextView
-                android:id="@+id/filipstitle2"
+                android:id="@+id/pcap_location_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
-                android:textColor="@color/colorOnSurface"
-
                 android:singleLine="true"
-                android:text="PCAP Log Location" />
+
+                android:text="@string/pcap_location_setting_name"
+                android:textColor="@color/colorOnSurface" />
 
             <TextView
                 android:id="@+id/pcap_location_summary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/filipstitle2"
-                android:layout_alignStart="@id/filipstitle2"
-                android:layout_alignLeft="@id/filipstitle2"
+                android:layout_below="@id/pcap_location_selector"
+                android:layout_alignStart="@id/pcap_location_selector"
+                android:layout_alignLeft="@id/pcap_location_selector"
                 android:layout_gravity="start"
                 android:maxLines="10"
                 android:text="Specify log location"
                 android:textAlignment="viewStart" />
 
-
         </RelativeLayout>
-
-
-
     </LinearLayout>
 </LinearLayout>

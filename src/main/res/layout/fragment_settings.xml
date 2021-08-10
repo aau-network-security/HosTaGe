@@ -27,7 +27,7 @@
 	</RelativeLayout>
 
 	<include
-		layout="@layout/filips_dialog"/>
+		layout="@layout/preference_pcap_logging"/>
 
 
 	<FrameLayout

@@ -260,7 +260,8 @@ public final class Api {
         }
     }
 
-//    TODO write javadoc
+    //    TODO write javadoc
+    @Deprecated
     public static void runCommand(String command) {
         Process process;
         try {
@@ -273,7 +274,26 @@ public final class Api {
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Error running commands: " + e.getMessage());
         }
+    }
 
+    /**
+     * TODO write javadoc
+     *
+     * @param command
+     * @return
+     */
+    public static Process runCommandWithHandle(String command) {
+        Process process;
+
+        try {
+            process = Runtime.getRuntime().exec(command);
+
+            return process;
+        } catch (IOException ioe) {
+            Log.e(TAG, "Error running commands: " + ioe.getMessage());
+
+            return null;
+        }
     }
 
     /**
@@ -660,7 +680,7 @@ public final class Api {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] dataBytesDecrypted = (cipher.doFinal(dataBytes));
             decryptStr = new String(dataBytesDecrypted);
-        } catch (InvalidKeyException | UnsupportedEncodingException |NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
         return decryptStr;
