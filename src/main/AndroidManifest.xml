@@ -109,6 +109,9 @@
             android:name="dk.aau.netsec.hostage.services.MultiStage"
             android:exported="false"></service>
 
+        <service android:name=".system.PcapLoggingService"
+            android:exported="false"></service>
+
         <provider
             android:name="dk.aau.netsec.hostage.provider.HostageContentProvider"
             android:authorities="dk.aau.netsec.hostage.provider"
