@@ -13,7 +13,7 @@ import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
 
-import dk.aau.netsec.hostage.system.PcapLoggingService;
+import dk.aau.netsec.hostage.services.PcapLoggingService;
 import dk.aau.netsec.hostage.ui.fragment.SettingsFragment;
 
 /**
@@ -177,6 +177,10 @@ public class PcapStorageManager {
         }
     }
 
+    /**
+     * TODO write javadoc
+     * @param period
+     */
     private void setLogRotationPeriod(int period){
         logRotationPeriod = period;
 
@@ -186,6 +190,9 @@ public class PcapStorageManager {
         editor.apply();
     }
 
+    /**
+     * TODO write javadoc
+     */
     private void retrieveLogRotationPeriod(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         logRotationPeriod = sharedPref.getInt(PREF_PCAP_LOG_ROTATION_KEY, 10);
@@ -249,6 +256,10 @@ public class PcapStorageManager {
         }
     }
 
+    /**
+     * TODO write javadoc
+     * @param period
+     */
     public void logRotationPeriodSelected(int period){
         setLogRotationPeriod(period);
     }
@@ -281,6 +292,10 @@ public class PcapStorageManager {
         }
     }
 
+    /**
+     * TODO write javadoc
+     * @return
+     */
     public int getLogRotationPeriod(){
         retrieveLogRotationPeriod();
 

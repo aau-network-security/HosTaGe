@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,17 +18,18 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.echo.holographlibrary.Line;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.logging.PcapStorageManager;
 import dk.aau.netsec.hostage.system.Device;
 
+//TODO extract strings from here and from related XML file
+
 /**
  * @author Alexander Brakowski
  * @created 24.02.14 23:37
- * @modified Shreyas Srinivasa
+ * @modified Shreyas Srinivasa, Filip Adamik
  */
 public class SettingsFragment extends UpNavigatibleFragment {
     private View v;
@@ -59,40 +59,57 @@ public class SettingsFragment extends UpNavigatibleFragment {
             initialiseRotationPeriodSelector();
 
         } else {
-
             rootedText.setText(R.string.no);
             rootedText.setTextColor(getResources().getColor(R.color.holo_red));
 
-            pcapSwitch = v.findViewById(R.id.pcap_checkbox);
-            pcapSwitch.setClickable(false);
-
-            TextView pcapToggleText = v.findViewById(R.id.pcap_log_toggle);
-            pcapToggleText.setEnabled(false);
-
-            TextView pcapToggleSummary = v.findViewById(R.id.pcap_log_summary);
-            pcapToggleSummary.setText("PCAP logging is only available on rooted devices");
-
-            LinearLayout locationPreference = v.findViewById(R.id.pcap_location_preference);
-            locationPreference.setVisibility(View.GONE);
-
-            LinearLayout rotationPreference = v.findViewById(R.id.pcap_log_rotation_preference);
-            rotationPreference.setVisibility(View.GONE);
-
-
-//            pcapToggleText.setTextColor(R.color.colorOnBackground);
-
-//            TextView pcapLocationText = v.findViewById(R.id.pcap_location_selector);
-//            pcapLocationText.setEnabled(false);
-//            pcapToggleText.setTextColor(R.color.colorOnBackground);
-
-//            TextView pcapDurationText = v.findViewById(R.id.pcap_log_rotation_selector);
-//            pcapDurationText.setEnabled(false);
-//            pcapDurationText.setTextColor();
-//            pcapToggleText.setTextColor(R.color.colorOnBackground);
-
+            disablePcapSettings();
         }
 
         return v;
+    }
+
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        manager = getFragmentManager();
+        manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (v != null) {
+            unbindDrawables(v);
+            v = null;
+            removeSettingsFragment();
+        }
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PcapStorageManager.ACTION_PICK_FOLDER_AND_ENABLE) {
+            mFolderUri = data.getData();
+            mPcapStorageManager.locationSelected(mFolderUri, true);
+
+            setLocationSummaryText();
+
+            CheckBox pcapCheckbox = v.findViewById(R.id.pcap_checkbox);
+            pcapCheckbox.setChecked(true);
+        } else if (requestCode == PcapStorageManager.ACTION_PICK_FOLDER) {
+            mFolderUri = data.getData();
+            mPcapStorageManager.locationSelected(mFolderUri, false);
+
+            setLocationSummaryText();
+        }
     }
 
     /**
@@ -192,37 +209,6 @@ public class SettingsFragment extends UpNavigatibleFragment {
 
     /**
      * TODO write javadoc
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PcapStorageManager.ACTION_PICK_FOLDER_AND_ENABLE) {
-            mFolderUri = data.getData();
-
-//            mPcapStorageManager.writeTestFile(mFolderUri);
-
-            mPcapStorageManager.locationSelected(mFolderUri, true);
-
-            setLocationSummaryText();
-
-            CheckBox pcapCheckbox = v.findViewById(R.id.pcap_checkbox);
-            pcapCheckbox.setChecked(true);
-        } else if (requestCode == PcapStorageManager.ACTION_PICK_FOLDER) {
-            mFolderUri = data.getData();
-
-            mPcapStorageManager.locationSelected(mFolderUri, false);
-
-            setLocationSummaryText();
-        }
-    }
-
-    /**
-     * TODO write javadoc
      */
     private void setLocationSummaryText() {
         TextView locationSummary = v.findViewById(R.id.pcap_location_summary);
@@ -234,11 +220,24 @@ public class SettingsFragment extends UpNavigatibleFragment {
         }
     }
 
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    /**
+     * TODO write javadoc
+     */
+    private void disablePcapSettings() {
+        pcapSwitch = v.findViewById(R.id.pcap_checkbox);
+        pcapSwitch.setClickable(false);
 
-        manager = getFragmentManager();
-        manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
+        TextView pcapToggleText = v.findViewById(R.id.pcap_log_toggle);
+        pcapToggleText.setEnabled(false);
+
+        TextView pcapToggleSummary = v.findViewById(R.id.pcap_log_summary);
+        pcapToggleSummary.setText("PCAP logging is only available on rooted devices");
+
+        LinearLayout locationPreference = v.findViewById(R.id.pcap_location_preference);
+        locationPreference.setVisibility(View.GONE);
+
+        LinearLayout rotationPreference = v.findViewById(R.id.pcap_log_rotation_preference);
+        rotationPreference.setVisibility(View.GONE);
     }
 
     private void removeSettingsFragment() {
@@ -247,16 +246,6 @@ public class SettingsFragment extends UpNavigatibleFragment {
         fragmentTransaction.remove(fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (v != null) {
-            unbindDrawables(v);
-            v = null;
-            removeSettingsFragment();
-        }
     }
 
     private void unbindDrawables(View view) {

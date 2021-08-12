@@ -1,4 +1,4 @@
-package dk.aau.netsec.hostage.system;
+package dk.aau.netsec.hostage.services;
 
 import static dk.aau.netsec.hostage.system.iptablesUtils.Api.runCommandWithHandle;
 
@@ -11,6 +11,8 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.documentfile.provider.DocumentFile;
 
 import java.io.BufferedReader;
@@ -29,6 +31,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import dk.aau.netsec.hostage.R;
 
 /***
  * This service handles the task of running tcpdump and writing out it's output to a file in the
@@ -59,6 +63,8 @@ public class PcapLoggingService extends Service {
     private Process tcpdumpProcess;
     private Thread tcpdumpThread;
     private Thread fileCopyThread = null;
+
+    private static final int PCAP_NOTIFICATION_ID = 765;
 
     public static final int LOG_TYPE_TEXT = 180;
     public static final int LOG_TYPE_PCAP = 561;
@@ -98,6 +104,8 @@ public class PcapLoggingService extends Service {
             fileCopyThread.start();
         }
 
+        showNotification();
+
         return START_STICKY;
     }
 
@@ -126,12 +134,39 @@ public class PcapLoggingService extends Service {
             fileCopyThread.interrupt();
         }
 
-        Log.d(TAG, "PCAP writer stopped");
-
         // Copy the last file, which was saved after tcpdump was interrupted.
         copyFilesToUserStorage(true);
 
+        cancelNotification();
+
+        Log.d(TAG, "PCAP writer stopped");
         super.onDestroy();
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    private void showNotification() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "42")
+                .setSmallIcon(R.drawable.ic_launcher)
+//                TODO extract strings
+                .setContentTitle("PCAP logging service running")
+                .setContentText("This could increase battery consumption")
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setAutoCancel(false)
+                .setOngoing(true);
+//        TODO open settings when notification is clicked
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(PCAP_NOTIFICATION_ID, builder.build());
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    private void cancelNotification() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancel(PCAP_NOTIFICATION_ID);
     }
 
     /**
