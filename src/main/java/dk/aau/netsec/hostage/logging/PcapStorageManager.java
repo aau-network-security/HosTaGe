@@ -27,11 +27,13 @@ public class PcapStorageManager {
     private Uri mStorageLocation;
     private Context context;
     private boolean pcapLogEnabled;
+    private int logRotationPeriod;
 
     private static WeakReference<PcapStorageManager> pcapStorageManagerInstance;
 
     private static final String PREF_PCAP_LOG_KEY = "pref_pcap_log_setting";
     private static final String PREF_PCAP_LOCATION_KEY = "pref_pcap_location_setting";
+    private static final String PREF_PCAP_LOG_ROTATION_KEY = "pref_pcap_log_rotation_setting";
 
     public static final int ACTION_PICK_FOLDER_AND_ENABLE = 6666;
     public static final int ACTION_PICK_FOLDER = 6667;
@@ -105,9 +107,10 @@ public class PcapStorageManager {
     private void startPcapLogging() {
         Intent intent = new Intent(context, PcapLoggingService.class);
 //        TODO implement various log types
-//        TODO implement various log rotation times
+
         intent.putExtra(PcapLoggingService.PCAP_SERVICE_INTENT_TYPE, PcapLoggingService.LOG_TYPE_PCAP);
         intent.putExtra(PcapLoggingService.PCAP_SERVICE_INTENT_URI, mStorageLocation.toString());
+        intent.putExtra(PcapLoggingService.PCAP_SERVICE_INTENT_SECONDS, logRotationPeriod);
 
         context.startService(intent);
     }
@@ -174,6 +177,20 @@ public class PcapStorageManager {
         }
     }
 
+    private void setLogRotationPeriod(int period){
+        logRotationPeriod = period;
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(PREF_PCAP_LOG_ROTATION_KEY, period);
+        editor.apply();
+    }
+
+    private void retrieveLogRotationPeriod(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        logRotationPeriod = sharedPref.getInt(PREF_PCAP_LOG_ROTATION_KEY, 10);
+    }
+
     /**
      * TODO write javadoc
      *
@@ -232,6 +249,10 @@ public class PcapStorageManager {
         }
     }
 
+    public void logRotationPeriodSelected(int period){
+        setLogRotationPeriod(period);
+    }
+
     /**
      * Return current status of Pcap logging
      *
@@ -258,6 +279,12 @@ public class PcapStorageManager {
         } else {
             return null;
         }
+    }
+
+    public int getLogRotationPeriod(){
+        retrieveLogRotationPeriod();
+
+        return logRotationPeriod;
     }
 
 //    //    ONLY FOR TESTING! (delete for release)

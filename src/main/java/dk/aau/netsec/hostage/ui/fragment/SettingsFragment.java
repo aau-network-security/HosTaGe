@@ -1,5 +1,7 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -15,6 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.echo.holographlibrary.Line;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.logging.PcapStorageManager;
@@ -31,7 +37,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
     private PcapStorageManager mPcapStorageManager;
     private FragmentManager manager;
     private Uri mFolderUri;
-    private CheckBox pcapCheckbox;
+    private SwitchMaterial pcapSwitch;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -45,42 +51,46 @@ public class SettingsFragment extends UpNavigatibleFragment {
         if (Device.isRooted()) {
             rootedText.setText(R.string.yes);
             rootedText.setTextColor(getResources().getColor(R.color.holo_dark_green));
+
+            mPcapStorageManager = PcapStorageManager.getPcapStorageManagerInstance(getContext());
+
+            initialiseLoggingSwitch();
+            initialiseLocationSelector();
+            initialiseRotationPeriodSelector();
+
         } else {
+
             rootedText.setText(R.string.no);
             rootedText.setTextColor(getResources().getColor(R.color.holo_red));
+
+            pcapSwitch = v.findViewById(R.id.pcap_checkbox);
+            pcapSwitch.setClickable(false);
+
+            TextView pcapToggleText = v.findViewById(R.id.pcap_log_toggle);
+            pcapToggleText.setEnabled(false);
+
+            TextView pcapToggleSummary = v.findViewById(R.id.pcap_log_summary);
+            pcapToggleSummary.setText("PCAP logging is only available on rooted devices");
+
+            LinearLayout locationPreference = v.findViewById(R.id.pcap_location_preference);
+            locationPreference.setVisibility(View.GONE);
+
+            LinearLayout rotationPreference = v.findViewById(R.id.pcap_log_rotation_preference);
+            rotationPreference.setVisibility(View.GONE);
+
+
+//            pcapToggleText.setTextColor(R.color.colorOnBackground);
+
+//            TextView pcapLocationText = v.findViewById(R.id.pcap_location_selector);
+//            pcapLocationText.setEnabled(false);
+//            pcapToggleText.setTextColor(R.color.colorOnBackground);
+
+//            TextView pcapDurationText = v.findViewById(R.id.pcap_log_rotation_selector);
+//            pcapDurationText.setEnabled(false);
+//            pcapDurationText.setTextColor();
+//            pcapToggleText.setTextColor(R.color.colorOnBackground);
+
         }
-
-        mPcapStorageManager = PcapStorageManager.getPcapStorageManagerInstance(getContext());
-
-        pcapCheckbox = v.findViewById(R.id.pcap_checkbox);
-        setPcapChecked();
-
-        pcapCheckbox.setOnClickListener((View v) -> {
-            if (pcapCheckbox.isChecked()) {
-                mPcapStorageManager.enablePcapLogging(this);
-            } else {
-                mPcapStorageManager.disablePcapLogging();
-            }
-        });
-
-        LinearLayout pcapSettingView = v.findViewById(R.id.pcap_setting_layout);
-
-        pcapSettingView.setOnClickListener((View v) -> {
-            if (pcapCheckbox.isChecked()) {
-                mPcapStorageManager.disablePcapLogging();
-                pcapCheckbox.setChecked(false);
-            } else {
-//                    TODO adjust box checked or not
-                mPcapStorageManager.enablePcapLogging(this);
-            }
-        });
-
-        LinearLayout locationSelector = v.findViewById(R.id.pcap_location_preference);
-        locationSelector.setOnClickListener((View v) -> {
-            mPcapStorageManager.selectLocation(this);
-        });
-
-        setLocationSummaryText();
 
         return v;
     }
@@ -88,8 +98,96 @@ public class SettingsFragment extends UpNavigatibleFragment {
     /**
      * TODO write javadoc
      */
-    public void setPcapChecked(){
-        pcapCheckbox.setChecked(mPcapStorageManager.isPcapLogEnabled());
+    private void initialiseLoggingSwitch() {
+        pcapSwitch = v.findViewById(R.id.pcap_checkbox);
+
+        // React to clicks on the Switch
+        pcapSwitch.setOnClickListener((View v) -> {
+            if (pcapSwitch.isChecked()) {
+                mPcapStorageManager.enablePcapLogging(this);
+            } else {
+                mPcapStorageManager.disablePcapLogging();
+            }
+        });
+
+        // React to clicks on the entire row
+        LinearLayout pcapSettingView = v.findViewById(R.id.pcap_setting_layout);
+        pcapSettingView.setOnClickListener((View v) -> {
+            if (pcapSwitch.isChecked()) {
+                mPcapStorageManager.disablePcapLogging();
+                pcapSwitch.setChecked(false);
+            } else {
+//                    TODO adjust box checked or not
+                mPcapStorageManager.enablePcapLogging(this);
+            }
+        });
+
+        setPcapChecked();
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    private void initialiseLocationSelector() {
+        LinearLayout locationSelector = v.findViewById(R.id.pcap_location_preference);
+        locationSelector.setOnClickListener((View v) -> {
+            mPcapStorageManager.selectLocation(this);
+        });
+
+        setLocationSummaryText();
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    private void initialiseRotationPeriodSelector() {
+        LinearLayout logRotationSelector = v.findViewById(R.id.pcap_log_rotation_preference);
+        logRotationSelector.setOnClickListener((View v) -> {
+            showLogRotationSelectionDialog();
+        });
+
+        setLogRotationPeriod();
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    private void showLogRotationSelectionDialog() {
+        int[] durations = {10, 30, 60, 90, 180};
+        String[] durationItems = new String[durations.length];
+
+        for (int i = 0; i < durations.length; i++) {
+            durationItems[i] = Integer.toString(durations[i]) + " seconds";
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Select log rotation period");
+        builder.setItems(durationItems, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mPcapStorageManager.logRotationPeriodSelected(durations[which]);
+
+                setLogRotationPeriod();
+            }
+        });
+        builder.show();
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    public void setLogRotationPeriod() {
+        int period = mPcapStorageManager.getLogRotationPeriod();
+
+        TextView periodView = v.findViewById(R.id.pcap_log_rotation_summary);
+        periodView.setText(Integer.toString(period) + " seconds");
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    public void setPcapChecked() {
+        pcapSwitch.setChecked(mPcapStorageManager.isPcapLogEnabled());
     }
 
     /**
