@@ -45,7 +45,7 @@
                 android:layout_alignLeft="@id/pcap_log_toggle"
                 android:layout_gravity="start"
                 android:maxLines="10"
-                android:text="Specify location below"
+                android:text="@string/pcap_log_setting_description"
                 android:textAlignment="viewStart"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -63,7 +63,7 @@
             android:paddingRight="0dp">
 
             <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/pcap_checkbox"
+                android:id="@+id/pcap_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -111,7 +111,7 @@
                 android:layout_alignLeft="@id/pcap_location_selector"
                 android:layout_gravity="start"
                 android:maxLines="10"
-                android:text="Specify log location"
+                android:text="@string/pcap_location_setting_description"
 
                 android:textAlignment="viewStart"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -149,7 +149,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
                 android:singleLine="true"
-                android:text="Specify log rotation duration"
+                android:text="@string/pcap_log_rotation_name"
 
                 android:textAppearance="?android:attr/textAppearanceListItem"
                 android:textColor="@color/textview_colors" />
@@ -163,11 +163,11 @@
                 android:layout_alignLeft="@id/pcap_log_rotation_selector"
                 android:layout_gravity="start"
                 android:maxLines="10"
-                android:text="Specify log rotation duration"
+                android:text="10 seconds"
 
                 android:textAlignment="viewStart"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="10 Seconds" />
+                />
 
         </RelativeLayout>
     </LinearLayout>

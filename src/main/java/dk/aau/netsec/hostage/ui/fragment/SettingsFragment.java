@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,10 +20,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import dk.aau.netsec.hostage.R;
-import dk.aau.netsec.hostage.logging.PcapStorageManager;
+import dk.aau.netsec.hostage.logging.PcapLoggingManager;
 import dk.aau.netsec.hostage.system.Device;
-
-//TODO extract strings from here and from related XML file
 
 /**
  * @author Alexander Brakowski
@@ -34,7 +31,7 @@ import dk.aau.netsec.hostage.system.Device;
 public class SettingsFragment extends UpNavigatibleFragment {
     private View v;
     private Bundle savedInstanceState;
-    private PcapStorageManager mPcapStorageManager;
+    private PcapLoggingManager mPcapLoggingManager;
     private FragmentManager manager;
     private Uri mFolderUri;
     private SwitchMaterial pcapSwitch;
@@ -52,7 +49,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
             rootedText.setText(R.string.yes);
             rootedText.setTextColor(getResources().getColor(R.color.holo_dark_green));
 
-            mPcapStorageManager = PcapStorageManager.getPcapStorageManagerInstance(getContext());
+            mPcapLoggingManager = PcapLoggingManager.getPcapLoggingManagerInstance(getContext());
 
             initialiseLoggingSwitch();
             initialiseLocationSelector();
@@ -86,44 +83,53 @@ public class SettingsFragment extends UpNavigatibleFragment {
     }
 
     /**
-     * TODO write javadoc
+     * This method is called when the user has selected the PCAP log output folder and has returned
+     * to the Settings fragment.
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * If the folder picker dialog was launched after a user requested to activate PCAP logging,
+     * but the output location has not been selected or is not writable, this method updates the UI
+     * and requests the {@link PcapLoggingManager} to start PCAP logging.
+     *
+     * If the folder picker dialog was launched by user clicking on the PCAP Output Location setting,
+     * update the UI and pass the location to {@link PcapLoggingManager}, without turning the PCAP
+     * logging on or off.
+     *
+     * @param requestCode Request code indicating what request is being completed
+     * @param resultCode Not used
+     * @param data Data including the Uri of the output folder selected by the user
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PcapStorageManager.ACTION_PICK_FOLDER_AND_ENABLE) {
+        if (requestCode == PcapLoggingManager.ACTION_PICK_FOLDER_AND_ENABLE) {
             mFolderUri = data.getData();
-            mPcapStorageManager.locationSelected(mFolderUri, true);
+            mPcapLoggingManager.locationSelected(mFolderUri, true);
 
             setLocationSummaryText();
+            setPcapChecked();
 
-            CheckBox pcapCheckbox = v.findViewById(R.id.pcap_checkbox);
-            pcapCheckbox.setChecked(true);
-        } else if (requestCode == PcapStorageManager.ACTION_PICK_FOLDER) {
+        } else if (requestCode == PcapLoggingManager.ACTION_PICK_FOLDER) {
             mFolderUri = data.getData();
-            mPcapStorageManager.locationSelected(mFolderUri, false);
+            mPcapLoggingManager.locationSelected(mFolderUri, false);
 
             setLocationSummaryText();
         }
     }
 
     /**
-     * TODO write javadoc
+     * Initialise the main PCAP logging switch. Assign on-click listeners to the Switch and to the
+     * entire setting row.
      */
     private void initialiseLoggingSwitch() {
-        pcapSwitch = v.findViewById(R.id.pcap_checkbox);
+        pcapSwitch = v.findViewById(R.id.pcap_switch);
 
         // React to clicks on the Switch
         pcapSwitch.setOnClickListener((View v) -> {
             if (pcapSwitch.isChecked()) {
-                mPcapStorageManager.enablePcapLogging(this);
+                mPcapLoggingManager.enablePcapLogging(this);
             } else {
-                mPcapStorageManager.disablePcapLogging();
+                mPcapLoggingManager.disablePcapLogging();
             }
         });
 
@@ -131,11 +137,10 @@ public class SettingsFragment extends UpNavigatibleFragment {
         LinearLayout pcapSettingView = v.findViewById(R.id.pcap_setting_layout);
         pcapSettingView.setOnClickListener((View v) -> {
             if (pcapSwitch.isChecked()) {
-                mPcapStorageManager.disablePcapLogging();
+                mPcapLoggingManager.disablePcapLogging();
                 pcapSwitch.setChecked(false);
             } else {
-//                    TODO adjust box checked or not
-                mPcapStorageManager.enablePcapLogging(this);
+                mPcapLoggingManager.enablePcapLogging(this);
             }
         });
 
@@ -143,19 +148,21 @@ public class SettingsFragment extends UpNavigatibleFragment {
     }
 
     /**
-     * TODO write javadoc
+     * Initialise the location setting by assinging an on-click listener and updating UI with
+     * the location value from {@link PcapLoggingManager}
      */
     private void initialiseLocationSelector() {
         LinearLayout locationSelector = v.findViewById(R.id.pcap_location_preference);
         locationSelector.setOnClickListener((View v) -> {
-            mPcapStorageManager.selectLocation(this);
+            mPcapLoggingManager.selectLocation(this);
         });
 
         setLocationSummaryText();
     }
 
     /**
-     * TODO write javadoc
+     * Initialise log rotation setting by assinging an on-click listener and updating UI with
+     * the value from {@link PcapLoggingManager}
      */
     private void initialiseRotationPeriodSelector() {
         LinearLayout logRotationSelector = v.findViewById(R.id.pcap_log_rotation_preference);
@@ -167,22 +174,27 @@ public class SettingsFragment extends UpNavigatibleFragment {
     }
 
     /**
-     * TODO write javadoc
+     * Show dialog prompting the user to select log rotation period from a list of pre-defined
+     * options
+     * <p>
+     * Notify {@link PcapLoggingManager} of the result and update UI accordingly
      */
     private void showLogRotationSelectionDialog() {
-        int[] durations = {10, 30, 60, 90, 180};
-        String[] durationItems = new String[durations.length];
+        int[] durations = PcapLoggingManager.PCAP_LOG_DURATION_OPTIONS;
 
+        // Construct a string array for AlertDialog builder
+        String[] durationItems = new String[durations.length];
         for (int i = 0; i < durations.length; i++) {
-            durationItems[i] = Integer.toString(durations[i]) + " seconds";
+            durationItems[i] = Integer.toString(durations[i]) + " " + getString(R.string.seconds);
         }
 
+        // Create and display the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Select log rotation period");
+        builder.setTitle(R.string.pcap_log_rotation_dialog);
         builder.setItems(durationItems, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mPcapStorageManager.logRotationPeriodSelected(durations[which]);
+                mPcapLoggingManager.logRotationPeriodSelected(durations[which]);
 
                 setLogRotationPeriod();
             }
@@ -191,47 +203,49 @@ public class SettingsFragment extends UpNavigatibleFragment {
     }
 
     /**
-     * TODO write javadoc
-     */
-    public void setLogRotationPeriod() {
-        int period = mPcapStorageManager.getLogRotationPeriod();
-
-        TextView periodView = v.findViewById(R.id.pcap_log_rotation_summary);
-        periodView.setText(Integer.toString(period) + " seconds");
-    }
-
-    /**
-     * TODO write javadoc
+     * Set switch in checked or un-checked state, based on the value retrieved from
+     * {@link PcapLoggingManager}
      */
     public void setPcapChecked() {
-        pcapSwitch.setChecked(mPcapStorageManager.isPcapLogEnabled());
+        pcapSwitch.setChecked(mPcapLoggingManager.isPcapLogEnabled());
     }
 
     /**
-     * TODO write javadoc
+     * Retrieve user-friendly location path from {@link PcapLoggingManager} and display it in
+     * the location setting summary.
      */
     private void setLocationSummaryText() {
-        TextView locationSummary = v.findViewById(R.id.pcap_location_summary);
-
-        String locationSummaryText = mPcapStorageManager.getStorageLocationPath();
+        String locationSummaryText = mPcapLoggingManager.getOutputLocationPath();
 
         if (locationSummaryText != null) {
+            TextView locationSummary = v.findViewById(R.id.pcap_location_summary);
             locationSummary.setText(locationSummaryText);
         }
     }
 
     /**
-     * TODO write javadoc
+     * Retrieve the log rotation period from {@link PcapLoggingManager} and display it in the
+     * Log Rotation setting summary.
+     */
+    public void setLogRotationPeriod() {
+        int period = mPcapLoggingManager.getLogRotationPeriod();
+
+        TextView periodView = v.findViewById(R.id.pcap_log_rotation_summary);
+        periodView.setText(Integer.toString(period) + " " + getString(R.string.seconds));
+    }
+
+    /**
+     * Disable PCAP settings on non-rooted devices and display a 'not available' message
      */
     private void disablePcapSettings() {
-        pcapSwitch = v.findViewById(R.id.pcap_checkbox);
+        pcapSwitch = v.findViewById(R.id.pcap_switch);
         pcapSwitch.setClickable(false);
 
         TextView pcapToggleText = v.findViewById(R.id.pcap_log_toggle);
         pcapToggleText.setEnabled(false);
 
         TextView pcapToggleSummary = v.findViewById(R.id.pcap_log_summary);
-        pcapToggleSummary.setText("PCAP logging is only available on rooted devices");
+        pcapToggleSummary.setText(R.string.pcap_not_available);
 
         LinearLayout locationPreference = v.findViewById(R.id.pcap_location_preference);
         locationPreference.setVisibility(View.GONE);

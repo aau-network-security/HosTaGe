@@ -78,7 +78,7 @@ public class PcapLoggingService extends Service {
     /**
      * Launches the service and starts the logging.
      *
-     * @param intent Starting intent. It has to carry the Uri of the desired output folder and should
+     * @param intent Starting intent. It has to include the Uri of the desired output folder and should
      *               include the desired logging type (text/Pcap) and log rotation period.
      * @return Specifies that service should be restarted, if killed due to low memory.
      */
@@ -86,7 +86,7 @@ public class PcapLoggingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         captureType = intent.getIntExtra(PCAP_SERVICE_INTENT_TYPE, LOG_TYPE_PCAP);
         outputFolder = Uri.parse(intent.getStringExtra(PCAP_SERVICE_INTENT_URI));
-        logRotationSeconds = intent.getIntExtra(PCAP_SERVICE_INTENT_SECONDS, 10);
+        logRotationSeconds = intent.getIntExtra(PCAP_SERVICE_INTENT_SECONDS, 180);
         context = this;
         filesDir = getFilesDir();
 
@@ -126,7 +126,6 @@ public class PcapLoggingService extends Service {
      */
     @Override
     public void onDestroy() {
-        //TODO maybe keep tdpdump alive if killed due to low memory?
         String command = "su -c pkill -SIGINT tcpdump";
         runCommandWithHandle(command);
 
@@ -136,7 +135,6 @@ public class PcapLoggingService extends Service {
 
         // Copy the last file, which was saved after tcpdump was interrupted.
         copyFilesToUserStorage(true);
-
         cancelNotification();
 
         Log.d(TAG, "PCAP writer stopped");
@@ -144,14 +142,13 @@ public class PcapLoggingService extends Service {
     }
 
     /**
-     * TODO write javadoc
+     * Display notification in the status bar, informing the user that PCAP logging is enabled.
      */
     private void showNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "42")
                 .setSmallIcon(R.drawable.ic_launcher)
-//                TODO extract strings
-                .setContentTitle("PCAP logging service running")
-                .setContentText("This could increase battery consumption")
+                .setContentTitle(getString(R.string.pcap_notification))
+                .setContentText(getString(R.string.pcap_notification_text))
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setAutoCancel(false)
                 .setOngoing(true);
@@ -162,7 +159,7 @@ public class PcapLoggingService extends Service {
     }
 
     /**
-     * TODO write javadoc
+     * Remove the PCAP logging notification from the status bar.
      */
     private void cancelNotification() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);

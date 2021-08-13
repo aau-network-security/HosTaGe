@@ -290,4 +290,12 @@
     <string name="uses_background_location_reason">Der Hintergrundstandort ermöglicht eine genaue Erfassung von Angriffsdaten während die App im Hintergrund läuft.</string>
     <string name="pcap_log_setting_name">Logging Aktivieren</string>
     <string name="pcap_location_setting_name">PCAP Log Speicherort</string>
+    <string name="pcap_notification">PCAP logging läuft</string>
+    <string name="pcap_notification_text">Dieses Service Ihren Batterie möglicherweise schneller entladen</string>
+    <string name="seconds">Sekunden</string>
+    <string name="pcap_log_rotation_dialog">Wählen Sie Protokollrotationsperiode</string>
+    <string name="pcap_not_available">PCAP-Protokollierung ist nur auf root Geräten verfügbar</string>
+    <string name="pcap_log_setting_description">PCAP-Protokolle an den unten angegebenen Speicherort schrieben</string>
+    <string name="pcap_location_setting_description">Speicherort der Protokollausgabe ändern</string>
+    <string name="pcap_log_rotation_name">Log-Rotationsfrequenz</string>
 </resources>
