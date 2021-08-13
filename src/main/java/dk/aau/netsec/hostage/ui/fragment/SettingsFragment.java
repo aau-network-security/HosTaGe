@@ -8,14 +8,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -75,18 +72,18 @@ public class SettingsFragment extends UpNavigatibleFragment {
     /**
      * This method is called when the user has selected the PCAP log output folder and has returned
      * to the Settings fragment.
-     *
+     * <p>
      * If the folder picker dialog was launched after a user requested to activate PCAP logging,
      * but the output location has not been selected or is not writable, this method updates the UI
      * and requests the {@link PcapLoggingManager} to start PCAP logging.
-     *
+     * <p>
      * If the folder picker dialog was launched by user clicking on the PCAP Output Location setting,
      * update the UI and pass the location to {@link PcapLoggingManager}, without turning the PCAP
      * logging on or off.
      *
      * @param requestCode Request code indicating what request is being completed
-     * @param resultCode Not used
-     * @param data Data including the Uri of the output folder selected by the user
+     * @param resultCode  Not used
+     * @param data        Data including the Uri of the output folder selected by the user
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -105,6 +102,25 @@ public class SettingsFragment extends UpNavigatibleFragment {
 
             setLocationSummaryText();
         }
+    }
+
+    /**
+     * Set switch in checked or un-checked state, based on the value retrieved from
+     * {@link PcapLoggingManager}
+     */
+    public void setPcapChecked() {
+        pcapSwitch.setChecked(mPcapLoggingManager.isPcapLogEnabled());
+    }
+
+    /**
+     * Retrieve the log rotation period from {@link PcapLoggingManager} and display it in the
+     * Log Rotation setting summary.
+     */
+    public void setLogRotationPeriod() {
+        int period = mPcapLoggingManager.getLogRotationPeriod();
+
+        TextView periodView = v.findViewById(R.id.pcap_log_rotation_summary);
+        periodView.setText(Integer.toString(period) + " " + getString(R.string.seconds));
     }
 
     /**
@@ -193,14 +209,6 @@ public class SettingsFragment extends UpNavigatibleFragment {
     }
 
     /**
-     * Set switch in checked or un-checked state, based on the value retrieved from
-     * {@link PcapLoggingManager}
-     */
-    public void setPcapChecked() {
-        pcapSwitch.setChecked(mPcapLoggingManager.isPcapLogEnabled());
-    }
-
-    /**
      * Retrieve user-friendly location path from {@link PcapLoggingManager} and display it in
      * the location setting summary.
      */
@@ -211,17 +219,6 @@ public class SettingsFragment extends UpNavigatibleFragment {
             TextView locationSummary = v.findViewById(R.id.pcap_location_summary);
             locationSummary.setText(locationSummaryText);
         }
-    }
-
-    /**
-     * Retrieve the log rotation period from {@link PcapLoggingManager} and display it in the
-     * Log Rotation setting summary.
-     */
-    public void setLogRotationPeriod() {
-        int period = mPcapLoggingManager.getLogRotationPeriod();
-
-        TextView periodView = v.findViewById(R.id.pcap_log_rotation_summary);
-        periodView.setText(Integer.toString(period) + " " + getString(R.string.seconds));
     }
 
     /**
@@ -243,5 +240,4 @@ public class SettingsFragment extends UpNavigatibleFragment {
         LinearLayout rotationPreference = v.findViewById(R.id.pcap_log_rotation_preference);
         rotationPreference.setVisibility(View.GONE);
     }
-
 }
