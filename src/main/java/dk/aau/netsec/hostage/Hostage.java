@@ -409,8 +409,6 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
                 listener.start();
             }
         }
-        // Toast.makeText(getApplicationContext(), "SERVICES STARTED!",
-        // Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -437,8 +435,6 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
                 }
             }
         }
-        // Toast.makeText(getApplicationContext(), protocolName +
-        // " SERVICE STOPPED!", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -475,8 +471,6 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
                 mProtocolActiveAttacks.remove(listener.getProtocolName());
             }
         }
-        // Toast.makeText(getApplicationContext(), "SERVICES STOPPED!",
-        // Toast.LENGTH_SHORT).show();
     }
 
     /**
