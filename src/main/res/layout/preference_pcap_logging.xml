@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/pcap_setting_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:baselineAligned="false"
+        android:clipToPadding="false"
+        android:gravity="center_vertical"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingRight="?android:attr/listPreferredItemPaddingRight">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/pcap_log_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text="@string/pcap_log_setting_name"
+                android:textAppearance="?android:attr/textAppearanceListItem"
+                android:textColor="@color/textview_colors" />
+
+            <TextView
+                android:id="@+id/pcap_log_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pcap_log_toggle"
+                android:layout_alignStart="@id/pcap_log_toggle"
+                android:layout_alignLeft="@id/pcap_log_toggle"
+                android:layout_gravity="start"
+                android:maxLines="10"
+                android:text="@string/pcap_log_setting_description"
+                android:textAlignment="viewStart"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/pcap_checkbox_wrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="end|center_vertical"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingEnd="0dp"
+            android:paddingRight="0dp">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pcap_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pcap_location_preference"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:baselineAligned="false"
+        android:clipToPadding="false"
+        android:gravity="center_vertical"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingRight="?android:attr/listPreferredItemPaddingRight">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/pcap_location_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text="@string/pcap_location_setting_name"
+                android:textAppearance="?android:attr/textAppearanceListItem"
+                android:textColor="@color/textview_colors" />
+
+            <TextView
+                android:id="@+id/pcap_location_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pcap_location_selector"
+                android:layout_alignStart="@id/pcap_location_selector"
+                android:layout_alignLeft="@id/pcap_location_selector"
+                android:layout_gravity="start"
+                android:maxLines="10"
+                android:text="@string/pcap_location_setting_description"
+
+                android:textAlignment="viewStart"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/pcap_log_rotation_preference"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:baselineAligned="false"
+        android:clipToPadding="false"
+        android:gravity="center_vertical"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingRight="?android:attr/listPreferredItemPaddingRight">
+
+        <RelativeLayout
+
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/pcap_log_rotation_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text="@string/pcap_log_rotation_name"
+
+                android:textAppearance="?android:attr/textAppearanceListItem"
+                android:textColor="@color/textview_colors" />
+
+            <TextView
+                android:id="@+id/pcap_log_rotation_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pcap_log_rotation_selector"
+                android:layout_alignStart="@id/pcap_log_rotation_selector"
+                android:layout_alignLeft="@id/pcap_log_rotation_selector"
+                android:layout_gravity="start"
+                android:maxLines="10"
+                android:text="10 seconds"
+
+                android:textAlignment="viewStart"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                />
+
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

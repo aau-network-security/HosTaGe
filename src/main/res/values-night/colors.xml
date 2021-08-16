@@ -20,6 +20,7 @@
     <color name="colorSurface">#696969</color>
     <color name="colorOnSurface">#ffffff</color>
     <color name="colorOnBackground">#ffffff</color>
+    <color name="colorDisabledText">#808080</color>
 
     <!--    TODO replace with theme specific colour-->
     <color name="light_grey">#FFC0C0C0</color>
