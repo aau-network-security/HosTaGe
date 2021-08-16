@@ -53,7 +53,6 @@ import dk.aau.netsec.hostage.logging.DaoSession;
 import dk.aau.netsec.hostage.logging.LogSaveWorker;
 import dk.aau.netsec.hostage.logging.RecordAll;
 import dk.aau.netsec.hostage.persistence.DAO.DAOHelper;
-import dk.aau.netsec.hostage.sync.android.SyncUtils;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.adapter.RecordListAdapter;
 import dk.aau.netsec.hostage.ui.dialog.ChecklistDialog;
@@ -628,9 +627,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 0) {
-            if (resultCode == SyncUtils.SYNC_SUCCESSFUL) {
-                actualiseListViewInBackground();
-            }
+//            if (resultCode == SyncUtils.SYNC_SUCCESSFUL) {
+//                actualiseListViewInBackground();
+//            }
 
             // Handle result from export file location picker
         } else if (requestCode == EXPORT_LOGS_PLAINTEXT_REQUEST_CODE || requestCode == EXPORT_LOGS_JSON_REQUEST_CODE) {

@@ -30,17 +30,7 @@
     <!-- Required because we're manually creating a new account. -->
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <!--
-    	<uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    -->
-    <uses-feature
-        android:name="android.hardware.nfc"
-        android:required="false" />
 
-    <uses-feature
-        android:name="android.hardware.wifi.direct"
-        android:required="true" />
 
     <application
         android:name="dk.aau.netsec.hostage.HostageApplication"
@@ -75,35 +65,12 @@
         <activity
             android:name="dk.aau.netsec.hostage.ui.activity.ProfileEditActivity"
             android:label="Edit Profile"></activity>
-        <activity
-            android:name="dk.aau.netsec.hostage.sync.tracing.TracingSyncActivity"
-            android:label="@string/gui_tracing"
-            android:theme="@android:style/Theme.Holo.Dialog"></activity>
-        <activity
-            android:name="dk.aau.netsec.hostage.sync.bluetooth.BluetoothSyncActivity"
-            android:label="@string/gui_bluetooth"
-            android:theme="@android:style/Theme.Holo.Dialog"></activity>
-        <activity
-            android:name="dk.aau.netsec.hostage.sync.nfc.NFCSyncActivity"
-            android:label="@string/gui_nfc"
-            android:theme="@android:style/Theme.Dialog">
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="application/dk.aau.netsec.hostage" />
-            </intent-filter>
-        </activity>
 
         <service
             android:name="dk.aau.netsec.hostage.Hostage"
             android:exported="false"></service>
         <service
             android:name="dk.aau.netsec.hostage.logging.Logger"
-            android:exported="false"></service>
-        <service
-            android:name="dk.aau.netsec.hostage.sync.tracing.TracingSyncService"
             android:exported="false"></service>
 
         <service
@@ -115,50 +82,9 @@
             android:authorities="dk.aau.netsec.hostage.provider"
             android:exported="false"></provider>
 
-        <provider
-            android:name="dk.aau.netsec.hostage.sync.android.SyncContentProvider"
-            android:authorities="dk.aau.netsec.hostage.androidsync"
-            android:exported="false" />
-
-        <!--<activity
-            android:name=".sync.p2p.P2PSyncActivity"
-            android:label="@string/title_activity_p2_psync"
-            android:parentActivityName=".ui.activity.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="dk.aau.netsec.hostage.ui.activity.MainActivity" />
-        </activity>-->
-
         <receiver
             android:name="dk.aau.netsec.hostage.services.MultiStageAlarm"
             android:enabled="true"></receiver>
-
-        <activity
-            android:name="dk.aau.netsec.hostage.sync.wifi_direct.ui.WiFiP2pSyncActivity"
-            android:label="@string/title_activity_p2_psync"></activity>
-
-
-        <service
-            android:name="dk.aau.netsec.hostage.sync.android.SyncService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/syncadapter" />
-        </service>
-
-        <service android:name="dk.aau.netsec.hostage.sync.android.HostageAccountService">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-        </service>
 
     </application>
 
