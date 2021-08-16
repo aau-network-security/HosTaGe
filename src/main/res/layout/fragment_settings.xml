@@ -26,42 +26,9 @@
 
 	</RelativeLayout>
 
-	<RelativeLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content" android:padding="16dp">
+	<include
+		layout="@layout/preference_pcap_logging"/>
 
-		<TextView
-			android:id="@+id/pcap_writer"
-			android:paddingTop="10dp"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/pcap_writer"
-			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:textStyle="bold" />
-
-		<Button
-			android:id="@+id/enable_pcap"
-			style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-			android:layout_width="80dp"
-			android:layout_height="50dp"
-			android:layout_alignParentEnd="true"
-			android:layout_gravity="bottom"
-			android:layout_marginEnd="94dp"
-			android:gravity="center"
-			android:text="@string/pcap_enable"
-			android:textSize="12sp" />
-
-		<Button android:layout_width="80dp"
-			android:layout_height="50dp"
-			android:text="@string/pcap_stop"
-			android:textSize="12sp"
-			android:id="@+id/stop_pcap"
-			android:gravity="center"
-			android:layout_alignParentEnd="true"
-			style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
-
-
-	</RelativeLayout>
 
 	<FrameLayout
 			android:layout_width="fill_parent"
