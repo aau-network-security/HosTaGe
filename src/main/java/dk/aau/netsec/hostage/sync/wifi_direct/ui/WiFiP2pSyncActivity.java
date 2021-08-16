@@ -41,33 +41,6 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
  */
 public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemClickListener {
 
-    public static String CONNECTION_LOST_MESSAGE = MainActivity.getContext().getString(R.string.CONNECTION_LOST_MESSAGE);// "Connection lost permanently, please enable wifi direct.";
-    public static String COULD_NOT_CONNECT_MESSAGE =MainActivity.getContext().getString(R.string.COULD_NOT_CONNECT_MESSAGE);// "Could not connect to device. Retry.";
-
-    public static String SYNCHRONIZATION_COMPLETE_MESSAGE =MainActivity.getContext().getString(R.string.SYNCHRONIZATION_COMPLETE_MESSAGE);// "Synchronization complete.";
-    public static String SYNCHRONIZATION_FAILED_MESSAGE =MainActivity.getContext().getString(R.string.SYNCHRONIZATION_FAILED_MESSAGE);// "Could not synchronize devices. Retry";
-
-    public static String PERFORMING_TASK_AS_HOST =MainActivity.getContext().getString(R.string.PERFORMING_TASK_AS_HOST);// "Acting as Host.";
-    public static String PERFORMING_TASK_AS_CLIENT = MainActivity.getContext().getString(R.string.PERFORMING_TASK_AS_CLIENT);//"Acting as Client.";
-
-    public static String ACTIONBAR_TITLE =MainActivity.getContext().getString(R.string.ACTIONBAR_TITLE);// "WifiDirect Synchronization";
-    public static String PROGRESS_MESSAGE_LOADING =MainActivity.getContext().getString(R.string.PROGRESS_TITLE_LOADING);// "Loading...";
-    public static String PROGRESS_MESSAGE_CONNECTING = MainActivity.getContext().getString(R.string.PROGRESS_TITLE_CONNECTING);//"Connecting...";
-    public static String PROGRESS_TITLE_SYNC = MainActivity.getContext().getString(R.string.PROGRESS_TITLE_SYNC);//"Connecting...";
-
-    public static String DEVICE_STATUS_AVAILABLE =MainActivity.getContext().getString(R.string.DEVICE_STATUS_AVAILABLE);// "Available";
-    public static String DEVICE_STATUS_INVITED =MainActivity.getContext().getString(R.string.DEVICE_STATUS_INVITED);// "Invited";
-    public static String DEVICE_STATUS_CONNECTED = MainActivity.getContext().getString(R.string.DEVICE_STATUS_CONNECTED);//"Connected";
-    public static String DEVICE_STATUS_FAILED =MainActivity.getContext().getString(R.string.DEVICE_STATUS_FAILED);// "Failed";
-    public static String DEVICE_STATUS_UNAVAILABLE =MainActivity.getContext().getString(R.string.DEVICE_STATUS_UNAVAILABLE);// "Unavailable";
-    public static String DEVICE_STATUS_UNKNOWN =MainActivity.getContext().getString(R.string.DEVICE_STATUS_UNKNOWN);// "Unknown";
-
-    public static String WIFI_STATUS_DISABLED_MESSAGE =MainActivity.getContext().getString(R.string.WIFI_STATUS_DISABLED_MESSAGE);// "WiFi Direct down, please enable WiFi Direct";
-    public static String WIFI_STATUS_ENABLE_BUTTON = MainActivity.getContext().getString(R.string.WIFI_STATUS_ENABLE_BUTTON);//"Enable WiFi Direct";
-
-    public static String CANCEL_BUTTON_TITLE =MainActivity.getContext().getString(R.string.CANCEL_BUTTON_TITLE);// "Cancel";
-
-
     private SyncClientTask clientTask;
     private SyncHostTask hostTask;
     private BackgroundTask executingTask;
@@ -77,7 +50,6 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
 
     private WiFiP2pEventHandler.WiFiP2pEventListener _p2pEventListener = null;
     private BackgroundTask.BackgroundTaskCompletionListener _syncCompletionListener = null;
-
 
     private TextView mTxtP2PDeviceName;
     private TextView mTxtP2PDeviceStatus;
@@ -96,10 +68,10 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
 
     private ProgressDialog progressDialog;
 
-
     public boolean isHost() {
         return isHost;
     }
+
     public void setHost(boolean isHost) {
         this.isHost = isHost;
     }
@@ -114,12 +86,12 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
         this.progressDialog = new ProgressDialog(this);
         this.progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         this.progressDialog.setIndeterminate(true);
-        this.progressDialog.setTitle(PROGRESS_TITLE_SYNC);
+        this.progressDialog.setTitle(getString(R.string.PROGRESS_TITLE_SYNC));
 
         setContentView(R.layout.activity_p2_psync);
 
         assert getActionBar() != null;
-        getActionBar().setTitle(ACTIONBAR_TITLE);
+        getActionBar().setTitle(getString(R.string.ACTIONBAR_TITLE));
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.extractFromView();
@@ -129,17 +101,17 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
 
         int seconds = 25;
 
-		new Timer().scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						searchForDevices();
-					}
-				});
-			}
-		}, 1000, seconds * 1000); // search for devices every few seconds
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        searchForDevices();
+                    }
+                });
+            }
+        }, 1000, seconds * 1000); // search for devices every few seconds
     }
 
     @Override
@@ -159,99 +131,99 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
 
     @Override
     public void onPause() {
-        if (this.clientTask != null) this.clientTask.interrupt(true);
-        if (this.hostTask != null) this.hostTask.interrupt(true);
+        if (clientTask != null) clientTask.interrupt(true);
+        if (hostTask != null) hostTask.interrupt(true);
 
-        this.wifiEventHandler().disconnect();
-        this.wifiEventHandler().stopService();
+        wifiEventHandler().disconnect();
+        wifiEventHandler().stopService();
         super.onPause();
     }
 
     @Override
-    protected void onStart()
-    {
+    protected void onStart() {
         super.onStart();
-        this.wifiEventHandler().startService();
+        wifiEventHandler().startService();
     }
 
     @Override
-    protected void onStop()
-    {
+    protected void onStop() {
         if (this.clientTask != null) this.clientTask.interrupt(true);
         if (this.hostTask != null) this.hostTask.interrupt(true);
-        this.wifiEventHandler().disconnect();
-        this.wifiEventHandler().stopService();
+        wifiEventHandler().disconnect();
+        wifiEventHandler().stopService();
         super.onStop();
     }
 
     @Override
-    protected void onDestroy(){
-        if (this.clientTask != null) this.clientTask.interrupt(true);
-        if (this.hostTask != null) this.hostTask.interrupt(true);
-        this.wifiEventHandler().stopService();
+    protected void onDestroy() {
+        if (clientTask != null) clientTask.interrupt(true);
+        if (hostTask != null) hostTask.interrupt(true);
+        wifiEventHandler().stopService();
         super.onDestroy();
     }
 
     /**
      * Returns a instance of the wifi event handler listener object. If no private instance was initiated it creates a new one.
      * This object handles all gui changes.
+     *
      * @return WiFiP2pEventHandler.WiFiP2pEventListener
      */
-    private WiFiP2pEventHandler.WiFiP2pEventListener eventListener(){
-        if (_p2pEventListener == null){
+    private WiFiP2pEventHandler.WiFiP2pEventListener eventListener() {
+        if (_p2pEventListener == null) {
             _p2pEventListener = new WiFiP2pEventHandler.WiFiP2pEventListener() {
                 WiFiP2pSyncActivity activity = null;
-                public WiFiP2pEventHandler.WiFiP2pEventListener init(WiFiP2pSyncActivity act){
-                    this.activity = act;
+
+                public WiFiP2pEventHandler.WiFiP2pEventListener init(WiFiP2pSyncActivity act) {
+                    activity = act;
                     return this;
                 }
 
                 @Override
                 public void discoveredDevices(List<WifiP2pDevice> peers) {
                     Log.d("DEBUG_WiFiP2p", "Activity - Actualise devices list");
-                    this.activity.updateDeviceListView(peers);
+                    activity.updateDeviceListView(peers);
                 }
 
                 @Override
                 public void wifiP2pIsEnabled(boolean enabled) {
-                    String tmp = enabled? "enabled" : "disabled";
+                    String tmp = enabled ? "enabled" : "disabled";
                     Log.d("DEBUG_WiFiP2p", "Activity - Peer to peer is " + tmp + ".");
-                    this.activity.setWifiDirectAvailable(enabled);
+                    activity.setWifiDirectAvailable(enabled);
                 }
 
                 @Override
                 public void didConnect(boolean isHost, WifiP2pInfo connectionInfo) {
                     Log.d("DEBUG_WiFiP2p", "Activity - Did connect");
 
-                    this.activity.progressDialog.setMessage(PROGRESS_MESSAGE_LOADING);
-                    if (!this.activity.progressDialog.isShowing()){
-                        this.activity.progressDialog.show();
+                    activity.progressDialog.setMessage(getString(R.string.PROGRESS_TITLE_LOADING));
+                    if (!activity.progressDialog.isShowing()) {
+                        activity.progressDialog.show();
                     }
 
-                    this.activity.setHost(isHost);
-                    if (isHost){
+                    activity.setHost(isHost);
+                    if (isHost) {
                         Log.d("DEBUG_WiFiP2p", "Activity - Connected as HOST");
-                        this.activity.startHost();
+                        activity.startHost();
                     } else {
                         Log.d("DEBUG_WiFiP2p", "Activity - Connected as Client");
-                        this.activity.startClient(connectionInfo);
+                        activity.startClient(connectionInfo);
                     }
                 }
 
                 @Override
                 public void failedToConnect() {
                     Log.d("DEBUG_WiFiP2p", "Activity - Failed to connect");
-                    Toast.makeText(this.activity, COULD_NOT_CONNECT_MESSAGE , Toast.LENGTH_LONG).show();
-                    if (this.activity.progressDialog != null){
-                        this.activity.progressDialog.dismiss();
+                    Toast.makeText(activity, getString(R.string.COULD_NOT_CONNECT_MESSAGE), Toast.LENGTH_LONG).show();
+                    if (activity.progressDialog != null) {
+                        activity.progressDialog.dismiss();
                     }
                 }
 
                 @Override
                 public void didDisconnect() {
                     Log.d("DEBUG_WiFiP2p", "Activity - Did disconnect");
-                    if (this.activity.progressDialog != null){
-                        this.activity.progressDialog.dismiss();
+                    if (activity.progressDialog != null) {
+                        activity.progressDialog.dismiss();
                     }
                 }
 
@@ -260,28 +232,28 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
                     Log.d("DEBUG_WiFiP2p", "Activity - Failed to disconnect");
                     //Toast.makeText(this.activity, "Could not disconnect with device. Retry.", Toast.LENGTH_LONG).show();
                     // Other device did disconnect a while before.
-                    if (this.activity.progressDialog != null &&
-                            ((this.activity.hostTask == null && this.activity.clientTask == null) ||
-                             (this.activity.clientTask != null && this.activity.clientTask.isInterrupted()) ||
-                             (this.activity.hostTask != null && this.activity.hostTask.isInterrupted()) ||
-                             (this.activity.ownDevice == null && this.activity.ownDevice.status != WifiP2pDevice.CONNECTED)
-                            )){
-                        this.activity.progressDialog.dismiss();
+                    if (activity.progressDialog != null &&
+                            ((activity.hostTask == null && activity.clientTask == null) ||
+                                    (activity.clientTask != null && activity.clientTask.isInterrupted()) ||
+                                    (activity.hostTask != null && activity.hostTask.isInterrupted()) ||
+                                    (activity.ownDevice == null && activity.ownDevice.status != WifiP2pDevice.CONNECTED)
+                            )) {
+                        activity.progressDialog.dismiss();
                     }
                 }
 
                 @Override
                 public void ownDeviceInformationIsUpdated(WifiP2pDevice device) {
                     Log.d("DEBUG_WiFiP2p", "Activity - Updated device " + device.deviceName + " " + device.deviceAddress + ".");
-                    this.activity.updateOwnDeviceInformation(device);
-                    this.activity.searchForDevices();
+                    activity.updateOwnDeviceInformation(device);
+                    activity.searchForDevices();
                 }
 
                 @Override
                 public void onConnectionLost() {
-                    Toast.makeText(this.activity, CONNECTION_LOST_MESSAGE , Toast.LENGTH_LONG).show();
-                    if (this.activity.progressDialog != null && this.activity.progressDialog.isShowing()){
-                        this.activity.progressDialog.dismiss();
+                    Toast.makeText(activity, R.string.CONNECTION_LOST_MESSAGE, Toast.LENGTH_LONG).show();
+                    if (activity.progressDialog != null && activity.progressDialog.isShowing()) {
+                        activity.progressDialog.dismiss();
                     }
                 }
             }.init(this);
@@ -292,49 +264,53 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
 
     /**
      * Returns a instance of the wifi event handler. If no private instance was initiated it creates a new one.
+     *
      * @return WiFiP2pEventHandler
      */
-    private WiFiP2pEventHandler wifiEventHandler(){
-        if (this._wifiEventHandler == null){
-            this._wifiEventHandler = new WiFiP2pEventHandler(this, this.eventListener());
+    private WiFiP2pEventHandler wifiEventHandler() {
+        if (_wifiEventHandler == null) {
+            _wifiEventHandler = new WiFiP2pEventHandler(this, eventListener());
         }
-        return this._wifiEventHandler;
+        return _wifiEventHandler;
     }
 
 
     /**
      * Returns a sync completion listener. If no listener was initiated it creates a new on.
+     *
      * @return BackgroundTaskCompletionListener
      */
-    private BackgroundTask.BackgroundTaskCompletionListener syncCompletionListener(){
-        if (_syncCompletionListener == null){
+    private BackgroundTask.BackgroundTaskCompletionListener syncCompletionListener() {
+        if (_syncCompletionListener == null) {
             _syncCompletionListener = new BackgroundTask.BackgroundTaskCompletionListener() {
                 WiFiP2pSyncActivity activity = null;
-                public BackgroundTask.BackgroundTaskCompletionListener init(WiFiP2pSyncActivity act){
-                    this.activity = act;
+
+                public BackgroundTask.BackgroundTaskCompletionListener init(WiFiP2pSyncActivity act) {
+                    activity = act;
                     return this;
                 }
+
                 @Override
                 public void didSucceed() {
-                    Toast.makeText(this.activity, SYNCHRONIZATION_COMPLETE_MESSAGE , Toast.LENGTH_SHORT).show();
-                    this.activity.wifiEventHandler().disconnect();
-                    if (this.activity.hostTask != null){
-                        this.activity.hostTask.setInterrupted(true);
-                        this.activity.hostTask = null;
+                    Toast.makeText(activity, R.string.SYNCHRONIZATION_COMPLETE_MESSAGE, Toast.LENGTH_SHORT).show();
+                    activity.wifiEventHandler().disconnect();
+                    if (activity.hostTask != null) {
+                        activity.hostTask.setInterrupted(true);
+                        activity.hostTask = null;
                     }
-                    //this.activity.clientTask = null;
+                    //activity.clientTask = null;
                 }
 
                 @Override
                 public void didFail(String e) {
                     boolean hasMessage = ((e != null) && (e.length() > 0));
-                    String message = hasMessage ? e : SYNCHRONIZATION_FAILED_MESSAGE;
+                    String message = hasMessage ? e : getString(R.string.SYNCHRONIZATION_FAILED_MESSAGE);
 
-                    Toast.makeText(this.activity, message, Toast.LENGTH_LONG).show();
-                    this.activity.wifiEventHandler().disconnect();
-                    if (this.activity.hostTask != null){
-                        this.activity.hostTask.setInterrupted(true);
-                        this.activity.hostTask = null;
+                    Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+                    activity.wifiEventHandler().disconnect();
+                    if (activity.hostTask != null) {
+                        activity.hostTask.setInterrupted(true);
+                        activity.hostTask = null;
                     }
                 }
             }.init(this);
@@ -345,53 +321,52 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
 
     /**
      * Updates the device list on the ui thread.
+     *
      * @param peers
      */
-    private void updateDeviceListView(List<WifiP2pDevice> peers)
-    {
+    private void updateDeviceListView(List<WifiP2pDevice> peers) {
         mTxtP2PSearchProgress.setVisibility(View.GONE);
 
-        this.discoveredDevices = new ArrayList<WifiP2pDevice>();
-        this.discoveredDevices.addAll(peers);
-        WiFiPeerListAdapter listAdapter = (WiFiPeerListAdapter) this.mLstP2PDevices.getAdapter();
+        discoveredDevices = new ArrayList<WifiP2pDevice>();
+        discoveredDevices.addAll(peers);
+        WiFiPeerListAdapter listAdapter = (WiFiPeerListAdapter) mLstP2PDevices.getAdapter();
         listAdapter.addItems(peers);
 
         // Run the update process on the gui thread, otherwise the list wont be updated.
-        this.runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
             private ListView listView;
 
             @Override
             public void run() {
-                WiFiPeerListAdapter adapter = (WiFiPeerListAdapter) this.listView.getAdapter();
-                this.listView.setAdapter(null);
+                WiFiPeerListAdapter adapter = (WiFiPeerListAdapter) listView.getAdapter();
+                listView.setAdapter(null);
                 adapter.notifyDataSetChanged();
-                this.listView.setAdapter(adapter);
+                listView.setAdapter(adapter);
             }
 
             public Runnable init(ListView listview) {
-                this.listView = listview;
+                listView = listview;
                 return this;
             }
-        }.init(this.mLstP2PDevices));
-        Log.d("DEBUG_WiFiP2p", "Activity - Discovered "+peers.size()+" devices.");
+        }.init(mLstP2PDevices));
+        Log.d("DEBUG_WiFiP2p", "Activity - Discovered " + peers.size() + " devices.");
 
-        if (peers.size() == 0){
-            this.searchForDevices();
+        if (peers.size() == 0) {
+            searchForDevices();
         }
     }
 
     /**
      * Starts the Host task. Informs the user by a little toast.
      */
-    private void startHost()
-    {
+    private void startHost() {
 
         //if (this.hostTask == null || this.hostTask.isInterrupted()){
-            Log.d("DEBUG_WiFiP2p", "Activity - Starting HOST Task");
-            //Toast.makeText(this, PERFORMING_TASK_AS_HOST , Toast.LENGTH_SHORT).show();
-            this.hostTask = new SyncHostTask(this.ownDevice, this.syncCompletionListener(), getApplicationContext());
-            this.executingTask = this.hostTask;
-            this.hostTask.execute();
+        Log.d("DEBUG_WiFiP2p", "Activity - Starting HOST Task");
+        //Toast.makeText(this, PERFORMING_TASK_AS_HOST , Toast.LENGTH_SHORT).show();
+        hostTask = new SyncHostTask(ownDevice, syncCompletionListener(), getApplicationContext());
+        executingTask = hostTask;
+        hostTask.execute();
         //} else {
         //    Log.d("DEBUG_WiFiP2p", "Activity - Preventing third device for any syncing.");
         //}
@@ -399,59 +374,61 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
 
     /**
      * Starts the wifi direct client task. Informs the user by a little toast.
+     *
      * @param info the WifiP2pInfo contains the groupOwnerAddress which is needed for the client task.
      */
-    private void startClient(WifiP2pInfo info)
-    {
-           Log.d("DEBUG_WiFiP2p", "Activity - Starting CLIENT Task");
-           this.clientTask = new SyncClientTask( info.groupOwnerAddress.getHostAddress(),this.ownDevice, this.syncCompletionListener(), getApplicationContext() );
-           this.executingTask = this.clientTask;
-           this.clientTask.execute();
+    private void startClient(WifiP2pInfo info) {
+        Log.d("DEBUG_WiFiP2p", "Activity - Starting CLIENT Task");
+        clientTask = new SyncClientTask(info.groupOwnerAddress.getHostAddress(), ownDevice, syncCompletionListener(), getApplicationContext());
+        executingTask = clientTask;
+        clientTask.execute();
     }
 
     /**
      * Try to connect to the given device and shows a simple progress dialog.
+     *
      * @param device
      */
-    private void connectTo(WifiP2pDevice device){
-        if (device != null){
-            this.progressDialog.setMessage(PROGRESS_MESSAGE_CONNECTING);
-            this.progressDialog.show();
+    private void connectTo(WifiP2pDevice device) {
+        if (device != null) {
+            progressDialog.setMessage(getString(R.string.PROGRESS_TITLE_CONNECTING));
+            progressDialog.show();
 
             mOtherDevice = device;
-            this.wifiEventHandler().connect(device);
+            wifiEventHandler().connect(device);
 
         }
     }
 
     /**
-     * Returns a localized device status string.
+     * Returns a localized device status string id.
+     *
      * @param deviceStatus the status to convert.
-     * @return status string
+     * @return status string id
      */
-    private static String getDeviceStatus(int deviceStatus) {
+    private static int getDeviceStatus(int deviceStatus) {
         switch (deviceStatus) {
             case WifiP2pDevice.AVAILABLE:
-                return DEVICE_STATUS_AVAILABLE;
+                return R.string.DEVICE_STATUS_AVAILABLE;
             case WifiP2pDevice.INVITED:
-                return DEVICE_STATUS_INVITED;
+                return R.string.DEVICE_STATUS_INVITED;
             case WifiP2pDevice.CONNECTED:
-                return DEVICE_STATUS_CONNECTED;
+                return R.string.DEVICE_STATUS_CONNECTED;
             case WifiP2pDevice.FAILED:
-                return DEVICE_STATUS_FAILED;
+                return R.string.DEVICE_STATUS_FAILED;
             case WifiP2pDevice.UNAVAILABLE:
-                return DEVICE_STATUS_UNAVAILABLE;
+                return R.string.DEVICE_STATUS_UNAVAILABLE;
             default:
-                return DEVICE_STATUS_UNKNOWN;
+                return R.string.DEVICE_STATUS_UNKNOWN;
         }
     }
 
     /**
      * Updates / displays own device information.
+     *
      * @param device
      */
-    private void updateOwnDeviceInformation(WifiP2pDevice device)
-    {
+    private void updateOwnDeviceInformation(WifiP2pDevice device) {
         mTxtP2PDeviceName.setText(device.deviceName);
         mTxtP2PDeviceStatus.setText(getDeviceStatus(device.status));
         ownDevice = device;
@@ -460,9 +437,9 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
     /**
      * Method to search for new devices.
      */
-    private void searchForDevices(){
+    private void searchForDevices() {
         mTxtP2PSearchProgress.setVisibility(View.VISIBLE);
-        this.wifiEventHandler().discoverDevices();
+        wifiEventHandler().discoverDevices();
     }
 
     /********************** UI ************************/
@@ -471,17 +448,18 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
      * Informs the user about a changed wifi state.
      * enabled = true - mTxtP2PNotAvailable is gone
      * enabled = false - mTxtP2PNotAvailable stays and a alert box is displayed for a quick navigation to the wifi settings.
+     *
      * @param enabled
      */
-    public void setWifiDirectAvailable(boolean enabled){
-        if (enabled){
+    public void setWifiDirectAvailable(boolean enabled) {
+        if (enabled) {
             mTxtP2PNotAvailable.setVisibility(View.GONE);
         } else {
             mTxtP2PNotAvailable.setVisibility(View.VISIBLE);
             ((WiFiPeerListAdapter) mLstP2PDevices.getAdapter()).notifyDataSetChanged();
             ownDevice = null;
-            this.updateDeviceListView(new ArrayList<WifiP2pDevice>());
-            this.showWifiDisabledDialog();
+            updateDeviceListView(new ArrayList<WifiP2pDevice>());
+            showWifiDisabledDialog();
             //Toast.makeText(this, "WiFi Direct P2P is disabled.", Toast.LENGTH_LONG).show();
         }
     }
@@ -489,16 +467,16 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
     /**
      * Displays a AlertDialog that informs the User about the disabled Wifi state and can navigate the user directly to the wifi settings.
      */
-    private void showWifiDisabledDialog(){
+    private void showWifiDisabledDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(WIFI_STATUS_DISABLED_MESSAGE)
+        builder.setMessage(R.string.WIFI_STATUS_DISABLED_MESSAGE)
                 .setCancelable(true)
-                .setPositiveButton(WIFI_STATUS_ENABLE_BUTTON, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.WIFI_STATUS_ENABLE_BUTTON, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
                     }
                 })
-                .setNegativeButton(CANCEL_BUTTON_TITLE, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.CANCEL_BUTTON_TITLE, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         finish();
                     }
@@ -511,41 +489,39 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
     /**
      * Extracts all subview initially from the view hierarchy.
      */
-    private void extractFromView(){
-        this.mTxtP2PDeviceName = findViewById(R.id.txt_p2p_device_name);
-        this.mTxtP2PDeviceStatus = findViewById(R.id.txt_p2p_device_status);
-        this.mTxtP2PChangeDeviceName = findViewById(R.id.txtP2PChangeDeviceName);
+    private void extractFromView() {
+        mTxtP2PDeviceName = findViewById(R.id.txt_p2p_device_name);
+        mTxtP2PDeviceStatus = findViewById(R.id.txt_p2p_device_status);
+        mTxtP2PChangeDeviceName = findViewById(R.id.txtP2PChangeDeviceName);
 
-        this.mViewAnimator = findViewById(R.id.viewAnimator);
-        this.mDevicesContainer = findViewById(R.id.devicesContainer);
-        this.mWelcomeContainer = findViewById(R.id.welcomeContainer);
-        this.mTxtP2PSearchProgress = findViewById(R.id.txtP2PSearchProgress);
-        this.mLstP2PDevices = findViewById(R.id.lstP2PDevices);
-        this.mTxtP2PNotAvailable = findViewById(R.id.txtP2PNotAvailable);
+        mViewAnimator = findViewById(R.id.viewAnimator);
+        mDevicesContainer = findViewById(R.id.devicesContainer);
+        mWelcomeContainer = findViewById(R.id.welcomeContainer);
+        mTxtP2PSearchProgress = findViewById(R.id.txtP2PSearchProgress);
+        mLstP2PDevices = findViewById(R.id.lstP2PDevices);
+        mTxtP2PNotAvailable = findViewById(R.id.txtP2PNotAvailable);
     }
 
     /**
      * Registers all the gui listeners.
      */
-    public void registerListeners(){
-        if (this.mLstP2PDevices.getOnItemClickListener() != this)
-            this.mLstP2PDevices.setOnItemClickListener(this);
+    public void registerListeners() {
+        if (mLstP2PDevices.getOnItemClickListener() != this)
+            mLstP2PDevices.setOnItemClickListener(this);
 
-        if (this.mLstP2PDevices.getAdapter() == null){
-            this.discoveredDevices = new ArrayList();
-            WiFiPeerListAdapter listAdapter = new WiFiPeerListAdapter(this, R.layout.row_devices, this.discoveredDevices);
-            this.mLstP2PDevices.setAdapter(listAdapter);
+        if (mLstP2PDevices.getAdapter() == null) {
+            discoveredDevices = new ArrayList();
+            WiFiPeerListAdapter listAdapter = new WiFiPeerListAdapter(this, R.layout.row_devices, discoveredDevices);
+            mLstP2PDevices.setAdapter(listAdapter);
         }
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final WifiP2pDevice device = (WifiP2pDevice) this.mLstP2PDevices.getAdapter().getItem(position);
-        this.connectTo(device);
+        final WifiP2pDevice device = (WifiP2pDevice) mLstP2PDevices.getAdapter().getItem(position);
+        connectTo(device);
     }
-
-
 
 
     /**
@@ -553,6 +529,7 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
      */
     private class WiFiPeerListAdapter extends ArrayAdapter<WifiP2pDevice> {
         private List<WifiP2pDevice> items;
+
         /**
          * @param context
          * @param textViewResourceId
@@ -570,7 +547,7 @@ public class WiFiP2pSyncActivity extends Activity implements AdapterView.OnItemC
         }
 
 
-        public void addItems(List<WifiP2pDevice> devicesToAdd){
+        public void addItems(List<WifiP2pDevice> devicesToAdd) {
             items.clear();
             items.addAll(devicesToAdd);
         }
