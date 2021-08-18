@@ -11,12 +11,12 @@ public class DrawerListItem {
 	/**
 	 * The icon of the item
 	 */
-    public int icon;
+    public final int icon;
 
 	/**
 	 * The text of the item
 	 */
-    public int text;
+    public final int text;
 
     public DrawerListItem(int text, int icon){
         this.text = text;

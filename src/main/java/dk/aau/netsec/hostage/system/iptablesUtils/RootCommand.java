@@ -52,6 +52,7 @@ public class RootCommand implements Cloneable, Serializable {
             rootCommand = (RootCommand) super.clone();
             rootCommand.isv6 = true;
         } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
         }
         return rootCommand;
     }

@@ -4,7 +4,10 @@ package dk.aau.netsec.hostage.ui.fragment.opengl;
  * some basic quaternion class because android doesn't provide any
  */
 public class Quaternion {
-	public float w, x, y, z;
+	public final float w;
+    public final float x;
+    public final float y;
+    public final float z;
 	
 	Quaternion() { // identity
 		w = 1.0f; x = y = z = 0.0f;

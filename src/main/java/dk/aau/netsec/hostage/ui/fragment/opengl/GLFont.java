@@ -16,13 +16,13 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
  * Created by Fabio Arnold on 13.02.15.
  */
 public class GLFont {
-	private class GlyphMetric {
+	private static class GlyphMetric {
 		float x0,y0,s0,t0; // top-left
 		float x1,y1,s1,t1; // bottom-right
 		float advance;
 	}
 
-	private int mTexture;
+	private final int mTexture;
 	private int mVertexBuffer;
 	private GlyphMetric[] mMetrics;
 
@@ -31,7 +31,7 @@ public class GLFont {
 
 		mTexture = ThreatIndicatorGLRenderer.loadTexture(texFilePath);
 
-		InputStream is = null;
+		InputStream is;
 		try {
 			is = assets.open(metricsFilePath);
 		} catch (IOException e) {

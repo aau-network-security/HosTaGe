@@ -1,7 +1,6 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,7 +24,7 @@ import dk.aau.netsec.hostage.system.Device;
  * @created 24.02.14 23:37
  * @modified Shreyas Srinivasa, Filip Adamik
  */
-public class SettingsFragment extends UpNavigatibleFragment {
+public class SettingsFragment extends UpNavigableFragment {
     private View v;
     private Bundle savedInstanceState;
     private PcapLoggingManager mPcapLoggingManager;
@@ -159,9 +158,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
      */
     private void initialiseLocationSelector() {
         LinearLayout locationSelector = v.findViewById(R.id.pcap_location_preference);
-        locationSelector.setOnClickListener((View v) -> {
-            mPcapLoggingManager.selectLocation(this);
-        });
+        locationSelector.setOnClickListener((View v) -> mPcapLoggingManager.selectLocation(this));
 
         setLocationSummaryText();
     }
@@ -172,9 +169,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
      */
     private void initialiseRotationPeriodSelector() {
         LinearLayout logRotationSelector = v.findViewById(R.id.pcap_log_rotation_preference);
-        logRotationSelector.setOnClickListener((View v) -> {
-            showLogRotationSelectionDialog();
-        });
+        logRotationSelector.setOnClickListener((View v) -> showLogRotationSelectionDialog());
 
         setLogRotationPeriod();
     }
@@ -197,13 +192,10 @@ public class SettingsFragment extends UpNavigatibleFragment {
         // Create and display the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(R.string.pcap_log_rotation_dialog);
-        builder.setItems(durationItems, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mPcapLoggingManager.logRotationPeriodSelected(durations[which]);
+        builder.setItems(durationItems, (dialog, which) -> {
+            mPcapLoggingManager.logRotationPeriodSelected(durations[which]);
 
-                setLogRotationPeriod();
-            }
+            setLogRotationPeriod();
         });
         builder.show();
     }

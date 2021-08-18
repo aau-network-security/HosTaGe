@@ -8,7 +8,7 @@ import android.os.AsyncTask;
  */
 public class LoaderTask extends AsyncTask<Void, Void, Void> {
 
-    private TaskListener listener;
+    private final TaskListener listener;
 
     @SuppressLint("ValidFragment")
     public interface TaskListener {

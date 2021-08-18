@@ -45,7 +45,7 @@ public class Profile implements JSONSerializable<Profile> {
     public String mIconName;
     public String mIconPath;
 
-    public boolean mEditable = false;
+    public boolean mEditable;
     @Transient
     public boolean mIsRandom = false;
     @Transient
@@ -136,9 +136,8 @@ public class Profile implements JSONSerializable<Profile> {
         if (this.mIconPath != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(this.mIconPath, options);
 
-            return bitmap;
+            return BitmapFactory.decodeFile(this.mIconPath, options);
         }
 
         return null;

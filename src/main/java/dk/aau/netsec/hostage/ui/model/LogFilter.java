@@ -66,10 +66,10 @@ public class LogFilter implements Parcelable {
 		this.belowTimestamp = Long.MAX_VALUE;
 		this.aboveTimestamp = Long.MIN_VALUE;
 		this.sorttype = SortType.packet_timestamp;
-		this.BSSIDs = new ArrayList<String>();
-		this.ESSIDs = new ArrayList<String>();
-		this.IPs = new ArrayList<String>();
-		this.protocols = new ArrayList<String>();
+		this.BSSIDs = new ArrayList<>();
+		this.ESSIDs = new ArrayList<>();
+		this.IPs = new ArrayList<>();
+		this.protocols = new ArrayList<>();
 	}
 
     @Override
@@ -80,7 +80,7 @@ public class LogFilter implements Parcelable {
 	// write filter's data to the passed-in Parcel
     @Override
 	public void writeToParcel(Parcel out, int flags) {
-		HashMap<String, ArrayList<String>> values = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> values = new HashMap<>();
 		if (this.BSSIDs != null && this.BSSIDs.size() > 0) {
 			values.put(BSSID_KEY, this.getBSSIDs());
 		}
@@ -119,7 +119,7 @@ public class LogFilter implements Parcelable {
      * @param in {@link Parcel parcel}
      * */
 	private LogFilter(Parcel in) {
-		HashMap<String, ArrayList<String>> values = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> values = new HashMap<>();
 		in.readMap(values, ArrayList.class.getClassLoader());
 
 		this.BSSIDs = values.get(BSSID_KEY);
@@ -128,13 +128,13 @@ public class LogFilter implements Parcelable {
 		this.protocols = values.get(protocols);
 
 		if (this.BSSIDs == null)
-			this.BSSIDs = new ArrayList<String>();
+			this.BSSIDs = new ArrayList<>();
 		if(this.IPs == null)
 			this.IPs = new ArrayList<>();
 		if (this.ESSIDs == null)
-			this.ESSIDs = new ArrayList<String>();
+			this.ESSIDs = new ArrayList<>();
 		if (this.protocols == null)
-			this.protocols = new ArrayList<String>();
+			this.protocols = new ArrayList<>();
 
 		this.sorttype = SortType.values()[Math.min(in.readInt(), SortType.values().length)];
 

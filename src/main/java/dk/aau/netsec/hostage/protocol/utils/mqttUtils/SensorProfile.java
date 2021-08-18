@@ -8,8 +8,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import dk.aau.netsec.hostage.protocol.MQTT;
 
 public class SensorProfile {
-    private double temperature = ThreadLocalRandom.current().nextDouble(10, 30 + 1);
-    private int humidity= ThreadLocalRandom.current().nextInt(55, 80 + 1);
+    private final double temperature = ThreadLocalRandom.current().nextDouble(10, 30 + 1);
+    private final int humidity= ThreadLocalRandom.current().nextInt(55, 80 + 1);
     private final static String clientId = UUID.randomUUID().toString();
 
 

@@ -1,5 +1,11 @@
 package dk.aau.netsec.hostage;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.location.Location;
+
+import androidx.preference.PreferenceManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,18 +14,10 @@ import java.net.SocketException;
 import java.util.List;
 import java.util.UUID;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.location.Location;
-
-import androidx.preference.PreferenceManager;
-
 import dk.aau.netsec.hostage.commons.HelperUtils;
 import dk.aau.netsec.hostage.commons.SubnetUtils;
 import dk.aau.netsec.hostage.location.CustomLocationManager;
 import dk.aau.netsec.hostage.location.LocationException;
-import dk.aau.netsec.hostage.publisher.PublishHelper;
 import dk.aau.netsec.hostage.logging.AttackRecord;
 import dk.aau.netsec.hostage.logging.Logger;
 import dk.aau.netsec.hostage.logging.MessageRecord;
@@ -32,6 +30,7 @@ import dk.aau.netsec.hostage.protocol.Protocol;
 import dk.aau.netsec.hostage.protocol.utils.amqpUtils.AMQPHandler;
 import dk.aau.netsec.hostage.protocol.utils.coapUtils.COAPHandler;
 import dk.aau.netsec.hostage.protocol.utils.mqttUtils.MQTTHandler;
+import dk.aau.netsec.hostage.publisher.PublishHelper;
 import dk.aau.netsec.hostage.wrapper.Packet;
 
 
@@ -47,26 +46,26 @@ public class Handler implements Runnable {
     /**
      * Time until the socket throws a time out. The time is in milliseconds.
      */
-    private int TIMEOUT;
+    private final int TIMEOUT;
 
-    private Hostage service;
-    protected Protocol protocol;
+    private final Hostage service;
+    protected final Protocol protocol;
     private Socket client;
-    protected Thread thread;
+    protected final Thread thread;
 
-    private SharedPreferences pref;
+    private final SharedPreferences pref;
 
     private long attack_id;
-    private String externalIP;
-    private String BSSID;
-    private String SSID;
+    private final String externalIP;
+    private final String BSSID;
+    private final String SSID;
 
-    private int subnetMask;
-    private int internalIPAddress;
+    private final int subnetMask;
+    private final int internalIPAddress;
 
     private boolean logged;
 
-    private Listener listener;
+    private final Listener listener;
 
     /**
      * Constructor of the class. Initializes class variables for communication
@@ -235,7 +234,6 @@ public class Handler implements Runnable {
      * one. Method is synchronized for thread safety.
      *
      * @param pref The default SharedPreference of the application
-     * @return Unique integer attack ID
      */
     private synchronized void getAndIncrementAttackID(SharedPreferences pref) {
         SharedPreferences.Editor editor = pref.edit();

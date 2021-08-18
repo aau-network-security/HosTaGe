@@ -17,7 +17,7 @@ import dk.aau.netsec.hostage.protocol.commons.logWatchers.LogBackWatcher;
 import dk.aau.netsec.hostage.protocol.commons.patterns.IpPattern;
 
 public class AMQPHandler {
-    private static ArrayList<String> packets = LogBackWatcher.getList();
+    private static final ArrayList<String> packets = LogBackWatcher.getList();
 
     public static boolean isAnAttackOngoing(){
         return !packets.isEmpty();

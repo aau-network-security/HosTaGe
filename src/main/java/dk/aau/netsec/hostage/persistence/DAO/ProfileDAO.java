@@ -6,7 +6,7 @@ import dk.aau.netsec.hostage.model.Profile;
 import dk.aau.netsec.hostage.model.ProfileDao;
 
 public class ProfileDAO extends DAO {
-    private DaoSession daoSession;
+    private final DaoSession daoSession;
 
     public ProfileDAO(DaoSession daoSession){
         this.daoSession= daoSession;

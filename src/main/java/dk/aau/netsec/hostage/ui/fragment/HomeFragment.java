@@ -1,8 +1,6 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static dk.aau.netsec.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer.ThreatLevel.LIVE_THREAT;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -12,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +18,16 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
@@ -39,8 +39,6 @@ import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer;
 import dk.aau.netsec.hostage.ui.model.LogFilter;
-
-import static dk.aau.netsec.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer.ThreatLevel.LIVE_THREAT;
 
 
 /**
@@ -74,7 +72,7 @@ public class HomeFragment extends Fragment {
     private DAOHelper daoHelper;
 
     private boolean mReceiverRegistered;
-    private boolean mRestoredFromSaved = false;
+    private final boolean mRestoredFromSaved = false;
     private boolean isActive = false;
     private boolean isConnected = false;
     private static boolean updatedImageView = false;
@@ -90,18 +88,6 @@ public class HomeFragment extends Fragment {
     public Context context;
     private Thread updateUIThread;
     private static ThreatIndicatorGLRenderer.ThreatLevel mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING;
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        AppCompatActivity a;
-
-        if (context instanceof AppCompatActivity) {
-            a = (AppCompatActivity) context;
-        }
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -148,9 +134,7 @@ public class HomeFragment extends Fragment {
             MainActivity.getInstance().injectFragment(fragment);
         });
 
-        View.OnClickListener attackClickListener = v -> {
-            loadAttackListener();
-        };
+        View.OnClickListener attackClickListener = v -> loadAttackListener();
 
         mHomeTextAttacks.setOnClickListener(attackClickListener);
         mHomeTextSecurity.setOnClickListener(attackClickListener);
@@ -245,9 +229,7 @@ public class HomeFragment extends Fragment {
         updateUIThread = new Thread() {
             @Override
             public void run() {
-                MainActivity.getInstance().runOnUiThread(() -> {
-                    updateUI();
-                });
+                MainActivity.getInstance().runOnUiThread(() -> updateUI());
 
             }
         };

@@ -95,12 +95,7 @@ final class SimpleSmtpServer implements AutoCloseable {
         this.receivedMail = new ArrayList<>();
         this.serverSocket = serverSocket;
         this.workerThread = new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        performWork();
-                    }
-                });
+                () -> performWork());
         this.workerThread.start();
     }
 

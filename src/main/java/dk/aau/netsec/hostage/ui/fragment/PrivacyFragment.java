@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,20 +21,19 @@ import dk.aau.netsec.hostage.R;
  * Shows Privacy information
  * Added as a part for fix in Android 11
  * Created by Shreyas Srinivasa on 01-03-2021
- *
- *
  */
 public class PrivacyFragment extends Fragment {
     private View rootView;
     private LayoutInflater inflater;
     private ViewGroup container;
     private Bundle savedInstanceState;
+
     @SuppressLint("SetTextI18n")
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         this.inflater = inflater;
-        this.container= container;
+        this.container = container;
         this.savedInstanceState = savedInstanceState;
         final Activity activity = getActivity();
         if (activity != null) {
@@ -51,7 +49,7 @@ public class PrivacyFragment extends Fragment {
             e.printStackTrace();
         }
 
-        String policyText  =    "<p>Last updated: July 20, 2021</p>\n" +
+        String policyText = "<p>Last updated: July 20, 2021</p>\n" +
                 "<!DOCTYPE html>\n" +
                 "    <html>\n" +
                 "    <head>\n" +
@@ -76,17 +74,17 @@ public class PrivacyFragment extends Fragment {
                 "                  anyone except as described in this Privacy Policy.\n" +
                 "                 </p> <p>\n" +
                 "                  The users can consent for the following:\n" +
-                "                  <ul> \n "+
-                "                   <li> The right to be forgotten – to get your data deleted. The right to have incorrect data corrected. </li> \n "+
-                "                   <li> The right to know what data a controller have on you. </li> \n "+
-                "                   <li> The right to have your data shared with another organization, if requested be the subject. </li> \n "+
-                "                   <li> The right to not be profiled, the right to object.</li> \n "+
-                "                  </ul> \n "+
+                "                  <ul> \n " +
+                "                   <li> The right to be forgotten – to get your data deleted. The right to have incorrect data corrected. </li> \n " +
+                "                   <li> The right to know what data a controller have on you. </li> \n " +
+                "                   <li> The right to have your data shared with another organization, if requested be the subject. </li> \n " +
+                "                   <li> The right to not be profiled, the right to object.</li> \n " +
+                "                  </ul> \n " +
                 "                </p> <p>\n" +
                 "                  The terms used in this Privacy Policy have the same meanings\n" +
                 "                  as in our Terms and Conditions, which is accessible at\n" +
                 "                  HosTaGe unless otherwise defined in this Privacy Policy.\n" +
-                "                  The Privacy Policy of Aalborg University can be accessed at https://www.en.aau.dk/privacy-policy-cookies#370625\n"+
+                "                  The Privacy Policy of Aalborg University can be accessed at https://www.en.aau.dk/privacy-policy-cookies#370625\n" +
                 "                </p> <p><strong>Information Collection and Use</strong></p> <p>\n" +
                 "                  For a better experience, while using our Service, we\n" +
                 "                  may require you to provide us with certain personally\n" +
@@ -169,14 +167,14 @@ public class PrivacyFragment extends Fragment {
                 "                </p> <p>This policy is effective as of 2021-03-08</p> <p><strong>Contact Us</strong></p> <p>\n" +
                 "                  If you have any questions or suggestions about our\n" +
                 "                  Privacy Policy, do not hesitate to contact us at hostage@es.aau.dk.\n" +
-                "Data subjects have the right to submit a complaint about how their personal data is processed\n"+
-                "to the Danish Data Protection Agency at dt@datatilsynet.dk or by post to Datatilsynet/the \n"+
-                "Danish Data Protection Agency, Borgergade 28, 5., 1300 Copenhagen K.\n"+
-                "Please contact our Data Protection Officer if you have any question about the processing of \n"+
-                "your personal data at dpo@aau.dk\n"+
-                "However, before contacting the Danish Data Protection Agency, we recommend that you \n"+
-                "contact Aalborg University’s data protection officer who may be able to solve the matter.\n"+
-                "\n"+
+                "Data subjects have the right to submit a complaint about how their personal data is processed\n" +
+                "to the Danish Data Protection Agency at dt@datatilsynet.dk or by post to Datatilsynet/the \n" +
+                "Danish Data Protection Agency, Borgergade 28, 5., 1300 Copenhagen K.\n" +
+                "Please contact our Data Protection Officer if you have any question about the processing of \n" +
+                "your personal data at dpo@aau.dk\n" +
+                "However, before contacting the Danish Data Protection Agency, we recommend that you \n" +
+                "contact Aalborg University’s data protection officer who may be able to solve the matter.\n" +
+                "\n" +
                 "    </body>\n" +
                 "    </html>\n" +
                 "      ";
@@ -185,19 +183,16 @@ public class PrivacyFragment extends Fragment {
         policy.setText(HtmlCompat.fromHtml(policyText, 0));
 
 
-
-
         return rootView;
     }
-
 
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(rootView!=null) {
+        if (rootView != null) {
             unbindDrawables(rootView);
-            rootView=null;
+            rootView = null;
 
         }
     }
@@ -205,24 +200,24 @@ public class PrivacyFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        onCreateView(inflater,container,savedInstanceState);
+        onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if(rootView!=null) {
+        if (rootView != null) {
             unbindDrawables(rootView);
-            rootView=null;
+            rootView = null;
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if(rootView!=null) {
+        if (rootView != null) {
             unbindDrawables(rootView);
-            rootView=null;
+            rootView = null;
         }
     }
 

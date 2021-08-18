@@ -70,11 +70,11 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
         // add click listener for the save button
         doneButton.setOnClickListener(v -> {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity());
-            ProfileManager pmanager = null;
+            ProfileManager pmanager;
 
             pmanager = ProfileManager.getInstance();
 
-            Profile profile = null;
+            Profile profile;
 
             profile = getProfile();
 
@@ -112,7 +112,7 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
                 profile.mGhostActive = false;
             }
 
-            profile.mActiveProtocols = new HashMap<String, Boolean>(mProfileProtocols);
+            profile.mActiveProtocols = new HashMap<>(mProfileProtocols);
 
             // persist the changes of the profile
             if (createNew) {
@@ -144,7 +144,7 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
      */
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Profile profile = null;
+        Profile profile;
         profile = getProfile();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit();
 

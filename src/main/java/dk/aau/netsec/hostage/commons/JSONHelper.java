@@ -11,12 +11,11 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import dk.aau.netsec.hostage.logging.RecordAll;
-import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 
 public class JSONHelper {
 
-    public void jsonWriter(JSONArray arr,File file){
+    public void jsonWriter(JSONArray arr, File file) {
         try {
             int BUFFER_SIZE = 8192;
             String UTF8 = "utf8";
@@ -31,7 +30,7 @@ public class JSONHelper {
         }
     }
 
-    public void jsonWriter(ArrayList<RecordAll> records,File filepath){
+    public void jsonWriter(ArrayList<RecordAll> records, File filepath) {
         try {
             int BUFFER_SIZE = 8192;
             String UTF8 = "utf8";
@@ -39,7 +38,7 @@ public class JSONHelper {
             BufferedWriter fnw = new BufferedWriter(new OutputStreamWriter(fout, UTF8), BUFFER_SIZE);
 
             JSONArray arr = new JSONArray();
-            for(RecordAll record: records) {
+            for (RecordAll record : records) {
                 arr.put(record.toJSON());
             }
             fnw.write(arr.toString());
@@ -50,7 +49,7 @@ public class JSONHelper {
         }
     }
 
-    public String getFilePath(File file){
+    public String getFilePath(File file) {
         return file.getAbsolutePath();
     }
 

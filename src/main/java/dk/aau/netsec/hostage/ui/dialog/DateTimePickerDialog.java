@@ -42,20 +42,17 @@ public class DateTimePickerDialog {
 
         final Calendar currentDate = Calendar.getInstance();
         date = Calendar.getInstance();
-        new DatePickerDialog(context, R.style.CustomDateTimePicker, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                date.set(year, monthOfYear, dayOfMonth);
-                new TimePickerDialog(context, R.style.CustomDateTimePicker, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        date.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        date.set(Calendar.MINUTE, minute);
+        new DatePickerDialog(context, R.style.CustomDateTimePicker, (view, year, monthOfYear, dayOfMonth) -> {
+            date.set(year, monthOfYear, dayOfMonth);
+            new TimePickerDialog(context, R.style.CustomDateTimePicker, new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    date.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    date.set(Calendar.MINUTE, minute);
 
-                        callback.dateTimeSelected(date, filterFrom);
-                    }
-                }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show();
-            }
+                    callback.dateTimeSelected(date, filterFrom);
+                }
+            }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show();
         }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
 
     }

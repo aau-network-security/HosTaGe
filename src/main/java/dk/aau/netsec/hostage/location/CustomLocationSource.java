@@ -15,7 +15,7 @@ import com.google.android.gms.maps.LocationSource;
  */
 public class CustomLocationSource implements LocationSource {
 
-    private CustomLocationManager mLocationManager;
+    private final CustomLocationManager mLocationManager;
     private OnLocationChangedListener mListener;
 
     /**

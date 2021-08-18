@@ -97,7 +97,7 @@ public class AttackRecord extends  RecordAll implements Parcelable, Serializable
 			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
 
             SharedPreferences.Editor editor = pref.edit();
-            Long attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
+            long attack_id = pref.getLong("ATTACK_ID_COUNTER", 0);
             editor.putLong("ATTACK_ID_COUNTER", attack_id + 1);
             editor.apply();
             this.attack_id = attack_id;

@@ -102,8 +102,7 @@ public class HostageContentProvider extends ContentProvider {
 			queryBuilder.appendWhere(MessageRecordDao.Properties.Id + "=" + rowID);
 		}
 		SQLiteDatabase db = getDatabase();
-		Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-		return cursor;
+        return queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 	}
 
 	@Override

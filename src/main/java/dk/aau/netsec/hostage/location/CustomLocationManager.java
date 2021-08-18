@@ -40,12 +40,12 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
 public class CustomLocationManager {
 
     Location mLatestLocation;
-    private Context mContext;
-    private LocationListener mLocationListener;
-    private LocationManager mLocationManager;
-    private Consumer<Location> mLocationConsumer;
+    private final Context mContext;
+    private final LocationListener mLocationListener;
+    private final LocationManager mLocationManager;
+    private final Consumer<Location> mLocationConsumer;
     private boolean locationPermissionDenied;
-    Set<LocationSource.OnLocationChangedListener> mListOfListeners;
+    final Set<LocationSource.OnLocationChangedListener> mListOfListeners;
     private boolean mReceivingUpdates = false;
 
     private static WeakReference<CustomLocationManager> mLocationManagerInstance;
@@ -63,27 +63,19 @@ public class CustomLocationManager {
         mContext = context;
         mListOfListeners = new HashSet<>();
 
-        mLocationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location location) {
+        mLocationListener = location -> {
 
 //                if (true) { //only for testing
-                if (isBetterLocation(location)) {
-                    mLatestLocation = location;
+            if (isBetterLocation(location)) {
+                mLatestLocation = location;
 
-                    for (LocationSource.OnLocationChangedListener listener : mListOfListeners) {
-                        listener.onLocationChanged(location);
-                    }
+                for (LocationSource.OnLocationChangedListener listener : mListOfListeners) {
+                    listener.onLocationChanged(location);
                 }
             }
         };
 
-        mLocationConsumer = new Consumer<Location>() {
-            @Override
-            public void accept(Location location) {
-                mLatestLocation = location;
-            }
-        };
+        mLocationConsumer = location -> mLatestLocation = location;
 
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
@@ -148,16 +140,9 @@ public class CustomLocationManager {
             dialog.setTitle(mContext.getResources().getString(R.string.uses_background_location));
             dialog.setMessage(mContext.getResources().getString(R.string.uses_background_location_reason));
             dialog.setCancelable(true);
-            dialog.setNeutralButton(mContext.getResources().getString(R.string.ok), ((dialog1, which) -> {
-                showLocationRequestDialog(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-            }));
+            dialog.setNeutralButton(mContext.getResources().getString(R.string.ok), ((dialog1, which) -> showLocationRequestDialog(Manifest.permission.ACCESS_BACKGROUND_LOCATION)));
 
-            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    showLocationRequestDialog(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-                }
-            });
+            dialog.setOnCancelListener(dialog12 -> showLocationRequestDialog(Manifest.permission.ACCESS_BACKGROUND_LOCATION));
 
             AlertDialog alertDialog = dialog.create();
             alertDialog.show();
@@ -304,16 +289,9 @@ public class CustomLocationManager {
             dialog.setTitle(mContext.getResources().getString(R.string.uses_location));
             dialog.setMessage(mContext.getResources().getString(R.string.uses_location_reason));
             dialog.setCancelable(true);
-            dialog.setNeutralButton(mContext.getResources().getString(R.string.ok), ((dialog1, which) -> {
-                showLocationRequestDialog(Manifest.permission.ACCESS_FINE_LOCATION);
-            }));
+            dialog.setNeutralButton(mContext.getResources().getString(R.string.ok), ((dialog1, which) -> showLocationRequestDialog(Manifest.permission.ACCESS_FINE_LOCATION)));
 
-            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    showLocationRequestDialog(Manifest.permission.ACCESS_FINE_LOCATION);
-                }
-            });
+            dialog.setOnCancelListener(dialog12 -> showLocationRequestDialog(Manifest.permission.ACCESS_FINE_LOCATION));
 
             AlertDialog alertDialog = dialog.create();
             alertDialog.show();
@@ -328,11 +306,11 @@ public class CustomLocationManager {
      * @param locationPermissionType Ask for either foreground or background location permission.
      */
     void showLocationRequestDialog(String locationPermissionType) {
-        if (locationPermissionType == Manifest.permission.ACCESS_FINE_LOCATION || locationPermissionType == Manifest.permission.ACCESS_COARSE_LOCATION) {
+        if (locationPermissionType.equals(Manifest.permission.ACCESS_FINE_LOCATION) || locationPermissionType.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MainActivity.LOCATION_PERMISSION_REQUEST_CODE);
 
             // Only relevant on newer APIs
-        } else if (locationPermissionType == Manifest.permission.ACCESS_BACKGROUND_LOCATION &&
+        } else if (locationPermissionType.equals(Manifest.permission.ACCESS_BACKGROUND_LOCATION) &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, MainActivity.LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
         }
@@ -342,8 +320,6 @@ public class CustomLocationManager {
      * Determines whether one Location reading is better than the current Location fix
      *
      * @param location            The new Location that you want to evaluate
-     * @param currentBestLocation The current Location fix, to which you want to compare the new
-     *                            one
      */
     boolean isBetterLocation(Location location) {
         if (mLatestLocation == null) {

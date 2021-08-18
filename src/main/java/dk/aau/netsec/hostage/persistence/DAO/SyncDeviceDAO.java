@@ -26,7 +26,7 @@ import dk.aau.netsec.hostage.logging.SyncRecord;
 public class SyncDeviceDAO extends DAO {
     public static SyncDevice thisDevice = null;
     private Context context;
-    private DaoSession daoSession;
+    private final DaoSession daoSession;
 
     public SyncDeviceDAO(DaoSession daoSession){
         this.daoSession= daoSession;
@@ -70,9 +70,8 @@ public class SyncDeviceDAO extends DAO {
      */
     public synchronized ArrayList<SyncDevice> getSyncDevices(){
         SyncDeviceDao recordDao = this.daoSession.getSyncDeviceDao();
-        ArrayList<SyncDevice> devices = (ArrayList<SyncDevice>) selectElements(recordDao);
 
-        return devices;
+        return (ArrayList<SyncDevice>) selectElements(recordDao);
 
     }
 
@@ -116,7 +115,7 @@ public class SyncDeviceDAO extends DAO {
 
         ArrayList<SyncDevice> devices = this.getSyncDevices();
 
-        HashMap<String, Long> deviceMap = new HashMap<String, Long>();
+        HashMap<String, Long> deviceMap = new HashMap<>();
         for (SyncDevice device : devices){
             deviceMap.put(device.getDeviceID(), device.getHighest_attack_id());
         }
@@ -134,7 +133,7 @@ public class SyncDeviceDAO extends DAO {
      * @return list of all device ids.
      */
     public synchronized  ArrayList<String> getAllDevicesIds(){
-        ArrayList<String> idsList = new ArrayList<String>();
+        ArrayList<String> idsList = new ArrayList<>();
         ArrayList<SyncDevice> syncDevices = this.getSyncDevices();
 
         for(SyncDevice record:syncDevices){
@@ -183,7 +182,7 @@ public class SyncDeviceDAO extends DAO {
      * @return HashMap containing device id's and the last synchronization timestamp.
      */
     public synchronized HashMap<String, Long> getSyncDeviceHashMap(){
-        HashMap<String, Long> devices = new HashMap<String, Long>();
+        HashMap<String, Long> devices = new HashMap<>();
 
         ArrayList<SyncDevice> allDevices = this.getSyncDevices();
 
@@ -241,7 +240,7 @@ public class SyncDeviceDAO extends DAO {
         editor.apply();
         thisDevice.setLast_sync_timestamp(0);
         thisDevice.setHighest_attack_id(attack_id-1);
-        ArrayList<SyncDevice> devices = new ArrayList<SyncDevice>();
+        ArrayList<SyncDevice> devices = new ArrayList<>();
         devices.add(thisDevice);
         this.insertSyncDevices(devices);
     }
@@ -254,7 +253,7 @@ public class SyncDeviceDAO extends DAO {
      */
     public synchronized  ArrayList<SyncDevice> getUpdatedDevicesFor(HashMap<String, Long> oldDeviceMap, boolean includeMissing){
         ArrayList<SyncDevice> devices = this.getSyncDevices();
-        ArrayList<SyncDevice> recordList = new ArrayList<SyncDevice>();
+        ArrayList<SyncDevice> recordList = new ArrayList<>();
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession,this.context);
 
 
@@ -288,7 +287,7 @@ public class SyncDeviceDAO extends DAO {
      */
     public synchronized  ArrayList<SyncRecord> getUnsyncedAttacksFor(HashMap<String,Long> deviceMap, boolean includeMissingDevices) {
         ArrayList<SyncDevice> updatedDevices = this.getUpdatedDevicesFor(deviceMap, includeMissingDevices);
-        ArrayList<SyncRecord> recordList = new ArrayList<SyncRecord>();
+        ArrayList<SyncRecord> recordList = new ArrayList<>();
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession,this.context);
         AttackRecordDao attackRecordDao = this.daoSession.getAttackRecordDao();
         SyncRecord syncRecord= new SyncRecord();

@@ -114,7 +114,7 @@ public class TELNET extends ProtocolFormatter {
 	 * @return names of the option commands as String.
 	 */
 	private String checkForOptions(byte[] bytes) {
-		StringBuffer options = new StringBuffer();
+		StringBuilder options = new StringBuilder();
 		for (int i = 0; i < bytes.length; i++) {
 			if (bytes[i] == (byte) 0xff && i + 2 < bytes.length) {
 				options.append(checkMode(bytes[i + 1]));

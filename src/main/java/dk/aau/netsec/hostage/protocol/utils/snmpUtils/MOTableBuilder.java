@@ -20,16 +20,16 @@ import java.util.List;
  */
 public class MOTableBuilder {
 
-    private MOTableSubIndex[] subIndexes = new MOTableSubIndex[] { new MOTableSubIndex(
+    private final MOTableSubIndex[] subIndexes = new MOTableSubIndex[] { new MOTableSubIndex(
             SMIConstants.SYNTAX_INTEGER) };
-    private MOTableIndex indexDef = new MOTableIndex(subIndexes, false);
+    private final MOTableIndex indexDef = new MOTableIndex(subIndexes, false);
 
-    private final List<MOColumn> columns = new ArrayList<MOColumn>();
-    private final List<Variable[]> tableRows = new ArrayList<Variable[]>();
+    private final List<MOColumn> columns = new ArrayList<>();
+    private final List<Variable[]> tableRows = new ArrayList<>();
     private int currentRow = 0;
     private int currentCol = 0;
 
-    private OID tableRootOid;
+    private final OID tableRootOid;
 
     private int colTypeCnt = 0;
 

@@ -58,7 +58,7 @@ public class RootShellService2 extends Service {
     private static Shell.Interactive rootSession;
     private static Context mContext;
     private static ShellState rootState = ShellState.INIT;
-    private static LinkedList<RootCommand> waitQueue = new LinkedList<>();
+    private static final LinkedList<RootCommand> waitQueue = new LinkedList<>();
 
     private static void complete(final RootCommand state, int exitCode) {
         if (enableProfiling) {
@@ -81,33 +81,30 @@ public class RootShellService2 extends Service {
 
     private static void runNextSubmission() {
 
-        do {
-            RootCommand state;
-            try {
-                state = waitQueue.remove();
-            } catch (NoSuchElementException e) {
-                // nothing left to do
-                if (rootState == ShellState.BUSY) {
-                    rootState = ShellState.READY;
-                }
-                break;
+        RootCommand state;
+        try {
+            state = waitQueue.remove();
+        } catch (NoSuchElementException e) {
+            // nothing left to do
+            if (rootState == ShellState.BUSY) {
+                rootState = ShellState.READY;
             }
-            if (state != null) {
-                //same as last one. ignore it
-                Log.i(TAG, "Start processing next state");
-                if (enableProfiling) {
-                    state.startTime = new Date();
-                }
-                if (rootState == ShellState.FAIL) {
-                    // if we don't have root, abort all queued commands
-                    complete(state, EXIT_NO_ROOT_ACCESS);
-                    continue;
-                } else if (rootState == ShellState.READY) {
-                    rootState = ShellState.BUSY;
-                    processCommands(state);
-                }
+            return;
+        }
+        if (state != null) {
+            //same as last one. ignore it
+            Log.i(TAG, "Start processing next state");
+            if (enableProfiling) {
+                state.startTime = new Date();
             }
-        } while (false);
+            if (rootState == ShellState.FAIL) {
+                // if we don't have root, abort all queued commands
+                complete(state, EXIT_NO_ROOT_ACCESS);
+            } else if (rootState == ShellState.READY) {
+                rootState = ShellState.BUSY;
+                processCommands(state);
+            }
+        }
     }
 
     private static void processCommands(final RootCommand state) {
@@ -133,9 +130,9 @@ public class RootShellService2 extends Service {
                                 String line = iter.next();
                                 if (line != null && !line.equals("")) {
                                     if (state.res != null) {
-                                        state.res.append(line + "\n");
+                                        state.res.append(line).append("\n");
                                     }
-                                    state.lastCommandResult.append(line + "\n");
+                                    state.lastCommandResult.append(line).append("\n");
                                 }
                             }
                         }
@@ -192,7 +189,7 @@ public class RootShellService2 extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) { // if crash restart...
             Log.i(TAG, "Restarting RootShell...");
-            List<String> cmds = new ArrayList<String>();
+            List<String> cmds = new ArrayList<>();
             cmds.add("true");
             new RootCommand().setFailureToast(R.string.error_su)
                     .setReopenShell(true).run(getApplicationContext(), cmds);

@@ -9,17 +9,21 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 
 /**
  * Created by Shreyas Srinivasa on 25.05.15.
- *
+ * <p>
  * Modbus serial communications protocol on industrial PLCs
  */
 public class MODBUS implements Protocol {
     private int port = 502;
 
     @Override
-    public int getPort() { return port; }
+    public int getPort() {
+        return port;
+    }
 
     @Override
-    public void setPort(int port){ this.port = port;}
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     public boolean isClosed() {
         return false;
@@ -29,7 +33,7 @@ public class MODBUS implements Protocol {
         return false;
     }
 
-    private StringBuffer command = new StringBuffer();
+    private final StringBuffer command = new StringBuffer();
 
 
     @Override
@@ -44,24 +48,23 @@ public class MODBUS implements Protocol {
 
     //Declarations
 
-    HashMap<Integer,Integer> coil = new HashMap<Integer,Integer>();
-    HashMap<Integer,Integer> register = new HashMap<Integer,Integer>();
-    HashMap<Integer,Integer> discreteInput = new HashMap<Integer,Integer>();
-
+    final HashMap<Integer, Integer> coil = new HashMap<>();
+    final HashMap<Integer, Integer> register = new HashMap<>();
+    final HashMap<Integer, Integer> discreteInput = new HashMap<>();
 
 
     //Function Request Codes
     public static final int READ_COILS = 1;
     public static final int READ_INPUT_DISCRETES = 2;
-    public static final int READ_HOLDING_REGISTERS=3;
+    public static final int READ_HOLDING_REGISTERS = 3;
     public static final int READ_INPUT_REGISTERS = 4;
     public static final int WRITE_COIL = 5;
     public static final int WRITE_SINGLE_REGISTER = 6;
     public static final int MODBUS_SERVICE = 17; //for detection using metasploit module
-    public static final int MODBUS_DISCOVER=1;
+    public static final int MODBUS_DISCOVER = 1;
 
 
-    public int sid=1; // Denotes the Unit Number or Slave_ID of the device
+    public int sid = 1; // Denotes the Unit Number or Slave_ID of the device
 
     public static final int COIL_MAX_DATA_ADDRESS = 128; // Max coil data address
 
@@ -82,19 +85,17 @@ public class MODBUS implements Protocol {
 
     @Override
     public List<Packet> processMessage(Packet requestPacket) {
-        List<Packet> responsePackets = new ArrayList<Packet>();
+        List<Packet> responsePackets = new ArrayList<>();
 
 
-
-        byte[] request = null;
+        byte[] request;
         if (requestPacket != null) {
             request = requestPacket.getBytes();
 
 
-           // getRequestType(request);
+            // getRequestType(request);
 
-            responsePackets=processRequest(request,getRequestType(request));
-
+            responsePackets = processRequest(request, getRequestType(request));
 
 
         }
@@ -104,87 +105,65 @@ public class MODBUS implements Protocol {
     }
 
 
+    private List<Packet> processRequest(byte[] request, int requestType) {
 
-    private List<Packet> processRequest(byte[] request,int requestType) {
-
-        List<Packet> responsePackets = new ArrayList<Packet>();
-        switch (requestType){
+        List<Packet> responsePackets = new ArrayList<>();
+        switch (requestType) {
 
             case MODBUS_SERVICE:
-                responsePackets.add(new Packet(getDeviceInfo()+"\r\n","EE:FF:66:88:GH:JI:DJ"));
+                responsePackets.add(new Packet(getDeviceInfo() + "\r\n", "EE:FF:66:88:GH:JI:DJ"));
                 break;
 
             case READ_INPUT_REGISTERS:
 
-                sid=(request[6]);
+                sid = (request[6]);
                 int registerAddress = (request[9]);
 
-
-                if(sid==1){
-                    //Exception packet
-                }
-
-                else if(sid==2 && registerAddress >= ANALOG_INPUT_START_ADDRESS && registerAddress<=ANALOG_INPUT_MAX_DATA_ADDRESS) {
+                if (sid == 2 && registerAddress >= ANALOG_INPUT_START_ADDRESS && registerAddress <= ANALOG_INPUT_MAX_DATA_ADDRESS) {
                     request[9] = (byte) readRegister(registerAddress);
                     responsePackets.add(new Packet(request, getDeviceInfo()));
 
                 }
 
-                else if(sid==2 && registerAddress < ANALOG_INPUT_START_ADDRESS || registerAddress > ANALOG_INPUT_MAX_DATA_ADDRESS ){
-                    //Exception packet
-                }
-
                 break;
 
             case READ_HOLDING_REGISTERS:
-                sid=request[6];
-                int holdingRegisterAddress=request[9];
+                sid = request[6];
+                int holdingRegisterAddress = request[9];
 
-                if (sid==1){
-                    //exception packet
-                }
-
-                else if (sid==2 && holdingRegisterAddress >=HOLDING_REGISTERS_START_ADDRESS && holdingRegisterAddress <= HOLDING_REGISTERS_MAX_ADDRESS){
+                if (sid == 2 && holdingRegisterAddress >= HOLDING_REGISTERS_START_ADDRESS && holdingRegisterAddress <= HOLDING_REGISTERS_MAX_ADDRESS) {
 
                     request[9] = (byte) readRegister(holdingRegisterAddress);
                     responsePackets.add(new Packet(request, getDeviceInfo()));
 
                 }
 
-                else if(sid==2 && holdingRegisterAddress < HOLDING_REGISTERS_START_ADDRESS || holdingRegisterAddress > HOLDING_REGISTERS_MAX_ADDRESS ){
-                    //Exception packet
-                }
-
             case READ_COILS:
 
-                sid= (request[6]);
+                sid = (request[6]);
                 int address = (request[9]);
 
-                if(sid==1&&address<COIL_MAX_DATA_ADDRESS && address>=COIL_START_ADDRESS){
+                if (sid == 1 && address < COIL_MAX_DATA_ADDRESS && address >= COIL_START_ADDRESS) {
 
-                    request[5]=4;
+                    request[5] = 4;
 
-                    request[9]=(byte)readCoil(address);
-                    responsePackets.add(new Packet(request,getDeviceInfo()));
+                    request[9] = (byte) readCoil(address);
+                    responsePackets.add(new Packet(request, getDeviceInfo()));
 
 
                 }
 
                 //Imitating Siemens Simatic S7-200 Architecture
-                else if(sid==1 && address<COIL_START_ADDRESS || address>COIL_MAX_DATA_ADDRESS){
+                else if (sid == 1 && address < COIL_START_ADDRESS || address > COIL_MAX_DATA_ADDRESS) {
 
-                  request[7]=(byte)129;
-                  request[8]=(byte)2;
-                  request[9]=0;
-                  request[10]=0;
-                  request[11]=0;
+                    request[7] = (byte) 129;
+                    request[8] = (byte) 2;
+                    request[9] = 0;
+                    request[10] = 0;
+                    request[11] = 0;
 
-                  responsePackets.add(new Packet(request,getDeviceInfo()));
+                    responsePackets.add(new Packet(request, getDeviceInfo()));
 
-                }
-
-                else if(sid==2){
-                    //Exception packet
                 }
 
 
@@ -193,50 +172,36 @@ public class MODBUS implements Protocol {
 
             case READ_INPUT_DISCRETES:
 
-                sid =request[6];
+                sid = request[6];
                 int inputAddress = (request[9]);
 
-                if(sid==1&& inputAddress>DISCRETE_MAX_DATA_ADDRESS || inputAddress<DISCRETE_START_ADDRESS){
-                    request[7]=(byte)129;
-                    request[8]=(byte)2;
-                    request[9]=0;
-                    request[10]=0;
-                    request[11]=0;
+                if (sid == 1 && inputAddress > DISCRETE_MAX_DATA_ADDRESS || inputAddress < DISCRETE_START_ADDRESS) {
+                    request[7] = (byte) 129;
+                    request[8] = (byte) 2;
+                    request[9] = 0;
+                    request[10] = 0;
+                    request[11] = 0;
 
-                    responsePackets.add(new Packet(request,getDeviceInfo()));
-                }
-
-                else if(sid==1&&inputAddress<DISCRETE_MAX_DATA_ADDRESS && inputAddress>=DISCRETE_START_ADDRESS){
+                    responsePackets.add(new Packet(request, getDeviceInfo()));
+                } else if (sid == 1 && inputAddress < DISCRETE_MAX_DATA_ADDRESS && inputAddress >= DISCRETE_START_ADDRESS) {
 
 
-                    request[5]=4;
-                    request[9]=(byte)readDiscrete(inputAddress);
-                    responsePackets.add(new Packet(request,getDeviceInfo()));
+                    request[5] = 4;
+                    request[9] = (byte) readDiscrete(inputAddress);
+                    responsePackets.add(new Packet(request, getDeviceInfo()));
 
-                }
-
-                else if(sid==2){
-                    //Exception packet
                 }
 
                 break;
 
             case WRITE_COIL:
 
-                sid=request[6];
+                sid = request[6];
 
                 int coilAddress = (request[9]);
                 int coilData = (request[10]);
 
-                if(sid==2){
-                    //Exception packet
-                }
-
-                else if(sid==1 && coilAddress>COIL_MAX_DATA_ADDRESS){
-                    //exception packet
-                }
-
-                else if(sid==1 && coilAddress<=COIL_MAX_DATA_ADDRESS && coilAddress>=COIL_START_ADDRESS) {
+                if (sid == 1 && coilAddress <= COIL_MAX_DATA_ADDRESS && coilAddress >= COIL_START_ADDRESS) {
                     writeCoil(coilAddress, coilData);
                     responsePackets.add(new Packet(request, getDeviceInfo()));
                 }
@@ -246,36 +211,18 @@ public class MODBUS implements Protocol {
             case WRITE_SINGLE_REGISTER:
 
                 sid = request[6];
-                int regAddress=(request[9]);
-                int regData=(request[10]);
+                int regAddress = (request[9]);
+                int regData = (request[10]);
 
-                if (sid==1){
-                    //exception
-                }
+                if (sid == 2 && regAddress >= ANALOG_INPUT_START_ADDRESS && regAddress <= ANALOG_INPUT_MAX_DATA_ADDRESS) {
 
-                else if(sid==2 && regAddress >= ANALOG_INPUT_START_ADDRESS && regAddress<=ANALOG_INPUT_MAX_DATA_ADDRESS) {
+                    writeSingleRegister(regAddress, regData);
+                    responsePackets.add(new Packet(request, getDeviceInfo()));
 
-                    writeSingleRegister(regAddress,regData);
-                    responsePackets.add(new Packet(request,getDeviceInfo()));
+                } else if (sid == 2 && regAddress >= HOLDING_REGISTERS_START_ADDRESS && regAddress <= HOLDING_REGISTERS_MAX_ADDRESS) {
 
-
-                }
-
-                else if(sid==2 && regAddress < ANALOG_INPUT_START_ADDRESS || regAddress > ANALOG_INPUT_MAX_DATA_ADDRESS ){
-                    //Exception packet
-                }
-
-                else if (sid==2 && regAddress >=HOLDING_REGISTERS_START_ADDRESS && regAddress <= HOLDING_REGISTERS_MAX_ADDRESS){
-
-
-                        writeSingleRegister(regAddress,regData);
-                        responsePackets.add(new Packet(request,getDeviceInfo()));
-
-                }
-
-                else if(sid==2 && regAddress < HOLDING_REGISTERS_START_ADDRESS || regAddress > HOLDING_REGISTERS_MAX_ADDRESS ) {
-
-                    //Exception Packet
+                    writeSingleRegister(regAddress, regData);
+                    responsePackets.add(new Packet(request, getDeviceInfo()));
 
                 }
 
@@ -285,18 +232,17 @@ public class MODBUS implements Protocol {
                 break;
 
         }
-    return responsePackets;
+        return responsePackets;
     }
 
 
     //Read Coil function
     public int readCoil(int address) {
 
-        address+=1;//has an offset 1
+        address += 1;//has an offset 1
 
         if (coil.containsKey(address)) {
-            int val = coil.get(address);
-            return val;
+            return coil.get(address);
         } else {
             coil.put(address, rand());
             //System.out.println(coil);
@@ -306,11 +252,11 @@ public class MODBUS implements Protocol {
             return val;
         }
     }
+
     //Random input of 0 & 1 for coils
     private int rand() {
 
-        int num =(Math.random()<0.5)?0:1;
-        return num;
+        return (Math.random() < 0.5) ? 0 : 1;
     }
 
 
@@ -324,15 +270,12 @@ public class MODBUS implements Protocol {
     }
 
 
-
-
     private int readRegister(int registerAddress) {
 
-       // registerAddress+=30001; //Offset of 30001 Check the packet in wireshark and decide to put offset
+        // registerAddress+=30001; //Offset of 30001 Check the packet in wireshark and decide to put offset
 
         if (register.containsKey(registerAddress)) {
-            int val = register.get(registerAddress);
-            return val;
+            return register.get(registerAddress);
         } else {
             register.put(registerAddress, randvalue());
             int val = register.get(registerAddress);
@@ -341,49 +284,42 @@ public class MODBUS implements Protocol {
         }
 
 
+    }
+
+    private int randvalue() {
+
+        return (Math.random() < 0.5) ? 0 : 255;
 
     }
 
-    private int randvalue(){
 
-        int num =(Math.random()<0.5)?0:255; //Max Hex value that can be stored in 10 bit Binary is 255
-        return num;
-
-    }
-
-
-
-    private int writeSingleRegister(int regAddress, int regData){
+    private int writeSingleRegister(int regAddress, int regData) {
 
         //regData+=30001;
         register.put(regAddress, regData);
-        int val = register.get(regAddress);
-        return val;
+        return register.get(regAddress);
 
     }
 
 
     private int writeCoil(int coilAddress, int coilData) {
 
-        coilAddress+=1;//offset 1
+        coilAddress += 1;//offset 1
 
-        coil.put(coilAddress,coilData);
+        coil.put(coilAddress, coilData);
 
-        int val= coil.get(coilAddress);
-        return val;
+        return coil.get(coilAddress);
 
     }
-
 
 
     //Read Coil function
     public int readDiscrete(int address) {
 
-        address+=1;//offset 1
+        address += 1;//offset 1
 
         if (discreteInput.containsKey(address)) {
-            int val = discreteInput.get(address);
-            return val;
+            return discreteInput.get(address);
         } else {
             discreteInput.put(address, rand());
             //System.out.println(coil);
@@ -395,12 +331,9 @@ public class MODBUS implements Protocol {
     }
 
 
-
-
-
     /* gets the type of request made from the master */
     private int getRequestType(byte[] request) {
-        if(request.length !=0) {
+        if (request.length != 0) {
             int requestType = request[7];
 
             if (requestType == 17) {
@@ -421,13 +354,10 @@ public class MODBUS implements Protocol {
             System.out.println(requestType);
             return requestType;
         }
-        int requestType = MODBUS_SERVICE;
 
-        return requestType;
+        return MODBUS_SERVICE;
 
     }
-
-
 
 
 }

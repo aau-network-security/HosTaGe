@@ -51,8 +51,8 @@ public class ServicesFragment extends TrackerFragment {
     private ServicesListAdapter adapter;
     private ArrayList<ServicesListItem> protocolList;
 
-    private DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-    private DAOHelper daoHelper = new DAOHelper(dbSession, getActivity());
+    private final DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+    private final DAOHelper daoHelper = new DAOHelper(dbSession, getActivity());
 
     private String[] protocols;
     private SharedPreferences mConnectionInfo;

@@ -14,12 +14,12 @@ import dk.aau.netsec.hostage.system.Device;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 public class DeviceEvent implements Event{
-    Context context;
+    final Context context;
     String manufacturer;
     String model;
     String deviceName;
     private static final String PERSIST_FILENAME = "deviceInfo.json";
-    File file = new File("/data/data/" + MainActivity.getContext().getPackageName() + "/" + PERSIST_FILENAME);
+    final File file = new File("/data/data/" + MainActivity.getContext().getPackageName() + "/" + PERSIST_FILENAME);
 
     public DeviceEvent(Context context){
         this.context = context;

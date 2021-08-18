@@ -6,10 +6,10 @@ package dk.aau.netsec.hostage.services;
  * Bean class to store objects of multistage attack
  */
 public class Stackbean {
-    private String remoteip;
-    private String localip;
+    private final String remoteip;
+    private final String localip;
     private String protocol;
-    private int remoteport;
+    private final int remoteport;
     private int localport;
     private String BSSID;
     private String SSID;

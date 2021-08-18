@@ -84,10 +84,10 @@ public final class Api {
     private static final String[] staticChains = {"", "-input", "-3g", "-wifi", "-reject", "-vpn", "-3g-tether", "-3g-home", "-3g-roam", "-wifi-tether", "-wifi-wan", "-wifi-lan", "-tor", "-tor-reject", "-tether"};
 
     //for custom scripts
-    private static String charsetName = "UTF8";
-    private static String algorithm = "DES";
-    private static int base64Mode = Base64.DEFAULT;
-    private static String CHAIN_NAME = "customRules";
+    private static final String charsetName = "UTF8";
+    private static final String algorithm = "DES";
+    private static final int base64Mode = Base64.DEFAULT;
+    private static final String CHAIN_NAME = "customRules";
 
 
     /**
@@ -610,7 +610,7 @@ public final class Api {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     inputStream, StandardCharsets.UTF_8));
             String line;
-            StringBuffer data = new StringBuffer();
+            StringBuilder data = new StringBuilder();
             while ((line = reader.readLine()) != null) {
                 data.append(line);
             }

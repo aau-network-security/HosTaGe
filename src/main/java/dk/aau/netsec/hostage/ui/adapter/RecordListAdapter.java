@@ -1,6 +1,5 @@
 package dk.aau.netsec.hostage.ui.adapter;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,14 +14,14 @@ import dk.aau.netsec.hostage.persistence.DAO.DAOHelper;
 import dk.aau.netsec.hostage.ui.model.ExpandableListItem;
 
 public class RecordListAdapter extends ExpandableListAdapter {
-    private DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
-    private DAOHelper daoHelper = new DAOHelper(dbSession);
+    private final DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
+    private final DAOHelper daoHelper = new DAOHelper(dbSession);
 
     /**
      * Constructor
-     * @param context the context
+     *
      * @param listSectionHeaders the section titles
-     * @param dataMapping HashMap<String, ArrayList<{@link ExpandableListItem ExpandableListItem}>> the data to visualise
+     * @param dataMapping        HashMap<String, ArrayList<{@link ExpandableListItem ExpandableListItem}>> the data to visualise
      */
     public RecordListAdapter(List<String> listSectionHeaders, HashMap<String, ArrayList<ExpandableListItem>> dataMapping) {
         super(listSectionHeaders, dataMapping);
@@ -38,7 +37,7 @@ public class RecordListAdapter extends ExpandableListAdapter {
     @Override
     public void configureCellView(View cell, int section, int row) {
         ExpandableListItem object = this.getDataForRow(section, row);
-        for (String key : object.getId_Mapping().keySet()){
+        for (String key : object.getId_Mapping().keySet()) {
             int viewID = object.getId_Mapping().get(key);
             String textualInfo = object.getData().get(key);
             TextView tView = cell.findViewById(viewID);
@@ -55,7 +54,7 @@ public class RecordListAdapter extends ExpandableListAdapter {
         int nowValue = this.getChildrenCount(section);
         int value = daoHelper.getMessageRecordDAO().getRecordCount(); //shows the real number of records, not the ones that they are in section.
         tView.setText(this._sectionHeader.get(section));
-        vView.setText(nowValue+"/" + value);
+        vView.setText(nowValue + "/" + value);
     }
 
     @Override

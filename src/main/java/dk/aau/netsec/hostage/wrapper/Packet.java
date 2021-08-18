@@ -9,8 +9,8 @@ import dk.aau.netsec.hostage.commons.HelperUtils;
  */
 public class Packet {
 
-	private byte[] payload;
-	private String protocol;
+	private final byte[] payload;
+	private final String protocol;
 
 	/**
 	 * Constructs Packet from byte[]

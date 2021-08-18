@@ -30,9 +30,9 @@ import java.util.Set;
  */
 public class SmtpMessage {
 	/** Headers: Map of List of String hashed on header name. */
-	private Map<String, List<String>> headers;
+	private final Map<String, List<String>> headers;
 	/** Message body. */
-	private StringBuilder body;
+	private final StringBuilder body;
 
 	/** Constructor. Initializes headers Map and body buffer. */
 	public SmtpMessage() {
@@ -116,11 +116,7 @@ public class SmtpMessage {
 	 * @param value header value
 	 */
 	private void addHeader(String name, String value) {
-		List<String> valueList = headers.get(name);
-		if (valueList == null) {
-			valueList = new ArrayList<>(1);
-			headers.put(name, valueList);
-		}
+		List<String> valueList = headers.computeIfAbsent(name, k -> new ArrayList<>(1));
 		valueList.add(value);
 	}
 

@@ -20,7 +20,7 @@ public class SplitPopupItem extends AbstractPopupItem {
 
     public boolean wasRightTouch;
 
-	private Context context;
+	private final Context context;
 	private View left_container;
 	private View right_container;
 

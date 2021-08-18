@@ -92,7 +92,7 @@ public class Device {
 
 		if (deployAsset("payload/redirect-ports.sh", "redirect-ports.sh")) {
 			String scriptFilePath = new File(MainActivity.getInstance().getFilesDir(), "redirect-ports.sh").getAbsolutePath();
-			Process p = null;
+			Process p;
 			try {
 				Runtime.getRuntime().exec("chmod " + mode + " " + scriptFilePath).waitFor();
 

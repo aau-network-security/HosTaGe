@@ -36,7 +36,7 @@ import dk.aau.netsec.hostage.ui.fragment.RecordOverviewFragment;
  * Created on 21/06/2021
  */
 public class LogSaveWorker extends Worker {
-    private Context mContext;
+    private final Context mContext;
 
     /**
      * Create the LogSaveWorker and save context for later use.

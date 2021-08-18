@@ -45,8 +45,8 @@ public class BarGraph extends View {
 
 	private final static int VALUE_FONT_SIZE = 23, AXIS_LABEL_FONT_SIZE = 12;
 	
-    private ArrayList<Bar> mBars = new ArrayList<Bar>();
-    private Paint mPaint = new Paint();
+    private ArrayList<Bar> mBars = new ArrayList<>();
+    private final Paint mPaint = new Paint();
     private Rect mRectangle = null;
     private boolean mShowBarText = true;
     private boolean mShowAxis = true;
@@ -57,7 +57,7 @@ public class BarGraph extends View {
 
     private int popupImageID;
 
-    private Context mContext = null;
+    private Context mContext;
 
 
     /**

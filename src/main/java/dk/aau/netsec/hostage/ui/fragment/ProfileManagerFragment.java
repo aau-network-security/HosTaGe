@@ -67,15 +67,14 @@ public class ProfileManagerFragment extends TrackerFragment implements ProfileRe
         profileManager.loadData();
 
         String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
-        /**
-         * Holds the shared preferences for the app
-         */
+
+//          Holds the shared preferences for the app
         SharedPreferences mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
 
-        /**
-         * Get list of profiles to be displayed in the recyclerview
-         */
-        List<Profile> strList = null;
+
+//          Get list of profiles to be displayed in the recyclerview
+
+        List<Profile> strList;
         assert profileManager != null;
         strList = new LinkedList<>(profileManager.getProfilesList());
 
@@ -97,9 +96,7 @@ public class ProfileManagerFragment extends TrackerFragment implements ProfileRe
         recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
         recyclerView.setAdapter(profileRecyclerAdapter);
 
-        /**
-         * Implement Swipe-to-edit functionality (swipe left to launch a ProfileEditFragment)
-         */
+//         Implement Swipe-to-edit functionality (swipe left to launch a ProfileEditFragment)
         SwipeToEditCallback swipeHandler = new SwipeToEditCallback(container.getContext()) {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {

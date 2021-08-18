@@ -208,7 +208,6 @@ public class PcapLoggingService extends Service {
                     }
                 } catch (ParseException pe) {
                     pe.printStackTrace();
-                    continue;
                 }
             }
 
@@ -282,20 +281,9 @@ public class PcapLoggingService extends Service {
      * @throws IOException
      */
     private static void copyFiles(FileInputStream fromFileStream, FileOutputStream toFileStream) throws IOException {
-        FileChannel source = null;
-        FileChannel destination = null;
 
-        try {
-            source = fromFileStream.getChannel();
-            destination = toFileStream.getChannel();
+        try (FileChannel source = fromFileStream.getChannel(); FileChannel destination = toFileStream.getChannel()) {
             destination.transferFrom(source, 0, source.size());
-        } finally {
-            if (source != null) {
-                source.close();
-            }
-            if (destination != null) {
-                destination.close();
-            }
         }
     }
 
@@ -347,7 +335,7 @@ public class PcapLoggingService extends Service {
             BufferedReader outputReader = new BufferedReader(new InputStreamReader(processOutput));
             char[] outputChar = new char[4096];
             int outputLength;
-            StringBuffer outputBuffer = new StringBuffer();
+            StringBuilder outputBuffer = new StringBuilder();
 
             try {
                 fileOutputStream = openFileForWriting("pcapLog");

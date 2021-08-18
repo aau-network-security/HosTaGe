@@ -35,7 +35,7 @@ public class NMB extends Thread {
 	private NBDS nbds;
 	private boolean isMaster;
 	private byte[] addr = new byte[4]; 
-	private static byte[] transactID = HelperUtils.randomBytes(2);
+	private static final byte[] transactID = HelperUtils.randomBytes(2);
 	
 	public NMB(String ip, String username, String workgroup) {
 		try {
@@ -281,9 +281,9 @@ public class NMB extends Thread {
 		nbdsSocket.close();
 	}
 		
-	private byte[] buffer = new byte[2048];
+	private final byte[] buffer = new byte[2048];
 	private boolean masterAnswered = false;
-	private DatagramPacket receive = new DatagramPacket(buffer, buffer.length);
+	private final DatagramPacket receive = new DatagramPacket(buffer, buffer.length);
 
 	/**
 	 * Check if the specified workgroup is already existing.

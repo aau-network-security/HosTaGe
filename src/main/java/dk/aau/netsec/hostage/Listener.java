@@ -45,21 +45,21 @@ public class Listener implements Runnable {
         return this;
     }
 
-    private ArrayList<Handler> handlers = new ArrayList<>();
+    private final ArrayList<Handler> handlers = new ArrayList<>();
 
-    private Protocol protocol;
+    private final Protocol protocol;
 
     private ServerSocket server;
     private Thread thread;
     private Thread socketsThread;
-    private int port;
-    private Hostage service;
-    private ConnectionRegister conReg;
+    private final int port;
+    private final Hostage service;
+    private final ConnectionRegister conReg;
     private boolean running = false;
 
-    private static Semaphore mutex = new Semaphore(1); // to enable atomic section in portscan detection
+    private static final Semaphore mutex = new Semaphore(1); // to enable atomic section in portscan detection
 
-    private static Map<String, Integer> realPorts = new LinkedHashMap<>();
+    private static final Map<String, Integer> realPorts = new LinkedHashMap<>();
 
     /**
      * Constructor for the class. Instantiate class variables.
@@ -342,7 +342,8 @@ public class Listener implements Runnable {
      * Starts a {@link Handler} with the given socket.
      *
      * @param client The socket with the accepted connection.
-     * @throws Exception
+     * @throws IllegalAccessException
+     * @throws InstantiationException
      */
     private void startHandler(Socket client) throws IllegalAccessException, InstantiationException {
         handlers.add(newInstance(service, this, protocol.toString().equals("CIFS") ? protocol : protocol.getClass().newInstance(), client));
@@ -352,7 +353,9 @@ public class Listener implements Runnable {
      * Creates a SSLSocket out of the given socket and starts a {@link Handler}.
      *
      * @param client The socket with the accepted connection.
-     * @throws Exception
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws IOException
      */
     private void startSecureHandler(Socket client) throws InstantiationException, IllegalAccessException, IOException {
         SSLContext sslContext = ((SSLProtocol) protocol).getSSLContext();

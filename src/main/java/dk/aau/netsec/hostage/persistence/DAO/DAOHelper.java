@@ -7,12 +7,12 @@ import dk.aau.netsec.hostage.logging.DaoSession;
 public class DAOHelper {
 
     private DaoSession daoSession;
-    private MessageRecordDAO messageRecordDAO;
-    private NetworkRecordDAO networkRecordDAO;
-    private ProfileDAO profileDAO;
-    private SyncInfoRecordDAO syncInfoRecordDAO;
-    private AttackRecordDAO attackRecordDAO;
-    private SyncDeviceDAO syncDeviceDAO;
+    private final MessageRecordDAO messageRecordDAO;
+    private final NetworkRecordDAO networkRecordDAO;
+    private final ProfileDAO profileDAO;
+    private final SyncInfoRecordDAO syncInfoRecordDAO;
+    private final AttackRecordDAO attackRecordDAO;
+    private final SyncDeviceDAO syncDeviceDAO;
 
     public DAOHelper(DaoSession daoSession, Context context){
         this.daoSession= daoSession;

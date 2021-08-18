@@ -19,14 +19,14 @@ import dk.aau.netsec.hostage.protocol.utils.mqttUtils.SensorProfile;
 import static dk.aau.netsec.hostage.protocol.utils.mqttUtils.MQTTHandler.isTopicPublished;
 
 public class MQTTListener extends Listener {
-    private ArrayList<Handler> handlers = new ArrayList<Handler>();
+    private final ArrayList<Handler> handlers = new ArrayList<>();
     private Thread thread;
     private Thread brokerThread;
     private ConnectionRegister conReg;
     private boolean running = false;
-    private int mqttport = 1883;
+    private final int mqttport = 1883;
 
-    private static Semaphore mutex = new Semaphore(1);
+    private static final Semaphore mutex = new Semaphore(1);
 
     /**
      * Constructor for the class. Instantiate class variables.
@@ -135,31 +135,28 @@ public class MQTTListener extends Listener {
     }
 
     private Thread brokerThread() {
-        brokerThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (ConnectionGuard.portscanInProgress())
-                        return;
+        brokerThread = new Thread(() -> {
+            try {
+                if (ConnectionGuard.portscanInProgress())
+                    return;
 
-                    mutex.acquire();
+                mutex.acquire();
 
-                    if (checkPostScanInProgress())
-                        return;
-                    mutex.release();
-                    Thread.sleep(100); // wait to see if other listeners detected a portscan
+                if (checkPostScanInProgress())
+                    return;
+                mutex.release();
+                Thread.sleep(100); // wait to see if other listeners detected a portscan
 
-                    if (ConnectionGuard.portscanInProgress())
-                        return;
+                if (ConnectionGuard.portscanInProgress())
+                    return;
 
-                    isTopicPublished();
-                    if (MQTTHandler.isAnAttackOngoing()) {
-                        startHandler();
-                        conReg.newOpenConnection();
-                    }
-                } catch (InterruptedException | IOException | IllegalAccessException | InstantiationException e) {
-                    e.printStackTrace();
+                isTopicPublished();
+                if (MQTTHandler.isAnAttackOngoing()) {
+                    startHandler();
+                    conReg.newOpenConnection();
                 }
+            } catch (InterruptedException | IOException | IllegalAccessException | InstantiationException e) {
+                e.printStackTrace();
             }
         });
 

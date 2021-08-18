@@ -6,7 +6,7 @@ import dk.aau.netsec.hostage.logging.RecordAll;
 
 public class TraCINgFormatter extends Formatter {
 
-	private static Formatter INSTANCE = new TraCINgFormatter();
+	private static final Formatter INSTANCE = new TraCINgFormatter();
 
 	public static Formatter getInstance() {
 		return INSTANCE;

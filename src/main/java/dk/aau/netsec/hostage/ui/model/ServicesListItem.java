@@ -7,11 +7,11 @@ package dk.aau.netsec.hostage.ui.model;
  * defines a service list item
  */
 public class ServicesListItem {
-	public String protocol;
+	public final String protocol;
 	public int attacks;
-	public int port;
+	public final int port;
 
-	public boolean activated;
+	public final boolean activated;
 
     /**
      * constructor of a service list item

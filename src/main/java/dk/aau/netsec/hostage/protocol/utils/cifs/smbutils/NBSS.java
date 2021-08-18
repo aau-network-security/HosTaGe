@@ -21,7 +21,7 @@ import dk.aau.netsec.hostage.wrapper.Packet;
  */
 public class NBSS extends Thread {
 	
-	private int nbssPort;
+	private final int nbssPort;
 	private ServerSocket nbssServer;
 	private Socket nbssSocket;
 	private Reader reader;

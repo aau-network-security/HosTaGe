@@ -130,7 +130,7 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      * Launch a {@link ProfileEditActivity} to change properties of an existing profile.
      *
      * @param mContext application context
-     * @param profile {@link Profile} to be edited
+     * @param profile  {@link Profile} to be edited
      */
     public void editProfile(Context mContext, Profile profile) {
         Intent intent = new Intent(mContext, ProfileEditActivity.class);
@@ -148,7 +148,6 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public void removeProfile(Profile profile) {
 //        TODO revisit - this is not currently supported from the UI
         list.remove(profile);
-        return;
     }
 
     /**
@@ -177,9 +176,9 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         /**
          * Create a reference to a single row in Profile Manager RecyclerView.
          *
-         * @param itemView root view for the row
+         * @param itemView                 root view for the row
          * @param onProfileClickedListener {@link OnProfileClickedListener} implementation to handle
-         *                                                                clicks from fragment
+         *                                 clicks from fragment
          */
         public ProfileRowViewHolder(View itemView, OnProfileClickedListener onProfileClickedListener) {
             super(itemView);

@@ -26,7 +26,7 @@ package com.echo.holographlibrary;
 import java.util.ArrayList;
 
 public class Line {
-	private ArrayList<LinePoint> points = new ArrayList<LinePoint>();
+	private ArrayList<LinePoint> points = new ArrayList<>();
 	private int color;
 	private boolean showPoints = true;
 	// 6 has been the default prior to the addition of custom stroke widths

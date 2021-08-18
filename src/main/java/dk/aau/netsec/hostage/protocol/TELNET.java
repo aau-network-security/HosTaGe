@@ -36,13 +36,13 @@ public class TELNET implements Protocol {
 	private byte[] command;
 
 	/** name of the server */
-	private String serverName = HelperUtils.getRandomString(16, false);
+	private final String serverName = HelperUtils.getRandomString(16, false);
 
-	private String serverVersion = initServerVersion();
+	private final String serverVersion = initServerVersion();
 	
-	private String login = initLogin();
+	private final String login = initLogin();
 	
-	private String serverBanner = initServerBanner();
+	private final String serverBanner = initServerBanner();
 	
 	/** command line prefix */
 	private static byte[] sessionToken = null;
@@ -88,7 +88,7 @@ public class TELNET implements Protocol {
 		if (requestPacket != null && requestPacket.getBytes().length > 0) { // ignore empty packets
 			request = requestPacket.getBytes();
 		}
-		List<Packet> responsePackets = new ArrayList<Packet>();
+		List<Packet> responsePackets = new ArrayList<>();
 
 		switch (state) {
 		case NONE:
@@ -210,11 +210,10 @@ public class TELNET implements Protocol {
 	private static String initServerVersion() {
 		String sharedPreferencePath = Hostage.getContext().getString(
 				R.string.shared_preference_path);
-		String profile = Hostage
+		return Hostage
 				.getContext()
 				.getSharedPreferences(sharedPreferencePath,
 						Context.MODE_PRIVATE).getString("os", "");
-		return profile;
 	}
 	
 	private String initServerBanner() {
@@ -259,7 +258,7 @@ public class TELNET implements Protocol {
 	 * @return accepted and unaccepted options
 	 */
 	private byte[] getOptionResponse(byte[] request) {
-		List<byte[]> responseList = new ArrayList<byte[]>();
+		List<byte[]> responseList = new ArrayList<>();
 		byte[] requestInverse;
 		for (int i = 0; i < request.length - 2; i += 3) {
 			if (request[i] == (byte) 0xff && request[i + 2] != 0x03

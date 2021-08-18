@@ -17,7 +17,7 @@ import dk.aau.netsec.hostage.ui.model.PlotComparisonItem;
 
 
 public class NetworkRecordDAO extends DAO {
-    private DaoSession daoSession;
+    private final DaoSession daoSession;
 
     public NetworkRecordDAO(DaoSession daoSession){
         this.daoSession= daoSession;
@@ -45,8 +45,7 @@ public class NetworkRecordDAO extends DAO {
         qb.orderDesc(NetworkRecordDao.Properties.TimestampLocation).build();
         qb.offset(offset).limit(limit).build();
 
-        ArrayList<NetworkRecord>  networkRecords = (ArrayList<NetworkRecord>) qb.list();
-        return  networkRecords;
+        return (ArrayList<NetworkRecord>) qb.list();
 
     }
 
@@ -89,7 +88,7 @@ public class NetworkRecordDAO extends DAO {
      * @return ArrayList<String> of all recorded BSSIDs.
      */
     public synchronized ArrayList<String> getAllBSSIDS() {
-        ArrayList<String> bssidList = new ArrayList<String>();
+        ArrayList<String> bssidList = new ArrayList<>();
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
 
         for(NetworkRecord record:networkRecords){
@@ -101,7 +100,7 @@ public class NetworkRecordDAO extends DAO {
     }
 
     public synchronized ArrayList<String> getAllESSIDS() {
-        ArrayList<String> ssidList = new ArrayList<String>();
+        ArrayList<String> ssidList = new ArrayList<>();
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
 
         for(NetworkRecord record:networkRecords){
@@ -119,7 +118,7 @@ public class NetworkRecordDAO extends DAO {
      */
     private synchronized ArrayList<String> getMissingNetworkBssids(ArrayList<String> otherBSSIDs) {
         ArrayList<String> currentBSSIDs = getAllBSSIDS();
-        ArrayList<String> notPresent = new ArrayList<String>(otherBSSIDs);
+        ArrayList<String> notPresent = new ArrayList<>(otherBSSIDs);
         notPresent.removeAll(currentBSSIDs);
 
         return notPresent;
@@ -134,7 +133,7 @@ public class NetworkRecordDAO extends DAO {
 public synchronized ArrayList<NetworkRecord> getMissingNetworkRecords(ArrayList<String> otherBSSIDs) {
         ArrayList<String> missingBSSIDs = getMissingNetworkBssids( otherBSSIDs);
         ArrayList<NetworkRecord> networkRecords = this.getNetworkRecords();
-        ArrayList<NetworkRecord> missingNetworkRecords = new ArrayList<NetworkRecord>();
+        ArrayList<NetworkRecord> missingNetworkRecords = new ArrayList<>();
 
         ArrayList<String> currentBssids= new ArrayList<>();
         networkRecords.stream().filter(o -> currentBssids.add(o.getBssid())).collect(Collectors.toList());
@@ -287,9 +286,8 @@ public ArrayList<NetworkRecord> selectionBSSIDFromFilter(LogFilter filter,int of
 
         ArrayList<String> essids= new ArrayList<>();
         networkRecords.stream().filter(o -> essids.add(o.getSsid())).collect(Collectors.toList());
-        ArrayList<String> distinctEssids = (ArrayList<String>) essids.stream().distinct().collect(Collectors.toList());
 
-        return  distinctEssids;
+        return (ArrayList<String>) essids.stream().distinct().collect(Collectors.toList());
 
     }
 
@@ -303,9 +301,8 @@ public ArrayList<NetworkRecord> selectionBSSIDFromFilter(LogFilter filter,int of
 
         ArrayList<String> bssids= new ArrayList<>();
         networkRecords.stream().filter(o -> bssids.add(o.getBssid())).collect(Collectors.toList());
-        ArrayList<String> distinctBssids = (ArrayList<String>) bssids.stream().distinct().collect(Collectors.toList());
 
-        return  distinctBssids;
+        return (ArrayList<String>) bssids.stream().distinct().collect(Collectors.toList());
 
     }
 
@@ -318,10 +315,9 @@ public synchronized ArrayList<String> getUniqueESSIDRecordsForProtocol(String pr
 
         ArrayList<String> essids= new ArrayList<>();
         filterNetworkRecords.stream().filter(o -> essids.add(o.getSsid())).collect(Collectors.toList());
-        ArrayList<String> distinctEssids = (ArrayList<String>) essids.stream().distinct().collect(Collectors.toList());
 
 
-        return  distinctEssids;
+    return (ArrayList<String>) essids.stream().distinct().collect(Collectors.toList());
     }
 
 public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String protocol) {
@@ -333,10 +329,9 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
 
         ArrayList<String> bssids = new ArrayList<>();
         filterNetworkRecords.stream().filter(o -> bssids.add(o.getBssid())).collect(Collectors.toList());
-        ArrayList<String> distinctBssids = (ArrayList<String>) bssids.stream().distinct().collect(Collectors.toList());
 
 
-        return  distinctBssids;
+    return (ArrayList<String>) bssids.stream().distinct().collect(Collectors.toList());
 
     }
 
@@ -348,7 +343,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
      */
     public synchronized ArrayList<PlotComparisonItem> attacksPerBSSID(LogFilter filter) {
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);
-        ArrayList<PlotComparisonItem> plots = new ArrayList<PlotComparisonItem>();
+        ArrayList<PlotComparisonItem> plots = new ArrayList<>();
 
          if(filter == null || filter.getBSSIDs().isEmpty())
             return  addPlotComparison(plots,this.getNetworkRecords());
@@ -364,7 +359,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
 
     public synchronized ArrayList<PlotComparisonItem> attacksPerBSSID(LogFilter filter,int offset,int limit) {
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);
-        ArrayList<PlotComparisonItem> plots = new ArrayList<PlotComparisonItem>();
+        ArrayList<PlotComparisonItem> plots = new ArrayList<>();
 
         if(filter == null || filter.getBSSIDs().isEmpty())
             return  addPlotComparison(plots,this.getNetworkRecords());
@@ -387,7 +382,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
     public synchronized ArrayList<PlotComparisonItem> attacksPerESSID(LogFilter filter) {
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);
         ArrayList<AttackRecord> filteredAttackRecords = attackRecordDAO.selectionQueryFromFilter(filter);
-        ArrayList<PlotComparisonItem> plots = new ArrayList<PlotComparisonItem>();
+        ArrayList<PlotComparisonItem> plots = new ArrayList<>();
 
 
         if(filter == null || filter.getESSIDs().isEmpty())
@@ -402,7 +397,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
     public synchronized ArrayList<PlotComparisonItem> attacksPerESSID(LogFilter filter,int offset,int limit) {
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);
         ArrayList<AttackRecord> filteredAttackRecords = attackRecordDAO.selectionQueryFromFilter(filter,offset,limit);
-        ArrayList<PlotComparisonItem> plots = new ArrayList<PlotComparisonItem>();
+        ArrayList<PlotComparisonItem> plots = new ArrayList<>();
 
 
         if(filter == null || filter.getESSIDs().isEmpty())
@@ -452,9 +447,7 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
         qb.join(AttackRecord.class
                 ,AttackRecordDao.Properties.TimestampLocation).where(AttackRecordDao.Properties.Protocol.eq(protocol));
 
-        ArrayList<NetworkRecord> attacks = (ArrayList<NetworkRecord>) qb.list();
-
-        return attacks;
+        return (ArrayList<NetworkRecord>) qb.list();
 
     }
 

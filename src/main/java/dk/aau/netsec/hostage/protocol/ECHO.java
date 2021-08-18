@@ -33,7 +33,7 @@ public class ECHO implements Protocol {
 
 	@Override
 	public List<Packet> processMessage(Packet requestPacket) {
-		List<Packet> responsePackets = new ArrayList<Packet>();
+		List<Packet> responsePackets = new ArrayList<>();
 		responsePackets.add(requestPacket);
 		return responsePackets;
 	}

@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
  * @author Alexander Brakowski
  * @created 12.03.14 16:20
  */
-public abstract class UpNavigatibleFragment extends Fragment {
+public abstract class UpNavigableFragment extends Fragment {
 	private Class<?> mUpFragment;
 	private boolean mIsUpNavigable = false;
 

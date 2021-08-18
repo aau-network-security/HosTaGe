@@ -53,7 +53,7 @@ public class HTTP implements Protocol {
 	private String request = "";
 
 	// version stuff
-	private String[][][] possibleHttpVersions = {
+	private final String[][][] possibleHttpVersions = {
 			{{ "Apache/2.0." }, { "28", "32", "35", "36", "39", "40", "42", "43", "44",
 							"45", "46", "47", "48", "49", "50", "51", "52",
 							"53", "54", "55", "58", "59", "61", "63", "64",
@@ -65,7 +65,7 @@ public class HTTP implements Protocol {
 			{ { "Apache/2.4." }, { "1", "2", "3", "4", "6" } },
 			{ { "Microsoft-IIS/" }, { "5.1", "7.0", "8.0" } } };
 
-	private String serverVersion = initServerVersion();
+	private final String serverVersion = initServerVersion();
 
 	private String initServerVersion() {
 		SecureRandom rndm = new SecureRandom();
@@ -97,8 +97,8 @@ public class HTTP implements Protocol {
 		return version;
 	}
 
-	private String httpVersion = "HTTP/1.1";
-	private String httpVersion_2 = "HTTP/2";
+	private final String httpVersion = "HTTP/1.1";
+	private final String httpVersion_2 = "HTTP/2";
 	private static String htmlDocumentContent = HelperUtils.getRandomString(32, false);
 
 	private static String htmlTitleContent = HelperUtils.getRandomString(32, false);
@@ -130,23 +130,23 @@ public class HTTP implements Protocol {
 	}
 
 	// html header pre and suffix
-	private String headerPrefix = "Date: " + getServerTime() + "\r\n"
+	private final String headerPrefix = "Date: " + getServerTime() + "\r\n"
 			+ "Server: " + serverVersion + " \r\n"
 			+ "Vary: Accept-Encoding\r\n" + "Content-Length: ";
-	private String headerSuffix = "\r\n" + "Keep-Alive: timeout=5, max=100\r\n"
+	private final String headerSuffix = "\r\n" + "Keep-Alive: timeout=5, max=100\r\n"
 			+ "Connection: Keep-Alive\r\n" + "Content-Type: text/html\r\n"
 			+ "\r\n";
 	// html website
-	private String htmlDocument = "<!doctype html>\n" + "<html lang=\"en\">\n"
+	private final String htmlDocument = "<!doctype html>\n" + "<html lang=\"en\">\n"
 			+ "<head>\n" + "<meta charset=\"UTF-8\">\n" + "<title>"
 			+ htmlTitleContent + "</title>\n" + "<body>"
 			+ htmlDocumentContent + "</body>\n" + "</head>\n" + "</html>";
 
 	// html error pre and suffix
-	private String errorHtmlPrefix = "<!doctype html>\n"
+	private final String errorHtmlPrefix = "<!doctype html>\n"
 			+ "<html lang=\"en\">\n" + "<head>\n"
 			+ "<meta charset=\"UTF-8\">\n" + "<title>";
-	private String errorHtmlSuffix = "</title>\n" + "</head>\n" + "</html>";
+	private final String errorHtmlSuffix = "</title>\n" + "</head>\n" + "</html>";
 
 	private int port = 80;
 
@@ -288,7 +288,7 @@ public class HTTP implements Protocol {
 	 * @return the html response
 	 */
 	private Packet buildPacket(String code, String type) {
-		String document = "";
+		String document;
 		switch (type) {
 			case GET:
 				document = htmlDocument;
@@ -317,7 +317,7 @@ public class HTTP implements Protocol {
 	private class QotdTask extends AsyncTask<String, Void, String> {
 		@Override
 		protected String doInBackground(String... unused) {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 
 			String[] sources = new String[]{"djxmmx.net"}; //, "alpha.mike-r.com"};
 			SecureRandom rndm = new SecureRandom();

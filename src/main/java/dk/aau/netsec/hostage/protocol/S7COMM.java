@@ -54,9 +54,9 @@ public class S7COMM implements Protocol {
     @Override
     public List<Packet> processMessage(Packet requestPacket) {
 
-        List<Packet> responsePackets = new ArrayList<Packet>();
+        List<Packet> responsePackets = new ArrayList<>();
 
-        byte[] request = null;
+        byte[] request;
         if (requestPacket != null) {
             request = requestPacket.getBytes();
 
@@ -75,9 +75,7 @@ public class S7COMM implements Protocol {
     private List<Packet> processRequest(byte[] request, int requestType) {
 
 
-        List<Packet> responsePackets = new ArrayList<Packet>();
-
-        return  responsePackets;
+        return new ArrayList<>();
 
 
     }

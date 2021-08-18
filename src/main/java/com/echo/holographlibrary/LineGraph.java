@@ -63,8 +63,8 @@ public class LineGraph extends View {
 
     private final static int AXIS_LABEL_FONT_SIZE = 8;
 
-    private ArrayList<Line> lines = new ArrayList<Line>();
-	Paint paint = new Paint();
+    private ArrayList<Line> lines = new ArrayList<>();
+	final Paint paint = new Paint();
 	private double minY = 0, minX = 0;
 	private double maxY = 0, maxX = 0;
 	private double rangeYRatio = 0;
@@ -89,7 +89,7 @@ public class LineGraph extends View {
 
     private AxisDataConverter converter;
 
-    private Context mContext;
+    private final Context mContext;
 
     public void setxAxisStep(float step){
         this.xAxisStep = step;
@@ -230,7 +230,7 @@ public class LineGraph extends View {
 		//postInvalidate();
 	}
 	public void removePointFromLine(int lineIndex, float x, float y){
-		LinePoint p = null;
+		LinePoint p;
 		Line line = getLine(lineIndex);
 		p = line.getPoint(x, y);
 		removePointFromLine(lineIndex, p);
@@ -333,7 +333,7 @@ public class LineGraph extends View {
         double max = lines.get(0).getPoint(0).getY();
 		for (Line line : lines){
 			for (LinePoint point : line.getPoints()){
-				max = point.getY() > max ? point.getY() : max;
+				max = Math.max(point.getY(), max);
 			}
 		}
 		maxY = max;
@@ -345,7 +345,7 @@ public class LineGraph extends View {
         double min = lines.get(0).getPoint(0).getY();
 		for (Line line : lines){
 			for (LinePoint point : line.getPoints()){
-				min = point.getY() < min ? point.getY() : min;
+				min = Math.min(point.getY(), min);
 			}
 		}
 		minY = min;
@@ -449,8 +449,8 @@ public class LineGraph extends View {
             // DRAW LINES
 			for (Line line : lines){
 				int count = 0;
-				float lastXPixels = 0, newYPixels = 0;
-				float lastYPixels = 0, newXPixels = 0;
+				float lastXPixels = 0, newYPixels;
+				float lastYPixels = 0, newXPixels;
 				
 				paint.setColor(line.getColor());
 				paint.setStrokeWidth(getStrokeWidth(line));
@@ -625,8 +625,8 @@ public class LineGraph extends View {
 			int lineCount = 0;
 			for (Line line : lines){
 				int count = 0;
-				float firstXPixels = 0, lastXPixels = 0, newYPixels = 0;
-				float lastYPixels = 0, newXPixels = 0;
+				float firstXPixels = 0, lastXPixels = 0, newYPixels;
+				float lastYPixels = 0, newXPixels;
 
 				if (lineCount == lineToFill){
 					paint.setColor(Color.BLACK);
@@ -644,7 +644,6 @@ public class LineGraph extends View {
 						if (count == 0){
 							lastXPixels = sidePadding + (xPercent*usableWidth);
 							lastYPixels = getHeight() - bottomPadding - (usableHeight*yPercent);
-							firstXPixels = lastXPixels;
 							path.moveTo(lastXPixels, lastYPixels);
 						} else {
 							newXPixels = sidePadding + (xPercent*usableWidth);
@@ -717,7 +716,7 @@ public class LineGraph extends View {
 	    
 	    int count = 0;
 	    int lineCount = 0;
-	    int pointCount = 0;
+	    int pointCount;
 	    
 	    Region r = new Region();
 	    for (Line line : lines){

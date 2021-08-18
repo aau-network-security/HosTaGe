@@ -68,7 +68,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
     private MapView mapView = null;
     private View rootView = null;
     private Thread mLoader = null;
-    private HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
+    private final HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
     private String mLocationProvider;
     private LayoutInflater inflater;
 
@@ -423,7 +423,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
             // Location is probably not ready yet, do nothing.
             } else {
-                return;
             }
         } catch (LocationException le) {
             le.printStackTrace();
@@ -464,7 +463,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
      * helper class
      * easier to use than LatLng
      */
-    private class Point {
+    private static class Point {
 
         public double x, y;
 
@@ -481,7 +480,8 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
      */
     private class SSIDArea {
 
-        private Point mMinimum, mMaximum;
+        private final Point mMinimum;
+        private final Point mMaximum;
 
         public int numPoints;
 

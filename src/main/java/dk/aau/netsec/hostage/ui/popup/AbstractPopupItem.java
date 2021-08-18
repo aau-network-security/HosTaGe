@@ -16,9 +16,9 @@ public abstract class AbstractPopupItem {
 
     private View rootView;
 
-    private LayoutInflater lInf;
+    private final LayoutInflater lInf;
 
-    public HashMap<Object, Object> data;
+    public final HashMap<Object, Object> data;
 
     /**
      * Override to return the layout id.
@@ -40,8 +40,8 @@ public abstract class AbstractPopupItem {
      */
     public void setValue(String key, Object value){
         if (key != null && value != null){
-            this.data.put(key, value);
-            if (this.rootView != null) this.configureItemView(this.rootView);
+            data.put(key, value);
+            if (rootView != null) this.configureItemView(rootView);
         }
     }
 
@@ -54,16 +54,16 @@ public abstract class AbstractPopupItem {
             for(Object key : map.keySet()){
                 this.data.put(key, map.get(key));
             }
-            if (this.rootView != null) this.configureItemView(this.rootView);
+            if (rootView != null) this.configureItemView(rootView);
         }
     }
 
     public void setTitle(String title){
-        this.title = title;
-        if (this.rootView != null) this.configureItemView(this.rootView);
+        title = title;
+        if (rootView != null) this.configureItemView(rootView);
     }
     public String getTitle(){
-        return this.title;
+        return title;
     }
 
     /**
@@ -89,8 +89,8 @@ public abstract class AbstractPopupItem {
      */
     public AbstractPopupItem(Context context) {
         super();
-        this.lInf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.data = new HashMap<Object, Object>();
+        lInf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        data = new HashMap<>();
     }
 
     /**
@@ -99,12 +99,12 @@ public abstract class AbstractPopupItem {
      * @return View rootview
      */
     public View getRootView(){
-        if (this.rootView == null){
-            this.rootView = this.lInf.inflate(this.getLayoutId(), null);
+        if (rootView == null){
+            rootView = lInf.inflate(getLayoutId(), null);
         }
-        this.configureItemView(this.rootView);
+        configureItemView(rootView);
 
-        return this.rootView;
+        return rootView;
     }
 
     /**

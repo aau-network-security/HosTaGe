@@ -32,9 +32,9 @@ public class CifsServer  {
 
     protected final dk.aau.netsec.hostage.protocol.SMB SMB;
     protected final FileInject fileInject;
-    ServerConfiguration cfg = new JLANFileServerConfiguration();
+    final ServerConfiguration cfg = new JLANFileServerConfiguration();
 
-    private int defaultPort=1025;
+    private final int defaultPort=1025;
 
     public CifsServer(SMB SMB, FileInject fileInject) throws InvalidConfigurationException, DeviceContextException {
         super();
@@ -44,9 +44,7 @@ public class CifsServer  {
 
     public void run() throws IOException {
         SMBServer smbServer = new SMBServer(cfg);
-        smbServer.addServerListener((server1, event) -> {
-            System.out.println("Server started with users: "+ server1.getSecurityConfiguration().getUserAccounts().getUserAt(0));
-        });
+        smbServer.addServerListener((server1, event) -> System.out.println("Server started with users: "+ server1.getSecurityConfiguration().getUserAccounts().getUserAt(0)));
         InterceptSysout interceptPackets =  new InterceptSysout(System.out);
         System.setOut(interceptPackets);
 

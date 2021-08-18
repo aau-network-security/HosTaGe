@@ -10,8 +10,8 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 
 public class Reader {
 
-	BufferedInputStream in;
-	String protocol;
+	final BufferedInputStream in;
+	final String protocol;
 
 	public Reader(InputStream in, String protocol) {
 		this.in = new BufferedInputStream(in);

@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import dk.aau.netsec.hostage.Hostage;
@@ -51,8 +52,8 @@ public class MultiStage extends Service {
     private DAOHelper daoHelper;
     Notification notification;
     NotificationManager manager;
-    private static int offset = 0;
-    private int limit = 50;
+    private static final int offset = 0;
+    private final int limit = 50;
     private int size;
     List<RecordAll> recordArray = new ArrayList<>();
 
@@ -72,13 +73,12 @@ public class MultiStage extends Service {
             dbSession = HostageApplication.getInstances().getDaoSession();
             daoHelper = new DAOHelper(dbSession, this);
             startCustomForeground();
-            fetchData();
         } else {
             dbSession = HostageApplication.getInstances().getDaoSession();
             daoHelper = new DAOHelper(dbSession, this);
             startForeground(1, new Notification());
-            fetchData();
         }
+        fetchData();
     }
 
     @Override
@@ -166,9 +166,7 @@ public class MultiStage extends Service {
 
     private void sortListIPs() {
         if (!recordArray.isEmpty())
-            Collections.sort(recordArray, (one, other) -> {
-                return one.getRemoteIP().compareTo(other.getRemoteIP());
-            });
+            recordArray.sort(Comparator.comparing(RecordAll::getRemoteIP));
 
     }
 

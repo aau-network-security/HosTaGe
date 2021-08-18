@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
@@ -14,8 +13,8 @@ import java.util.zip.ZipInputStream;
  * Created by shankar on 16.05.14.
  */
 public class Decompress {
-    private String _zipFile;
-    private String _location;
+    private final String _zipFile;
+    private final String _location;
 
     public Decompress(String zipFile, String location) {
         _zipFile = zipFile;
@@ -28,7 +27,7 @@ public class Decompress {
         try {
             FileInputStream fin = new FileInputStream(_zipFile);
             ZipInputStream zin = new ZipInputStream(fin);
-            ZipEntry ze = null;
+            ZipEntry ze;
             while ((ze = zin.getNextEntry()) != null) {
                 Log.v("Decompress", "Unzipping " + ze.getName());
 

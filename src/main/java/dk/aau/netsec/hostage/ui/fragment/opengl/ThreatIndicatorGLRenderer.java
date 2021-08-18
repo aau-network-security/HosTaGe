@@ -65,7 +65,7 @@ public class ThreatIndicatorGLRenderer implements Renderer {
         mBackgroundColor[2] = (float) Color.blue(color) / 255.0f;
     }
 
-    private static float[] mBackgroundColor = new float[3];
+    private static final float[] mBackgroundColor = new float[3];
 
     // OpenGL data
     private int mAnimatedProgram;
@@ -94,7 +94,7 @@ public class ThreatIndicatorGLRenderer implements Renderer {
 
     private static boolean sPlayGreetingAnimation = true; // greet the first time
 
-    private long mStartTimeMillis; // for animation
+    private final long mStartTimeMillis; // for animation
 
     public ThreatIndicatorGLRenderer() {
         mStartTimeMillis = System.currentTimeMillis();
@@ -379,11 +379,10 @@ public class ThreatIndicatorGLRenderer implements Renderer {
             float textHeight = 40.0f;
             float bubbleDiameter = 256.0f;
             float bubbleWidth = textWidth + 0.75f * bubbleDiameter;
-            float bubbleHeight = bubbleDiameter;
             float y = 0.8f * 1024.0f + 32.0f * (float) Math.sin(2.0 * animTime);
             float x = 0.5f * 1024.0f + 16.0f * (float) Math.cos(1.0 * animTime);
-            drawSpeechBubble(speechBubbleTexture, x - 0.5f * bubbleWidth, y - 0.5f * bubbleHeight,
-                    bubbleWidth, bubbleHeight);
+            drawSpeechBubble(speechBubbleTexture, x - 0.5f * bubbleWidth, y - 0.5f * bubbleDiameter,
+                    bubbleWidth, bubbleDiameter);
             GLES20.glUniform4f(colorUniformLoc, 0.0f, 0.0f, 0.0f, 1.0f);
             font.drawText(mTexturedProgram, message, x - 0.5f * textWidth,
                     y - 0.5f * textHeight);
@@ -406,14 +405,12 @@ public class ThreatIndicatorGLRenderer implements Renderer {
      * Informs renderer of changed surface dimensions
      */
     public void onSurfaceChanged(GL10 arg0, int w, int h) {
-        int width = w;
-        int height = h;
         float aspectRatio = (float) w / (float) h;
         //Matrix.orthoM(mProjection, 0, -aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
         float near = 0.1f;
         float fov = 2.0f;
         Matrix.frustumM(mProjection, 0, near * -aspectRatio, near * aspectRatio, -near, near, fov * near, 100.0f);
-        GLES20.glViewport(0, 0, width, height);
+        GLES20.glViewport(0, 0, w, h);
     }
 
     // some helper functions

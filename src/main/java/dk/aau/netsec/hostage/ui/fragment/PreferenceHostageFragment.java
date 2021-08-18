@@ -42,7 +42,7 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
      * Contains preferences for which to display a preview of the value in the summary
      */
     private HashSet<String> mPrefValuePreviewSet;
-    MultiStageAlarm alarm = new MultiStageAlarm();
+    final MultiStageAlarm alarm = new MultiStageAlarm();
     private static Boolean enabledHpfeeds = false;
     private static Boolean enabledMultistage = false;
 
@@ -222,9 +222,7 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
         builder.setMessage("The data collected from HosTaGe attack records will be stored for Advanced Collaborative Threat Intelligence. GDPR sensitive data include but are not limited to the public IP address of the publishing HosTaGe device. Please note that the physical geographical location of the participating HosTaGe publisher can be determined with the public IP address. Furthermore, hpfeeds include the IP address and the ports of the attack sources. Exclusive access to the hpfeeds repository is provided only with an internal review process.\n" +
                 "\n" +
                 "By enabling hpfeeds, the user of this app agrees to send Aalborg University (Denmark) attack data and provides his consent to use this data to process threat intelligence. The user has the right to ask for the deletion of the data published by him/her. Please contact hostage@es.aau.dk for queries and more information.");
-        builder.setPositiveButton(R.string.enable, (dialog, which) -> {
-            enabledHpfeeds = true;
-        });
+        builder.setPositiveButton(R.string.enable, (dialog, which) -> enabledHpfeeds = true);
         builder.setNegativeButton(R.string.close, (dialog, which) -> {
             checkboxPrefHpFeeds.setChecked(false);
             enabledHpfeeds = false;

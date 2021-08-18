@@ -15,7 +15,7 @@ import dk.aau.netsec.hostage.ui.model.LogFilter;
 
 public class MessageRecordDAO extends DAO {
 
-    private DaoSession daoSession;
+    private final DaoSession daoSession;
 
     public MessageRecordDAO(DaoSession daoSession) {
         this.daoSession = daoSession;
@@ -72,11 +72,10 @@ public class MessageRecordDAO extends DAO {
 
     public ArrayList<MessageRecord> getAllMessageRecords() {
         MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
-        ArrayList<MessageRecord> messageRecords = (ArrayList<MessageRecord>) recordDao.queryBuilder()
+
+        return (ArrayList<MessageRecord>) recordDao.queryBuilder()
                 .orderDesc(MessageRecordDao.Properties.Id)
                 .list();
-
-        return messageRecords;
     }
 
 
@@ -86,8 +85,7 @@ public class MessageRecordDAO extends DAO {
         qb.orderDesc(MessageRecordDao.Properties.Timestamp).build();
         qb.offset(offset).limit(limit).build();
 
-        ArrayList<MessageRecord> messageRecords = (ArrayList<MessageRecord>) qb.list();
-        return messageRecords;
+        return (ArrayList<MessageRecord>) qb.list();
 
     }
 
@@ -99,9 +97,7 @@ public class MessageRecordDAO extends DAO {
     public synchronized int getRecordCount() {
         MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
 
-        int result = (int) countElements(recordDao);
-
-        return result;
+        return (int) countElements(recordDao);
     }
 
     /**
@@ -117,10 +113,8 @@ public class MessageRecordDAO extends DAO {
     public ArrayList<MessageRecord> getMessageRecords(AttackRecord attackRecord) {
         MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
 
-        ArrayList<MessageRecord> records =
-                (ArrayList<MessageRecord>) selectElementsByCondition
-                        (recordDao, MessageRecordDao.Properties.Attack_id.eq(attackRecord.getAttack_id()));
-        return records;
+        return (ArrayList<MessageRecord>) selectElementsByCondition
+                (recordDao, MessageRecordDao.Properties.Attack_id.eq(attackRecord.getAttack_id()));
 
     }
 
@@ -144,7 +138,7 @@ public class MessageRecordDAO extends DAO {
     }
 
     private ArrayList<MessageRecord> filterTimestamp(MessageRecordDao recordDao, LogFilter filter, int offset, int limit) {
-        ArrayList<MessageRecord> list = new ArrayList<>();
+        ArrayList<MessageRecord> list;
 
         QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
         qb.orderDesc(MessageRecordDao.Properties.Id);
@@ -195,7 +189,7 @@ public class MessageRecordDAO extends DAO {
 
     private ArrayList<MessageRecord> filterList(LogFilter filter) {
         MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
-        ArrayList<MessageRecord> list = new ArrayList<>();
+        ArrayList<MessageRecord> list;
         QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
 
         qb.and(MessageRecordDao.Properties.Timestamp.lt(filter.getBelowTimestamp()),
@@ -214,9 +208,7 @@ public class MessageRecordDAO extends DAO {
         qb.join(MessageRecord.class
                 , MessageRecordDao.Properties.Attack_id);
 
-        ArrayList<AttackRecord> attacks = (ArrayList<AttackRecord>) qb.list();
-
-        return attacks;
+        return (ArrayList<AttackRecord>) qb.list();
 
     }
 

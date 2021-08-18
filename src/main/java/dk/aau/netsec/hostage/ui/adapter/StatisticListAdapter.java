@@ -22,7 +22,7 @@ public class StatisticListAdapter extends ArrayAdapter<PlotComparisonItem> {
     /**
      * Holds all necessary subviews in the rootview.
      */
-    private class ViewHolder {
+    private static class ViewHolder {
         public TextView titleView;
         public TextView valueView;
         public TextView colorView;
@@ -56,7 +56,7 @@ public class StatisticListAdapter extends ArrayAdapter<PlotComparisonItem> {
      */
     public StatisticListAdapter(Context context, List<PlotComparisonItem> objects) {
         super(context, getLayoutID(), objects);
-        List<PlotComparisonItem> list = objects == null ? new ArrayList<PlotComparisonItem>() : objects;
+        List<PlotComparisonItem> list = objects == null ? new ArrayList<>() : objects;
         this.context = context;
         this.values = list;
     }
@@ -75,7 +75,7 @@ public class StatisticListAdapter extends ArrayAdapter<PlotComparisonItem> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = convertView;
-        ViewHolder holder = null;
+        ViewHolder holder;
 
         final PlotComparisonItem item = values.get(position);
 

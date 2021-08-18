@@ -11,18 +11,18 @@ import dk.aau.netsec.hostage.commons.HelperUtils;
  */
 public class NBDS {
 	
-	private String dst;
-	private byte[] type;
-	private byte[] flags;
+	private final String dst;
+	private final byte[] type;
+	private final byte[] flags;
 	private byte[] transactID;
-	private byte[] srcIP;
-	private byte[] srcPort;
-	private byte[] length;
-	private byte[] offset;
-	private byte[] srcName;
+	private final byte[] srcIP;
+	private final byte[] srcPort;
+	private final byte[] length;
+	private final byte[] offset;
+	private final byte[] srcName;
 	private byte[] dstName;
 	private int nbdstype;
-	private SMBPacket smb;
+	private final SMBPacket smb;
 	
 	public NBDS(byte[] addr, String src, String dst) {
 		this.dst = dst;

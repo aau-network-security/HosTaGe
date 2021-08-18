@@ -63,7 +63,7 @@ public class GHOST implements Protocol {
 
 	@Override
 	public List<Packet> processMessage(Packet requestPacket) {
-		List<Packet> responsePackets = new ArrayList<Packet>();
+		List<Packet> responsePackets = new ArrayList<>();
 		try {
 			if (mirroredConnection == null) {
 				mirroredConnection = new Socket(attackerIP, currentPort);

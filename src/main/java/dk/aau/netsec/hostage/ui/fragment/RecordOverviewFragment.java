@@ -38,8 +38,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -65,7 +65,7 @@ import dk.aau.netsec.hostage.ui.popup.SimplePopupTable;
 import dk.aau.netsec.hostage.ui.popup.SplitPopupItem;
 
 
-public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimePickerDialog.DateTimeSelected {
+public class RecordOverviewFragment extends UpNavigableFragment implements ChecklistDialog.ChecklistDialogListener, DateTimePickerDialog.DateTimeSelected {
     static final String FILTER_MENU_TITLE_BSSID = MainActivity.getContext().getString(R.string.BSSID);
     static final String FILTER_MENU_TITLE_ESSID = MainActivity.getContext().getString(R.string.ESSID);
     static final String FILTER_MENU_TITLE_IPS = MainActivity.getContext().getString(R.string.RecordIP);
@@ -97,9 +97,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     private DaoSession dbSession;
     private DAOHelper daoHelper;
 
-    private int offset = 0;
+    private final int offset = 0;
     private int limit = 20;
-    private int attackRecordOffset = 0;
+    private final int attackRecordOffset = 0;
     private int attackRecordLimit = 999;//needs Different limit because the attackRecords are smaller than messageRecords.
     private final int realLimit = 20;
     private String sectionToOpen = "";
@@ -396,11 +396,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
         if (item instanceof SplitPopupItem) {
             SplitPopupItem splitItem = (SplitPopupItem) item;
-            if (splitItem.wasRightTouch) {
-                DateTimePickerDialog.showDateTimePicker(getContext(), false, this);
-            } else {
-                DateTimePickerDialog.showDateTimePicker(getContext(), true, this);
-            }
+            DateTimePickerDialog.showDateTimePicker(getContext(), !splitItem.wasRightTouch, this);
             return;
         }
 
@@ -699,7 +695,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         ArrayList<String> groupTitle = new ArrayList<>();
 
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = this.fetchDataForFilter(this.filter, groupTitle);
-        RecordListAdapter adapter = null;
+        RecordListAdapter adapter;
         if (mylist.getAdapter() != null && mylist.getAdapter() instanceof RecordListAdapter) {
             adapter = (RecordListAdapter) mylist.getAdapter();
             adapter.setData(sectionData);
@@ -748,7 +744,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     }
 
     private HashMap<String, ArrayList<ExpandableListItem>> fetchDataForFilter(LogFilter filter, ArrayList<String> groupTitle) {
-        HashMap<String, ArrayList<ExpandableListItem>> sectionData = new HashMap<String, ArrayList<ExpandableListItem>>();
+        HashMap<String, ArrayList<ExpandableListItem>> sectionData = new HashMap<>();
         // Adding Items to ListView
         String[] keys = new String[]{RecordOverviewFragment.this.getString(R.string.RecordIP), RecordOverviewFragment.this.getString(R.string.RecordSSID), RecordOverviewFragment.this.getString(R.string.RecordProtocol), RecordOverviewFragment.this.getString(R.string.RecordTimestamp)};
         int[] ids = new int[]{R.id.RecordTextFieldBSSID, R.id.RecordTextFieldIP, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp};
@@ -805,9 +801,9 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
 
 
         if (this.groupingKey.equals(this.groupingTitles().get(DEFAULT_GROUPING_KEY_INDEX))) {
-            Collections.sort(groupTitle, new DateStringComparator());
+            groupTitle.sort(new DateStringComparator());
         } else {
-            Collections.sort(groupTitle, String::compareToIgnoreCase);
+            groupTitle.sort(String::compareToIgnoreCase);
         }
 
         return sectionData;
@@ -1066,7 +1062,6 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      */
     private Date convertStringToDate(String dateString) {
         if (dateString != null && dateString.length() != 0) {
-            SimpleDateFormat dateFormat = groupingDateFormatter; //new SimpleDateFormat(localDatePattern);
             Date date;
             try {
                 if (dateString.equals(TODAY)) {
@@ -1076,7 +1071,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                     long millisec = RecordOverviewFragment.this.yesterdayMilliseconds();
                     date = new Date(millisec);
                 } else {
-                    date = dateFormat.parse(dateString);
+                    date = groupingDateFormatter.parse(dateString);
                 }
                 return date;
 
@@ -1320,7 +1315,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
                 if (adapter != null) {
                     return adapter.getSectionHeaders();
                 }
-                return new ArrayList<String>();
+                return new ArrayList<>();
         }
     }
 
@@ -1354,7 +1349,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         });
         filterMenu.setTitle(FILTER_MENU_POPUP_TITLE);
         for (String title : RecordOverviewFragment.this.filterMenuTitles()) {
-            AbstractPopupItem item = null;
+            AbstractPopupItem item;
             if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_BELOW)) continue;
             if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_ABOVE)) {
                 item = new SplitPopupItem(this.getActivity());
@@ -1420,7 +1415,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * @return ArrayList<String> tiles
      */
     public ArrayList<String> groupingTitles() {
-        ArrayList<String> titles = new ArrayList<String>();
+        ArrayList<String> titles = new ArrayList<>();
         titles.add(MainActivity.getContext().getString(R.string.date));
         titles.add(MainActivity.getContext().getString(R.string.rec_protocol));
         titles.add(MainActivity.getContext().getString(R.string.IP));
@@ -1452,10 +1447,8 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      */
     public ArrayList<String> protocolTitles() {
         ArrayList<String> titles = new ArrayList<>();
-        for (String protocol : this.getResources().getStringArray(
-                R.array.protocols)) {
-            titles.add(protocol);
-        }
+        titles.addAll(Arrays.asList(this.getResources().getStringArray(
+                R.array.protocols)));
 
         titles.add("PORTSCAN");
         titles.add("FILE INJECTION");
@@ -1674,9 +1667,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
      * Paints the filter button if the current filter object is set.
      */
     private void actualiseFilterButton() {
-        if (optionsMenu == null) {
-            return;
-        } else {
+        if (optionsMenu != null) {
             MenuItem filterItem = optionsMenu.findItem(R.id.records_action_filter);
             if (filterItem == null) {
                 return;
