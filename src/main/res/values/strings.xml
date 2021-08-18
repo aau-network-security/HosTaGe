@@ -302,7 +302,8 @@
     <string name="nfc_enable_beam">Enable Android Beam before synchronizing.</string>
     <string name="nfc_hold_phones_together">Hold phones together to send or receive data.</string>
     <string name="error_activating_services">Could not activate. Please try again later.</string>
-
+    <string name="services_unavailable">Services are not ready yet, please try in a few seconds.</string>
+    <string name="close_app_warning"> Press the back button again to close HosTaGe</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>

@@ -32,7 +32,6 @@ import dk.aau.netsec.hostage.protocol.Protocol;
 import dk.aau.netsec.hostage.protocol.utils.amqpUtils.AMQPHandler;
 import dk.aau.netsec.hostage.protocol.utils.coapUtils.COAPHandler;
 import dk.aau.netsec.hostage.protocol.utils.mqttUtils.MQTTHandler;
-import dk.aau.netsec.hostage.sync.tracing.TracingSyncService;
 import dk.aau.netsec.hostage.wrapper.Packet;
 
 
@@ -159,17 +158,17 @@ public class Handler implements Runnable {
         listener.refreshHandlers();
     }
 
-    @Deprecated
-    //TODO Temporary removed TracingMonitor
-    private void uploadTracing() {
-        boolean upload = pref.getBoolean("pref_auto_synchronize", false);
-        if (upload) {
-            Intent intent = new Intent(service, TracingSyncService.class);
-            intent.setAction(TracingSyncService.ACTION_START_SYNC);
-            service.startService(intent);
-        }
-
-    }
+//    @Deprecated
+//    //TODO Temporary removed TracingMonitor
+//    private void uploadTracing() {
+//        boolean upload = pref.getBoolean("pref_auto_synchronize", false);
+//        if (upload) {
+//            Intent intent = new Intent(service, TracingSyncService.class);
+//            intent.setAction(TracingSyncService.ACTION_START_SYNC);
+//            service.startService(intent);
+//        }
+//
+//    }
 
     /**
      * Creates InputStream and OutputStream for the socket. Starts communication

@@ -17,9 +17,10 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -511,12 +512,11 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
             sig.write(System.getProperty("line.separator").getBytes());
             sig.flush();
             sig.close();
-            Toast.makeText(this.getActivity().getApplicationContext(), "Policy file:" + fileName + "created", Toast.LENGTH_LONG).show();
-
+            Snackbar.make(mRootView, "Policy file:" + fileName + "created", Snackbar.LENGTH_LONG).show();
 
         } else {
 //TODO extract string
-            Toast.makeText(this.getActivity(), "Could not write to SD Card", Toast.LENGTH_SHORT).show();
+            Snackbar.make(mRootView, "Could not write to SD Card", Snackbar.LENGTH_SHORT).show();
             return;
         }
 
@@ -541,11 +541,11 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
             sig.write(System.getProperty("line.separator").getBytes());
             sig.flush();
             sig.close();
-            Toast.makeText(this.getActivity().getApplicationContext(), "Signature file:" + fileName + "created", Toast.LENGTH_LONG).show();
+            Snackbar.make(mRootView, "Signature file:" + fileName + "created", Snackbar.LENGTH_LONG).show();
 
         } else {
 //            TODO extract string
-            Toast.makeText(this.getActivity(), "Could not write to SD Card", Toast.LENGTH_SHORT).show();
+            Snackbar.make(mRootView, "Could not write to SD Card", Snackbar.LENGTH_SHORT).show();
             return;
         }
 

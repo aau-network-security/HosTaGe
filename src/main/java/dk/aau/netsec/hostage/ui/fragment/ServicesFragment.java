@@ -1,7 +1,5 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
-import java.util.ArrayList;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,13 +13,14 @@ import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import java.util.ArrayList;
 
 import dk.aau.netsec.hostage.Handler;
 import dk.aau.netsec.hostage.HostageApplication;
@@ -212,7 +211,7 @@ public class ServicesFragment extends TrackerFragment {
 
                             setStateActive();
                         } catch (NullPointerException ne) {
-                            Toast.makeText(getContext(), R.string.error_activating_services, Toast.LENGTH_SHORT).show();
+                            Snackbar.make(rootView, R.string.error_activating_services, Snackbar.LENGTH_SHORT).show();
                             setStateNotActive();
                         }
 

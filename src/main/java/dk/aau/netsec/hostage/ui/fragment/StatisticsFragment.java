@@ -16,13 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -34,6 +32,7 @@ import com.echo.holographlibrary.LineGraph;
 import com.echo.holographlibrary.LinePoint;
 import com.echo.holographlibrary.PieGraph;
 import com.echo.holographlibrary.PieSlice;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -129,7 +128,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
     private ListView legendListView;
 
-    private Toast noDataNotificationToast;
+    private Snackbar noDataNotificationSnackbar;
     private String selectedCompareData = COMPARE_TITLE_AttacksPerProtocol;
 
     private LayoutInflater inflater;
@@ -1304,16 +1303,16 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * Shows a small toast if the data to show is empty (no records).
      */
     private void showEmptyDataNotification() {
-        if (noDataNotificationToast == null) {
-            noDataNotificationToast = Toast.makeText(getApplicationContext(), R.string.no_data_notification, Toast.LENGTH_SHORT);
+        if (noDataNotificationSnackbar == null) {
+            noDataNotificationSnackbar = Snackbar.make(rootView, R.string.no_data_notification, Snackbar.LENGTH_LONG);
         }
         if (filter.isSet()) {
-            noDataNotificationToast.setText(R.string.no_data_notification);
+            noDataNotificationSnackbar.setText(R.string.no_data_notification);
         } else {
-            noDataNotificationToast.setText(R.string.no_data_notification_no_filter);
+            noDataNotificationSnackbar.setText(R.string.no_data_notification_no_filter);
         }
         if (currentData == null || currentData.isEmpty()) {
-            noDataNotificationToast.show();
+            noDataNotificationSnackbar.show();
         }
     }
 

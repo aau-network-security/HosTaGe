@@ -7,7 +7,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -18,6 +17,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.HashSet;
 
@@ -45,15 +45,6 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
     MultiStageAlarm alarm = new MultiStageAlarm();
     private static Boolean enabledHpfeeds = false;
     private static Boolean enabledMultistage = false;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
 
     /**
      * Called during {@link #onCreate(Bundle)} to supply the preferences for this fragment.
@@ -284,7 +275,7 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
             alarm.onReceive(context, intent);
             alarm.setAlarm(context);
         } else {
-            Toast.makeText(context, "Alarm is null", Toast.LENGTH_SHORT).show();
+            Snackbar.make(getView(), "Alarm is null", Snackbar.LENGTH_SHORT).show();
         }
     }
 }
