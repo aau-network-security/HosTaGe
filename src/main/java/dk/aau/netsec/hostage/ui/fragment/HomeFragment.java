@@ -494,17 +494,6 @@ public class HomeFragment extends Fragment {
             ((ViewGroup) view).removeAllViews();
         }
     }
-
-    public void AlertFile(String fname) {
-        AlertDialog alert = new AlertDialog.Builder(getActivity()).create();
-        alert.setTitle("Delete entry");
-        alert.setMessage("Are you sure you want to delete this entry?:\n" + fname);
-        alert.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                (dialog, which) -> dialog.dismiss());
-        alert.show();
-    }
-
-
 }
 
 
