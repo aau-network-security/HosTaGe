@@ -17,7 +17,7 @@
 					android:layout_height="wrap_content"
 					android:textAppearance="?android:attr/textAppearanceMedium"
 					android:text="@string/ssid"
-					android:id="@+id/textView1" android:layout_column="0"
+                android:layout_column="0"
 					android:layout_margin="4dp"
 					android:textColor="?attr/colorOnBackground"
 					android:textStyle="bold"/>
@@ -37,7 +37,7 @@
 					android:layout_height="wrap_content"
 					android:textAppearance="?android:attr/textAppearanceMedium"
 					android:text="@string/bssid"
-					android:id="@+id/txtP2PSubheader" android:layout_column="0"
+                android:layout_column="0"
 					android:layout_margin="4dp"
 					android:textColor="?attr/colorOnBackground"
 					android:textStyle="bold"/>
@@ -57,7 +57,7 @@
 					android:layout_height="wrap_content"
 					android:textAppearance="?android:attr/textAppearanceMedium"
 					android:text="@string/internal_ip"
-					android:id="@+id/textView3" android:layout_column="0"
+                android:layout_column="0"
 					android:layout_margin="4dp"
 					android:textColor="?attr/colorOnBackground"
 					android:textStyle="bold"/>

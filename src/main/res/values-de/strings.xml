@@ -2,22 +2,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">HosTaGe</string>
-    <string name="action_settings">Einstellungen</string>
-    <string name="action_about">Über</string>
-    <string name="capital_on">AUS</string>
-    <string name="capital_off">AN</string>
     <string name="title_connection_info">Verbindungs Info</string>
-    <string name="status">Status</string>
-    <string name="paranoid">Paranoid Mode</string>
-    <string name="details">Verbindungs Info</string>
     <string name="not_connected">Nicht verbunden</string>
     <string name="attack">&#160;Angriff</string>
     <string name="attacks">&#160;Angriffe</string>
-	<string name="portscan">&#160;Portscan</string>
-    <string name="portscans">&#160;Portscans</string>
     <string name="secure">Sicher</string>
     <string name="insecure">Unsicher</string>
-    <string name="logged">&#160;gelogged</string>
     <string name="recorded">&#160;aufgezeichnet</string>
     <string name="zero_attacks">0 Angriffe aufgezeichnet</string>
 
@@ -32,31 +22,13 @@
 
     <string name="ssid">SSID:</string>
     <string name="bssid">BSSID:</string>
-    <string name="protocol">Protokoll:</string>
-    <string name="timestamp">Zeitstempel:</string>
-    <string name="hostage.location" tools:ignore="ExtraTranslation">Ort:</string>
     <string name="internal_ip">Interne IP:</string>
     <string name="external_ip">Externe IP:</string>
-    <string name="remote_ip">Remote IP:</string>
-    <string name="packet_type">Packet Typ:</string>
-    <string name="packet_content">Packet Inhalt:</string>
 
-    <string name="services">Dienste</string>
-    <string name="connections">Aufgezeichnete Verbindungen:</string>
-    <string name="statistics">Statistiken</string>
-    <string name="database">Datenbank</string>
-    <string name="log_actions">Aktionen</string>
-    <string name="firstAttack">Erster Angriff:</string>
-    <string name="lastAttack">Letzter Angriff:</string>
-    <string name="clear">Clear</string>
     <string name="delete">L&#246;schen</string>
     <string name="cancel">Abbrechen</string>
     <string name="close">Schließen</string>
     <string name="show_records">Zeige Aufzeichnungen</string>
-    <string name="dialog_clear_database">Clear all data?</string>
-    <string name="export_dialog_title">Choose Export Format</string>
-    <string name="delete_dialog_title">Delete data sets by:</string>
-    <string name="dialog_clear_database_date">Delete all data before:</string>
 
     <string name="deleteFILTEREDAttacksTitle">Durch die Filtereinstellung werden nur die gefilterten Angriffsdaten gel&#246;scht.\n\nM&#246;chten Sie fortfahren?</string>
     <string name="deleteALLAttacksTitle">Sollen s&#228;mtliche Angriffsdaten gel&#246;scht werden?\n\nDurch die Filtereinstellungen k&#246;nnen Sie auch gezielt Angriffsdaten gel&#246;schen!</string>
@@ -82,21 +54,18 @@
     <string name="drawer_profile_manager">Profile</string>
     <string name="drawer_app_info">&#220;ber diese App</string>
     <string name="drawer_statistics">Statistiken</string>
-	<string name="drawer_help">Hilfe videos</string>
 
     <string name="hostage_with_url"><a href="http://www.tk.informatik.tu-darmstadt.de/de/research/secure-smart-infrastructures/hostage">HosTaGe</a></string>
 
     <string name="button_title_apply">Anwenden</string>
     <string name="button_title_cancel">Abbrechen</string>
     <string name="shared_preference_path">dk.aau.netsec.hostage.preferences</string>
-    <string name="UUID">9fc4f490-659e-11e3-949a-0800200c9a66</string>
 
     <string name="recorded_attacks">Angriffe: </string>
     <string name="current_connection">Aktuelle Verbindung</string>
     <string name="monitor_services">&#220;berwache Dienste</string>
 
     <string name="device_rooted">Ger&#228;t gerooted</string>
-    <string name="porthack_installed">Porthack installiert</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
 
@@ -107,7 +76,6 @@
     <string name="YESTERDAY">Gestern</string>
 
     <string name="ui_dev_by">Entwicklerteam:</string>
-    <string name="core_dev_by">Core Entwicklung</string>
     <string name="advanced_settings">Erweiterte Einstellungen</string>
     <string name="change_name_of_profile">&#196;ndere den Namen des Profils</string>
     <string name="change_desc_of_profile">&#196;ndere die Beschreibung des Profils</string>
@@ -115,8 +83,6 @@
     <string name="profile_description">Beschreibung</string>
     <string name="general">Allgemein</string>
     <string name="select_icon">W&#228;hle Icon</string>
-    <string name="delete_profile">Profil l&#252;schen</string>
-    <string name="really_want_delete_profiel">Willst du dieses Profil wirklich l&#252;schen?</string>
     <string name="discard">Verwerfen</string>
     <string name="save">Speichern</string>
     <string name="rec_protocol">Protokoll</string>
@@ -130,9 +96,6 @@
     <string name="rec_group_by">Gruppieren</string>
     <string name="rec_filter_by">Filtern</string>
     <string name="rec_time">Zeit</string>
-    <string name="rec_set_date">Datum auswählen</string>
-    <string name="rec_set">Speichern</string>
-    <string name="rec_cancel">Abbrechen</string>
     <string name="stats_protocols">Protokolle</string>
     <string name="stats_networks">Netzwerke</string>
     <string name="stats_attacks">Angriffe</string>
@@ -147,76 +110,28 @@
     <string name="stats_attacks_bssid">Angriffe pro BSSID</string>
     <string name="stats_attacks_time">Angriffe pro Zeit (24h)</string>
     <string name="stats_attacks_date">Angriffe pro Datum</string>
-    <string name="stats_uses_protocol">Nutzung pro Protokoll</string>
     <string name="stats_attacks_protocol">Angriffe pro Protokoll</string>
     <string name="stats_select_attack_data">W&#228;hle Kriterium zum Vergleich</string>
     <string name="stats_select_network_data">W&#228;hle Kriterium zum Vergleich</string>
-    <string name="stats_select_protocol_data">W&#228;hle Kriterium zum Vergleich</string>
     <string name="stats_per_cent_all">% von allen</string>
     <string name="pie_all">Alle</string>
 
 
-    <string name="CONNECTION_LOST_MESSAGE">Verbindung verloren, Wifi Direct muss erneut aktiviert werden.</string>
-    <string name="COULD_NOT_CONNECT_MESSAGE">Could not connect to device. Retry.</string>
-
-    <string name="SYNCHRONIZATION_COMPLETE_MESSAGE">Synchronisierung abgeschlossen.</string>
-    <string name="SYNCHRONIZATION_FAILED_MESSAGE">Synchronisierung konnte nicht abgeschlossen werden. Versuche es erneut.</string>
-
-
-    <string name="ERROR_CONNECTION_FAILED">Es konnte keine stabile Verbindung hergestellt werden.</string>
-    <string name="ERROR_CONNECTION_TIMEOUT">Zeitüberschreitung - Versuche es erneut.</string>
-    <string name="ERROR_MESSAGE_UNKNOWN">Ein unbekannter Fehler ist aufgetreten. Überprüfe die Appversion oder versuche es erneut.</string>
-    <string name="ERROR_COMMUNICATION_FAILED">Übertragungsfehler - Überprüfe die Appversion oder versuche es erneut.</string>
-
-
-    <string name="PERFORMING_TASK_AS_HOST">Verbunden als Host.</string>
-    <string name="PERFORMING_TASK_AS_CLIENT">Verbunden als Client.</string>
-
-    <string name="ACTIONBAR_TITLE">P2P Synchronisierung</string>
-    <string name="PROGRESS_TITLE_LOADING">Empfangen...</string>
-    <string name="PROGRESS_TITLE_CONNECTING">Verbinden...</string>
-    <string name="PROGRESS_TITLE_SYNC">Datenaustausch</string>
-
-    <string name="DEVICE_STATUS_AVAILABLE">Bereit</string>
-    <string name="DEVICE_STATUS_INVITED">Eingeladen</string>
-    <string name="DEVICE_STATUS_CONNECTED">Verbunden</string>
-    <string name="DEVICE_STATUS_FAILED">Fehlgeschlagen</string>
-    <string name="DEVICE_STATUS_UNAVAILABLE">Unerreichbar</string>
-    <string name="DEVICE_STATUS_UNKNOWN">Status ist unbekannt</string>
-
-    <string name="WIFI_STATUS_DISABLED_MESSAGE">WiFi Direct ist nicht vorhanden, bitte aktiviere WiFi Direct.</string>
-    <string name="WIFI_STATUS_ENABLE_BUTTON">Aktivieren</string>
-    <string name="CANCEL_BUTTON_TITLE">Abbrechen</string>
-
-    <string name="Your_Device">Eigene Ger&#228;te Informationen</string>
-    <string name="Change_Device_Name">Ger&#228;tename &#228;ndern</string>
-    <string name="Device_Name">Ger&#228;tename</string>
-    <string name="Device_Status">Ger&#228;testatus</string>
-    <string name="Wifi_Direct_Not_suppported">Das Ger&#228;t unterst&#252;tzt kein Wifi Direct.</string>
-    <string name="Available_Devices">Vorhandene Ger&#228;te</string>
-    <string name="Looking_For_Devices_Progress_Title">Suche andere Ger&#228;te.</string>
-
-	<string name="record_details_received">EMPFANGEN</string>
+    <string name="record_details_received">EMPFANGEN</string>
 	<string name="record_details_sent">GESENDET</string>
 	<string name="record_details_info" formatted="false">von %s an %s\n%s um %s Uhr</string>
-	<string name="record_details_dateformat" formatted="false">d. MMMM, yyyy \'um\' HH:mm:ss \'Uhr\'</string>
-	<string name="record_details_nocontent">Kein Inhalt</string>
+    <string name="record_details_nocontent">Kein Inhalt</string>
 	<string name="record_details_remote_ip">REMOTE IP</string>
 	<string name="record_details_conversation">Unterhaltung</string>
-    <string name="profile_vista_desc">Dieses Profil immitiert Windows Vista</string>
-	<string name="profile_seven_desc">Dieses Profil immitiert Windows 7</string>
+    <string name="profile_seven_desc">Dieses Profil immitiert Windows 7</string>
     <string name="profile_xp_desc">Dieses Profil aktiviert Dienste die Typisch f&#252;r Windows XP sind</string>
-    <string name="profile_webserv_http_desc">Dieses Profil immitiert einen simplen Webserver, welcher nur den Port für das HTTP Protokoll &#252;berwacht</string>
-	<string name="profile_webserv_apache_desc">Dieses Profil immitiert einen Apache Webserver</string>
+    <string name="profile_webserv_apache_desc">Dieses Profil immitiert einen Apache Webserver</string>
 	<string name="profile_webserv_iis_desc">Dieses Profil immitiert einen IIS Webserver</string>
-    <string name="profile_webserv_desc">Dieses Profil immitiert einen simplen Webserver, welcher neben dem HTTP Protokoll auch das HTTPS Protokoll unterst&#252;tzt</string>
-    <string name="profile_unix_desc">Dieses Profil aktiviert Unix-typische Dienste</string>
     <string name="profile_linux_desc">Dieses Profil immitiert ein Linux System mit entsprechenden Diensten</string>
 	<string name="profile_linux_hard_desc">Dieses Profil immitiert ein Linux System, bei welchem nur SSH aktiv ist</string>
 	<string name="profile_voip_desc">Dieses Profil immitiert einen VOIP Server, welcher das SIP Protokoll &#252;berwacht</string>
     <string name="profile_random_desc">In diesem Profil werden zuf&#228;llige Protokolle aktiviert</string>
     <string name="profile_vigilant_desc">Dieses Profil aktiviert alle Protokolle</string>
-    <string name="profile_help_swipe">Swipe von der linken oder rechten Seite um alle Aktionen zu zeigen</string>
     <string name="profile_monitor_ghost">&#220;berwache GHOST</string>
     <string name="profile_activate_ghost">Aktiviere GHOST &#220;berwachung</string>
     <string name="profile_activate_ghost_summary">Dieses Protokoll spiegelt eingehende Verbindungen</string>
@@ -226,59 +141,23 @@
     <string name="profile_activate_protocols_summary">Aktiviere die zu &#252;berwachenden Protokolle</string>
     <string name="profile_warning">Bitte beachte, dass dieses Profil nicht bearbeitet werden kann. Wenn du &#196;nderungen machst und speicherst, so wird ein neues Profil mit diesen Einstellungen erstellt.</string>
     <string name="rec_choose_export_format">W&#228;hle Exportformat</string>
-    <string name="rec_sync_rec">Synchronisiere Aufzeichungen</string>
-    <string name="rec_via_bt">&#220;ber Bluetooth</string>
-    <string name="rec_via_nfc">&#220;ber NFC</string>
-    <string name="rec_via_online">&#220;ber Online Datenbank</string>
-    <string name="title_activity_p2_psync">WifiDirect Synchronization</string>
-    <string name="pref_sync_countries_dialog">Länderauswahl</string>
-    <string name="pref_sync_countries_desc">Nur Angriffdaten von diesen Ländern herunterladen</string>
-    <string name="pref_sync_countries">Länder</string>
-    <string name="pref_download_server">Download server</string>
     <string name="honeypot_past_threat">Sieht nicht sicher aus...</string>
     <string name="honeypot_not_monitoring">Zzz...</string>
     <string name="honeypot_no_threat">Sieht sicher aus!</string>
     <string name="honeypot_live_threat">Wir werden angegriffen!!!</string>
-    <string name="help_me">Hilfe!</string>
-    <string name="install_porthack">Portbinder installieren</string>
-    <string name="iptables_available">Iptables verfügbar</string>
     <string name="network_not_connected_msg">Sie sind mit keinem Netzwerk verbunden. \n\nBitte verbinden sie sich zuerst mit einem Netzwerk, bevor sie HosTaGe starten.</string>
-    <string name="no_thanks">Nein, danke.</string>
-    <string name="not_rooted">Ihr Smartphone hat keine root Rechte. Um den vollen Funktionsumfang zu nutzen, benötigen sie root Rechte.</string>
-    <string name="portbinder_website">Website besuchen</string>
     <string name="pref_portscan_timeout_summary">Sollte der maximalen Dauer eines Portscans in Sekunden entsprechen</string>
     <string name="record_details_confirm_delete">Wollen sie diesen Angriff wirklich löschen?</string>
     <string name="pref_max_connections_summary">Maximale Anzahl an Gleichzeitigen Verbindungen pro Protokol</string>
-    <string name="subnet_mask">Subnetzmaske</string>
-    <string name="uninstall_porthack">Portbinder deinstallieren</string>
-    <string name="porthack_explanation"><![CDATA[<h1>Portbinder</h1> <p>Um Protokolle mit Ports unter 1024 zu nutzen, benötigt ihr Smartphone root Rechte. Standartmäßig läuft HosTaGe nicht mit root Rechten. Deswegen wird ein kleines Programm mit dem Namen Portbinder benötigt. Dieses öffnet einen Socket und gibt diesen an die HosTaGe App weiter.</p> <p>Eine alternative Möglichkeit ist, diese Ports umzuleiten auf höhere Ports. Unter Android ist dies möglich mit iptables. Wenn iptables auf ihrem Smartphone unterstützt werden, dann ist der Portbinder nicht nötig.</p>]]></string>
-    <string name="confirm_msg">Dieser automaitsche Installer nimmt die Smartphone spezifische Binary und installiert diese auf dem Smartphone.\n\nDieser automatische Prozess verändert einige Verzeichnis Rechte. Sie handeln mit eigenem Risiko.\n\nBestätigen sie um die automatische Portbinder Installation zu starten?</string>
     <string name="google_play_services_unavailable">Fehler: Google Play Services sind nicht verfügbar.</string>
-    <string name="help">Hilfe</string>
-    <string name="helpPortbinder">Bitte befolgen sie die Anleitungen auf unserer Website um den \'Portbinder\' zu installieren.\n\nAlternativ können sie den automatischen Installer benutzen in dem sie auf den Knopf \'Hilfe!\' drücken.</string>
-    <string name="how">Wie?</string>
     <string name="no_network_connection_threatmap_msg">Sie sind zurzeit nicht mit dem Internet verbunden.\n\nBitte stellen sie eine Verbindung her um die Threatmap zu benutzten.</string>
-    <string name="no_portbinder_msg">Ihr Smartphone hat keinen  \'Portbinder\' installiert. Aufgrund von Einschränkungen unter Android können sie nur Dienste mit Ports >1024 benutzten.\n\nUm die volle Funktionalität von  HosTaGe nutzen zu können, müssen sie sicherstellen, dass ihr Smartphone gerootet ist und  der \'Portbinder\' installiert ist.</string>
-    <string name="no_portbinder_msg2">Ihr Smartphone unterstützt zur Zeit nicht alle Funktionen von HosTaGe. Klicken sie auf \'Hilfe\' um mehr zu erfahren.</string>
-    <string name="confirm">Bestätigen</string>
-    <string name="pref_sync_frequency_summary">Der Intervall in minuten in dem eine Synchronisierung mit TraCINg durchgeführt werden soll.</string>
-    <string name="pref_sync_frequency_title">Synchronisierungsinterval</string>
     <string name="hostage_live_threat">Netzwerk ist infiziert!</string>
     <string name="hostage_no_threat">Netzwerk sieht sicher aus</string>
     <string name="hostage_not_monitoring">HosTaGe ist inaktiv</string>
     <string name="hostage_past_threat">Netzwerk wurde in der Vergangenheit angegriffen</string>
-    <string name="hostage_email">
-        <a href="mailto:hostage@tk.informatik.tu-darmstadt.de?Subject=Inquiry">Sag uns deine Meinung
-            zu HosTaGe
-        </a>
-    </string>
     <string name="multistage_service">Mehrstufige Service</string>
     <string name="multistage_summary">Aktivieren Mehrstufige Angriff Detection Service</string>
-    <string name="portbinder_tutorial">Videoanleitung</string>
     <string name="service">Dienste</string>
-    <string name="nfc_not_available">NFC ist nicht verfügbar</string>
-    <string name="nfc_enable_beam">Android Beam Aktivieren</string>
-    <string name="nfc_hold_phones_together">Halten Sie Telefone zusammen, um Daten zu senden oder empfangen.</string>
     <string name="error_activating_services">Versuchen Sie es später nochmals.</string>
     <string name="enable">Aktivieren</string>
     <string name="warning">Warnung</string>
