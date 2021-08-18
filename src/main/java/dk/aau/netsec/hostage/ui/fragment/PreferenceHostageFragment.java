@@ -177,8 +177,8 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
 
         if (key.equals(PREFERENCE_KEY_MULTISTAGE)) {
             checkMultistage();
-        } else if (key.equals(PREFERENCE_KEY_HPFEEDS)) {
-            checkHpfeeds();
+//        } else if (key.equals(PREFERENCE_KEY_HPFEEDS)) {
+//            checkHpfeeds();
         }
     }
 
@@ -192,12 +192,12 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
         }
     }
 
-    private void checkHpfeeds() {
-        SwitchPreference switchPrefHpfeeds = (SwitchPreference) getPreferenceManager().findPreference(PREFERENCE_KEY_HPFEEDS);
-
-        if (switchPrefHpfeeds.isChecked() && !enabledHpfeeds)
-            confirmHpfeeds(switchPrefHpfeeds).create().show();
-    }
+//    private void checkHpfeeds() {
+//        SwitchPreference switchPrefHpfeeds = (SwitchPreference) getPreferenceManager().findPreference(PREFERENCE_KEY_HPFEEDS);
+//
+//        if (switchPrefHpfeeds.isChecked() && !enabledHpfeeds)
+//            confirmHpfeeds(switchPrefHpfeeds).create().show();
+//    }
 
     private MaterialAlertDialogBuilder confirmMultistage(SwitchPreference switchPrefMultiStage) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
@@ -215,23 +215,24 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
         return builder;
     }
 
-    private MaterialAlertDialogBuilder confirmHpfeeds(SwitchPreference switchPrefHpFeeds) {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
-        builder.setTitle(R.string.data_disclaimer);
-//		TODO extract strings
-        builder.setMessage("The data collected from HosTaGe attack records will be stored for Advanced Collaborative Threat Intelligence. GDPR sensitive data include but are not limited to the public IP address of the publishing HosTaGe device. Please note that the physical geographical location of the participating HosTaGe publisher can be determined with the public IP address. Furthermore, hpfeeds include the IP address and the ports of the attack sources. Exclusive access to the hpfeeds repository is provided only with an internal review process.\n" +
-                "\n" +
-                "By enabling hpfeeds, the user of this app agrees to send Aalborg University (Denmark) attack data and provides his consent to use this data to process threat intelligence. The user has the right to ask for the deletion of the data published by him/her. Please contact hostage@es.aau.dk for queries and more information.");
-        builder.setPositiveButton(R.string.enable, (dialog, which) -> {
-            enabledHpfeeds = true;
-        });
-        builder.setNegativeButton(R.string.close, (dialog, which) -> {
-            switchPrefHpFeeds.setChecked(false);
-            enabledHpfeeds = false;
-        });
+//    private MaterialAlertDialogBuilder confirmHpfeeds(SwitchPreference switchPrefHpFeeds) {
+//        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+//        builder.setTitle(R.string.data_disclaimer);
+////		TODO extract strings
 
-        return builder;
-    }
+//        builder.setMessage("The data collected from HosTaGe attack records will be stored for Advanced Collaborative Threat Intelligence. GDPR sensitive data include but are not limited to the public IP address of the publishing HosTaGe device. Please note that the physical geographical location of the participating HosTaGe publisher can be determined with the public IP address. Furthermore, hpfeeds include the IP address and the ports of the attack sources. Exclusive access to the hpfeeds repository is provided only with an internal review process.\n" +
+//                "\n" +
+//                "By enabling hpfeeds, the user of this app agrees to send Aalborg University (Denmark) attack data and provides his consent to use this data to process threat intelligence. The user has the right to ask for the deletion of the data published by him/her. Please contact hostage@es.aau.dk for queries and more information.");
+//        builder.setPositiveButton(R.string.enable, (dialog, which) -> {
+//            enabledHpfeeds = true;
+//        });
+//        builder.setNegativeButton(R.string.close, (dialog, which) -> {
+//            switchPrefHpFeeds.setChecked(false);
+//            enabledHpfeeds = false;
+//        });
+//
+//        return builder;
+//    }
 
     @Override
     public Fragment getCallbackFragment() {
