@@ -62,7 +62,7 @@ public class RootShellService2 extends Service {
 
     private static void complete(final RootCommand state, int exitCode) {
         if (enableProfiling) {
-            Log.d(TAG, "RootShell: " + state.getCommmands().size() + " commands completed in " +
+            Log.d(TAG, "RootShell: " + state.getCommands().size() + " commands completed in " +
                     (new Date().getTime() - state.startTime.getTime()) + " ms");
         }
         state.exitCode = exitCode;
@@ -111,8 +111,8 @@ public class RootShellService2 extends Service {
     }
 
     private static void processCommands(final RootCommand state) {
-        if (state.commandIndex < state.getCommmands().size() && state.getCommmands().get(state.commandIndex) != null) {
-            String command = state.getCommmands().get(state.commandIndex);
+        if (state.commandIndex < state.getCommands().size() && state.getCommands().get(state.commandIndex) != null) {
+            String command = state.getCommands().get(state.commandIndex);
             //not to send conflicting status
             sendUpdate(state);
 
@@ -152,7 +152,7 @@ public class RootShellService2 extends Service {
                         state.retryCount = 0;
 
                         boolean errorExit = exitCode != 0 && !state.ignoreExitCode;
-                        if (state.commandIndex >= state.getCommmands().size() || errorExit) {
+                        if (state.commandIndex >= state.getCommands().size() || errorExit) {
                             complete(state, exitCode);
                             if (exitCode < 0) {
                                 rootState = ShellState.FAIL;
@@ -182,7 +182,7 @@ public class RootShellService2 extends Service {
         new Thread(() -> {
             Intent broadcastIntent = new Intent();
             broadcastIntent.setAction("UPDATEUI6");
-            broadcastIntent.putExtra("SIZE", state2.getCommmands().size());
+            broadcastIntent.putExtra("SIZE", state2.getCommands().size());
             broadcastIntent.putExtra("INDEX", state2.commandIndex);
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(broadcastIntent);
         }).start();
@@ -244,7 +244,7 @@ public class RootShellService2 extends Service {
 
     public void runScriptAsRoot(Context ctx, List<String> cmds, RootCommand state) {
         Log.i(TAG, "Received cmds: #" + cmds.size());
-        state.setCommmands(cmds);
+        state.setCommands(cmds);
         state.commandIndex = 0;
         state.retryCount = 0;
         if (mContext == null) {

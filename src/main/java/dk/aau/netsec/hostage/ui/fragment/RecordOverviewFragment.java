@@ -1037,7 +1037,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     }
 
     /**
-     * Returns a date as a formated string
+     * Returns a date as a formatted string
      *
      * @param timestamp date
      * @return String date format is localised
@@ -1154,7 +1154,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     }
 
     /**
-     * Returns a date as a formated string
+     * Returns a date as a formatted string
      *
      * @param timeStamp date
      * @return String date format is localised
@@ -1484,7 +1484,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     /**
      * Returns the Sorttype Titles
      *
-     * @return ArayList<String> Sort type titles
+     * @return ArrayList<String> Sort type titles
      */
     public ArrayList<String> sortTypeTiles() {
         ArrayList<String> titles = new ArrayList<>();
@@ -1612,7 +1612,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     }
 
     /**
-     * Will be called if the users clicks the positiv button on a ChechlistDialog.
+     * Will be called if the users clicks the positive button on a ChecklistDialog.
      *
      * @param dialog {@link ChecklistDialog ChecklistDialog }
      */
@@ -1712,7 +1712,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     }
 
     /**
-     * Will be called if the users clicks the negativ button on a ChechlistDialog.
+     * Will be called if the users clicks the negative button on a ChecklistDialog.
      *
      * @param dialog {@link ChecklistDialog ChecklistDialog }
      */
@@ -1731,7 +1731,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if (fm != null) {
             RecordDetailFragment newFragment = new RecordDetailFragment();
             newFragment.setRecord(record);
-            newFragment.setUpNavigatible(true);
+            newFragment.setUpNavigable(true);
             MainActivity.getInstance().injectFragment(newFragment);
         }
     }

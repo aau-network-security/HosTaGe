@@ -238,7 +238,7 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
         return this;
     }
 
-    //TODO Replace with seperate Fragments as suggested in https://developer.android.com/guide/topics/ui/settings/organize-your-settings#split_your_hierarchy_into_multiple_screens
+    //TODO Replace with separate Fragments as suggested in https://developer.android.com/guide/topics/ui/settings/organize-your-settings#split_your_hierarchy_into_multiple_screens
 
     /**
      * SubsScreens in Android X are no longer Supported.

@@ -144,7 +144,7 @@ public class ProfileManager {
      */
     public void loadData() {
         try {
-            if (loadDefaulData())
+            if (loadDefaultData())
                 return;
             String UTF8 = "utf8";
             int BUFFER_SIZE = 8192;
@@ -173,7 +173,7 @@ public class ProfileManager {
         }
     }
 
-    private boolean loadDefaulData() {
+    private boolean loadDefaultData() {
         boolean profileExist = new File(PERSIST_FILENAME).exists();
         if (!profileExist) {
             fillDefaultData();
@@ -351,7 +351,7 @@ public class ProfileManager {
      * Adds a given profile to the profile manager.
      *
      * @param profile the profile to add
-     * @param persist true,  if the profile should also be persisted immediatly,
+     * @param persist true,  if the profile should also be persisted immediately,
      *                false, if the profile should just be added internally without being persisted
      *                (Note: you can still call persistData later to persist all the profiles)
      */
@@ -373,7 +373,7 @@ public class ProfileManager {
     }
 
     /**
-     * Deletes a given profile. These changes will be persisted immediatly.
+     * Deletes a given profile. These changes will be persisted immediately.
      *
      * @param profile the profile to delete
      */

@@ -59,17 +59,17 @@ public class SplitPopupItem extends AbstractPopupItem {
 
         TextView rightTitleView = view.findViewById(R.id.right_title_text_view);
         rightTitleView.setText(rightTitle);
-        TextView rightSubtilteView = view.findViewById(R.id.right_subtitle_text_view);
+        TextView rightSubtitleView = view.findViewById(R.id.right_subtitle_text_view);
         if (rightSubtitle != null){
-            rightSubtilteView.setText(rightSubtitle);
+            rightSubtitleView.setText(rightSubtitle);
         } else {
-            rightSubtilteView.setText("-");
+            rightSubtitleView.setText("-");
         }
     }
 
     /**
      * Returns the displayed object for the clicked position in the view.
-     * E.g. the user tapped the right side, it returns the object representing the right side of the clickt view.
+     * E.g. the user tapped the right side, it returns the object representing the right side of the clicked view.
      * @param event MotionEvent
      * @return Object
      */

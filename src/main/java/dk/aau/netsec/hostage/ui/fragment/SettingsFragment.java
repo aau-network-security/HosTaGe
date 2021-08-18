@@ -154,7 +154,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
     }
 
     /**
-     * Initialise the location setting by assinging an on-click listener and updating UI with
+     * Initialise the location setting by assigning an on-click listener and updating UI with
      * the location value from {@link PcapLoggingManager}
      */
     private void initialiseLocationSelector() {
@@ -167,7 +167,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
     }
 
     /**
-     * Initialise log rotation setting by assinging an on-click listener and updating UI with
+     * Initialise log rotation setting by assigning an on-click listener and updating UI with
      * the value from {@link PcapLoggingManager}
      */
     private void initialiseRotationPeriodSelector() {

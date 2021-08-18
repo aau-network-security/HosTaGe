@@ -44,8 +44,8 @@ import dk.aau.netsec.hostage.R;
  * <i>PCAP mode</i> saves the output as .cap files, which can be opened by Wireshark or the like.
  * When operating in this mode, tcpdump outputs the logs periodically into an app-private files
  * folder. Another thread then copies these files into the user-specified folder. This setup is
- * necessary, since tcpdump cannot reliably write files direcly to the user-specified folder on
- * all API verions (due to restrictions in app's access to user files on API >= 28).
+ * necessary, since tcpdump cannot reliably write files directly to the user-specified folder on
+ * all API versions (due to restrictions in app's access to user files on API >= 28).
  *
  * @author Filip Adamik
  * Created on 10-08-2021
@@ -239,7 +239,7 @@ public class PcapLoggingService extends Service {
      *
      * @param fileName Filename of the newly created file.
      * @return Writeable FileOutputStream
-     * @throws FileNotFoundException This exception should never be thown.
+     * @throws FileNotFoundException This exception should never be thrown.
      */
     private FileOutputStream openFileForWriting(String fileName) throws FileNotFoundException {
         DocumentFile dirFile = DocumentFile.fromTreeUri(context, outputFolder);

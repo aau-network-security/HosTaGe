@@ -48,7 +48,7 @@ public class PcapLoggingManager {
      * Private mandatory constructor.
      * <p>
      * getPcapLoggingManagerInstance should be used to obtain an instance of logging manager, to
-     * ensure there is only a sinle instance active at any given time.
+     * ensure there is only a single instance active at any given time.
      *
      * @param context
      */
@@ -120,7 +120,7 @@ public class PcapLoggingManager {
      * PCAP logs will be written to.
      *
      * @param fragment         fragment to launch the picker from and return back to
-     * @param enableAfterwards Speficies whether the PCAP logging should be enabled after the user
+     * @param enableAfterwards Specifies whether the PCAP logging should be enabled after the user
      *                         has selected the output folder.
      */
     private void launchFolderPicker(SettingsFragment fragment, boolean enableAfterwards) {
@@ -225,7 +225,7 @@ public class PcapLoggingManager {
      * Activate PCAP logging. If output location is null or is not writable, prompt the user to
      * select an output location first.
      *
-     * @param fragment Settings fragment instance where the user triggerred the action.
+     * @param fragment Settings fragment instance where the user triggered the action.
      */
     public void enablePcapLogging(SettingsFragment fragment) {
         if (mOutputLocation == null || !pcapLocationWritable(mOutputLocation)) {
@@ -339,28 +339,4 @@ public class PcapLoggingManager {
 
         return mLogRotationPeriod;
     }
-
-//    //    ONLY FOR TESTING! (delete for release)
-//    public void writeTestFile(Uri locationUri) {
-//
-//        DocumentFile dirFile = DocumentFile.fromTreeUri(context, locationUri);
-//
-//        DocumentFile file = dirFile.createFile("text/plain", "filipsFile");
-//        Uri uri = file.getUri();
-//
-//
-//        try {
-//            ParcelFileDescriptor pfd = context.getContentResolver().
-//                    openFileDescriptor(uri, "w");
-//            FileOutputStream fileOutputStream =
-//                    new FileOutputStream(pfd.getFileDescriptor());
-//            fileOutputStream.write(("Overwritten at " + System.currentTimeMillis() +
-//                    "\n").getBytes());
-//            fileOutputStream.close();
-//            pfd.close();
-//
-//        } catch (IOException fnfe) {
-//            fnfe.printStackTrace();
-//        }
-//    }
 }

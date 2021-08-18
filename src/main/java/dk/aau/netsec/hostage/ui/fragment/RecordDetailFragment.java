@@ -137,7 +137,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
         this.mRootView = inflater.inflate(this.getLayoutId(), container, false);
         this.assignViews(mRootView);
-        this.configurateRootView(mRootView);
+        this.configureRootView(mRootView);
 
         return mRootView;
     }
@@ -171,7 +171,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
      *
      * @param rootView the view to use to display the information
      */
-    private void configurateRootView(View rootView) {
+    private void configureRootView(View rootView) {
         mRecordDetailsTextAttackType.setText(mRecord.getWasInternalAttack() ? R.string.RecordInternalAttack : R.string.RecordExternalAttack);
         mRecordDetailsTextBssid.setText(mRecord.getBssid());
         mRecordDetailsTextSsid.setText(mRecord.getSsid());

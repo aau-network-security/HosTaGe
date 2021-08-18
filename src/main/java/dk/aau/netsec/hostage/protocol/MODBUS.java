@@ -10,7 +10,7 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 /**
  * Created by Shreyas Srinivasa on 25.05.15.
  *
- * Modbus serial communications protocol on industraial PLCs
+ * Modbus serial communications protocol on industrial PLCs
  */
 public class MODBUS implements Protocol {
     private int port = 502;

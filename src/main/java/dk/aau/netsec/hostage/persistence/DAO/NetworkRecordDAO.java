@@ -341,10 +341,10 @@ public synchronized ArrayList<String> getUniqueBSSIDRecordsForProtocol(String pr
     }
 
     /**
-     * Returns PlotComparisionItems for attacks per bssid.
+     * Returns PlotComparisonItems for attacks per bssid.
      * @param filter (LogFilter) filter object
      *
-     * @return ArrayList<PlotComparisonItem>
+     * @return ArrayList<PlotComparsonItem>
      */
     public synchronized ArrayList<PlotComparisonItem> attacksPerBSSID(LogFilter filter) {
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(this.daoSession);

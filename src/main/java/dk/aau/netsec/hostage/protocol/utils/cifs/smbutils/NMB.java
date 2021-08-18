@@ -14,7 +14,7 @@ import dk.aau.netsec.hostage.net.MyDatagramSocketFactory;
 
 /**
  * NetBIOS.
- * Used to registrate computers and workgroups in a windows network.
+ * Used to register computers and workgroups in a windows network.
  * @author Wulf Pfeiffer
  */
 public class NMB extends Thread {
@@ -100,15 +100,15 @@ public class NMB extends Thread {
 	/**
 	 * Sends the required packets for user and workgroup registration.
 	 */
-	private void registrate() {
-		registrateUser();
-		registrateGroup();
+	private void register() {
+		registerUser();
+		registerGroup();
 	}
 	
 	/**
 	 * Sends the required packets for user registration.
 	 */
-	private void registrateUser() {
+	private void registerUser() {
 		nbns.setType(NBNSType.REGISTRATION_UNIQUE);
 		nbns.setService(NBNSService.SERVER);
 		nbns.setName(username);
@@ -124,7 +124,7 @@ public class NMB extends Thread {
 	/**
 	 * Sends the required packets for workgroup registration.
 	 */
-	private void registrateGroup() {
+	private void registerGroup() {
 		nbns.setName(workgroup);
 		nbns.setType(NBNSType.REGISTRATION_GROUP);
 		sendPacket(nbns);
@@ -154,7 +154,7 @@ public class NMB extends Thread {
 	/**
 	 * Sends the required packets for local master registration.
 	 */
-	private void registrateLocalMaster() {
+	private void registerLocalMaster() {
 		nbns.setName(workgroup);
 		nbns.setType(NBNSType.REGISTRATION_UNIQUE);
 		nbns.setService(NBNSService.LOCAL_MASTER_BROWSER);
@@ -237,19 +237,19 @@ public class NMB extends Thread {
 			e.printStackTrace();
 		}
 
-		registrate();
+		register();
 		announceHost();
 		queryName();
 		checkForAnswers();
 		
 		if (isMaster) {
-			registrate();
+			register();
 			queryName();
 			
-			registrate();
+			register();
 			queryName();
 			
-			registrate();
+			register();
 			queryName();	
 			
 			browserElection();
@@ -262,10 +262,10 @@ public class NMB extends Thread {
 			registrateMsBrowse();
 			registrateMsBrowse();
 			
-			registrateLocalMaster();
-			registrateLocalMaster();
-			registrateLocalMaster();
-			registrateLocalMaster();
+			registerLocalMaster();
+			registerLocalMaster();
+			registerLocalMaster();
+			registerLocalMaster();
 			
 			requestAnnouncement();
 			localMasterAnnouncementAll();

@@ -539,7 +539,7 @@ public class MainActivity extends AppCompatActivity {
         this.mDisplayedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
         configureFragment();
 
-        if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigatible()) {
+        if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigable()) {
             mDrawerToggle.setDrawerIndicatorEnabled(true);
         } else {
             mDrawerToggle.setDrawerIndicatorEnabled(false);
@@ -635,7 +635,7 @@ public class MainActivity extends AppCompatActivity {
             if (upFrag.getUpFragment() == null) {
                 upFrag.setUpFragment(this.mDisplayedFragment.getClass());
             }
-            if (upFrag.isUpNavigatible()) {
+            if (upFrag.isUpNavigable()) {
                 mDrawerToggle.setDrawerIndicatorEnabled(false);
             }
         }
@@ -704,7 +704,7 @@ public class MainActivity extends AppCompatActivity {
             this.mDisplayedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
             configureFragment();
 
-            if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigatible()) {
+            if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigable()) {
                 mDrawerToggle.setDrawerIndicatorEnabled(true);
             } else {
                 mDrawerToggle.setDrawerIndicatorEnabled(false);

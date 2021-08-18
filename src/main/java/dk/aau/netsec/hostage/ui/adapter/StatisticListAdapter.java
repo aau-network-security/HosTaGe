@@ -50,9 +50,9 @@ public class StatisticListAdapter extends ArrayAdapter<PlotComparisonItem> {
     }
 
     /**
-     * Contructor
+     * Constructor
      * @param context the context
-     * @param objects the repesenting {@link dk.aau.netsec.hostage.ui.model.PlotComparisonItem PlotComparisonItems}
+     * @param objects the representing {@link dk.aau.netsec.hostage.ui.model.PlotComparisonItem PlotComparisonItems}
      */
     public StatisticListAdapter(Context context, List<PlotComparisonItem> objects) {
         super(context, getLayoutID(), objects);

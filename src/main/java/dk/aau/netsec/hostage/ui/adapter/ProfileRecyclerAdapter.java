@@ -22,7 +22,7 @@ import dk.aau.netsec.hostage.ui.activity.ProfileEditActivity;
 import dk.aau.netsec.hostage.ui.layouts.FlowLayout;
 
 /**
- * RecyclerAdapter to bind list of profiles obrained from ProfileManager to UI views constructed
+ * RecyclerAdapter to bind list of profiles obtained from ProfileManager to UI views constructed
  * by RecyclerView
  *
  * @author Filip Adamik

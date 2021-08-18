@@ -34,7 +34,7 @@ public class DateTimePickerDialog {
      *
      * @param context    Application context
      * @param filterFrom A flag that is passed back in the callback, indicating whether this was
-     *                   triggerred from the <i>before</i> or <i>after</i> filter.
+     *                   triggered from the <i>before</i> or <i>after</i> filter.
      * @param callback   The interface implementation where the date and time value is passed.
      */
     public static void showDateTimePicker(@NonNull Context context, boolean filterFrom, @NonNull DateTimeSelected callback) {

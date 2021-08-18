@@ -193,7 +193,7 @@ public abstract class AbstractPopup {
             this.popupWindow.setHeight(height);
 
             if (lastItemView != null) {
-                View v = lastItemView.findViewById(R.id.bottom_seperator);
+                View v = lastItemView.findViewById(R.id.bottom_separator);
 
                 if (v != null) {
                     v.setVisibility(View.GONE);

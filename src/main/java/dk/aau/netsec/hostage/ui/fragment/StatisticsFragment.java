@@ -367,7 +367,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     }
 
     /**
-     * Sets the current chart to the given type and acualises it.
+     * Sets the current chart to the given type and actualises it.
      *
      * @param type {@link StatisticsFragment.ChartType ChartType}
      */
@@ -425,7 +425,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     }
 
     /**
-     * Actualises the list view. Therefore it requiers the "currentData".
+     * Actualises the list view. Therefore it requires the "currentData".
      */
     public void actualiseLegendList() {
         StatisticListAdapter adapter = new StatisticListAdapter(getApplicationContext(), currentData);
@@ -558,7 +558,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * */
 
     /**
-     * Will be called if the user selects the positiv button on an checklist dialog.
+     * Will be called if the user selects the positive button on an checklist dialog.
      *
      * @param dialog {@link ChecklistDialog ChecklistDialog}
      */
@@ -624,7 +624,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     }
 
     /**
-     * Will be called if the user selects the negativ button on an checklist dialog.
+     * Will be called if the user selects the negative button on an checklist dialog.
      *
      * @param dialog {@link ChecklistDialog ChecklistDialog}
      */
@@ -1727,7 +1727,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     }
 
     /**
-     * Returns the given hour as a formated string.
+     * Returns the given hour as a formatted string.
      * Format: "HH:00"
      */
     private String getHourAsTimeString(long hour) {
@@ -1737,7 +1737,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     //static final DateFormat dateFormat = new SimpleDateFormat("d.M.yy");
 
     /**
-     * Returns a date as a formated string
+     * Returns a date as a formatted string
      *
      * @param timeStamp date
      * @return String date format is localised
@@ -1750,7 +1750,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     }
 
     /**
-     * Returns a date as a formated string
+     * Returns a date as a formatted string
      *
      * @param timeStamp date
      * @return String date format (H:mm  dd/MM/yyyy)
@@ -1853,7 +1853,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             // Create a new instance of your Fragment.
             RecordOverviewFragment newFragment = new RecordOverviewFragment();
             // Set true, if the user can navigate backwards from the new pushed fragment.
-            newFragment.setUpNavigatible(true);
+            newFragment.setUpNavigable(true);
 
             // Set a Filter Object if needed.
             // Otherwise the RecordOverviewFragment will display all possible records / attacks.

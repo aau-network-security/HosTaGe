@@ -29,7 +29,7 @@ public class RootCommand implements Cloneable, Serializable {
     public int hash = -1;
     public boolean isv6 = false;
 
-    private List<String> commmands;
+    private List<String> commands;
 
     public RootCommand setHash(int hash) {
         this.hash = hash;
@@ -56,12 +56,12 @@ public class RootCommand implements Cloneable, Serializable {
         return rootCommand;
     }
 
-    public List<String> getCommmands() {
-        return commmands;
+    public List<String> getCommands() {
+        return commands;
     }
 
-    public void setCommmands(List<String> commmands) {
-        this.commmands = commmands;
+    public void setCommands(List<String> commands) {
+        this.commands = commands;
     }
 
     /**

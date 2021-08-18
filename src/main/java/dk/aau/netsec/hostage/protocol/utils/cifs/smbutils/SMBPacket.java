@@ -339,9 +339,9 @@ public class SMBPacket {
 	}
 
 	/**
-	 * Builds the session setup challange packet
+	 * Builds the session setup challenge packet
 	 * 
-	 * @return session setup challange packet
+	 * @return session setup challenge packet
 	 */
 	private byte[] getSetupChal() {
 		byte[] wordCount = { 0x04 };
