@@ -8,11 +8,11 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0'
+        classpath 'com.android.tools.build:gradle:7.0.1'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
 
-        classpath 'com.google.gms:google-services:4.3.8' //added gms support
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.0'
+        classpath 'com.google.gms:google-services:4.3.10' //added gms support
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
     }
 }
 apply plugin: 'com.android.application'
@@ -31,7 +31,7 @@ allprojects {
 }
 dependencies {
     //firebase
-    implementation 'com.google.firebase:firebase-crashlytics:18.0.1'
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.1'
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
     implementation 'com.google.firebase:firebase-core:19.0.0'
     //google api
@@ -42,7 +42,7 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-analytics:17.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.1'
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.google.android.gms:play-services-auth:19.2.0'
     //greenDao
 //    implementation 'org.roboguice:roboguice:4.0.0'
     implementation 'org.greenrobot:greendao:3.3.0'
@@ -97,9 +97,9 @@ dependencies {
         exclude group: 'com.github.Stericson'
     }
 
-    implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.0"
 
-    implementation "androidx.work:work-runtime:2.6.0-beta01"
+    implementation "androidx.work:work-runtime:2.6.0-rc01"
 
     //androidX legacy support
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -126,7 +126,7 @@ dependencies {
     implementation 'com.jaredrummler:android-device-names:2.0.0'
 
     //materialDesign
-    implementation 'com.google.android.material:material:1.4.0-rc01'
+    implementation 'com.google.android.material:material:1.5.0-alpha02'
 
     //leakcanary
     //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
@@ -137,19 +137,19 @@ dependencies {
 
     // Optional -- Mockito framework
     testImplementation "org.mockito:mockito-core:3.10.0"
-    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.annotation:annotation:1.2.0'
 
-    androidTestImplementation 'androidx.test:rules:1.4.0-beta02'
-    androidTestImplementation 'androidx.test:runner:1.4.0-beta02'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
 
     // Optional -- UI testing with Espresso
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //PowerMock
     testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
     testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
     testImplementation 'org.powermock:powermock-core:2.0.9'
     testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.9'
-    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
     // Optional -- Robolectric environment
     testImplementation 'org.robolectric:robolectric:4.4.1'
 }
