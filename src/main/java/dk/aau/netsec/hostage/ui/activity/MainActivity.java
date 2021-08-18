@@ -166,11 +166,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
     /**
-     * Holds an profile manager instance
-     */
-    private ProfileManager mProfileManager;
-
-    /**
      * Holds the root fragment for our hierarchical fragment navigation
      */
     private Fragment mRootFragment;
@@ -216,18 +211,6 @@ public class MainActivity extends AppCompatActivity {
         if (isServiceRunning()) {
             this.bindService();
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        if (locationManager != null)
-//            locationManager.stopUpdates();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     /**
@@ -376,7 +359,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addProfileManager() {
-        mProfileManager = ProfileManager.getInstance();
+        /**
+         * Holds an profile manager instance
+         */
+        ProfileManager mProfileManager = ProfileManager.getInstance();
     }
 
     private void loadFirstRun() {

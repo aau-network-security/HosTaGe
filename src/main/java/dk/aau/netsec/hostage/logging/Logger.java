@@ -99,8 +99,7 @@ public class Logger extends IntentService {
 
 	}
 
-	private DaoSession dbSession;
-	private DAOHelper daoHelper;
+    private DAOHelper daoHelper;
 	public Logger() {
 		super("Logger");
 	}
@@ -108,7 +107,7 @@ public class Logger extends IntentService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		dbSession = HostageApplication.getInstances().getDaoSession();
+        DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
 		daoHelper = new DAOHelper(dbSession,this);
 	}
 

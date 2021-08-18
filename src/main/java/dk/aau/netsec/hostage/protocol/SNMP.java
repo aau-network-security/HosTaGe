@@ -88,7 +88,7 @@ public class SNMP extends BaseAgent implements Protocol {
 
     private String address;
 
-    public SNMP(String address) throws IOException {
+    public SNMP(String address) {
 
         super(new File("conf.agent"), new File("bootCounter.agent"),
                 new CommandProcessor(

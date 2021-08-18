@@ -59,7 +59,7 @@ public abstract class AbstractPopupItem {
     }
 
     public void setTitle(String title){
-        title = title;
+        this.title = title;
         if (rootView != null) this.configureItemView(rootView);
     }
     public String getTitle(){

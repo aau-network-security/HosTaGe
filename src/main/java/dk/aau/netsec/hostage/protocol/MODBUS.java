@@ -260,13 +260,11 @@ public class MODBUS implements Protocol {
     }
 
 
-    //Device Information
-    private String DeviceInfo = getDeviceInfo();
-
     private String getDeviceInfo() {
 
-        DeviceInfo = "5369656d656e732053494d415449432053372d323030"; // Hex value for Simatic S7 200
-        return DeviceInfo;
+        //Device Information
+        String deviceInfo = "5369656d656e732053494d415449432053372d323030"; // Hex value for Simatic S7 200
+        return deviceInfo;
     }
 
 

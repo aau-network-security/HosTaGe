@@ -22,11 +22,8 @@ import android.util.Log;
  */
 
 public class AnimatedMesh {
-    private ByteBuffer data;
 
-    private int vertexOffset;
     private int vertexSize;
-    private int triangleOffset;
     private int triangleCount;
 
     private int vertexBuffer; // vbo
@@ -132,7 +129,7 @@ public class AnimatedMesh {
         }
     }
 
-    private class Track {
+    private static class Track {
         @SuppressWarnings("unused")
         public int boneIndex;
         public final ArrayList<JointPose> poses;
@@ -226,7 +223,7 @@ public class AnimatedMesh {
         }
 
         //data = ByteBuffer.wrap(out.toByteArray()); // doesn't work data needs to be direct
-        data = ByteBuffer.allocateDirect(out.size());
+        ByteBuffer data = ByteBuffer.allocateDirect(out.size());
         data.order(ByteOrder.nativeOrder());
         data.put(out.toByteArray());
         data.position(0);
@@ -237,9 +234,9 @@ public class AnimatedMesh {
         //assert(magicNum == ('A' << 24 | 'M' << 16 | 'S' << 8 | 'H') && version == 1);
 
         vertexSize = 48;
-        vertexOffset = data.getInt();
+        int vertexOffset = data.getInt();
         int vertexCount = data.getInt();
-        triangleOffset = data.getInt();
+        int triangleOffset = data.getInt();
         triangleCount = data.getInt();
         int boneOffset = data.getInt();
         int boneCount = data.getInt();

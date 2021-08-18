@@ -24,7 +24,6 @@ public class MQTTListener extends Listener {
     private Thread brokerThread;
     private ConnectionRegister conReg;
     private boolean running = false;
-    private final int mqttport = 1883;
 
     private static final Semaphore mutex = new Semaphore(1);
 
@@ -112,6 +111,7 @@ public class MQTTListener extends Listener {
     }
 
     public void stopMqttBroker() {
+        int mqttport = 1883;
         if (super.getPort() == mqttport) {
             MQTT.brokerStop();
             if (brokerThread != null)
@@ -155,7 +155,7 @@ public class MQTTListener extends Listener {
                     startHandler();
                     conReg.newOpenConnection();
                 }
-            } catch (InterruptedException | IOException | IllegalAccessException | InstantiationException e) {
+            } catch (InterruptedException | IllegalAccessException | InstantiationException e) {
                 e.printStackTrace();
             }
         });
@@ -189,7 +189,7 @@ public class MQTTListener extends Listener {
         sensorProfile.startSensor();
     }
 
-    private boolean checkPostScanInProgress() throws IOException {
+    private boolean checkPostScanInProgress() {
         if (ConnectionGuard.portscanInProgress()) {
             mutex.release();
             return true;

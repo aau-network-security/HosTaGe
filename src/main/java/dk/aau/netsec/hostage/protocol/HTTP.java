@@ -98,8 +98,7 @@ public class HTTP implements Protocol {
 	}
 
 	private final String httpVersion = "HTTP/1.1";
-	private final String httpVersion_2 = "HTTP/2";
-	private static String htmlDocumentContent = HelperUtils.getRandomString(32, false);
+    private static String htmlDocumentContent = HelperUtils.getRandomString(32, false);
 
 	private static String htmlTitleContent = HelperUtils.getRandomString(32, false);
 
@@ -133,22 +132,13 @@ public class HTTP implements Protocol {
 	private final String headerPrefix = "Date: " + getServerTime() + "\r\n"
 			+ "Server: " + serverVersion + " \r\n"
 			+ "Vary: Accept-Encoding\r\n" + "Content-Length: ";
-	private final String headerSuffix = "\r\n" + "Keep-Alive: timeout=5, max=100\r\n"
-			+ "Connection: Keep-Alive\r\n" + "Content-Type: text/html\r\n"
-			+ "\r\n";
-	// html website
+    // html website
 	private final String htmlDocument = "<!doctype html>\n" + "<html lang=\"en\">\n"
 			+ "<head>\n" + "<meta charset=\"UTF-8\">\n" + "<title>"
 			+ htmlTitleContent + "</title>\n" + "<body>"
 			+ htmlDocumentContent + "</body>\n" + "</head>\n" + "</html>";
 
-	// html error pre and suffix
-	private final String errorHtmlPrefix = "<!doctype html>\n"
-			+ "<html lang=\"en\">\n" + "<head>\n"
-			+ "<meta charset=\"UTF-8\">\n" + "<title>";
-	private final String errorHtmlSuffix = "</title>\n" + "</head>\n" + "</html>";
-
-	private int port = 80;
+    private int port = 80;
 
 	@Override
 	public int getPort() { return port; }
@@ -176,7 +166,8 @@ public class HTTP implements Protocol {
 		this.request = request;
 
 		assert request != null;
-		if (request.isEmpty()) {
+        String httpVersion_2 = "HTTP/2";
+        if (request.isEmpty()) {
 			//weird if clause but required for https
 			responsePackets.add(buildPacket(STATUS_CODE_200, GET));
 			checkProfile();
@@ -289,7 +280,11 @@ public class HTTP implements Protocol {
 	 */
 	private Packet buildPacket(String code, String type) {
 		String document;
-		switch (type) {
+        String errorHtmlSuffix = "</title>\n" + "</head>\n" + "</html>";// html error pre and suffix
+        String errorHtmlPrefix = "<!doctype html>\n"
+                + "<html lang=\"en\">\n" + "<head>\n"
+                + "<meta charset=\"UTF-8\">\n" + "<title>";
+        switch (type) {
 			case GET:
 				document = htmlDocument;
 				break;
@@ -305,7 +300,10 @@ public class HTTP implements Protocol {
 				break;
 		}
 
-		return new Packet(httpVersion + " " + code + headerPrefix
+        String headerSuffix = "\r\n" + "Keep-Alive: timeout=5, max=100\r\n"
+                + "Connection: Keep-Alive\r\n" + "Content-Type: text/html\r\n"
+                + "\r\n";
+        return new Packet(httpVersion + " " + code + headerPrefix
 				+ document.length() + headerSuffix + document, toString());
 	}
 	

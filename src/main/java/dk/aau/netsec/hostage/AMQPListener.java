@@ -18,7 +18,6 @@ public class AMQPListener extends Listener {
     private Thread serverThread;
     private ConnectionRegister conReg;
     private boolean running = false;
-    private final int defaultPort =5672;
 
     private static final Semaphore mutex = new Semaphore(1);
     /**
@@ -103,6 +102,7 @@ public class AMQPListener extends Listener {
     public void stop() { stopServer();}
 
     public void stopServer(){
+        int defaultPort = 5672;
         if(super.getPort() == defaultPort) {
             AMQP.stopBroker();
             if(serverThread!=null)

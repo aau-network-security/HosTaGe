@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -143,7 +142,7 @@ public class ChecklistDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        CharSequence[] titles = this.itemTitles.toArray(new CharSequence[this.itemTitles.size()]);
+        CharSequence[] titles = this.itemTitles.toArray(new CharSequence[0]);
 
         boolean[] selectedArray = new boolean[this.itemTitles.size()];
         for (Integer selection : this.mSelectedItems) {

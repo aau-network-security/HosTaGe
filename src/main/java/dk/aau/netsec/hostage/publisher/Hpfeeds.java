@@ -44,7 +44,6 @@ public class Hpfeeds {
 
     private long writtenMessages = 0;
     private long writtenBytes = 0;
-    private String brokerName;
 
 
     private static final Logger log = LoggerFactory.getLogger(Hpfeeds.class);
@@ -107,7 +106,7 @@ public class Hpfeeds {
         buf.position(1 + nameLen);
         rand = buf.slice();
 
-        brokerName = name;
+        String brokerName = name;
 
         writtenBytes += sc.write(msgauth(rand, ident, secret));
         writtenMessages++;

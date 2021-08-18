@@ -23,7 +23,6 @@ public class NMB extends Thread {
 	private DatagramSocket nbdsSocket;
 	private DatagramPacket packet;
 	private String ip;
-	private String[] ipParts;
 	private InetAddress dst;
 	private final int nbnsOriginPort = 137;
 	private final int nbdsOriginPort = 138;
@@ -34,7 +33,6 @@ public class NMB extends Thread {
 	private NBNS nbns;
 	private NBDS nbds;
 	private boolean isMaster;
-	private byte[] addr = new byte[4]; 
 	private static final byte[] transactID = HelperUtils.randomBytes(2);
 	
 	public NMB(String ip, String username, String workgroup) {
@@ -43,10 +41,10 @@ public class NMB extends Thread {
 			this.username = username;
 			this.workgroup = workgroup;
 			this.ip = ip;
-			ipParts = ip.split("\\.");
+			String[] ipParts = ip.split("\\.");
 			String newHostAddr = ipParts[0] + "." + ipParts[1] + "." + ipParts[2] + ".255";
 			dst = InetAddress.getByName(newHostAddr);
-			addr = addressToBytes(ip);
+			byte[] addr = addressToBytes(ip);
 			nbns = new NBNS(addr);
 			nbds = new NBDS(addr, username, workgroup);
 		} catch (UnknownHostException e) {

@@ -7,7 +7,6 @@ import com.mbed.coap.server.CoapExchange;
 import com.mbed.coap.utils.CoapResource;
 
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;

@@ -65,7 +65,6 @@ public class SSH implements Protocol {
     private final String serverName = HelperUtils.getRandomString(16, false);
     private int packetNumber = 0;
     private int recipientChannel;
-    private String userName;
     private String terminalPrefix;
     private StringBuffer command = new StringBuffer();
     private final SecureRandom random = new SecureRandom();
@@ -76,11 +75,6 @@ public class SSH implements Protocol {
     private byte[] I_S;
     private byte[] I_C;
     private byte[] e;
-    private BigInteger f;
-    private byte[] h;
-    private BigInteger k;
-    private byte[] K_S;
-    private byte[] signature;
 
     // allowed algorithms for kexinit
     private static final String KEX_ALG = "diffie-hellman-group1-sha1";
@@ -92,11 +86,6 @@ public class SSH implements Protocol {
     private static final String COMP_ALG_C = "none";
     private static final String COMP_ALG_S = "none";
 
-    private final int cipherBlockSize = 16;
-
-    // for en- and decryption
-    private DESede desEncryption;
-    private DESede desDecryption;
     private CBCMode cbcEncryption;
     private CBCMode cbcDecryption;
     private MAC macEncryption;
@@ -219,6 +208,7 @@ public class SSH implements Protocol {
     private Packet wrapPacket(byte[] response) {
         // 4 byte packet length, 1 byte padding length, payload length
         int packetLength = 5 + response.length;
+        int cipherBlockSize = 16;
         int paddingLengthCBS = cipherBlockSize
                 - (packetLength % cipherBlockSize);
         int paddingLength8 = 8 - (packetLength % 8);
@@ -332,16 +322,16 @@ public class SSH implements Protocol {
             DhExchange dhx = new DhExchange();
             dhx.serverInit(1, random);
             dhx.setE(new BigInteger(e));
-            f = dhx.getF();
+            BigInteger f = dhx.getF();
             DSAPrivateKey dsa = (DSAPrivateKey) PEMDecoder.decode(dsaPem, null);
-            K_S = DSASHA1Verify.encodeSSHDSAPublicKey(dsa.getPublicKey());
-            h = dhx.calculateH(V_C, V_S, I_C, I_S, K_S);
-            k = dhx.getK();
+            byte[] k_S = DSASHA1Verify.encodeSSHDSAPublicKey(dsa.getPublicKey());
+            byte[] h = dhx.calculateH(V_C, V_S, I_C, I_S, k_S);
+            BigInteger k = dhx.getK();
             DSASignature ds = DSASHA1Verify.generateSignature(h, dsa, random);
-            signature = DSASHA1Verify.encodeSSHDSASignature(ds);
+            byte[] signature = DSASHA1Verify.encodeSSHDSASignature(ds);
             TypesWriter tw = new TypesWriter();
             tw.writeByte(31);
-            tw.writeString(K_S, 0, K_S.length);
+            tw.writeString(k_S, 0, k_S.length);
             tw.writeMPInt(f);
             tw.writeString(signature, 0, signature.length);
             response = tw.getBytes();
@@ -351,8 +341,9 @@ public class SSH implements Protocol {
             // keylength, blocklength, maclength
             KeyMaterial km = KeyMaterial.create("SHA1", h, k, h, 24, 8, 20, 24,
                     8, 20);
-            desEncryption = new DESede();
-            desDecryption = new DESede();
+            // for en- and decryption
+            DESede desEncryption = new DESede();
+            DESede desDecryption = new DESede();
             desEncryption.init(true, km.enc_key_server_to_client);
             desDecryption.init(false, km.enc_key_client_to_server);
             cbcEncryption = new CBCMode(desEncryption,
@@ -418,7 +409,7 @@ public class SSH implements Protocol {
         }
         try {
             TypesReader tr = new TypesReader(request, 6);
-            userName = tr.readString();
+            String userName = tr.readString();
             terminalPrefix = "[" + userName + "@" + serverName + " ~]$ ";
         } catch (IOException e) {
             e.printStackTrace();

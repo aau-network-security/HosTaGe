@@ -86,7 +86,6 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
     private LogFilter filter;
     private boolean showFilterButton;
     private View rootView;
-    private View footer;
     private int mListPosition = -1;
     private int mItemPosition = -1;
     public String groupingKey;
@@ -94,7 +93,6 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
     private ProgressBar spinner;
     private Snackbar noDataNotificationSnackbar;
 
-    private DaoSession dbSession;
     private DAOHelper daoHelper;
 
     private final int offset = 0;
@@ -105,11 +103,9 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
     private String sectionToOpen = "";
     private ArrayList<Integer> openSections;
     private ProgressBar progressBar;
-    private SharedPreferences pref;
     Thread loader;
     private boolean mReceiverRegistered = false;
     private BroadcastReceiver mReceiver;
-    private ExpandableListView mylist;
     ArrayList<RecordAll> data = new ArrayList<>();
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 3;
 
@@ -125,9 +121,6 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
     static final String TODAY = MainActivity.getInstance().getResources().getString(R.string.TODAY);
     static final String YESTERDAY = MainActivity.getInstance().getResources().getString(R.string.YESTERDAY);
 
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private Bundle savedInstanceState;
     private Menu optionsMenu;
 
 
@@ -155,10 +148,6 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        this.inflater = inflater;
-        this.container = container;
-        this.savedInstanceState = savedInstanceState;
-
         setHasOptionsMenu(true);
         getActivity().setTitle(getResources().getString(R.string.drawer_records));
         setUpDatabase();
@@ -172,9 +161,9 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
 
 
     private void setUpDatabase() {
-        dbSession = HostageApplication.getInstances().getDaoSession();
+        DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
         daoHelper = new DAOHelper(dbSession, getActivity());
-        pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
     }
 
@@ -235,8 +224,8 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
         View rootView = inflater.inflate(this.getLayoutId(), container, false);
         this.rootView = rootView;
 
-        mylist = rootView.findViewById(R.id.loglistview);
-        this.footer = LayoutInflater.from(getApplicationContext()).inflate(R.layout.footer_listview_progressbar, null);
+        ExpandableListView mylist = rootView.findViewById(R.id.loglistview);
+        View footer = LayoutInflater.from(getApplicationContext()).inflate(R.layout.footer_listview_progressbar, null);
         this.progressBar = footer.findViewById(R.id.progressBar);
         this.spinner = rootView.findViewById(R.id.progressBar1);
         this.spinner.setVisibility(View.GONE);
@@ -1446,8 +1435,7 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
      * @return ArrayList<String> protocolTitles
      */
     public ArrayList<String> protocolTitles() {
-        ArrayList<String> titles = new ArrayList<>();
-        titles.addAll(Arrays.asList(this.getResources().getStringArray(
+        ArrayList<String> titles = new ArrayList<>(Arrays.asList(this.getResources().getStringArray(
                 R.array.protocols)));
 
         titles.add("PORTSCAN");

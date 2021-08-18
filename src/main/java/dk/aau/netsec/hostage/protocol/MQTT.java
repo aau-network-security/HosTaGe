@@ -25,8 +25,6 @@ public class MQTT implements Protocol {
 
     private static final String TAG = "MQTT";
     private int port = 1883;
-    private final String defaultPort = "1883";
-    private final String defaultAddress = "0.0.0.0";
     private static final int brokerPort = 1883;
     private static boolean brokerStarted = false; //prevents the server from starting multiple times from the threads
     // private static final String MQTT_URI = "broker.mqttdashboard.com";
@@ -124,6 +122,8 @@ public class MQTT implements Protocol {
      * @return
      */
     private MemoryConfig getConfig() {
+        String defaultAddress = "0.0.0.0";
+        String defaultPort = "1883";
         MQTTConfig config = new MQTTConfig(defaultPort, defaultAddress);
         return config.configBroker();
     }

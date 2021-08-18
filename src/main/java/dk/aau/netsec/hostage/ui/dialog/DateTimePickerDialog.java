@@ -3,7 +3,6 @@ package dk.aau.netsec.hostage.ui.dialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
@@ -44,14 +43,11 @@ public class DateTimePickerDialog {
         date = Calendar.getInstance();
         new DatePickerDialog(context, R.style.CustomDateTimePicker, (view, year, monthOfYear, dayOfMonth) -> {
             date.set(year, monthOfYear, dayOfMonth);
-            new TimePickerDialog(context, R.style.CustomDateTimePicker, new TimePickerDialog.OnTimeSetListener() {
-                @Override
-                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    date.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                    date.set(Calendar.MINUTE, minute);
+            new TimePickerDialog(context, R.style.CustomDateTimePicker, (view1, hourOfDay, minute) -> {
+                date.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                date.set(Calendar.MINUTE, minute);
 
-                    callback.dateTimeSelected(date, filterFrom);
-                }
+                callback.dateTimeSelected(date, filterFrom);
             }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show();
         }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
 

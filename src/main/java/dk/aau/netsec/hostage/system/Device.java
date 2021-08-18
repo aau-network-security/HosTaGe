@@ -13,13 +13,12 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 
 public class Device {
-	private static boolean initialized = false;
-	private static boolean root = false; // device is rooted
+    private static boolean root = false; // device is rooted
 	private static boolean iptables = false; // iptables redirection confirmed working
 
     public static void checkCapabilities() {
 		// assume worst case
-		initialized = false;
+        boolean initialized = false;
 		root = false;
 		iptables = false;
 

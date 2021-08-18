@@ -39,7 +39,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -107,7 +106,6 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
     // MINIMAL 2
     static final int MAX_NUMBER_OF_CHART_OBJECTS = 6;
-    private boolean wasBelowTimePicker;
     private LogFilter filter;
 
     /*Maybe used in the future if the users doesn't need a filterbutton in every situation*/
@@ -124,17 +122,12 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
     private ArrayList<PlotComparisonItem> currentData;
 
-    private DaoSession dbSession;
     private DAOHelper daoHelper;
 
     private ListView legendListView;
 
     private Snackbar noDataNotificationSnackbar;
     private String selectedCompareData = COMPARE_TITLE_AttacksPerProtocol;
-
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private Bundle savedInstanceState;
 
     private Menu optionsMenu;
 
@@ -149,10 +142,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         BAR_CHART(1),
         LINE_CHART(2);
 
-        private final int value;
-
         ChartType(int value) {
-            this.value = value;
         }
 
         static public ChartType create(int value) {
@@ -187,12 +177,9 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
         super.onCreateView(inflater, container, savedInstanceState);
 
-        this.inflater = inflater;
-        this.container = container;
-        this.savedInstanceState = savedInstanceState;
         getActivity().setTitle(getResources().getString(R.string.drawer_statistics));
 
-        dbSession = HostageApplication.getInstances().getDaoSession();
+        DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
         daoHelper = new DAOHelper(dbSession, getActivity());
 
         // Get the message from the intent
@@ -754,7 +741,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     private void onFilterMenuItemSelected(AbstractPopupItem item) {
         if (item instanceof SplitPopupItem) {
             SplitPopupItem sItem = (SplitPopupItem) item;
-            wasBelowTimePicker = sItem.wasRightTouch;
+            boolean wasBelowTimePicker = sItem.wasRightTouch;
             DateTimePickerDialog.showDateTimePicker(getContext(), !wasBelowTimePicker, this);
             return;
         }
@@ -1534,8 +1521,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * @return ArrayList<String> protocolNames
      */
     public ArrayList<String> protocolTitles() {
-        ArrayList<String> titles = new ArrayList<>();
-        titles.addAll(Arrays.asList(getResources().getStringArray(
+        ArrayList<String> titles = new ArrayList<>(Arrays.asList(getResources().getStringArray(
                 R.array.protocols)));
 
         titles.add("PORTSCAN");

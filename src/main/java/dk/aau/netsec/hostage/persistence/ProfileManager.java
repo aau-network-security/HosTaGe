@@ -78,7 +78,6 @@ public class ProfileManager {
      */
     public final HashMap<Integer, Profile> mProfiles;
 
-    private final SharedPreferences mSharedPreferences;
     private final SharedPreferences.Editor mSharedEditor;
 
     /**
@@ -106,7 +105,7 @@ public class ProfileManager {
         mProfiles = new HashMap<>();
 
         String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
-        mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
+        SharedPreferences mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
         mSharedEditor = mSharedPreferences.edit();
         mSharedEditor.apply();
     }

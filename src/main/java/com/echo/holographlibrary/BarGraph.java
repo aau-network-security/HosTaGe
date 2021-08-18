@@ -47,7 +47,6 @@ public class BarGraph extends View {
 	
     private ArrayList<Bar> mBars = new ArrayList<>();
     private final Paint mPaint = new Paint();
-    private Rect mRectangle = null;
     private boolean mShowBarText = true;
     private boolean mShowAxis = true;
     private int mIndexSelected = -1;
@@ -57,7 +56,7 @@ public class BarGraph extends View {
 
     private int popupImageID;
 
-    private Context mContext;
+    private final Context mContext;
 
 
     /**
@@ -150,8 +149,8 @@ public class BarGraph extends View {
                     maxValue = bar.getValue();
                 }
             }
-            
-            mRectangle = new Rect();
+
+            Rect mRectangle = new Rect();
             
             int count = 0;
             for (final Bar bar : mBars) {
@@ -176,7 +175,7 @@ public class BarGraph extends View {
                 // Draw x-axis label text
                 if (mShowAxis){
                     this.mPaint.setTextSize(AXIS_LABEL_FONT_SIZE * mContext.getResources().getDisplayMetrics().scaledDensity);
-                    int x = (int)(((mRectangle.left+mRectangle.right)/2)-(this.mPaint.measureText(bar.getName())/2));
+                    int x = (int)(((mRectangle.left+ mRectangle.right)/2)-(this.mPaint.measureText(bar.getName())/2));
                     int y = (int) (getHeight()-3 * mContext.getResources().getDisplayMetrics().scaledDensity);
                     canvas.drawText(bar.getName(), x, y, this.mPaint);
                 }
@@ -188,13 +187,13 @@ public class BarGraph extends View {
                     Rect r2 = new Rect();
                     this.mPaint.getTextBounds(bar.getValueString(), 0, 1, r2);
                     
-                    int boundLeft = (int) (((mRectangle.left+mRectangle.right)/2)-(this.mPaint.measureText(bar.getValueString())/2)-5 * mContext.getResources().getDisplayMetrics().density);
+                    int boundLeft = (int) (((mRectangle.left+ mRectangle.right)/2)-(this.mPaint.measureText(bar.getValueString())/2)-5 * mContext.getResources().getDisplayMetrics().density);
                     int boundTop = (int) (mRectangle.top+(r2.top-r2.bottom)-18 * mContext.getResources().getDisplayMetrics().density);
-                    int boundRight = (int)(((mRectangle.left+mRectangle.right)/2)+(this.mPaint.measureText(bar.getValueString())/2)+5 * mContext.getResources().getDisplayMetrics().density);
+                    int boundRight = (int)(((mRectangle.left+ mRectangle.right)/2)+(this.mPaint.measureText(bar.getValueString())/2)+5 * mContext.getResources().getDisplayMetrics().density);
                     popup.setBounds(boundLeft, boundTop, boundRight, mRectangle.top);
                     popup.draw(canvas);
                     
-                    canvas.drawText(bar.getValueString(), (int)(((mRectangle.left+mRectangle.right)/2)-(this.mPaint.measureText(bar.getValueString()))/2), mRectangle.top-(mRectangle.top - boundTop)/2f+(float)Math.abs(r2.top-r2.bottom)/2f*0.7f, this.mPaint);
+                    canvas.drawText(bar.getValueString(), (int)(((mRectangle.left+ mRectangle.right)/2)-(this.mPaint.measureText(bar.getValueString()))/2), mRectangle.top-(mRectangle.top - boundTop)/2f+(float)Math.abs(r2.top-r2.bottom)/2f*0.7f, this.mPaint);
                 }
                 if (mIndexSelected == count && mListener != null) {
                     this.mPaint.setColor(Color.parseColor("#33B5E5"));

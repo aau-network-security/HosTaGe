@@ -51,10 +51,6 @@ public class RecordDetailFragment extends UpNavigableFragment {
      * Hold the record of which the detail informations should be shown
      */
     private RecordAll mRecord;
-    /**
-     * The database helper to retrieve data from the database
-     */
-    private DaoSession dbSession;
     private DAOHelper daoHelper;
     /**
      * The layout inflater
@@ -72,9 +68,6 @@ public class RecordDetailFragment extends UpNavigableFragment {
     private TextView mRecordDetailsTextProtocol;
     private Button textButton;
     private Button hexButton;
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private Bundle savedInstanceState;
     public SharedPreferences pref;
     public int port;
 
@@ -122,15 +115,14 @@ public class RecordDetailFragment extends UpNavigableFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        this.inflater = inflater;
-        this.container = container;
-        this.savedInstanceState = savedInstanceState;
-
         mInflater = inflater;
         if (mRecord != null)
             getActivity().setTitle(mRecord.getSsid());
 
-        dbSession = HostageApplication.getInstances().getDaoSession();
+        /**
+         * The database helper to retrieve data from the database
+         */
+        DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
         daoHelper = new DAOHelper(dbSession, getActivity());
 
         this.mRootView = inflater.inflate(this.getLayoutId(), container, false);
@@ -138,15 +130,6 @@ public class RecordDetailFragment extends UpNavigableFragment {
         this.configureRootView(mRootView);
 
         return mRootView;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onStart() {
-        super.onStart();
-
     }
 
     /**

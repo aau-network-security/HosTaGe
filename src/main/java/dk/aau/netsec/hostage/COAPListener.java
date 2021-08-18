@@ -17,7 +17,6 @@ public class COAPListener extends Listener {
     private Thread serverThread;
     private ConnectionRegister conReg;
     private boolean running = false;
-    private final int defaultPort =5683;
 
     private static final Semaphore mutex = new Semaphore(1);
     /**
@@ -102,6 +101,7 @@ public class COAPListener extends Listener {
     public void stop() { stopServer();}
 
     public void stopServer(){
+        int defaultPort = 5683;
         if(super.getPort() == defaultPort) {
             COAP.serverStop();
             if(serverThread!=null)

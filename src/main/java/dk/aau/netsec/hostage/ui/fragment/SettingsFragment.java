@@ -26,15 +26,11 @@ import dk.aau.netsec.hostage.system.Device;
  */
 public class SettingsFragment extends UpNavigableFragment {
     private View v;
-    private Bundle savedInstanceState;
     private PcapLoggingManager mPcapLoggingManager;
-    private FragmentManager manager;
-    private Uri mFolderUri;
     private SwitchMaterial pcapSwitch;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        this.savedInstanceState = savedInstanceState;
         getActivity().setTitle(getResources().getString(R.string.drawer_settings));
 
         v = inflater.inflate(R.layout.fragment_settings, container, false);
@@ -64,7 +60,7 @@ public class SettingsFragment extends UpNavigableFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        manager = getFragmentManager();
+        FragmentManager manager = getFragmentManager();
         manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
     }
 
@@ -88,6 +84,7 @@ public class SettingsFragment extends UpNavigableFragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Uri mFolderUri;
         if (requestCode == PcapLoggingManager.ACTION_PICK_FOLDER_AND_ENABLE) {
             mFolderUri = data.getData();
             mPcapLoggingManager.locationSelected(mFolderUri, true);

@@ -57,9 +57,6 @@ public class HomeFragment extends Fragment {
     private ImageView mHomeConnectionInfoButton;
     private ImageView mHomeAndroidImage;
     private View mRootView;
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private Bundle savedInstanceState;
 
     private BroadcastReceiver mReceiver;
 
@@ -68,7 +65,6 @@ public class HomeFragment extends Fragment {
     private ProfileManager mProfileManager;
     private SharedPreferences mConnectionInfo;
 
-    private DaoSession dbSession;
     private DAOHelper daoHelper;
 
     private boolean mReceiverRegistered;
@@ -98,7 +94,7 @@ public class HomeFragment extends Fragment {
             activity.setTitle(getActivity().getString(R.string.drawer_overview));
         }
 
-        dbSession = HostageApplication.getInstances().getDaoSession();
+        DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
         daoHelper = new DAOHelper(dbSession, getActivity());
 
 
@@ -106,9 +102,6 @@ public class HomeFragment extends Fragment {
 
         mProfileManager = ProfileManager.getInstance();
 
-        this.inflater = inflater;
-        this.container = container;
-        this.savedInstanceState = savedInstanceState;
         mRootView = inflater.inflate(R.layout.fragment_home, container, false);
         assignViews();
 

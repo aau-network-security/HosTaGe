@@ -50,7 +50,7 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
 
     static {
         // NETWORK
-        String networkSQLBuilder = "CREATE TABLE " + HostageDBContract.NetworkEntry.TABLE_NAME + "(" +
+        SQL_CREATE_NETWORK_ENTRIES = "CREATE TABLE " + HostageDBContract.NetworkEntry.TABLE_NAME + "(" +
                 HostageDBContract.NetworkEntry.COLUMN_NAME_BSSID + " TEXT PRIMARY KEY," +
                 HostageDBContract.NetworkEntry.COLUMN_NAME_SSID + " TEXT," +
                 HostageDBContract.NetworkEntry.COLUMN_NAME_LATITUDE + " INTEGER," +
@@ -58,10 +58,9 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
                 HostageDBContract.NetworkEntry.COLUMN_NAME_ACCURACY + " INTEGER," +
                 HostageDBContract.NetworkEntry.COLUMN_NAME_GEO_TIMESTAMP + " INTEGER" +
                 ")";
-        SQL_CREATE_NETWORK_ENTRIES = networkSQLBuilder;
 
         // ATTACK
-        String attackSQLBuilder = "CREATE TABLE " + HostageDBContract.AttackEntry.TABLE_NAME + "(" +
+        SQL_CREATE_ATTACK_ENTRIES = "CREATE TABLE " + HostageDBContract.AttackEntry.TABLE_NAME + "(" +
                 HostageDBContract.AttackEntry.COLUMN_NAME_ATTACK_ID + " INTEGER PRIMARY KEY," +
                 HostageDBContract.AttackEntry.COLUMN_NAME_PROTOCOL + " TEXT," +
                 HostageDBContract.AttackEntry.COLUMN_NAME_EXTERNAL_IP + " TEXT," +
@@ -78,10 +77,9 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
                 String.format("FOREIGN KEY(%s) REFERENCES %s(%s) ON DELETE CASCADE ON UPDATE CASCADE", HostageDBContract.AttackEntry.COLUMN_NAME_DEVICE, HostageDBContract.SyncDeviceEntry.TABLE_NAME,
                         HostageDBContract.SyncDeviceEntry.COLUMN_NAME_DEVICE_ID) +
                 ")";
-        SQL_CREATE_ATTACK_ENTRIES = attackSQLBuilder;
 
         // PACKET
-        String packetSQLBuilder = "CREATE TABLE " + HostageDBContract.PacketEntry.TABLE_NAME + "(" +
+        SQL_CREATE_PACKET_ENTRIES = "CREATE TABLE " + HostageDBContract.PacketEntry.TABLE_NAME + "(" +
                 HostageDBContract.PacketEntry.COLUMN_NAME_ID + " INTEGER NOT NULL," +
                 HostageDBContract.PacketEntry.COLUMN_NAME_ATTACK_ID + " INTEGER NOT NULL," +
                 HostageDBContract.PacketEntry.COLUMN_NAME_TYPE + " TEXT," +
@@ -91,18 +89,16 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
                 String.format("FOREIGN KEY(%s) REFERENCES %s(%s)", HostageDBContract.PacketEntry.COLUMN_NAME_ATTACK_ID, HostageDBContract.AttackEntry.TABLE_NAME,
                         HostageDBContract.AttackEntry.COLUMN_NAME_ATTACK_ID) +
                 ")";
-        SQL_CREATE_PACKET_ENTRIES = packetSQLBuilder;
 
         // SyncDeviceEntry
-        String syncDevicesSQLBuilder = "CREATE TABLE " + HostageDBContract.SyncDeviceEntry.TABLE_NAME + "(" +
+        SQL_CREATE_SYNC_DEVICES_ENTRIES = "CREATE TABLE " + HostageDBContract.SyncDeviceEntry.TABLE_NAME + "(" +
                 HostageDBContract.SyncDeviceEntry.COLUMN_NAME_DEVICE_ID + " TEXT PRIMARY KEY," +
                 HostageDBContract.SyncDeviceEntry.COLUMN_NAME_DEVICE_TIMESTAMP + " INTEGER," +
                 HostageDBContract.SyncDeviceEntry.COLUMN_NAME_HIGHEST_ATTACK_ID + " INTEGER" +
                 ")";
-        SQL_CREATE_SYNC_DEVICES_ENTRIES = syncDevicesSQLBuilder;
 
         // SyncInfoEntry
-        String syncInfoSQLBuilder = "CREATE TABLE " + HostageDBContract.SyncInfoEntry.TABLE_NAME + "(" +
+        SQL_CREATE_SYNC_INFO_ENTRIES = "CREATE TABLE " + HostageDBContract.SyncInfoEntry.TABLE_NAME + "(" +
                 HostageDBContract.SyncInfoEntry.COLUMN_NAME_DEVICE_ID + " TEXT," +
                 HostageDBContract.SyncInfoEntry.COLUMN_NAME_BSSID + " TEXT," +
                 HostageDBContract.SyncInfoEntry.COLUMN_NAME_NUMBER_ATTACKS + " INTEGER," +
@@ -111,10 +107,9 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
                 String.format("FOREIGN KEY(%s) REFERENCES %s(%s)", HostageDBContract.SyncInfoEntry.COLUMN_NAME_BSSID, HostageDBContract.NetworkEntry.TABLE_NAME,
                         HostageDBContract.NetworkEntry.COLUMN_NAME_BSSID) +
                 ")";
-        SQL_CREATE_SYNC_INFO_ENTRIES = syncInfoSQLBuilder;
 
         // ProfileEntry
-        String profilSQLBuilder = "CREATE TABLE " + HostageDBContract.ProfileEntry.TABLE_NAME + "(" +
+        SQL_CREATE_PROFILE_ENTRIES = "CREATE TABLE " + HostageDBContract.ProfileEntry.TABLE_NAME + "(" +
                 HostageDBContract.ProfileEntry.COLUMN_NAME_PROFILE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 HostageDBContract.ProfileEntry.COLUMN_NAME_PROFILE_NAME + " TEXT," +
                 HostageDBContract.ProfileEntry.COLUMN_NAME_PROFILE_DESCRIPTION + " TEXT," +
@@ -123,7 +118,6 @@ public class HostageDBOpenHelper extends SQLiteOpenHelper {
                 HostageDBContract.ProfileEntry.COLUMN_NAME_PROFILE_EDITABLE + " INTEGER," +
                 HostageDBContract.ProfileEntry.COLUMN_NAME_PROFILE_ACTIVE + " INTEGER" +
                 ")";
-        SQL_CREATE_PROFILE_ENTRIES = profilSQLBuilder;
     }
 
     private static final String SQL_CREATE_NETWORK_ENTRIES;

@@ -71,7 +71,6 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
 public class Hostage extends Service implements LocationSource.OnLocationChangedListener {
 
     private HashMap<String, Boolean> mProtocolActiveAttacks;
-    private DaoSession dbSession;
 
     static boolean implementedProtocolsReady;
 
@@ -594,7 +593,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
     }
 
     private void checkNetworkPreviousInfection() {
-        dbSession = HostageApplication.getInstances().getDaoSession();
+        DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(dbSession);
 
         for (Listener listener : listeners) {

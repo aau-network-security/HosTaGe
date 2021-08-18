@@ -15,12 +15,11 @@ public class SMB extends ProtocolFormatter {
         byte[] bytes = HelperUtils.hexStringToBytes(packet);
         byte cmd = bytes[8]; // command code located at 8
 
-        String buffer = "Command: " +
+        return "Command: " +
                 getCommandString(cmd) +
                 "\n" +
                 "Content: " +
                 getContent(cmd, bytes);
-        return buffer;
     }
 
     /**

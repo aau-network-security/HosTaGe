@@ -15,7 +15,6 @@ import android.os.IBinder;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -48,7 +47,6 @@ public class MultiStage extends Service {
     int stackLport;
     String stackssid;
     String stackbssid;
-    private DaoSession dbSession;
     private DAOHelper daoHelper;
     Notification notification;
     NotificationManager manager;
@@ -69,6 +67,7 @@ public class MultiStage extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        DaoSession dbSession;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             dbSession = HostageApplication.getInstances().getDaoSession();
             daoHelper = new DAOHelper(dbSession, this);

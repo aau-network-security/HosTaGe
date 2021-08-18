@@ -20,16 +20,12 @@ import dk.aau.netsec.hostage.wrapper.Packet;
  * @author Wulf Pfeiffer
  */
 public class NBSS extends Thread {
-	
-	private final int nbssPort;
-	private ServerSocket nbssServer;
-	private Socket nbssSocket;
-	private Reader reader;
-	private Writer writer;
-	private SMB smb;
+
+    private ServerSocket nbssServer;
+    private SMB smb;
 
 	public NBSS() {
-		nbssPort = 139;
+        int nbssPort = 139;
 		MyServerSocketFactory factory = new MyServerSocketFactory();
 		try {
 			nbssServer = factory.createServerSocket(nbssPort);
@@ -41,7 +37,7 @@ public class NBSS extends Thread {
 	@Override
 	public void run() {
 		try {
-			nbssSocket = nbssServer.accept();
+            Socket nbssSocket = nbssServer.accept();
 			smb = new SMB();
 			talkToClient(nbssSocket.getInputStream(), nbssSocket.getOutputStream());
 		} catch (IOException e) {
@@ -56,8 +52,8 @@ public class NBSS extends Thread {
 	 * @throws IOException
 	 */
 	private void talkToClient(InputStream in, OutputStream out) throws IOException {
-		reader = new Reader(in, smb.toString());
-		writer = new Writer(out);
+        Reader reader = new Reader(in, smb.toString());
+        Writer writer = new Writer(out);
 		Packet inputLine;
 		List<Packet> outputLine;
 		if (smb.whoTalksFirst() == Protocol.TALK_FIRST.SERVER) {

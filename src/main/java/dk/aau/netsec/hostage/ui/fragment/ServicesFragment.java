@@ -58,11 +58,6 @@ public class ServicesFragment extends TrackerFragment {
     private SharedPreferences mConnectionInfo;
     private boolean mReceiverRegistered = false;
     private Profile mProfile;
-    private Integer[] mGhostPorts;
-
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private Bundle savedInstanceState;
 
     public ServicesFragment() {
     }
@@ -159,9 +154,6 @@ public class ServicesFragment extends TrackerFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        this.inflater = inflater;
-        this.container = container;
-        this.savedInstanceState = savedInstanceState;
         rootView = inflater.inflate(R.layout.fragment_services, container, false);
         assignViews();
 
@@ -240,7 +232,7 @@ public class ServicesFragment extends TrackerFragment {
     @Deprecated
     private void checkGhost(String protocol) {
         if (protocol.equals("GHOST") && mProfile.mGhostActive) {
-            mGhostPorts = mProfile.getGhostPorts();
+            Integer[] mGhostPorts = mProfile.getGhostPorts();
             if (mGhostPorts.length != 0) {
                 for (Integer port : mGhostPorts) {
                     if (MainActivity.getInstance().getHostageService() != null

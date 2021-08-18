@@ -31,12 +31,12 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 
 			@Override
 			public void checkClientTrusted(X509Certificate[] chain,
-					String authType) throws CertificateException {
+					String authType) {
 			}
 
 			@Override
 			public void checkServerTrusted(X509Certificate[] chain,
-					String authType) throws CertificateException {
+					String authType) {
 			}
 
 			@Override

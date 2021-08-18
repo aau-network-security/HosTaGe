@@ -61,7 +61,6 @@ public class PcapLoggingService extends Service {
     private File filesDir;
 
     private Process tcpdumpProcess;
-    private Thread tcpdumpThread;
     private Thread fileCopyThread = null;
 
     private static final int PCAP_NOTIFICATION_ID = 765;
@@ -91,6 +90,7 @@ public class PcapLoggingService extends Service {
         filesDir = getFilesDir();
 
         // Determine thread based on logging type.
+        Thread tcpdumpThread;
         if (captureType == LOG_TYPE_TEXT) {
             tcpdumpThread = new TextLogThread();
         } else {

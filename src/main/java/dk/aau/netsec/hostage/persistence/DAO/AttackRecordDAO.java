@@ -31,7 +31,6 @@ import static dk.aau.netsec.hostage.persistence.DAO.SyncDeviceDAO.thisDevice;
 public class AttackRecordDAO extends DAO {
     private final DaoSession daoSession;
     private Context context;
-    private final int limit = 20; //limit for the details Conversation
 
 
     public AttackRecordDAO(DaoSession daoSession) {
@@ -619,6 +618,8 @@ public class AttackRecordDAO extends DAO {
         MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
 
         QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
+        //limit for the details Conversation
+        int limit = 20;
         qb.limit(limit);
         qb.where(MessageRecordDao.Properties.Attack_id.eq(attack_id));
         ArrayList<MessageRecord> attackRecords = (ArrayList<MessageRecord>) qb.list();

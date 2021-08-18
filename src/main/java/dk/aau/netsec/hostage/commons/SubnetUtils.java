@@ -302,14 +302,13 @@ public class SubnetUtils {
          */
         @Override
         public String toString() {
-            String buf = "CIDR Signature:\t[" + getCidrSignature() + "]" +
+            return "CIDR Signature:\t[" + getCidrSignature() + "]" +
                     " Netmask: [" + getNetmask() + "]\n" +
                     "Network:\t[" + getNetworkAddress() + "]\n" +
                     "Broadcast:\t[" + getBroadcastAddress() + "]\n" +
                     "First Address:\t[" + getLowAddress() + "]\n" +
                     "Last Address:\t[" + getHighAddress() + "]\n" +
                     "# Addresses:\t[" + getAddressCount() + "]\n";
-            return buf;
         }
     }
 

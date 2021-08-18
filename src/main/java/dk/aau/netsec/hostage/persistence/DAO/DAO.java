@@ -85,8 +85,7 @@ public abstract class DAO {
         for (WhereCondition condition : conditions) {
             qb = qb.where(condition);
         }
-        List<T> items = qb.list();
-        return items;
+        return qb.list();
     }
 
     public <T> List<T> selectElementsByConditionAndSort(AbstractDao<T, ?> absDao,
@@ -101,8 +100,7 @@ public abstract class DAO {
             qb = qb.where(condition);
         }
         qb.orderCustom(sortProperty, sortStrategy);
-        List<T> items = qb.list();
-        return items;
+        return qb.list();
     }
 
     public <T> List<T> selectElementsByConditionAndSortWithNullHandling(AbstractDao<T, ?> absDao,
@@ -121,8 +119,7 @@ public abstract class DAO {
             qb = qb.where(condition);
         }
         qb.orderRaw("(CASE WHEN " + "T." + sortProperty.columnName + " IS NULL then 1 ELSE 0 END)," + "T." + sortProperty.columnName + " " + sortStrategy);
-        List<T> items = qb.list();
-        return items;
+        return qb.list();
     }
 
     public <T, V extends Class> List<T> selectByJoin(AbstractDao<T, ?> absDao,
