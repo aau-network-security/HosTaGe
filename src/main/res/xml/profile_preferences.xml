@@ -4,7 +4,7 @@
 	<Preference android:summary="@string/profile_warning"
 				android:layout="@layout/preference_warning"
 				android:key="pref_profile_warning"
-				android:enabled="false" />
+				android:enabled="true" />
 
 	<PreferenceCategory android:title="@string/general"
 	                    android:key="pref_profile_general_settings">

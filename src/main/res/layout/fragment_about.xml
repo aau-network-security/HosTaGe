@@ -51,14 +51,13 @@
 		<RelativeLayout
 			android:orientation="horizontal"
 			android:layout_width="fill_parent"
-			android:layout_height="fill_parent" android:layout_weight="0.7"
+			android:layout_height="fill_parent"
 			android:paddingTop="15dp">
 
 			<LinearLayout
 				android:orientation="horizontal"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
 				android:layout_alignTop="@+id/linearLayout" android:layout_alignParentLeft="true"
 				android:layout_alignParentStart="true"
                 android:layout_marginLeft="10dp">
@@ -98,14 +97,13 @@
 		<RelativeLayout
 			android:orientation="horizontal"
 			android:layout_width="fill_parent"
-			android:layout_height="fill_parent" android:layout_weight="0.7"
+			android:layout_height="fill_parent"
 			android:paddingTop="15dp">
 
 			<LinearLayout
 				android:orientation="vertical"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
 				android:layout_alignTop="@+id/linearLayout" android:layout_alignParentLeft="true"
 				android:layout_alignParentStart="true"
                 android:layout_marginLeft="10dp">

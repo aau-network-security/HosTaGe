@@ -16,8 +16,7 @@
                 android:layout_alignParentRight="false"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="20dp"
-                android:layout_weight="1"
-                android:text="@string/current_connection"
+            android:text="@string/current_connection"
                 android:textSize="18dp"
                 android:textStyle="bold" />
 
@@ -71,8 +70,7 @@
                 android:layout_alignParentRight="false"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="35dp"
-                android:layout_weight="1"
-                android:text="@string/monitor_services"
+            android:text="@string/monitor_services"
                 android:textStyle="bold"
                 android:textSize="20dp"/>
 
@@ -90,8 +88,7 @@
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="0dp"
-                android:layout_weight="1"
-                android:scaleX="1.1"
+            android:scaleX="1.1"
                 android:scaleY="1.1"
                 android:checked="false"
                 android:textSize="10dp" />

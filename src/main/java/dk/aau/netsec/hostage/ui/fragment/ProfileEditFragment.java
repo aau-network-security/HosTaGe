@@ -207,6 +207,7 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
         }
 
         if (profile == null || profile.isEditable()) {
+//            TODO check why profile warning is not displayed
             getPreferenceScreen().removePreference(findPreference("pref_profile_warning"));
         }
 

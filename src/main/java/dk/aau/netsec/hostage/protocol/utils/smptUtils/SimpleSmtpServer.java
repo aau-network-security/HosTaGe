@@ -163,7 +163,6 @@ final class SimpleSmtpServer implements AutoCloseable {
             // Server: loop until stopped
             while (!stopped) {
                 // Start server socket and listen for client connections
-                //noinspection resource
                 try (Socket socket = serverSocket.accept();
                      Scanner input = new Scanner(new InputStreamReader(socket.getInputStream(), StandardCharsets.ISO_8859_1)).useDelimiter(CRLF);
                      PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.ISO_8859_1));) {

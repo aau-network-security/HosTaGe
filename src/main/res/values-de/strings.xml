@@ -141,8 +141,8 @@
     <string name="profile_activate_protocols_summary">Aktiviere die zu &#252;berwachenden Protokolle</string>
     <string name="profile_warning">Bitte beachte, dass dieses Profil nicht bearbeitet werden kann. Wenn du &#196;nderungen machst und speicherst, so wird ein neues Profil mit diesen Einstellungen erstellt.</string>
     <string name="rec_choose_export_format">W&#228;hle Exportformat</string>
-    <string name="honeypot_past_threat">Sieht nicht sicher aus...</string>
-    <string name="honeypot_not_monitoring">Zzz...</string>
+    <string name="honeypot_past_threat">Sieht nicht sicher aus…</string>
+    <string name="honeypot_not_monitoring">Zzz…</string>
     <string name="honeypot_no_threat">Sieht sicher aus!</string>
     <string name="honeypot_live_threat">Wir werden angegriffen!!!</string>
     <string name="network_not_connected_msg">Sie sind mit keinem Netzwerk verbunden. \n\nBitte verbinden sie sich zuerst mit einem Netzwerk, bevor sie HosTaGe starten.</string>
@@ -177,4 +177,7 @@
     <string name="pcap_log_setting_description">PCAP-Protokolle an den unten angegebenen Speicherort schrieben</string>
     <string name="pcap_location_setting_description">Speicherort der Protokollausgabe ändern</string>
     <string name="pcap_log_rotation_name">Log-Rotationsfrequenz</string>
+    <string name="multistage_notification">MultiStage läuft…</string>
+    <string name="services_unavailable">Bitte versuche es erneut</string>
+    <string name="close_app_warning">Drücken Sie die Zurück erneut, um HosTaGe . zu schließen</string>
 </resources>

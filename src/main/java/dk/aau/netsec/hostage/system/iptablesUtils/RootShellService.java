@@ -56,11 +56,9 @@ public class RootShellService extends Service implements Cloneable {
     //number of retries - increase the count
     private final static int MAX_RETRIES = 10;
     private static Shell.Interactive rootSession;
-    private static Context mContext;
     private static NotificationManager notificationManager;
     private static ShellState rootState = ShellState.INIT;
     private static final LinkedList<RootCommand> waitQueue = new LinkedList<>();
-    private static NotificationCompat.Builder builder;
 
     @Override
     public RootShellService clone() {
@@ -73,7 +71,7 @@ public class RootShellService extends Service implements Cloneable {
         return rootShellService;
     }
 
-    private static void complete(final RootCommand state, int exitCode) {
+    private static void complete(final RootCommand state, Context context, int exitCode) {
         if (enableProfiling) {
             Log.d(TAG, "RootShell: " + state.getCommands().size() + " commands completed in " +
                     (new Date().getTime() - state.startTime.getTime()) + " ms");
@@ -85,9 +83,9 @@ public class RootShellService extends Service implements Cloneable {
         }
 
         if (exitCode == 0 && state.successToast != NO_TOAST) {
-            Api.sendToastBroadcast(mContext, mContext.getString(state.successToast));
+            Api.sendToastBroadcast(context, context.getString(state.successToast));
         } else if (exitCode != 0 && state.failureToast != NO_TOAST) {
-            Api.sendToastBroadcast(mContext, mContext.getString(state.failureToast));
+            Api.sendToastBroadcast(context, context.getString(state.failureToast));
         }
 
         if (notificationManager != null) {
@@ -95,7 +93,7 @@ public class RootShellService extends Service implements Cloneable {
         }
     }
 
-    private static void runNextSubmission() {
+    private static void runNextSubmission(Context context) {
 
         RootCommand state;
         try {
@@ -115,21 +113,21 @@ public class RootShellService extends Service implements Cloneable {
             }
             if (rootState == ShellState.FAIL) {
                 // if we don't have root, abort all queued commands
-                complete(state, EXIT_NO_ROOT_ACCESS);
+                complete(state, context, EXIT_NO_ROOT_ACCESS);
             } else if (rootState == ShellState.READY) {
                 rootState = ShellState.BUSY;
-                processCommands(state);
+                processCommands(context, state);
             }
         }
 
     }
 
-    private static void processCommands(final RootCommand state) {
+    private static void processCommands(Context context, final RootCommand state) {
         if (state.commandIndex < state.getCommands().size() && state.getCommands().get(state.commandIndex) != null) {
             String command = state.getCommands().get(state.commandIndex);
             //not to send conflicting status
             if (!state.isv6) {
-                sendUpdate(state);
+                sendUpdate(context, state);
             }
             if (command != null) {
                 state.ignoreExitCode = false;
@@ -159,7 +157,7 @@ public class RootShellService extends Service implements Cloneable {
                             state.retryCount++;
                             Log.d(TAG, "command '" + state.lastCommand + "' exited with status " + exitCode +
                                     ", retrying (attempt " + state.retryCount + "/" + MAX_RETRIES + ")");
-                            processCommands(state);
+                            processCommands(context, state);
                             return;
                         }
 
@@ -168,7 +166,7 @@ public class RootShellService extends Service implements Cloneable {
 
                         boolean errorExit = exitCode != 0 && !state.ignoreExitCode;
                         if (state.commandIndex >= state.getCommands().size() || errorExit) {
-                            complete(state, exitCode);
+                            complete(state, context, exitCode);
                             if (exitCode < 0) {
                                 rootState = ShellState.FAIL;
                                 Log.e(TAG, "libsuperuser error " + exitCode + " on command '" + state.lastCommand + "'");
@@ -179,9 +177,9 @@ public class RootShellService extends Service implements Cloneable {
                                 }
                                 rootState = ShellState.READY;
                             }
-                            runNextSubmission();
+                            runNextSubmission(context);
                         } else {
-                            processCommands(state);
+                            processCommands(context, state);
                         }
                     });
                 } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
@@ -189,17 +187,17 @@ public class RootShellService extends Service implements Cloneable {
                 }
             }
         } else {
-            complete(state, 0);
+            complete(state, context, 0);
         }
     }
 
-    private static void sendUpdate(final RootCommand state2) {
+    private static void sendUpdate(Context context, final RootCommand state2) {
         new Thread(() -> {
             Intent broadcastIntent = new Intent();
             broadcastIntent.setAction("UPDATEUI4");
             broadcastIntent.putExtra("SIZE", state2.getCommands().size());
             broadcastIntent.putExtra("INDEX", state2.commandIndex);
-            LocalBroadcastManager.getInstance(mContext).sendBroadcast(broadcastIntent);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
         }).start();
     }
 
@@ -224,7 +222,7 @@ public class RootShellService extends Service implements Cloneable {
     }
 
 
-    private void startShellInBackground() {
+    private void startShellInBackground(Context context) {
         Log.d(TAG, "Starting root shell...");
         setupLogging();
         //start only rootSession is null
@@ -241,7 +239,7 @@ public class RootShellService extends Service implements Cloneable {
                             Log.d(TAG, "Root shell is open");
                             rootState = ShellState.READY;
                         }
-                        runNextSubmission();
+                        runNextSubmission(context);
                     });
         }
 
@@ -253,7 +251,7 @@ public class RootShellService extends Service implements Cloneable {
                 notificationManager.cancel(NOTIFICATION_ID);
             }
             rootState = ShellState.BUSY;
-            startShellInBackground();
+            startShellInBackground(context);
             try {
                 Intent intent = new Intent(context, RootShellService.class);
                 context.startService(intent);
@@ -269,9 +267,7 @@ public class RootShellService extends Service implements Cloneable {
         state.setCommands(cmds);
         state.commandIndex = 0;
         state.retryCount = 0;
-        if (mContext == null) {
-            mContext = ctx.getApplicationContext();
-        }
+
         //already in memory and applied
         //add it to queue
         Log.d(TAG, "Hashing...." + state.isv6);
@@ -282,7 +278,7 @@ public class RootShellService extends Service implements Cloneable {
         if (rootState == ShellState.INIT || (rootState == ShellState.FAIL && state.reopenShell)) {
             reOpenShell(ctx);
         } else if (rootState != ShellState.BUSY) {
-            runNextSubmission();
+            runNextSubmission(ctx);
         } else {
             new Timer().schedule(new TimerTask() {
                 @Override
@@ -293,7 +289,7 @@ public class RootShellService extends Service implements Cloneable {
                         Log.i(TAG, "Forcefully changing the state " + rootState);
                         rootState = ShellState.READY;
                     }
-                    runNextSubmission();
+                    runNextSubmission(ctx);
                 }
             }, 10000);
         }

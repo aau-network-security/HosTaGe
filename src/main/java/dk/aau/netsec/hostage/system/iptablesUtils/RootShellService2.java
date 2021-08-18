@@ -56,11 +56,11 @@ public class RootShellService2 extends Service {
     //number of retries - increase the count
     private final static int MAX_RETRIES = 10;
     private static Shell.Interactive rootSession;
-    private static Context mContext;
+//    private static Context mContext;
     private static ShellState rootState = ShellState.INIT;
     private static final LinkedList<RootCommand> waitQueue = new LinkedList<>();
 
-    private static void complete(final RootCommand state, int exitCode) {
+    private static void complete(final RootCommand state, Context context, int exitCode) {
         if (enableProfiling) {
             Log.d(TAG, "RootShell: " + state.getCommands().size() + " commands completed in " +
                     (new Date().getTime() - state.startTime.getTime()) + " ms");
@@ -72,14 +72,14 @@ public class RootShellService2 extends Service {
         }
 
         if (exitCode == 0 && state.successToast != NO_TOAST) {
-            Api.sendToastBroadcast(mContext, mContext.getString(state.successToast));
+            Api.sendToastBroadcast(context, context.getString(state.successToast));
         } else if (exitCode != 0 && state.failureToast != NO_TOAST) {
-            Api.sendToastBroadcast(mContext, mContext.getString(state.failureToast));
+            Api.sendToastBroadcast(context, context.getString(state.failureToast));
         }
 
     }
 
-    private static void runNextSubmission() {
+    private static void runNextSubmission(Context context) {
 
         RootCommand state;
         try {
@@ -99,19 +99,19 @@ public class RootShellService2 extends Service {
             }
             if (rootState == ShellState.FAIL) {
                 // if we don't have root, abort all queued commands
-                complete(state, EXIT_NO_ROOT_ACCESS);
+                complete(state, context, EXIT_NO_ROOT_ACCESS);
             } else if (rootState == ShellState.READY) {
                 rootState = ShellState.BUSY;
-                processCommands(state);
+                processCommands(state, context);
             }
         }
     }
 
-    private static void processCommands(final RootCommand state) {
+    private static void processCommands(final RootCommand state, Context context) {
         if (state.commandIndex < state.getCommands().size() && state.getCommands().get(state.commandIndex) != null) {
             String command = state.getCommands().get(state.commandIndex);
             //not to send conflicting status
-            sendUpdate(state);
+            sendUpdate(state, context);
 
             if (command != null) {
                 state.ignoreExitCode = false;
@@ -141,7 +141,7 @@ public class RootShellService2 extends Service {
                             state.retryCount++;
                             Log.d(TAG, "command '" + state.lastCommand + "' exited with status " + exitCode +
                                     ", retrying (attempt " + state.retryCount + "/" + MAX_RETRIES + ")");
-                            processCommands(state);
+                            processCommands(state, context);
                             return;
                         }
 
@@ -150,7 +150,7 @@ public class RootShellService2 extends Service {
 
                         boolean errorExit = exitCode != 0 && !state.ignoreExitCode;
                         if (state.commandIndex >= state.getCommands().size() || errorExit) {
-                            complete(state, exitCode);
+                            complete(state, context, exitCode);
                             if (exitCode < 0) {
                                 rootState = ShellState.FAIL;
                                 Log.e(TAG, "libsuperuser error " + exitCode + " on command '" + state.lastCommand + "'");
@@ -161,9 +161,9 @@ public class RootShellService2 extends Service {
                                 }
                                 rootState = ShellState.READY;
                             }
-                            runNextSubmission();
+                            runNextSubmission(context);
                         } else {
-                            processCommands(state);
+                            processCommands(state, context);
                         }
                     });
                 } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
@@ -171,17 +171,17 @@ public class RootShellService2 extends Service {
                 }
             }
         } else {
-            complete(state, 0);
+            complete(state, context, 0);
         }
     }
 
-    private static void sendUpdate(final RootCommand state2) {
+    private static void sendUpdate(final RootCommand state2, Context context) {
         new Thread(() -> {
             Intent broadcastIntent = new Intent();
             broadcastIntent.setAction("UPDATEUI6");
             broadcastIntent.putExtra("SIZE", state2.getCommands().size());
             broadcastIntent.putExtra("INDEX", state2.commandIndex);
-            LocalBroadcastManager.getInstance(mContext).sendBroadcast(broadcastIntent);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
         }).start();
     }
 
@@ -206,7 +206,7 @@ public class RootShellService2 extends Service {
     }
 
 
-    private void startShellInBackground() {
+    private void startShellInBackground(Context context) {
         Log.d(TAG, "Starting root shell...");
         setupLogging();
         //start only rootSession is null
@@ -223,7 +223,7 @@ public class RootShellService2 extends Service {
                             Log.d(TAG, "Root shell is open");
                             rootState = ShellState.READY;
                         }
-                        runNextSubmission();
+                        runNextSubmission(context);
                     });
         }
 
@@ -232,7 +232,7 @@ public class RootShellService2 extends Service {
     private void reOpenShell(Context context) {
         if (rootState == null || rootState != ShellState.READY || rootState == ShellState.FAIL) {
             rootState = ShellState.BUSY;
-            startShellInBackground();
+            startShellInBackground(context);
             Intent intent = new Intent(context, RootShellService2.class);
             context.startService(intent);
         }
@@ -244,9 +244,7 @@ public class RootShellService2 extends Service {
         state.setCommands(cmds);
         state.commandIndex = 0;
         state.retryCount = 0;
-        if (mContext == null) {
-            mContext = ctx.getApplicationContext();
-        }
+
         //already in memory and applied
         //add it to queue
         Log.d(TAG, "Hashing...." + state.isv6);
@@ -257,7 +255,7 @@ public class RootShellService2 extends Service {
         if (rootState == ShellState.INIT || (rootState == ShellState.FAIL && state.reopenShell)) {
             reOpenShell(ctx);
         } else if (rootState != ShellState.BUSY) {
-            runNextSubmission();
+            runNextSubmission(ctx);
         } else {
             new Timer().schedule(new TimerTask() {
                 @Override
@@ -268,7 +266,7 @@ public class RootShellService2 extends Service {
                         Log.i(TAG, "Forcefully changing the state " + rootState);
                         rootState = ShellState.READY;
                     }
-                    runNextSubmission();
+                    runNextSubmission(ctx);
                 }
             }, 10000);
         }

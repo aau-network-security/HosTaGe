@@ -11,7 +11,8 @@
 				  android:layout_marginBottom="6dip"
 				  android:minHeight="?android:attr/listPreferredItemHeight"
 				  android:background="@drawable/panel_warning_bg"
-				  android:paddingEnd="?android:attr/scrollbarSize">
+				  android:paddingEnd="?android:attr/scrollbarSize"
+		android:baselineAligned="false">
 	<RelativeLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

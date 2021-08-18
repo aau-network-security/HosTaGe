@@ -487,6 +487,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
             mNotificationManager.createNotificationChannel(channel);
             Notification.Builder notificationBuilder = new Notification.Builder(this, "32");
             notificationBuilder.setContentTitle(getString(R.string.app_name)).setTicker(getString(R.string.honeypot_live_threat))
+//                    TODO replace notification icons with a white variation
                     .setContentText(getString(R.string.honeypot_live_threat)).setSmallIcon(R.drawable.ic_service_red).setAutoCancel(true).setWhen(System.currentTimeMillis())
                     .setSound(Uri.parse(strRingtonePreference));
 

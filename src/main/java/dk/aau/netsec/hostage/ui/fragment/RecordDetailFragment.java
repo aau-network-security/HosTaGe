@@ -210,6 +210,7 @@ public class RecordDetailFragment extends UpNavigableFragment {
         changeTextToHex(hexButton, r, conversationContent);
 
         Date date = new Date(r.getTimestamp());
+//        TODO verify that String.format works as intended here
         conversationInfo.setText(String.format(getString(R.string.record_details_info), from, to, getDateAsString(date), getTimeAsString(date)));
         if (r.getPacket() != null)
             conversationContent.setText(r.getPacket());
