@@ -10,11 +10,11 @@ import android.provider.Settings;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -183,9 +183,9 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
     }
 
     private void checkMultistage() {
-        CheckBoxPreference checkboxPrefMultiStage = (CheckBoxPreference) getPreferenceManager().findPreference(PREFERENCE_KEY_MULTISTAGE);
-        if (checkboxPrefMultiStage.isChecked()) {
-            confirmMultistage(checkboxPrefMultiStage).create().show();
+        SwitchPreference switchPrefMultiStage = (SwitchPreference) getPreferenceManager().findPreference(PREFERENCE_KEY_MULTISTAGE);
+        if (switchPrefMultiStage.isChecked()) {
+            confirmMultistage(switchPrefMultiStage).create().show();
         } else {
             stopMultiStage();
             enabledMultistage = false;
@@ -193,13 +193,13 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
     }
 
     private void checkHpfeeds() {
-        CheckBoxPreference checkboxPrefHpfeeds = (CheckBoxPreference) getPreferenceManager().findPreference(PREFERENCE_KEY_HPFEEDS);
+        SwitchPreference switchPrefHpfeeds = (SwitchPreference) getPreferenceManager().findPreference(PREFERENCE_KEY_HPFEEDS);
 
-        if (checkboxPrefHpfeeds.isChecked() && !enabledHpfeeds)
-            confirmHpfeeds(checkboxPrefHpfeeds).create().show();
+        if (switchPrefHpfeeds.isChecked() && !enabledHpfeeds)
+            confirmHpfeeds(switchPrefHpfeeds).create().show();
     }
 
-    private MaterialAlertDialogBuilder confirmMultistage(CheckBoxPreference checkboxPrefMultiStage) {
+    private MaterialAlertDialogBuilder confirmMultistage(SwitchPreference switchPrefMultiStage) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
         builder.setTitle(R.string.warning);
         builder.setMessage(R.string.multistage_warning);
@@ -208,14 +208,14 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
             enabledMultistage = true;
         });
         builder.setNegativeButton(R.string.close, (dialog, which) -> {
-            checkboxPrefMultiStage.setChecked(false);
+            switchPrefMultiStage.setChecked(false);
             enabledMultistage = false;
         });
 
         return builder;
     }
 
-    private MaterialAlertDialogBuilder confirmHpfeeds(CheckBoxPreference checkboxPrefHpFeeds) {
+    private MaterialAlertDialogBuilder confirmHpfeeds(SwitchPreference switchPrefHpFeeds) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
         builder.setTitle(R.string.data_disclaimer);
 //		TODO extract strings
@@ -226,7 +226,7 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
             enabledHpfeeds = true;
         });
         builder.setNegativeButton(R.string.close, (dialog, which) -> {
-            checkboxPrefHpFeeds.setChecked(false);
+            switchPrefHpFeeds.setChecked(false);
             enabledHpfeeds = false;
         });
 
