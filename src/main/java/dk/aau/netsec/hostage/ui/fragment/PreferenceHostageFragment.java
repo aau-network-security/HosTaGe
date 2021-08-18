@@ -10,11 +10,11 @@ import android.provider.Settings;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -177,29 +177,29 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
 
         if (key.equals(PREFERENCE_KEY_MULTISTAGE)) {
             checkMultistage();
-        } else if (key.equals(PREFERENCE_KEY_HPFEEDS)) {
-            checkHpfeeds();
+//        } else if (key.equals(PREFERENCE_KEY_HPFEEDS)) {
+//            checkHpfeeds();
         }
     }
 
     private void checkMultistage() {
-        CheckBoxPreference checkboxPrefMultiStage = (CheckBoxPreference) getPreferenceManager().findPreference(PREFERENCE_KEY_MULTISTAGE);
-        if (checkboxPrefMultiStage.isChecked()) {
-            confirmMultistage(checkboxPrefMultiStage).create().show();
+        SwitchPreference switchPrefMultiStage = (SwitchPreference) getPreferenceManager().findPreference(PREFERENCE_KEY_MULTISTAGE);
+        if (switchPrefMultiStage.isChecked()) {
+            confirmMultistage(switchPrefMultiStage).create().show();
         } else {
             stopMultiStage();
             enabledMultistage = false;
         }
     }
 
-    private void checkHpfeeds() {
-        CheckBoxPreference checkboxPrefHpfeeds = (CheckBoxPreference) getPreferenceManager().findPreference(PREFERENCE_KEY_HPFEEDS);
+//    private void checkHpfeeds() {
+//        SwitchPreference switchPrefHpfeeds = (SwitchPreference) getPreferenceManager().findPreference(PREFERENCE_KEY_HPFEEDS);
+//
+//        if (switchPrefHpfeeds.isChecked() && !enabledHpfeeds)
+//            confirmHpfeeds(switchPrefHpfeeds).create().show();
+//    }
 
-        if (checkboxPrefHpfeeds.isChecked() && !enabledHpfeeds)
-            confirmHpfeeds(checkboxPrefHpfeeds).create().show();
-    }
-
-    private MaterialAlertDialogBuilder confirmMultistage(CheckBoxPreference checkboxPrefMultiStage) {
+    private MaterialAlertDialogBuilder confirmMultistage(SwitchPreference switchPrefMultiStage) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
         builder.setTitle(R.string.warning);
         builder.setMessage(R.string.multistage_warning);
@@ -208,30 +208,31 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
             enabledMultistage = true;
         });
         builder.setNegativeButton(R.string.close, (dialog, which) -> {
-            checkboxPrefMultiStage.setChecked(false);
+            switchPrefMultiStage.setChecked(false);
             enabledMultistage = false;
         });
 
         return builder;
     }
 
-    private MaterialAlertDialogBuilder confirmHpfeeds(CheckBoxPreference checkboxPrefHpFeeds) {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
-        builder.setTitle(R.string.data_disclaimer);
-//		TODO extract strings
-        builder.setMessage("The data collected from HosTaGe attack records will be stored for Advanced Collaborative Threat Intelligence. GDPR sensitive data include but are not limited to the public IP address of the publishing HosTaGe device. Please note that the physical geographical location of the participating HosTaGe publisher can be determined with the public IP address. Furthermore, hpfeeds include the IP address and the ports of the attack sources. Exclusive access to the hpfeeds repository is provided only with an internal review process.\n" +
-                "\n" +
-                "By enabling hpfeeds, the user of this app agrees to send Aalborg University (Denmark) attack data and provides his consent to use this data to process threat intelligence. The user has the right to ask for the deletion of the data published by him/her. Please contact hostage@es.aau.dk for queries and more information.");
-        builder.setPositiveButton(R.string.enable, (dialog, which) -> {
-            enabledHpfeeds = true;
-        });
-        builder.setNegativeButton(R.string.close, (dialog, which) -> {
-            checkboxPrefHpFeeds.setChecked(false);
-            enabledHpfeeds = false;
-        });
+//    private MaterialAlertDialogBuilder confirmHpfeeds(SwitchPreference switchPrefHpFeeds) {
+//        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+//        builder.setTitle(R.string.data_disclaimer);
+////		TODO extract strings
 
-        return builder;
-    }
+//        builder.setMessage("The data collected from HosTaGe attack records will be stored for Advanced Collaborative Threat Intelligence. GDPR sensitive data include but are not limited to the public IP address of the publishing HosTaGe device. Please note that the physical geographical location of the participating HosTaGe publisher can be determined with the public IP address. Furthermore, hpfeeds include the IP address and the ports of the attack sources. Exclusive access to the hpfeeds repository is provided only with an internal review process.\n" +
+//                "\n" +
+//                "By enabling hpfeeds, the user of this app agrees to send Aalborg University (Denmark) attack data and provides his consent to use this data to process threat intelligence. The user has the right to ask for the deletion of the data published by him/her. Please contact hostage@es.aau.dk for queries and more information.");
+//        builder.setPositiveButton(R.string.enable, (dialog, which) -> {
+//            enabledHpfeeds = true;
+//        });
+//        builder.setNegativeButton(R.string.close, (dialog, which) -> {
+//            switchPrefHpFeeds.setChecked(false);
+//            enabledHpfeeds = false;
+//        });
+//
+//        return builder;
+//    }
 
     @Override
     public Fragment getCallbackFragment() {

@@ -13,12 +13,12 @@
 			android:summary="@string/multistage_summary"
 			android:title="@string/multistage_service"/>
 
-		<SwitchPreference
-			app:iconSpaceReserved="false"
-			android:key="pref_hpfeeds_server"
-			android:defaultValue="false"
-			android:title="@string/pref_upload"
-			android:summary="@string/pref_upload_hpfeeds" />
+<!--		<SwitchPreference-->
+<!--			app:iconSpaceReserved="false"-->
+<!--			android:key="pref_hpfeeds_server"-->
+<!--			android:defaultValue="false"-->
+<!--			android:title="@string/pref_upload"-->
+<!--			android:summary="@string/pref_upload_hpfeeds" />-->
 
 		<!--Disable Hpfeeds Settings-->
 <!--		<PreferenceScreen-->
