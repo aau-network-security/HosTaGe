@@ -63,19 +63,16 @@ public class CustomLocationManager {
         mContext = context;
         mListOfListeners = new HashSet<>();
 
-        mLocationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location location) {
 
-//                if (true) { //only for testing
-                if (isBetterLocation(location)) {
-                    mLatestLocation = location;
+        mLocationListener = location -> {
+            if (isBetterLocation(location)) {
+                mLatestLocation = location;
 
-                    for (LocationSource.OnLocationChangedListener listener : mListOfListeners) {
-                        listener.onLocationChanged(location);
-                    }
+                for (LocationSource.OnLocationChangedListener listener : mListOfListeners) {
+                    listener.onLocationChanged(location);
                 }
             }
+
         };
 
         mLocationConsumer = new Consumer<Location>() {
@@ -134,6 +131,21 @@ public class CustomLocationManager {
             throw new LocationNotYetAvailableException("Location permission was granted, but location is not available yet");
         } else {
             throw new LocationException("Location permission has not been granted");
+        }
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @return
+     */
+    public Location getLastKnownLocation() {
+        try {
+            return mLocationManager.getLastKnownLocation(getPreferedProvider());
+
+        } catch (LocationException le) {
+            le.printStackTrace();
+            return null;
         }
     }
 
@@ -261,17 +273,6 @@ public class CustomLocationManager {
      *                           all turned off)
      */
     private void startUpdatingLocation() throws LocationException {
-        String preferredProvider;
-
-        // Check provider availability (starting with most accurate
-        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            preferredProvider = LocationManager.GPS_PROVIDER;
-        } else if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            preferredProvider = LocationManager.NETWORK_PROVIDER;
-        } else {
-            throw new LocationException("No network provider enabled");
-        }
-
         // Check location permissions
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -280,8 +281,20 @@ public class CustomLocationManager {
         }
 
         // Request periodic location updates.
-        mLocationManager.requestLocationUpdates(preferredProvider, 0, 0, mLocationListener);
+        mLocationManager.requestLocationUpdates(getPreferedProvider(), 100, 0, mLocationListener);
         mReceivingUpdates = true;
+    }
+
+
+    private String getPreferedProvider() throws LocationException {
+        // Check provider availability (starting with most accurate)
+        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            return LocationManager.GPS_PROVIDER;
+        } else if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            return LocationManager.NETWORK_PROVIDER;
+        } else {
+            throw new LocationException("No network provider enabled");
+        }
     }
 
     /**
@@ -341,9 +354,7 @@ public class CustomLocationManager {
     /**
      * Determines whether one Location reading is better than the current Location fix
      *
-     * @param location            The new Location that you want to evaluate
-     * @param currentBestLocation The current Location fix, to which you want to compare the new
-     *                            one
+     * @param location The new Location that you want to evaluate
      */
     boolean isBetterLocation(Location location) {
         if (mLatestLocation == null) {
@@ -357,12 +368,10 @@ public class CustomLocationManager {
         boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
 
         // If it's been more than two minutes since the current hostage.location, use
-        // the new hostage.location
-        // because the user has likely moved
+        // the new hostage.location because the user has likely moved
         if (isSignificantlyNewer) {
             return true;
-            // If the new hostage.location is more than two minutes older, it must be
-            // worse
+            // If the new hostage.location is more than two minutes older, it must be worse
         } else if (isSignificantlyOlder) {
             return false;
         }

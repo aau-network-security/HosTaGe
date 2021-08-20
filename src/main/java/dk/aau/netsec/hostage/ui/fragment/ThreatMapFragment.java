@@ -16,6 +16,7 @@ import android.location.Location;
 import android.os.Bundle;
 
 import android.text.Html;
+import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -140,7 +141,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * On Resume repopulate map with attack data and register a Location Listener to start periodic
      * location updates.
      */
@@ -165,7 +166,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * On Pause deregister Location Listener to stop receiving periodic location updates.
      */
     @Override
@@ -207,7 +208,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
         sMap.setOnInfoWindowClickListener(this);
         setInfoWindowAdapter();
 
-        animateMapToUserLocation();
+        retrieveLocation();
     }
 
     /**
@@ -283,7 +284,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
      */
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        animateMapToUserLocation();
+        retrieveLocation();
     }
 
     /**
@@ -411,23 +412,30 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
     /**
      * Move map view smoothly to a new location.
      */
-    private void animateMapToUserLocation() {
+    private void retrieveLocation() {
+        Location userLocation = null;
+
         try {
-            // Retrieve latest location
-            Location userLocation = mLocationManager.getLatestLocation();
-
-            // If success, animate map smoothly
-            if (userLocation != null && sMap != null) {
-                LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-                sMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(userLatLng, 13)));
-
-            // Location is probably not ready yet, do nothing.
-            } else {
-                return;
-            }
+            userLocation = mLocationManager.getLatestLocation();
+            
         } catch (LocationException le) {
             le.printStackTrace();
+            userLocation = mLocationManager.getLastKnownLocation();
         }
+
+        if (userLocation != null && sMap != null) {
+            animateToLocation(userLocation);
+        }
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @param location
+     */
+    private void animateToLocation(Location location) {
+        LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+        sMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(userLatLng, 13)));
     }
 
     /**
