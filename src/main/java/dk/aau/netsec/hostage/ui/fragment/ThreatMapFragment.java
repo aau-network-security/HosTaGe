@@ -16,7 +16,6 @@ import android.location.Location;
 import android.os.Bundle;
 
 import android.text.Html;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,12 +64,9 @@ import dk.aau.netsec.hostage.ui.model.LogFilter;
 public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, LocationSource.OnLocationChangedListener {
 
     private GoogleMap sMap = null;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private MapView mapView = null;
-    private View rootView = null;
     private Thread mLoader = null;
-    private HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
-    private String mLocationProvider;
+    private final HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
     private LayoutInflater inflater;
 
     // needed for LIVE threat map
@@ -99,7 +95,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
             activity.setTitle(getResources().getString(R.string.drawer_threat_map));
         }
 
-        rootView = inflater.inflate(R.layout.fragment_threatmap, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_threatmap, container, false);
         this.inflater = inflater;
 
         if (rootView != null) {
@@ -413,7 +409,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
      * Move map view smoothly to a new location.
      */
     private void retrieveLocation() {
-        Location userLocation = null;
+        Location userLocation;
 
         try {
             userLocation = mLocationManager.getLatestLocation();
@@ -472,7 +468,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
      * helper class
      * easier to use than LatLng
      */
-    private class Point {
+    private static class Point {
 
         public double x, y;
 
@@ -487,9 +483,10 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
      * contains heuristic to split SSIDs by hostage.location
      * see MAX_DISTANCE
      */
-    private class SSIDArea {
+    private static class SSIDArea {
 
-        private Point mMinimum, mMaximum;
+        private final Point mMinimum;
+        private final Point mMaximum;
 
         public int numPoints;
 

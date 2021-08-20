@@ -3,7 +3,6 @@ package dk.aau.netsec.hostage.location;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -40,12 +39,12 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
 public class CustomLocationManager {
 
     Location mLatestLocation;
-    private Context mContext;
-    private LocationListener mLocationListener;
-    private LocationManager mLocationManager;
-    private Consumer<Location> mLocationConsumer;
+    private final Context mContext;
+    private final LocationListener mLocationListener;
+    private final LocationManager mLocationManager;
+    private final Consumer<Location> mLocationConsumer;
     private boolean locationPermissionDenied;
-    Set<LocationSource.OnLocationChangedListener> mListOfListeners;
+    final Set<LocationSource.OnLocationChangedListener> mListOfListeners;
     private boolean mReceivingUpdates = false;
 
     private static WeakReference<CustomLocationManager> mLocationManagerInstance;
@@ -75,12 +74,7 @@ public class CustomLocationManager {
 
         };
 
-        mLocationConsumer = new Consumer<Location>() {
-            @Override
-            public void accept(Location location) {
-                mLatestLocation = location;
-            }
-        };
+        mLocationConsumer = location -> mLatestLocation = location;
 
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
@@ -141,7 +135,7 @@ public class CustomLocationManager {
      */
     public Location getLastKnownLocation() {
         try {
-            return mLocationManager.getLastKnownLocation(getPreferedProvider());
+            return mLocationManager.getLastKnownLocation(getPreferredProvider());
 
         } catch (LocationException le) {
             le.printStackTrace();
@@ -160,16 +154,9 @@ public class CustomLocationManager {
             dialog.setTitle(mContext.getResources().getString(R.string.uses_background_location));
             dialog.setMessage(mContext.getResources().getString(R.string.uses_background_location_reason));
             dialog.setCancelable(true);
-            dialog.setNeutralButton(mContext.getResources().getString(R.string.ok), ((dialog1, which) -> {
-                showLocationRequestDialog(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-            }));
+            dialog.setNeutralButton(mContext.getResources().getString(R.string.ok), ((dialog1, which) -> showLocationRequestDialog(Manifest.permission.ACCESS_BACKGROUND_LOCATION)));
 
-            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    showLocationRequestDialog(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-                }
-            });
+            dialog.setOnCancelListener(dialog12 -> showLocationRequestDialog(Manifest.permission.ACCESS_BACKGROUND_LOCATION));
 
             AlertDialog alertDialog = dialog.create();
             alertDialog.show();
@@ -281,12 +268,12 @@ public class CustomLocationManager {
         }
 
         // Request periodic location updates.
-        mLocationManager.requestLocationUpdates(getPreferedProvider(), 100, 0, mLocationListener);
+        mLocationManager.requestLocationUpdates(getPreferredProvider(), 100, 0, mLocationListener);
         mReceivingUpdates = true;
     }
 
 
-    private String getPreferedProvider() throws LocationException {
+    private String getPreferredProvider() throws LocationException {
         // Check provider availability (starting with most accurate)
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             return LocationManager.GPS_PROVIDER;
@@ -317,16 +304,9 @@ public class CustomLocationManager {
             dialog.setTitle(mContext.getResources().getString(R.string.uses_location));
             dialog.setMessage(mContext.getResources().getString(R.string.uses_location_reason));
             dialog.setCancelable(true);
-            dialog.setNeutralButton(mContext.getResources().getString(R.string.ok), ((dialog1, which) -> {
-                showLocationRequestDialog(Manifest.permission.ACCESS_FINE_LOCATION);
-            }));
+            dialog.setNeutralButton(mContext.getResources().getString(R.string.ok), ((dialog1, which) -> showLocationRequestDialog(Manifest.permission.ACCESS_FINE_LOCATION)));
 
-            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    showLocationRequestDialog(Manifest.permission.ACCESS_FINE_LOCATION);
-                }
-            });
+            dialog.setOnCancelListener(dialog12 -> showLocationRequestDialog(Manifest.permission.ACCESS_FINE_LOCATION));
 
             AlertDialog alertDialog = dialog.create();
             alertDialog.show();
@@ -341,11 +321,11 @@ public class CustomLocationManager {
      * @param locationPermissionType Ask for either foreground or background location permission.
      */
     void showLocationRequestDialog(String locationPermissionType) {
-        if (locationPermissionType == Manifest.permission.ACCESS_FINE_LOCATION || locationPermissionType == Manifest.permission.ACCESS_COARSE_LOCATION) {
+        if (locationPermissionType.equals(Manifest.permission.ACCESS_FINE_LOCATION) || locationPermissionType.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MainActivity.LOCATION_PERMISSION_REQUEST_CODE);
 
             // Only relevant on newer APIs
-        } else if (locationPermissionType == Manifest.permission.ACCESS_BACKGROUND_LOCATION &&
+        } else if (locationPermissionType.equals(Manifest.permission.ACCESS_BACKGROUND_LOCATION) &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, MainActivity.LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
         }
