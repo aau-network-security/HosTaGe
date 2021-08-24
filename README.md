@@ -104,3 +104,7 @@ Please use the Github issues to report any issues or for questions.
 __License & Distribution__
 
 Distributed under the MIT license. See [LICENSE](./LICENSE.md) for license information. 
+
+__Privacy Policy__
+
+You can find the privacy policy for the app under [Privacy Policy](./Privacy_policy.md)
