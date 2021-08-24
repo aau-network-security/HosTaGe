@@ -6,17 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="343dp"
-        android:layout_height="48dp"
-        android:text="@string/Privacy_Policy"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        tools:layout_editor_absoluteX="23dp"
-        tools:layout_editor_absoluteY="28dp" />
-
     <ScrollView
         android:layout_width="409dp"
         android:layout_height="662dp"
