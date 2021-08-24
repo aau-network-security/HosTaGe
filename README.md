@@ -61,9 +61,9 @@ __Original Authors__
 
 __Contributors__
 
-[Shreyas Srinivasa](https://sastry17.github.io/), lead developer, Aalborg University and Technische Universität Darmstadt (Github - @sastry17)
+[Shreyas Srinivasa](https://sastry17.github.io/), lead developer, Aalborg University and Technische Universität Darmstadt ([@sastry17](https://github.com/sastry17))
 
-Eirini Lygerou, GSoC 2020 Developer (Github - [@irinil](https://github.com/irinil))
+Eirini Lygerou, GSoC 2020 Developer ([@irinil](https://github.com/irinil))
 
 Filip Adamík, GSoC 2021 Developer ([@zafodB](https://github.com/zafodB))
 
