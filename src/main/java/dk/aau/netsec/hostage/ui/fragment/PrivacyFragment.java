@@ -6,9 +6,9 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
 
@@ -17,26 +17,21 @@ import dk.aau.netsec.hostage.R;
 /**
  * Shows Privacy information
  * Added as a part for fix in Android 11
- * Created by Shreyas Srinivasa on 01-03-2021
+ *
+ * @author Shreyas Srinivasa
+ * Created on 01-03-2021
  */
 public class PrivacyFragment extends Fragment {
-    private View rootView;
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private Bundle savedInstanceState;
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        this.inflater = inflater;
-        this.container = container;
-        this.savedInstanceState = savedInstanceState;
         final Activity activity = getActivity();
         if (activity != null) {
             activity.setTitle(getResources().getString(R.string.privacy_policy));
         }
 
-        rootView = inflater.inflate(R.layout.fragment_privacy, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_privacy, container, false);
 
         String policyText = "<p>Last updated: July 20, 2021</p>\n" +
                 "<!DOCTYPE html>\n" +
@@ -173,51 +168,5 @@ public class PrivacyFragment extends Fragment {
         policy.setMovementMethod(LinkMovementMethod.getInstance());
 
         return rootView;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (rootView != null) {
-            unbindDrawables(rootView);
-            rootView = null;
-
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        onCreateView(inflater, container, savedInstanceState);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (rootView != null) {
-            unbindDrawables(rootView);
-            rootView = null;
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (rootView != null) {
-            unbindDrawables(rootView);
-            rootView = null;
-        }
-    }
-
-    private void unbindDrawables(View view) {
-        if (view.getBackground() != null) {
-            view.getBackground().setCallback(null);
-        }
-        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                unbindDrawables(((ViewGroup) view).getChildAt(i));
-            }
-            ((ViewGroup) view).removeAllViews();
-        }
     }
 }
