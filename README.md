@@ -109,4 +109,4 @@ Distributed under the MIT license. See [LICENSE](./LICENSE.md) for license infor
 
 __Privacy Policy__
 
-You can find the privacy policy for the app under [Privacy Policy](./Privacy_policy.md)
+You can find the privacy policy under [Privacy Policy](./Privacy_policy.md)
