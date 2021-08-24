@@ -183,9 +183,7 @@ public class PrivacyFragment extends Fragment {
 
         TextView policy = rootView.findViewById(R.id.policyText);
         policy.setText(HtmlCompat.fromHtml(policyText, 0));
-
-
-
+        policy.setMovementMethod(LinkMovementMethod.getInstance());
 
         return rootView;
     }
