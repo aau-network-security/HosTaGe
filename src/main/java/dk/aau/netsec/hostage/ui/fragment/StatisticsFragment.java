@@ -183,8 +183,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         daoHelper = new DAOHelper(dbSession, getActivity());
 
         // Get the message from the intent
-        if (this.filter == null) {
-            Intent intent = this.getActivity().getIntent();
+        if (filter == null) {
+            Intent intent = getActivity().getIntent();
             LogFilter filter = intent.getParcelableExtra(LogFilter.LOG_FILTER_INTENT_KEY);
             if (filter == null) {
                 clearFilter();
@@ -193,10 +193,10 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             }
         }
 
-        this.rootView = inflater.inflate(getLayoutID(), container, false);
-        configureRootView(this.rootView);
+        rootView = inflater.inflate(getLayoutID(), container, false);
+        configureRootView(rootView);
 
-        return this.rootView;
+        return rootView;
     }
 
     @Override
@@ -237,11 +237,10 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         ViewGroup container = (ViewGroup) getView();
         assert container != null;
         container.removeAllViewsInLayout();
-        this.rootView = inflater.inflate(getLayoutID(), container, false);
-        container.addView(this.rootView);
+        rootView = inflater.inflate(getLayoutID(), container, false);
+        container.addView(rootView);
 
-        configureRootView(this.rootView);
-
+        configureRootView(rootView);
     }
 
     /**
@@ -288,7 +287,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         }
 
         legendListView = rootView.findViewById(R.id.legend_list_view);
-        legendListView.setOnItemClickListener((adapterView, view, i, l) -> StatisticsFragment.this.userTappedOnLegendItem(i));
+        legendListView.setOnItemClickListener((adapterView, view, i, l) -> userTappedOnLegendItem(i));
         rootView.setWillNotDraw(false);
 
 //        ImageButton visualButton = rootView.findViewById(R.id.plot_data_button);
@@ -312,7 +311,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * @param title String
      */
     public void setTitle(String title) {
-        TextView titleView = this.rootView.findViewById(R.id.title_text_view);
+        TextView titleView = rootView.findViewById(R.id.title_text_view);
         if (title != null && titleView != null) {
             titleView.setText(title);
             titleView.invalidate();
@@ -325,7 +324,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * @return String title
      */
     public String getTitle() {
-        TextView titleView = this.rootView.findViewById(R.id.title_text_view);
+        TextView titleView = rootView.findViewById(R.id.title_text_view);
         if (titleView != null) {
             return "" + titleView.getText();
         }
@@ -335,13 +334,13 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     @Override
     public void onStart() {
         super.onStart();
-        this.actualiseCurrentPlot();
-        this.currentPlotView.invalidate();
+        actualiseCurrentPlot();
+        currentPlotView.invalidate();
 
-        if (this.currentPlotView instanceof BarGraph) {
-            this.setTitle("" + this.getCurrentSelectedProtocol() + ": " + this.selectedCompareData);
+        if (currentPlotView instanceof BarGraph) {
+            setTitle("" + getCurrentSelectedProtocol() + ": " + selectedCompareData);
         } else {
-            this.setTitle(this.selectedCompareData);
+            setTitle(selectedCompareData);
         }
     }
 
@@ -455,12 +454,12 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         SimplePopupTable visualiseMenu = new SimplePopupTable(getActivity(), ob -> {
             if (ob instanceof AbstractPopupItem) {
                 AbstractPopupItem item = (AbstractPopupItem) ob;
-                StatisticsFragment.this.userSelectMenuItem(item);
+                userSelectMenuItem(item);
             }
         });
         visualiseMenu.setTitle(MENU_POPUP_TITLE);
         int id = 0;
-        for (String title : StatisticsFragment.this.getMenuTitles()) {
+        for (String title : getMenuTitles()) {
             SimplePopupItem item = new SimplePopupItem(getActivity());
             item.setTitle(title);
             item.setItemId(id);
@@ -547,7 +546,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
         if (title.equals(FILTER_MENU_TITLE_PROTOCOLS)) {
             //titles = titles.size() == 0 ? protocolTitles() : titles;
-            this.filter.setProtocols(titles);
+            filter.setProtocols(titles);
             actualiseCurrentPlot();
             return;
         }
@@ -556,7 +555,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
                 titles = new ArrayList<>();
                 titles.add(protocolTitles().get(0));
             }
-            this.filter.setProtocols(titles);
+            filter.setProtocols(titles);
 
             actualiseCurrentPlot();
             String fragTitle = "" + getCurrentSelectedProtocol() + ": " + selectedCompareData;
@@ -704,7 +703,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         SimplePopupTable filterMenu = new SimplePopupTable(getActivity(), ob -> {
             if (ob instanceof AbstractPopupItem) {
                 AbstractPopupItem item = (AbstractPopupItem) ob;
-                StatisticsFragment.this.onFilterMenuItemSelected(item);
+                onFilterMenuItemSelected(item);
             }
         });
 
@@ -868,7 +867,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
         int i = 0;
         for (String essid : essids) {
-            selected[i] = (this.filter.getESSIDs().contains(essid));
+            selected[i] = (filter.getESSIDs().contains(essid));
             i++;
         }
         return selected;
@@ -902,7 +901,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
         int i = 0;
         for (String bssid : bssids) {
-            selected[i] = (this.filter.getBSSIDs().contains(bssid));
+            selected[i] = (filter.getBSSIDs().contains(bssid));
             i++;
         }
         return selected;
@@ -1048,11 +1047,11 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         if (shouldUseDate) {
             linegraph.resetXLimits();
 
-            if (this.filter.hasBelowTimestamp()) {
-                rangeMax_X = Math.max(this.filter.belowTimestamp, rangeMax_X);
+            if (filter.hasBelowTimestamp()) {
+                rangeMax_X = Math.max(filter.belowTimestamp, rangeMax_X);
             }
-            if (this.filter.hasAboveTimestamp()) {
-                rangeMin_X = Math.min(this.filter.aboveTimestamp, rangeMin_X);
+            if (filter.hasAboveTimestamp()) {
+                rangeMin_X = Math.min(filter.aboveTimestamp, rangeMin_X);
             }
 
             if (rangeMax_X == rangeMin_X) {
@@ -1069,7 +1068,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             linegraph.setConverter(new LineGraph.AxisDataConverter() {
                 @Override
                 public String convertDataForX_Position(double x) {
-                    return StatisticsFragment.this.getDateAsDayString((long) x);
+                    return getDateAsDayString((long) x);
                 }
 
                 @Override
@@ -1131,8 +1130,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * @return records {@link java.util.ArrayList}, {@link RecordAll Record}
      */
     public ArrayList<RecordAll> getFetchedRecords() {
-        if (this.filter == null) clearFilter();
-        return daoHelper.getAttackRecordDAO().getRecordsForFilter(this.filter);
+        if (filter == null) clearFilter();
+        return daoHelper.getAttackRecordDAO().getRecordsForFilter(filter);
     }
 
     /**
@@ -1180,39 +1179,39 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             }
 
             private void loadDataInBackground() {
-                View plot = StatisticsFragment.this.currentPlotView;
+                View plot = currentPlotView;
                 if (plot instanceof PieGraph) {
                     PieGraph pie = (PieGraph) plot;
-                    StatisticsFragment.this.setPieGraphData(pie);
+                    setPieGraphData(pie);
                 }
                 if (plot instanceof BarGraph) {
                     BarGraph bar = (BarGraph) plot;
-                    StatisticsFragment.this.setBarGraphData(bar);
+                    setBarGraphData(bar);
                 }
                 if (plot instanceof LineGraph) {
                     LineGraph line = (LineGraph) plot;
-                    StatisticsFragment.this.setLineGraphData(line);
+                    setLineGraphData(line);
                 }
             }
 
             private void actualiseUI() {
 
-                Activity actv = StatisticsFragment.this.getActivity();
+                Activity actv = getActivity();
 
                 if (actv != null) {
                     actv.runOnUiThread(() -> {
                         // SET VISIBILITY
-                        View plot1 = StatisticsFragment.this.currentPlotView;
+                        View plot1 = currentPlotView;
 
                         if (plot1 instanceof PieGraph) {
                             // HIDE FILTER BUTTON
 //                            ImageButton filterButton = StatisticsFragment.this.getFilterButton();
 //                            if (filterButton != null) filterButton.setVisibility(View.GONE);
                         } else {
-                            if (StatisticsFragment.this.pieGraph != null) {
-                                StatisticsFragment.this.pieGraph.setVisibility(View.GONE);
-                                if (StatisticsFragment.this.pieGraph.getParent() != null) {
-                                    thePlotlayout.removeView(StatisticsFragment.this.pieGraph);
+                            if (pieGraph != null) {
+                                pieGraph.setVisibility(View.GONE);
+                                if (pieGraph.getParent() != null) {
+                                    thePlotlayout.removeView(pieGraph);
                                 }
                             }
                             // SHOW FILTER BUTTON
@@ -1220,18 +1219,18 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 //                            if (filterButton != null) filterButton.setVisibility(View.VISIBLE);
                         }
                         if (!(plot1 instanceof BarGraph)) {
-                            if (StatisticsFragment.this.barGraph != null) {
-                                StatisticsFragment.this.barGraph.setVisibility(View.GONE);
-                                if (StatisticsFragment.this.barGraph.getParent() != null) {
-                                    thePlotlayout.removeView(StatisticsFragment.this.barGraph);
+                            if (barGraph != null) {
+                                barGraph.setVisibility(View.GONE);
+                                if (barGraph.getParent() != null) {
+                                    thePlotlayout.removeView(barGraph);
                                 }
                             }
                         }
                         if (!(plot1 instanceof LineGraph)) {
-                            if (StatisticsFragment.this.lineGraph != null) {
-                                StatisticsFragment.this.lineGraph.setVisibility(View.GONE);
-                                if (StatisticsFragment.this.lineGraph.getParent() != null) {
-                                    thePlotlayout.removeView(StatisticsFragment.this.lineGraph);
+                            if (lineGraph != null) {
+                                lineGraph.setVisibility(View.GONE);
+                                if (lineGraph.getParent() != null) {
+                                    thePlotlayout.removeView(lineGraph);
                                 }
                             }
                         }
@@ -1241,19 +1240,19 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
                         if (plot1.getParent() == null) {
                             thePlotlayout.addView(plot1);
                         }
-                        StatisticsFragment.this.actualiseLegendList();
-                        StatisticsFragment.this.currentPlotView.bringToFront();
-                        StatisticsFragment.this.currentPlotView.invalidate();
+                        actualiseLegendList();
+                        currentPlotView.bringToFront();
+                        currentPlotView.invalidate();
 
-                        StatisticsFragment.this.spinner.setVisibility(View.GONE);
+                        spinner.setVisibility(View.GONE);
 
-                        StatisticsFragment.this.showEmptyDataNotification();
+                        showEmptyDataNotification();
                     });
                 }
             }
         });
 
-        this.loader.start();
+        loader.start();
     }
 
     /**
@@ -1452,7 +1451,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         protocollist.add(protocol);
         filter.setProtocols(protocollist);
 
-        ArrayList<PlotComparisonItem> plotItems = this.daoHelper.getNetworkRecordDAO().attacksPerESSID(filter); //new ArrayList<PlotComparisonItem>();
+        ArrayList<PlotComparisonItem> plotItems = daoHelper.getNetworkRecordDAO().attacksPerESSID(filter); //new ArrayList<PlotComparisonItem>();
 
         plotItems.sort((s1, s2) -> s2.getValue2().compareTo(s1.getValue2()));
 
@@ -1541,7 +1540,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
         int i = 0;
         for (String protocol : protocols) {
-            selected[i] = (this.filter.protocols.contains(protocol));
+            selected[i] = (filter.protocols.contains(protocol));
             i++;
         }
         return selected;
@@ -1549,7 +1548,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
     public ArrayList<String> getSelectedProtocolTitles() {
         ArrayList<String> knownProtocols = protocolTitles();
-        if (this.filter.hasProtocols()) {
+        if (filter.hasProtocols()) {
             ArrayList<String> titles = new ArrayList<>();
             int i = 0;
             for (boolean b : selectedProtocols()) {
@@ -1635,8 +1634,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * Clears the current filter.
      */
     private void clearFilter() {
-        if (filter == null) this.filter = new LogFilter();
-        this.filter.clear();
+        if (filter == null) filter = new LogFilter();
+        filter.clear();
     }
 
     /*
