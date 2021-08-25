@@ -64,45 +64,6 @@ import dk.aau.netsec.hostage.ui.popup.SplitPopupItem;
  * Created by Julien on 16.02.14.
  */
 public class StatisticsFragment extends TrackerFragment implements ChecklistDialog.ChecklistDialogListener, DateTimePickerDialog.DateTimeSelected {
-    static final String FILTER_MENU_TITLE_BSSID = "BSSID";
-    static final String FILTER_MENU_TITLE_ESSID = "ESSID";
-    static final String FILTER_MENU_TITLE_PROTOCOLS = MainActivity.getContext().getString(R.string.stats_protocols);
-    static final String FILTER_MENU_TITLE_PROTOCOL = MainActivity.getContext().getString(R.string.rec_protocol);
-    static final String FILTER_MENU_TITLE_TIMESTAMP_BELOW = MainActivity.getContext().getString(R.string.rec_latest);
-    static final String FILTER_MENU_TITLE_TIMESTAMP_ABOVE = MainActivity.getContext().getString(R.string.rec_earliest);
-    static final String FILTER_MENU_TITLE_REMOVE = MainActivity.getContext().getString(R.string.rec_reset_filter);
-    static final String FILTER_MENU_POPUP_TITLE = MainActivity.getContext().getString(R.string.rec_filter_by);
-
-    static final String MENU_TITLE_PROTOCOLS = MainActivity.getContext().getString(
-            R.string.stats_protocols);
-    static final String MENU_TITLE_NETWORK = MainActivity.getContext().getString(
-            R.string.stats_networks);
-    static final String MENU_TITLE_ATTACKS = MainActivity.getContext().getString(
-            R.string.stats_attacks);
-    static final String MENU_POPUP_TITLE = MainActivity.getContext().getString(
-            R.string.stats_visualize);
-
-    static final String CHART_TYPE_TITLE_BAR = MainActivity.getContext().getString(
-            R.string.stats_bar_plot);
-    static final String CHART_TYPE_TITLE_PIE = MainActivity.getContext().getString(R.string.stats_pie_plot);
-    static final String CHART_TYPE_TITLE_LINE = MainActivity.getContext().getString(R.string.stats_line_plot);
-
-    //static final String DIALOG_PROTOCOLS_TITLE = MainActivity.getContext().getString(R.string.stats_select_protocol_data);
-    static final String DIALOG_NETWORK_TITLE = MainActivity.getContext().getString(R.string.stats_select_network_data);
-    static final String DIALOG_ATTACK_TITLE = MainActivity.getContext().getString(R.string.stats_select_attack_data);
-
-    static final String COMPARE_TITLE_AttacksPerProtocol = MainActivity.getContext().getString(R.string.stats_attacks_protocol);
-    //static  final String COMPARE_TITLE_UsesPerProtocol      = MainActivity.getContext().getString(R.string.stats_uses_protocol);
-    static final String COMPARE_TITLE_AttacksPerDate = MainActivity.getContext().getString(R.string.stats_attacks_date);
-    static final String COMPARE_TITLE_AttacksPerTime = MainActivity.getContext().getString(R.string.stats_attacks_time);
-    static final String COMPARE_TITLE_AttacksPerBSSID = MainActivity.getContext().getString(R.string.stats_attacks_bssid);
-    static final String COMPARE_TITLE_AttacksPerESSID = MainActivity.getContext().getString(R.string.stats_attacks_essid);
-    static final String FILTER_MENU_PROTOCOL_SINGLE_CHOICE_TITLE = MainActivity.getContext().getString(R.string.stats_select_protocol);
-
-    static final String TABLE_HEADER_VALUE_TITLE_ATTACKS_COUNT = MainActivity.getContext().getString(R.string.stats_attacks_count);
-    static final String TABLE_HEADER_VALUE_TITLE_ATTACKS_PERCENTAGE = MainActivity.getContext().getString(R.string.stats_per_cent_all);
-
-    static final String OTHER_CHART_TITLE = MainActivity.getContext().getString(R.string.stats_other);
 
     // MINIMAL 2
     static final int MAX_NUMBER_OF_CHART_OBJECTS = 6;
@@ -127,7 +88,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     private ListView legendListView;
 
     private Snackbar noDataNotificationSnackbar;
-    private String selectedCompareData = COMPARE_TITLE_AttacksPerProtocol;
+    private String selectedCompareData;
 
     private Menu optionsMenu;
 
@@ -149,17 +110,6 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             if (value < 0 || value >= ChartType.values().length) return ChartType.PIE_CHART;
             return ChartType.values()[value];
         }
-
-        public String toString() {
-            if (this.equals(ChartType.create(0))) {
-                return CHART_TYPE_TITLE_PIE;
-            }
-            if (this.equals(ChartType.create(1))) {
-                return CHART_TYPE_TITLE_BAR;
-            }
-            return CHART_TYPE_TITLE_LINE;
-        }
-
     }
 
     /**
@@ -192,6 +142,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
                 this.filter = filter;
             }
         }
+
+        selectedCompareData = getString(R.string.stats_attacks_protocol);
 
         rootView = inflater.inflate(getLayoutID(), container, false);
         configureRootView(rootView);
@@ -420,19 +372,19 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         TextView tableHeaderTitleView = rootView.findViewById(R.id.table_header_title_textview);
         TextView tableHeaderValueView = rootView.findViewById(R.id.table_header_value_textview);
         if (currentPlotView instanceof LineGraph) {
-            tableHeaderTitleView.setText(FILTER_MENU_TITLE_ESSID);
-            tableHeaderValueView.setText(TABLE_HEADER_VALUE_TITLE_ATTACKS_PERCENTAGE);
+            tableHeaderTitleView.setText(R.string.essid);
+            tableHeaderValueView.setText(R.string.stats_per_cent_all);
         }
         if (currentPlotView instanceof PieGraph) {
-            tableHeaderTitleView.setText(FILTER_MENU_TITLE_PROTOCOL);
-            tableHeaderValueView.setText(TABLE_HEADER_VALUE_TITLE_ATTACKS_COUNT);
+            tableHeaderTitleView.setText(R.string.rec_protocol);
+            tableHeaderValueView.setText(R.string.stats_attacks_count);
         }
         if (currentPlotView instanceof BarGraph) {
-            tableHeaderValueView.setText(TABLE_HEADER_VALUE_TITLE_ATTACKS_COUNT);
-            if (selectedCompareData.equals(COMPARE_TITLE_AttacksPerBSSID)) {
-                tableHeaderTitleView.setText(FILTER_MENU_TITLE_BSSID);
+            tableHeaderValueView.setText(R.string.stats_attacks_count);
+            if (selectedCompareData.equals(getString(R.string.stats_attacks_bssid))) {
+                tableHeaderTitleView.setText(R.string.bssid);
             } else {
-                tableHeaderTitleView.setText(FILTER_MENU_TITLE_ESSID);
+                tableHeaderTitleView.setText(R.string.essid);
             }
         }
         if (currentData == null || currentData.isEmpty()) {
@@ -457,7 +409,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
                 userSelectMenuItem(item);
             }
         });
-        visualiseMenu.setTitle(MENU_POPUP_TITLE);
+        visualiseMenu.setTitle(getString(R.string.stats_visualize));
         int id = 0;
         for (String title : getMenuTitles()) {
             SimplePopupItem item = new SimplePopupItem(getActivity());
@@ -477,16 +429,15 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      */
     private void userSelectMenuItem(AbstractPopupItem item) {
         // OPEN A DIALOG TO SPECIFY THE VISUALISE DATA
-        if (item.getTitle().equals(MENU_TITLE_PROTOCOLS)) {
+        if (item.getTitle().equals(getString(R.string.stats_protocols))) {
             ChartType chartType = ChartType.PIE_CHART;
-            selectedCompareData = COMPARE_TITLE_AttacksPerProtocol;
             setChartType(chartType);
-            setTitle(COMPARE_TITLE_AttacksPerProtocol);
+            setTitle(getString(R.string.stats_attacks_protocol));
         }
-        if (item.getTitle().equals(MENU_TITLE_NETWORK)) {
+        if (item.getTitle().equals(getString(R.string.stats_networks))) {
             openNetworkDataDialog();
         }
-        if (item.getTitle().equals(MENU_TITLE_ATTACKS)) {
+        if (item.getTitle().equals(getString(R.string.stats_attacks))) {
             openAttackDataDialog();
         }
     }
@@ -496,9 +447,9 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      */
     private ArrayList<String> getMenuTitles() {
         ArrayList<String> titles = new ArrayList<>();
-        titles.add(MENU_TITLE_PROTOCOLS);
-        titles.add(MENU_TITLE_NETWORK);
-        titles.add(MENU_TITLE_ATTACKS);
+        titles.add(getString(R.string.stats_protocols));
+        titles.add(getString(R.string.stats_networks));
+        titles.add(getString(R.string.stats_attacks));
         return titles;
     }
 
@@ -516,8 +467,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      */
     private void openNetworkDataDialog() {
         ArrayList<String> titles = getDialogNetworkDataTitle();
-        ChecklistDialog newFragment = new ChecklistDialog(DIALOG_NETWORK_TITLE, titles, selectedData(titles), false, this);
-        newFragment.show(getActivity().getFragmentManager(), DIALOG_NETWORK_TITLE);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.stats_select_network_data), titles, selectedData(titles), false, this);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.stats_select_network_data));
     }
 
     /**
@@ -525,8 +476,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      */
     private void openAttackDataDialog() {
         ArrayList<String> titles = getDialogAttackDataTitle();
-        ChecklistDialog newFragment = new ChecklistDialog(DIALOG_ATTACK_TITLE, titles, selectedData(titles), false, this);
-        newFragment.show(getActivity().getFragmentManager(), DIALOG_ATTACK_TITLE);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.stats_select_attack_data), titles, selectedData(titles), false, this);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.stats_select_attack_data));
     }
 
     /*
@@ -544,13 +495,13 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         String title = dialog.getTitle();
         ArrayList<String> titles = dialog.getSelectedItemTitles();
 
-        if (title.equals(FILTER_MENU_TITLE_PROTOCOLS)) {
+        if (title.equals(getString(R.string.stats_protocols))) {
             //titles = titles.size() == 0 ? protocolTitles() : titles;
             filter.setProtocols(titles);
             actualiseCurrentPlot();
             return;
         }
-        if (title.equals(FILTER_MENU_PROTOCOL_SINGLE_CHOICE_TITLE)) {
+        if (title.equals(getString(R.string.stats_select_protocol))) {
             if (titles.size() == 0) {
                 titles = new ArrayList<>();
                 titles.add(protocolTitles().get(0));
@@ -563,14 +514,14 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
             return;
         }
-        if (title.equals(FILTER_MENU_TITLE_ESSID)) {
-            this.filter.setESSIDs(titles);
+        if (title.equals(getString(R.string.essid))) {
+            filter.setESSIDs(titles);
             actualiseCurrentPlot();
 
             return;
         }
-        if (title.equals(FILTER_MENU_TITLE_BSSID)) {
-            this.filter.setBSSIDs(titles);
+        if (title.equals(getString(R.string.bssid))) {
+            filter.setBSSIDs(titles);
             actualiseCurrentPlot();
 
             return;
@@ -582,13 +533,13 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
             actualiseFilterButton();
 
-            if (data.equals(COMPARE_TITLE_AttacksPerTime) || data.equals(COMPARE_TITLE_AttacksPerDate)) {
+            if (data.equals(getString(R.string.stats_attacks_time)) || data.equals(getString(R.string.stats_attacks_date))) {
                 ChartType chartType = ChartType.LINE_CHART;
                 selectedCompareData = data;
                 setChartType(chartType);
                 return;
             }
-            if (data.equals(COMPARE_TITLE_AttacksPerBSSID) || data.equals(COMPARE_TITLE_AttacksPerESSID)) {
+            if (data.equals(getString(R.string.stats_attacks_bssid)) || data.equals(getString(R.string.stats_attacks_essid))) {
                 ChartType chartType = ChartType.BAR_CHART;
                 selectedCompareData = data;
                 setChartType(chartType);
@@ -617,7 +568,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
 
 //     private ArrayList<String> getDialogProtocolDataTitle(){
 //        ArrayList<String> data = new ArrayList<String>();
-//        data.add(COMPARE_TITLE_AttacksPerProtocol);
+//        data.add(getString(R.string.stats_attacks_protocol));
 //        data.add(COMPARE_TITLE_UsesPerProtocol);
 //        return data;
 //    }
@@ -629,8 +580,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      */
     private ArrayList<String> getDialogAttackDataTitle() {
         ArrayList<String> data = new ArrayList<>();
-        data.add(COMPARE_TITLE_AttacksPerDate);
-        data.add(COMPARE_TITLE_AttacksPerTime);
+        data.add(getString(R.string.stats_attacks_date));
+        data.add(getString(R.string.stats_attacks_time));
         return data;
     }
 
@@ -641,8 +592,8 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      */
     private ArrayList<String> getDialogNetworkDataTitle() {
         ArrayList<String> data = new ArrayList<>();
-        data.add(COMPARE_TITLE_AttacksPerESSID);
-        data.add(COMPARE_TITLE_AttacksPerBSSID);
+        data.add(getString(R.string.stats_attacks_essid));
+        data.add(getString(R.string.stats_attacks_bssid));
         return data;
     }
 
@@ -707,19 +658,20 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             }
         });
 
-        filterMenu.setTitle(FILTER_MENU_POPUP_TITLE);
-        for (String title : StatisticsFragment.this.filterMenuTitles()) {
+        filterMenu.setTitle(getString(R.string.rec_filter_by));
+        for (String title : filterMenuTitles()) {
             AbstractPopupItem item;
-            if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_BELOW)) continue;
-            if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_ABOVE)) {
+            if (title.equals(getString(R.string.rec_latest))) continue;
+            if (title.equals(getString(R.string.rec_earliest))) {
+
                 item = new SplitPopupItem(getActivity());
-                item.setValue(SplitPopupItem.RIGHT_TITLE, FILTER_MENU_TITLE_TIMESTAMP_BELOW);
-                item.setValue(SplitPopupItem.LEFT_TITLE, FILTER_MENU_TITLE_TIMESTAMP_ABOVE);
-                if (this.filter.hasBelowTimestamp()) {
-                    item.setValue(SplitPopupItem.RIGHT_SUBTITLE, getDateAsString(this.filter.belowTimestamp));
+                item.setValue(SplitPopupItem.RIGHT_TITLE, getString(R.string.rec_latest));
+                item.setValue(SplitPopupItem.LEFT_TITLE, getString(R.string.rec_earliest));
+                if (filter.hasBelowTimestamp()) {
+                    item.setValue(SplitPopupItem.RIGHT_SUBTITLE, getDateAsString(filter.belowTimestamp));
                 }
-                if (this.filter.hasAboveTimestamp()) {
-                    item.setValue(SplitPopupItem.LEFT_SUBTITLE, getDateAsString(this.filter.aboveTimestamp));
+                if (filter.hasAboveTimestamp()) {
+                    item.setValue(SplitPopupItem.LEFT_SUBTITLE, getDateAsString(filter.aboveTimestamp));
                 }
             } else {
                 item = new SimplePopupItem(getActivity());
@@ -745,19 +697,19 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             return;
         }
         String title = item.getTitle();
-        if (title.equals(FILTER_MENU_TITLE_ESSID)) {
+        if (title.equals(getString(R.string.essid))) {
             openESSIDFilterDialog();
         }
-        if (title.equals(FILTER_MENU_TITLE_BSSID)) {
+        if (title.equals(getString(R.string.bssid))) {
             openBSSIDFilterDialog();
         }
-        if (title.equals(FILTER_MENU_TITLE_PROTOCOL)) {
+        if (title.equals(getString(R.string.rec_protocol))) {
             openFilterDialogSelectProtocol();
         }
-        if (title.equals(FILTER_MENU_TITLE_PROTOCOLS)) {
+        if (title.equals(getString(R.string.stats_protocols))) {
             openProtocolsFilterDialog();
         }
-        if (title.equals(FILTER_MENU_TITLE_REMOVE)) {
+        if (title.equals(getString(R.string.rec_reset_filter))) {
             clearFilter();
             actualiseCurrentPlot();
         }
@@ -771,27 +723,27 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     private ArrayList<String> filterMenuTitles() {
         ArrayList<String> titles = new ArrayList<>();
         if (currentPlotView instanceof LineGraph) {
-            titles.add(FILTER_MENU_TITLE_ESSID);
-            titles.add(FILTER_MENU_TITLE_PROTOCOLS);
-            titles.add(FILTER_MENU_TITLE_TIMESTAMP_ABOVE);
-            if (this.filter.hasESSIDs() || this.filter.hasATimestamp() || (this.filter.getProtocols() != null && this.filter.hasProtocols() && this.filter.getProtocols().size() != this.protocolTitles().size())) {
-                titles.add(FILTER_MENU_TITLE_REMOVE);
+            titles.add(getString(R.string.essid));
+            titles.add(getString(R.string.stats_protocols));
+            titles.add(getString(R.string.rec_earliest));
+            if (filter.hasESSIDs() || filter.hasATimestamp() || (filter.getProtocols() != null && filter.hasProtocols() && filter.getProtocols().size() != protocolTitles().size())) {
+                titles.add(getString(R.string.rec_reset_filter));
             }
         } else {
-            titles.add(FILTER_MENU_TITLE_PROTOCOL);
+            titles.add(getString(R.string.rec_protocol));
             String protocol = getCurrentSelectedProtocol();
             if (protocol.length() > 0) {
-                if (selectedCompareData.equals(COMPARE_TITLE_AttacksPerBSSID)) {
-                    titles.add(FILTER_MENU_TITLE_BSSID);
+                if (selectedCompareData.equals(getString(R.string.stats_attacks_bssid))) {
+                    titles.add(getString(R.string.bssid));
                 } else {
                     // DEFAULT
-                    titles.add(FILTER_MENU_TITLE_ESSID);
+                    titles.add(getString(R.string.essid));
                 }
             }
-            titles.add(FILTER_MENU_TITLE_TIMESTAMP_ABOVE);
-            if (this.filter.hasATimestamp() || this.filter.hasESSIDs() || this.filter.hasBSSIDs()
+            titles.add(getString(R.string.rec_earliest));
+            if (filter.hasATimestamp() || filter.hasESSIDs() || filter.hasBSSIDs()
                     || (currentPlotView instanceof LineGraph && filter.hasProtocols())) {
-                titles.add(FILTER_MENU_TITLE_REMOVE);
+                titles.add(getString(R.string.rec_reset_filter));
             }
         }
         return titles;
@@ -801,12 +753,12 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * Opens a multiple protocol checklist dialog
      */
     private void openProtocolsFilterDialog() {
-        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_PROTOCOLS,
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.stats_protocols),
                 protocolTitles(),
                 selectedProtocols(),
                 true,
                 this);
-        newFragment.show(getActivity().getFragmentManager(), FILTER_MENU_TITLE_PROTOCOLS);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.stats_protocols));
     }
 
     /**
@@ -820,24 +772,24 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             selected[i] = title.equals(getCurrentSelectedProtocol());
             i++;
         }
-        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_PROTOCOL_SINGLE_CHOICE_TITLE, titles, selected, false, this);
-        newFragment.show(getActivity().getFragmentManager(), FILTER_MENU_PROTOCOL_SINGLE_CHOICE_TITLE);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.stats_select_protocol), titles, selected, false, this);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.stats_select_protocol));
     }
 
     /**
      * Opens a multiple essid checklist dialog
      */
     private void openESSIDFilterDialog() {
-        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_ESSID, essids(), selectedESSIDs(), true, this);
-        newFragment.show(getActivity().getFragmentManager(), FILTER_MENU_TITLE_ESSID);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.essid), essids(), selectedESSIDs(), true, this);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.essid));
     }
 
     /**
      * Opens a multiple bssid checlist dialog.
      */
     private void openBSSIDFilterDialog() {
-        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_BSSID, bssids(), selectedBSSIDs(), true, this);
-        newFragment.show(getActivity().getFragmentManager(), FILTER_MENU_TITLE_BSSID);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.bssid), bssids(), selectedBSSIDs(), true, this);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.bssid));
     }
 
     /**
@@ -1043,7 +995,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         rangeMax_Y++;
         rangeMin_Y--;
 
-        boolean shouldUseDate = selectedCompareData.equals(COMPARE_TITLE_AttacksPerDate);
+        boolean shouldUseDate = selectedCompareData.equals(getString(R.string.stats_attacks_date));
         if (shouldUseDate) {
             linegraph.resetXLimits();
 
@@ -1292,7 +1244,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
         String protocol = getCurrentSelectedProtocol();
 
         if (protocol.length() > 0) {
-            if (selectedCompareData.equals(COMPARE_TITLE_AttacksPerESSID)) {
+            if (selectedCompareData.equals(getString(R.string.stats_attacks_essid))) {
                 return attacksPerESSID(protocol);
             }
             // DEFAULT
@@ -1351,7 +1303,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
     public ArrayList<PlotComparisonItem> attacksPerTime() {
         HashMap<String, HashMap<Long, ArrayList<RecordAll>>> lineMap = new HashMap<>();
 
-        boolean shouldUseDate = selectedCompareData.equals(COMPARE_TITLE_AttacksPerDate);
+        boolean shouldUseDate = selectedCompareData.equals(getString(R.string.stats_attacks_date));
 
         ArrayList<RecordAll> records = getFetchedRecords();
         for (RecordAll record : records) {
@@ -1484,7 +1436,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
                         valueOfOthers += item.getValue2();
                     }
                 }
-                PlotComparisonItem otherItem = new PlotComparisonItem(OTHER_CHART_TITLE, getOtherColor(), 0., valueOfOthers);
+                PlotComparisonItem otherItem = new PlotComparisonItem(getString(R.string.stats_other), getOtherColor(), 0., valueOfOthers);
                 otherItem.setChildItems(others);
                 copy.add(otherItem);
 
@@ -1612,20 +1564,20 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
      * @return boolean b
      */
     private boolean isFilterSetForTitle(String title) {
-        if (title.equals(FILTER_MENU_TITLE_BSSID)) {
-            return this.filter.hasBSSIDs();
+        if (title.equals(getString(R.string.bssid))) {
+            return filter.hasBSSIDs();
         }
-        if (title.equals(FILTER_MENU_TITLE_ESSID)) {
-            return this.filter.hasESSIDs();
+        if (title.equals(getString(R.string.essid))) {
+            return filter.hasESSIDs();
         }
-        if (title.equals(FILTER_MENU_TITLE_PROTOCOLS)) {
-            return (this.filter.getProtocols() != null && this.filter.hasProtocols() && this.filter.getProtocols().size() != this.protocolTitles().size());
+        if (title.equals(getString(R.string.stats_protocols))) {
+            return (filter.getProtocols() != null && filter.hasProtocols() && filter.getProtocols().size() != protocolTitles().size());
         }
-        if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_BELOW)) {
-            return this.filter.hasBelowTimestamp();
+        if (title.equals(getString(R.string.rec_latest))) {
+            return filter.hasBelowTimestamp();
         }
-        if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_ABOVE)) {
-            return this.filter.hasAboveTimestamp();
+        if (title.equals(getString(R.string.rec_earliest))) {
+            return filter.hasAboveTimestamp();
         }
         return false;
     }
@@ -1736,12 +1688,12 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
             }
             if (currentPlotView instanceof BarGraph) {
 
-                if (selectedCompareData.equals(COMPARE_TITLE_AttacksPerESSID)) {
+                if (selectedCompareData.equals(getString(R.string.stats_attacks_essid))) {
                     filter.setESSIDs(selectedData);
-                    groupingKey = MainActivity.getInstance().getResources().getString(R.string.ESSID);
+                    groupingKey = getString(R.string.essid);
                 } else {
                     filter.setBSSIDs(selectedData);
-                    groupingKey = MainActivity.getInstance().getResources().getString(R.string.BSSID);
+                    groupingKey = getString(R.string.bssid);
 
                 }
                 ArrayList<String> currentSelectedProtocol = new ArrayList<>();
@@ -1753,7 +1705,7 @@ public class StatisticsFragment extends TrackerFragment implements ChecklistDial
                 selectedData.add(item.getTitle());
                 filter.setESSIDs(selectedData);
                 filter.setProtocols(this.filter.getProtocols());
-                groupingKey = MainActivity.getInstance().getResources().getString(R.string.ESSID);
+                groupingKey = getString(R.string.essid);
             }
 
             if (this.filter.hasATimestamp()) {

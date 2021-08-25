@@ -66,20 +66,6 @@ import dk.aau.netsec.hostage.ui.popup.SplitPopupItem;
 
 
 public class RecordOverviewFragment extends UpNavigableFragment implements ChecklistDialog.ChecklistDialogListener, DateTimePickerDialog.DateTimeSelected {
-    static final String FILTER_MENU_TITLE_BSSID = MainActivity.getContext().getString(R.string.BSSID);
-    static final String FILTER_MENU_TITLE_ESSID = MainActivity.getContext().getString(R.string.ESSID);
-    static final String FILTER_MENU_TITLE_IPS = MainActivity.getContext().getString(R.string.RecordIP);
-    static final String FILTER_MENU_TITLE_PROTOCOLS = MainActivity.getContext().getString(R.string.rec_protocol);
-    static final String FILTER_MENU_TITLE_TIMESTAMP_BELOW = MainActivity.getContext().getString(
-            R.string.rec_latest);
-    static final String FILTER_MENU_TITLE_TIMESTAMP_ABOVE = MainActivity.getContext().getString(
-            R.string.rec_earliest);
-    static final String FILTER_MENU_TITLE_SORTING = MainActivity.getContext().getString(R.string.rec_sortby);
-    static final String FILTER_MENU_TITLE_REMOVE = MainActivity.getContext().getString(R.string.rec_reset_filter);
-    static final String FILTER_MENU_TITLE_GROUP = MainActivity.getContext().getString(
-            R.string.rec_group_by);
-    static final String FILTER_MENU_POPUP_TITLE = MainActivity.getContext().getString(
-            R.string.rec_filter_by);
     static final int DEFAULT_GROUPING_KEY_INDEX = 0;
 
     private boolean wasBelowTimePicker;
@@ -390,29 +376,29 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
         }
 
         if (title != null) {
-            if (title.equals(FILTER_MENU_TITLE_BSSID)) {
+            if (title.equals(getString(R.string.bssid))) {
                 openBSSIDFilterDialog();
             }
-            if (title.equals(FILTER_MENU_TITLE_ESSID)) {
+            if (title.equals(getString(R.string.essid))) {
                 openESSIDFilterDialog();
             }
-            if (title.equals(FILTER_MENU_TITLE_IPS)) {
+            if (title.equals(getString(R.string.ip))) {
                 openIpsFilterDialog();
             }
-            if (title.equals(FILTER_MENU_TITLE_PROTOCOLS)) {
+            if (title.equals(getString(R.string.rec_protocol))) {
                 openProtocolsFilterDialog();
             }
-            if (title.equals(FILTER_MENU_TITLE_SORTING)) {
+            if (title.equals(getString(R.string.rec_sortby))) {
                 openSortingDialog();
             }
-            if (title.equals(FILTER_MENU_TITLE_REMOVE)) {
+            if (title.equals(getString(R.string.rec_reset_filter))) {
                 clearFilter();
                 actualiseListViewInBackground();
             }
-            if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_BELOW)) {
+            if (title.equals(getString(R.string.rec_latest))) {
                 DateTimePickerDialog.showDateTimePicker(getContext(), false, this);
             }
-            if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_ABOVE)) {
+            if (title.equals(getString(R.string.rec_earliest))) {
                 DateTimePickerDialog.showDateTimePicker(getContext(), true, this);
             }
         }
@@ -736,7 +722,7 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
     private HashMap<String, ArrayList<ExpandableListItem>> fetchDataForFilter(LogFilter filter, ArrayList<String> groupTitle) {
         HashMap<String, ArrayList<ExpandableListItem>> sectionData = new HashMap<>();
         // Adding Items to ListView
-        String[] keys = new String[]{getString(R.string.RecordIP), getString(R.string.RecordSSID), getString(R.string.RecordProtocol), getString(R.string.RecordTimestamp)};
+        String[] keys = new String[]{getString(R.string.ip), getString(R.string.ssid), getString(R.string.RecordProtocol), getString(R.string.RecordTimestamp)};
         int[] ids = new int[]{R.id.RecordTextFieldBSSID, R.id.RecordTextFieldIP, R.id.RecordTextFieldProtocol, R.id.RecordTextFieldTimestamp};
 
         if (filter != null && !filter.protocols.isEmpty()) {
@@ -765,7 +751,7 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
             // DO GROUPING IN HERE
             HashMap<String, String> map = new HashMap<>();
             map.put(getString(R.string.bssid), val.getBssid());
-            map.put(getString(R.string.RecordIP), val.getRemoteIP());
+            map.put(getString(R.string.ip), val.getRemoteIP());
             map.put(getString(R.string.RecordProtocol), val.getProtocol());
             map.put(getString(R.string.RecordTimestamp), getDateAsString(val.getTimestamp()));
 
@@ -1190,41 +1176,41 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
      * Opens the grouping dialog
      */
     private void openGroupingDialog() {
-        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_GROUP, groupingTitles(), selectedGroup(), false, this);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.rec_group_by), groupingTitles(), selectedGroup(), false, this);
         expListView.setStackFromBottom(false);
-        newFragment.show(getActivity().getFragmentManager(), FILTER_MENU_TITLE_GROUP);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.rec_group_by));
     }
 
     /**
      * opens the bssid filter dialog
      */
     private void openBSSIDFilterDialog() {
-        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_BSSID, bssids(), selectedBSSIDs(), true, this);
-        newFragment.show(getActivity().getFragmentManager(), FILTER_MENU_TITLE_BSSID);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.bssid), bssids(), selectedBSSIDs(), true, this);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.bssid));
     }
 
     /**
      * opens the essid filter dialog
      */
     private void openESSIDFilterDialog() {
-        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_ESSID, essids(), selectedESSIDs(), true, this);
-        newFragment.show(getActivity().getFragmentManager(), FILTER_MENU_TITLE_ESSID);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.essid), essids(), selectedESSIDs(), true, this);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.essid));
     }
 
     /**
      * opens the ips filter dialog
      */
     private void openIpsFilterDialog() {
-        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_IPS, ips(), selectedIps(), true, this);
-        newFragment.show(getActivity().getFragmentManager(), FILTER_MENU_TITLE_IPS);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.ip), ips(), selectedIps(), true, this);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.ip));
     }
 
     /**
      * opens the protocol filter dialog
      */
     private void openProtocolsFilterDialog() {
-        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_PROTOCOLS, protocolTitles(), selectedProtocols(), true, this);
-        newFragment.show(getActivity().getFragmentManager(), FILTER_MENU_TITLE_PROTOCOLS);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.rec_protocol), protocolTitles(), selectedProtocols(), true, this);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.rec_protocol));
     }
 
 
@@ -1250,8 +1236,8 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
      * opens the sorting dialog
      */
     private void openSortingDialog() {
-        ChecklistDialog newFragment = new ChecklistDialog(FILTER_MENU_TITLE_SORTING, sortTypeTiles(), selectedSorttype(), false, this);
-        newFragment.show(getActivity().getFragmentManager(), FILTER_MENU_TITLE_SORTING);
+        ChecklistDialog newFragment = new ChecklistDialog(getString(R.string.rec_sortby), sortTypeTiles(), selectedSorttype(), false, this);
+        newFragment.show(getActivity().getFragmentManager(), getString(R.string.rec_sortby));
     }
 
     /*****************************
@@ -1336,15 +1322,15 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
                 onFilterMenuItemSelected(item);
             }
         });
-        filterMenu.setTitle(FILTER_MENU_POPUP_TITLE);
 
+        filterMenu.setTitle(getString(R.string.rec_filter_by));
         for (String title : filterMenuTitles()) {
             AbstractPopupItem item;
-            if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_BELOW)) continue;
-            if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_ABOVE)) {
+            if (title.equals(getString(R.string.rec_latest))) continue;
+            if (title.equals(getString(R.string.rec_earliest))) {
                 item = new SplitPopupItem(getActivity());
-                item.setValue(SplitPopupItem.RIGHT_TITLE, FILTER_MENU_TITLE_TIMESTAMP_BELOW);
-                item.setValue(SplitPopupItem.LEFT_TITLE, FILTER_MENU_TITLE_TIMESTAMP_ABOVE);
+                item.setValue(SplitPopupItem.RIGHT_TITLE, getString(R.string.rec_latest));
+                item.setValue(SplitPopupItem.LEFT_TITLE, getString(R.string.rec_earliest));
                 if (filter.hasBelowTimestamp()) {
                     item.setValue(SplitPopupItem.RIGHT_SUBTITLE, getDateAsString(filter.belowTimestamp));
                 }
@@ -1364,28 +1350,28 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
 
     /**
      * Returns true  if the filter object is set for the given title otherwise false. e.g. the filter object has protocols,
-     * so the method will return for the title FILTER_MENU_TITLE_PROTOCOLS TRUE.
+     * so the method will return for the title getString(R.string.rec_protocol) TRUE.
      *
      * @param title String
      * @return boolean value
      */
     private boolean isFilterSetForTitle(String title) {
-        if (title.equals(FILTER_MENU_TITLE_BSSID)) {
+        if (title.equals(getString(R.string.bssid))) {
             return filter.hasBSSIDs();
         }
-        if (title.equals(FILTER_MENU_TITLE_ESSID)) {
+        if (title.equals(getString(R.string.essid))) {
             return filter.hasESSIDs();
         }
-        if (title.equals(FILTER_MENU_TITLE_IPS)) {
+        if (title.equals(getString(R.string.ip))) {
             return filter.hasIps();
         }
-        if (title.equals(FILTER_MENU_TITLE_PROTOCOLS)) {
+        if (title.equals(getString(R.string.rec_protocol))) {
             return filter.hasProtocols();
         }
-        if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_BELOW)) {
+        if (title.equals(getString(R.string.rec_latest))) {
             return filter.hasBelowTimestamp();
         }
-        if (title.equals(FILTER_MENU_TITLE_TIMESTAMP_ABOVE)) {
+        if (title.equals(getString(R.string.rec_earliest))) {
             return filter.hasAboveTimestamp();
         }
         return false;
@@ -1408,9 +1394,9 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
         ArrayList<String> titles = new ArrayList<>();
         titles.add(MainActivity.getContext().getString(R.string.date));
         titles.add(MainActivity.getContext().getString(R.string.rec_protocol));
-        titles.add(MainActivity.getContext().getString(R.string.IP));
-        titles.add(MainActivity.getContext().getString(R.string.ESSID));
-        titles.add(MainActivity.getContext().getString(R.string.BSSID));
+        titles.add(MainActivity.getContext().getString(R.string.ip));
+        titles.add(MainActivity.getContext().getString(R.string.essid));
+        titles.add(MainActivity.getContext().getString(R.string.bssid));
         return titles;
     }
 
@@ -1472,9 +1458,9 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
         ArrayList<String> titles = new ArrayList<>();
         titles.add(MainActivity.getContext().getString(R.string.rec_time));
         titles.add(MainActivity.getContext().getString(R.string.rec_protocol));
-        titles.add(MainActivity.getContext().getString(R.string.IP));
-        titles.add(MainActivity.getContext().getString(R.string.ESSID));
-        titles.add(MainActivity.getContext().getString(R.string.BSSID));
+        titles.add(MainActivity.getContext().getString(R.string.ip));
+        titles.add(MainActivity.getContext().getString(R.string.essid));
+        titles.add(MainActivity.getContext().getString(R.string.bssid));
         return titles;
     }
 
@@ -1583,13 +1569,13 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
      */
     private ArrayList<String> filterMenuTitles() {
         ArrayList<String> titles = new ArrayList<>();
-        titles.add(FILTER_MENU_TITLE_BSSID);
-        titles.add(FILTER_MENU_TITLE_ESSID);
-        titles.add(FILTER_MENU_TITLE_IPS);
-        titles.add(FILTER_MENU_TITLE_PROTOCOLS);
-        titles.add(FILTER_MENU_TITLE_TIMESTAMP_ABOVE);
-        titles.add(FILTER_MENU_TITLE_TIMESTAMP_BELOW);
-        if (filter.isSet()) titles.add(FILTER_MENU_TITLE_REMOVE);
+        titles.add(getString(R.string.bssid));
+        titles.add(getString(R.string.essid));
+        titles.add(getString(R.string.ip));
+        titles.add(getString(R.string.rec_protocol));
+        titles.add(getString(R.string.rec_earliest));
+        titles.add(getString(R.string.rec_latest));
+        if (filter.isSet()) titles.add(getString(R.string.rec_reset_filter));
         return titles;
     }
 
@@ -1600,7 +1586,7 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
      */
     public void onDialogPositiveClick(ChecklistDialog dialog) {
         String title = dialog.getTitle();
-        if (title.equals(FILTER_MENU_TITLE_BSSID)) {
+        if (title.equals(getString(R.string.bssid))) {
             ArrayList<String> titles = dialog.getSelectedItemTitles();
             if (titles.size() == bssids().size()) {
                 filter.setBSSIDs(new ArrayList<>());
@@ -1608,7 +1594,7 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
                 filter.setBSSIDs(titles);
             }
         }
-        if (title.equals(FILTER_MENU_TITLE_ESSID)) {
+        if (title.equals(getString(R.string.essid))) {
             ArrayList<String> titles = dialog.getSelectedItemTitles();
             if (titles.size() == essids().size()) {
                 filter.setESSIDs(new ArrayList<>());
@@ -1617,7 +1603,7 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
             }
         }
 
-        if (title.equals(FILTER_MENU_TITLE_IPS)) {
+        if (title.equals(getString(R.string.ip))) {
             ArrayList<String> titles = dialog.getSelectedItemTitles();
             if (titles.size() == ips().size()) {
                 filter.setIps(new ArrayList<>());
@@ -1625,7 +1611,7 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
                 filter.setIps(titles);
             }
         }
-        if (title.equals(FILTER_MENU_TITLE_PROTOCOLS)) {
+        if (title.equals(getString(R.string.rec_protocol))) {
             ArrayList<String> protocols = dialog.getSelectedItemTitles();
             if (protocols.size() == protocolTitles().size()) {
                 filter.setProtocols(new ArrayList<>());
@@ -1633,7 +1619,7 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
                 filter.setProtocols(dialog.getSelectedItemTitles());
             }
         }
-        if (title.equals(FILTER_MENU_TITLE_SORTING)) {
+        if (title.equals(getString(R.string.rec_sortby))) {
             ArrayList<String> titles = dialog.getSelectedItemTitles();
             if (titles.size() == 0) return;
             // ALWAYS GET THE FIRST ELEMENT (SHOULD BE ALWAYS ONE)
@@ -1641,7 +1627,7 @@ public class RecordOverviewFragment extends UpNavigableFragment implements Check
             int sortType = sortTypeTiles().indexOf(t);
             filter.setSorttype(LogFilter.SortType.values()[sortType]);
         }
-        if (title.equals(FILTER_MENU_TITLE_GROUP)) {
+        if (title.equals(getString(R.string.rec_group_by))) {
             ArrayList<String> titles = dialog.getSelectedItemTitles();
             if (titles.size() == 0) return;
             // ALWAYS GET THE FIRST ELEMENT (SHOULD BE ALWAYS ONE)

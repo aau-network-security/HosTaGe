@@ -42,8 +42,6 @@
 	<string name="RecordAttackType">Typ</string>
 	<string name="RecordInternalAttack">Interner Angriff</string>
 	<string name="RecordExternalAttack">Externer Angriff</string>
-    <string name="RecordBSSID">BSSID</string>
-    <string name="RecordSSID">SSID</string>
     <string name="RecordTimestamp">Zeitstempel</string>
     <string name="RecordProtocol">Protokoll</string>
 
@@ -91,8 +89,6 @@
     <string name="save">Speichern</string>
     <string name="rec_protocol">Protokoll</string>
     <string name="date">Datum</string>
-    <string name="ESSID">ESSID</string>
-    <string name="BSSID">BSSID</string>
     <string name="rec_sortby">Sortieren</string>
     <string name="rec_latest">Bis</string>
     <string name="rec_earliest">Von</string>
