@@ -20,14 +20,8 @@
     <string name="monitor_current_connection">&#220;berwache Verbindung</string>
     <string name="active_profile">Aktives Profil: </string>
 
-    <string name="protocol">Protokoll:</string>
-    <string name="timestamp">Zeitstempel:</string>
-    <string name="hostage.location" tools:ignore="ExtraTranslation">Ort:</string>
     <string name="internal_ip">Interne IP</string>
     <string name="external_ip">Externe IP</string>
-    <string name="remote_ip">Remote IP:</string>
-    <string name="packet_type">Packet Typ:</string>
-    <string name="packet_content">Packet Inhalt:</string>
 
     <string name="delete">L&#246;schen</string>
     <string name="cancel">Abbrechen</string>
