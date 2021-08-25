@@ -1,4 +1,4 @@
-Last updated: July 20, 2021
+Last updated: 24 August, 2021
 
   **Privacy Policy**
 
@@ -15,7 +15,7 @@ The users can consent for the following:
 *   The right to have your data shared with another organization, if requested be the subject.
 *   The right to not be profiled, the right to object.
 
-The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which is accessible at HosTaGe unless otherwise defined in this Privacy Policy. The Privacy Policy of Aalborg University can be accessed at https://www.en.aau.dk/privacy-policy-cookies#370625\\n"+
+The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which is accessible at HosTaGe unless otherwise defined in this Privacy Policy. The Privacy Policy of Aalborg University can be accessed at [https://www.en.aau.dk/privacy-policy-cookies#370625](https://www.en.aau.dk/privacy-policy-cookies#370625)
 
 **Information Collection and Use**
 
@@ -27,7 +27,7 @@ The app does use third party services that may collect information used to ident
 
 Link to privacy policy of third party service providers used by the app
 
-*   [Google Play Services](\"https://www.google.com/policies/privacy/\")
+*   [Google Play Services](https://policies.google.com/privacy)
 
 **Log Data**
 
@@ -70,4 +70,4 @@ This policy is effective as of 2021-03-08
 
 **Contact Us**
 
-If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at hostage@es.aau.dk. Data subjects have the right to submit a complaint about how their personal data is processed to the Danish Data Protection Agency at dt@datatilsynet.dk or by post to Datatilsynet/the Danish Data Protection Agency, Borgergade 28, 5., 1300 Copenhagen K. Please contact our Data Protection Officer if you have any question about the processing of your personal data at dpo@aau.dk However, before contacting the Danish Data Protection Agency, we recommend that you contact Aalborg University’s data protection officer who may be able to solve the matter. ";
+If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at hostage@es.aau.dk. Data subjects have the right to submit a complaint about how their personal data is processed to the Danish Data Protection Agency at dt@datatilsynet.dk or by post to Datatilsynet/the Danish Data Protection Agency, Borgergade 28, 5., 1300 Copenhagen K. Please contact our Data Protection Officer if you have any question about the processing of your personal data at dpo@aau.dk However, before contacting the Danish Data Protection Agency, we recommend that you contact Aalborg University’s data protection officer who may be able to solve the matter.
