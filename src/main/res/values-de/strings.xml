@@ -174,4 +174,5 @@
     <string name="multistage_notification">MultiStage läuft…</string>
     <string name="services_unavailable">Bitte versuche es erneut</string>
     <string name="close_app_warning">Drücken Sie die Zurück erneut, um HosTaGe . zu schließen</string>
+    <string name="policy_link_open">Im Browser öffnen</string>
 </resources>
