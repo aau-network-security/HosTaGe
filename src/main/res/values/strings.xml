@@ -34,10 +34,17 @@
     <string name="monitor_current_connection">Monitor current connection</string>
     <string name="active_profile">Active profile: </string>
 
-    <string name="ssid">SSID:</string>
-    <string name="bssid">BSSID:</string>
-    <string name="internal_ip">Internal IP:</string>
-    <string name="external_ip">External IP:</string>
+    <string name="ssid" translatable="false">SSID</string>
+    <string name="bssid" translatable="false">BSSID</string>
+	<string name="protocol">Protocol:</string>
+	<string name="timestamp">Timestamp:</string>
+	<string name="hostage.location" tools:ignore="ExtraTranslation">Location:</string>
+    <string name="internal_ip">Internal IP</string>
+	<string name="subnet_mask">Subnet Mask:</string>
+    <string name="external_ip">External IP</string>
+	<string name="remote_ip">Remote IP:</string>
+	<string name="packet_type">Packet type:</string>
+	<string name="packet_content">Packet content:</string>
 
     <string name="delete">Delete</string>
 	<string name="cancel">Cancel</string>

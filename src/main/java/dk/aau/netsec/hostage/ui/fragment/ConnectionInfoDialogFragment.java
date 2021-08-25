@@ -51,6 +51,11 @@ public class ConnectionInfoDialogFragment extends DialogFragment {
         LayoutInflater localInflater = getActivity().getLayoutInflater();
         view = localInflater.inflate(R.layout.fragment_connectioninfo_dialog, null);
 
+        ((TextView) view.findViewById(R.id.ssid_label)).setText(getString(R.string.ssid) + ":");
+        ((TextView) view.findViewById(R.id.bssid_label)).setText(getString(R.string.ssid) + ":");
+        ((TextView) view.findViewById(R.id.internal_ip_label)).setText(getString(R.string.internal_ip) + ":");
+        ((TextView) view.findViewById(R.id.external_ip_label)).setText(getString(R.string.external_ip) + ":");
+
         // assign values in layout
         if (view != null) {
             ((TextView) view.findViewById(R.id.connectioninfo_ssid_value)).setText(ssid);

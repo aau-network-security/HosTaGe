@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center_horizontal"
@@ -17,15 +18,15 @@
             android:layout_height="fill_parent">
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/ssid_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:layout_margin="4dp"
-                android:text="@string/ssid"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="?attr/colorOnBackground"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="SSID:" />
 
             <TextView
                 android:id="@+id/connectioninfo_ssid_value"
@@ -43,15 +44,15 @@
             android:layout_height="fill_parent">
 
             <TextView
-                android:id="@+id/txtP2PSubheader"
+                android:id="@+id/bssid_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:layout_margin="4dp"
-                android:text="@string/bssid"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="?attr/colorOnBackground"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="BSSID: " />
 
             <TextView
                 android:id="@+id/connectioninfo_bssid_value"
@@ -69,15 +70,15 @@
             android:layout_height="fill_parent">
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/internal_ip_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:layout_margin="4dp"
-                android:text="@string/internal_ip"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="?attr/colorOnBackground"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="Internal IP:" />
 
             <TextView
                 android:id="@+id/connectioninfo_internalip_value"
@@ -95,15 +96,15 @@
             android:layout_height="fill_parent">
 
             <TextView
-                android:id="@+id/record_details_text_bssid"
+                android:id="@+id/external_ip_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:layout_margin="4dp"
-                android:text="@string/external_ip"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="?attr/colorOnBackground"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="External IP:" />
 
             <TextView
                 android:id="@+id/connectioninfo_externalip_value"
