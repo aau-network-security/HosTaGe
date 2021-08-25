@@ -1,14 +1,20 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
 
@@ -22,6 +28,14 @@ import dk.aau.netsec.hostage.R;
  * Created on 01-03-2021
  */
 public class PrivacyFragment extends Fragment {
+
+    private static final String PRIVACY_POLICY_URL = "https://aau-network-security.github.io/HosTaGe/Privacy_policy.html";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -149,6 +163,9 @@ public class PrivacyFragment extends Fragment {
                 "                  periodically for any changes. We will" +
                 "                  notify you of any changes by posting the new Privacy Policy on" +
                 "                  this page." +
+                "                  </p> <p>" +
+                "                   This Privacy Policy is also available at <a href=\""+ PRIVACY_POLICY_URL +"\" target=\"_blank\" rel=\"noopener noreferrer\">"
+                + PRIVACY_POLICY_URL + "</a>"+
                 "                </p> <p>This policy is effective as of 2021-03-08</p> <p><strong>Contact Us</strong></p> <p>" +
                 "                  If you have any questions or suggestions about our" +
                 "                  Privacy Policy, do not hesitate to contact us at hostage@es.aau.dk." +
@@ -168,5 +185,23 @@ public class PrivacyFragment extends Fragment {
         policy.setMovementMethod(LinkMovementMethod.getInstance());
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.privacy_policy_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.privacy_link_open){
+
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY_URL));
+            startActivity(browserIntent);
+
+            return true;
+        }
+
+        return false;
     }
 }
