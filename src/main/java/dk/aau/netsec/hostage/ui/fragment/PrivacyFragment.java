@@ -47,7 +47,7 @@ public class PrivacyFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_privacy, container, false);
 
-        String policyText = "<p>Last updated: July 20, 2021</p>\n" +
+        String policyText =
                 "<!DOCTYPE html>\n" +
                 "    <html>\n" +
                 "    <head>\n" +
@@ -55,6 +55,7 @@ public class PrivacyFragment extends Fragment {
                 "      <meta name='viewport' content='width=device-width'>\n" +
                 "    </head>\n" +
                 "    <body>\n" +
+                "       <p>Last updated: July 20, 2021</p>\n" +
                 "    <strong>Privacy Policy</strong> <p>\n" +
                 "                  Aalborg University, Denmark built the HosTaGe app as" +
                 "                  an Open Source app. This SERVICE is provided by" +
