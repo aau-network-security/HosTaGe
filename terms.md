@@ -1,3 +1,5 @@
+# Terms and Conditions #
+
 By downloading the application from Aalborg University, Denmark or Google™ (here after referered to as “The Company”), installing or using this application or any portion thereof (“Application”), you agree to the following terms and conditions (the “Terms and Conditions”).
 
 **1\. USE OF APPLICATION**  
