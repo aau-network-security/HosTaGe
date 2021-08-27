@@ -338,4 +338,6 @@
     <string name="seconds">seconds</string>
     <string name="pcap_log_rotation_dialog">Select log rotation period</string>
     <string name="pcap_not_available">PCAP logging is only available on rooted devices</string>
+    <string name="agree">Agree</string>
+    <string name="disagree">Disagree</string>
 </resources>

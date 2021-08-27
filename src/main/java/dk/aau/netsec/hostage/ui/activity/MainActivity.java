@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -347,11 +349,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onFirstRun() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        TODO adjust disclaimer to mention T&C location as well
         builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.agree), (dialog, id) -> {
-                    // and, if the user accept, you can execute something like this:
-                    // We need an Editor object to make preference changes.
                     SharedPreferences.Editor editor = mSharedPreferences.edit();
                     editor.putBoolean("isFirstRun", false);
                     editor.apply();
@@ -373,6 +374,9 @@ public class MainActivity extends AppCompatActivity {
                 });
         AlertDialog alert = builder.create();
         alert.show();
+
+        // Make the textview clickable. Must be called after show()
+        ((TextView)alert.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private void addProfileManager() {
