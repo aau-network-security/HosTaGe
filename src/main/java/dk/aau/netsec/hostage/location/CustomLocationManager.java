@@ -143,7 +143,8 @@ public class CustomLocationManager {
      */
     @SuppressLint("InlinedApi")
     public void requestBackgroundLocation() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale((MainActivity) mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+//        if (ActivityCompat.shouldShowRequestPermissionRationale((MainActivity) mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+        if (true) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
             dialog.setTitle(mContext.getResources().getString(R.string.uses_background_location));
             dialog.setMessage(mContext.getResources().getString(R.string.uses_background_location_reason));
@@ -299,7 +300,8 @@ public class CustomLocationManager {
      */
     private void requestLocationPermission() {
         // If needed, show explanation
-        if (ActivityCompat.shouldShowRequestPermissionRationale((MainActivity) mContext, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+//        if (ActivityCompat.shouldShowRequestPermissionRationale((MainActivity) mContext, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+        if (true) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
             dialog.setTitle(mContext.getResources().getString(R.string.uses_location));
             dialog.setMessage(mContext.getResources().getString(R.string.uses_location_reason));
