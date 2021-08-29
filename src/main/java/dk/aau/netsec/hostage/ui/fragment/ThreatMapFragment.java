@@ -1,20 +1,16 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-
 import android.text.Html;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -22,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
-
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,11 +38,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.commons.HelperUtils;
-import dk.aau.netsec.hostage.location.CustomLocationSource;
 import dk.aau.netsec.hostage.location.CustomLocationManager;
+import dk.aau.netsec.hostage.location.CustomLocationSource;
 import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.DaoSession;
 import dk.aau.netsec.hostage.logging.RecordAll;
@@ -140,7 +139,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * On Resume repopulate map with attack data and register a Location Listener to start periodic
      * location updates.
      */
@@ -156,23 +155,35 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
         try {
             mLocationManager = CustomLocationManager.getLocationManagerInstance(getContext());
 
-            mLocationManager.registerCustomLocationListener(this);
+            if (!mLocationManager.isLocationPermissionGranted(getContext())) {
+                mLocationManager.getLocationPermission(this);
+            } else {
+                startReceivingLocation();
+            }
+
+//            mLocationManager.registerCustomLocationListener(getContext(), this);
         } catch (LocationException le) {
             le.printStackTrace();
             // TODO handle if user did not grant location permission
         }
+
+
+    }
+
+    private void startReceivingLocation() throws LocationException {
+        mLocationManager.startReceiveingLocation(this);
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * On Pause deregister Location Listener to stop receiving periodic location updates.
      */
     @Override
     public void onPause() {
         super.onPause();
 
-        mLocationManager.unregisterCustomLocationListener(this);
+        mLocationManager.stopReceivingLocation(this);
     }
 
     @Override
@@ -201,7 +212,10 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
     public void onMapReady(GoogleMap googleMap) {
         sMap = googleMap;
         sMap.setLocationSource(new CustomLocationSource(mLocationManager));
-        sMap.setMyLocationEnabled(true);
+
+        if (mLocationManager.isLocationPermissionGranted(getContext())) {
+            sMap.setMyLocationEnabled(true);
+        }
 
         sMap.getUiSettings().setZoomControlsEnabled(true);
         sMap.setOnInfoWindowClickListener(this);
@@ -411,22 +425,26 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
     /**
      * Move map view smoothly to a new location.
      */
+//    TODO rework this to provide callback back to fragment
     private void animateMapToUserLocation() {
+        Location userLocation;
+
+        // Retrieve latest location
         try {
-            // Retrieve latest location
-            Location userLocation = mLocationManager.getLatestLocation();
-
-            // If success, animate map smoothly
-            if (userLocation != null && sMap != null) {
-                LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-                sMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(userLatLng, 13)));
-
-            // Location is probably not ready yet, do nothing.
-            } else {
-                return;
-            }
+            userLocation = mLocationManager.getLatestLocation(getContext());
         } catch (LocationException le) {
             le.printStackTrace();
+            userLocation = null;
+        }
+
+        // If success, animate map smoothly
+        if (userLocation != null && sMap != null) {
+            LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+            sMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(userLatLng, 13)));
+
+            // Location is probably not ready yet, do nothing.
+        } else {
+            return;
         }
     }
 
@@ -446,6 +464,34 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
                     )
                     .setIcon(android.R.drawable.ic_dialog_info).show();
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        sMap.setMyLocationEnabled(true);
+                        animateMapToUserLocation();
+
+                        startReceivingLocation();
+                    } catch (LocationException le) {
+                        le.printStackTrace();
+                    }
+                } else {
+                    showWhyWeNeedLocation();
+                }
+
+                break;
+            }
+        }
+    }
+
+    private void showWhyWeNeedLocation() {
+//        TODO show alertdialog why we need location
     }
 
     private void unbindDrawables(View view) {

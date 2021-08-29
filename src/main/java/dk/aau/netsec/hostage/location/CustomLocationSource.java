@@ -32,7 +32,7 @@ public class CustomLocationSource implements LocationSource {
         mListener = onLocationChangedListener;
 
         try {
-            mLocationManager.registerCustomLocationListener(onLocationChangedListener);
+            mLocationManager.startReceiveingLocation(onLocationChangedListener);
         } catch (LocationException le) {
             le.printStackTrace();
         }
@@ -40,6 +40,6 @@ public class CustomLocationSource implements LocationSource {
 
     @Override
     public void deactivate() {
-        mLocationManager.unregisterCustomLocationListener(mListener);
+        mLocationManager.stopReceivingLocation(mListener);
     }
 }

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 

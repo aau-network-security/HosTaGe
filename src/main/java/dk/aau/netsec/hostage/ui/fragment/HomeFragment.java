@@ -1,8 +1,8 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static dk.aau.netsec.hostage.location.CustomLocationManager.LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE;
+import static dk.aau.netsec.hostage.location.CustomLocationManager.LOCATION_PERMISSION_REQUEST_CODE;
+import static dk.aau.netsec.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer.ThreatLevel.LIVE_THREAT;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -11,17 +11,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -29,9 +28,15 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import dk.aau.netsec.hostage.HostageApplication;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.commons.HelperUtils;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.DaoSession;
 import dk.aau.netsec.hostage.model.Profile;
 import dk.aau.netsec.hostage.persistence.DAO.DAOHelper;
@@ -40,14 +45,13 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
 import dk.aau.netsec.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer;
 import dk.aau.netsec.hostage.ui.model.LogFilter;
 
-import static dk.aau.netsec.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer.ThreatLevel.LIVE_THREAT;
-
 
 /**
  * @author Alexander Brakowski
  * @created 13.01.14 19:06
  */
 
+//TODO refactor and streamline this fragment, it's VERY messy
 public class HomeFragment extends Fragment {
     private SwitchMaterial mHomeSwitchConnection;
     private TextView mHomeTextName;
@@ -65,7 +69,6 @@ public class HomeFragment extends Fragment {
 
     private BroadcastReceiver mReceiver;
 
-    private CompoundButton.OnCheckedChangeListener mSwitchChangeListener = null;
     private int mDefaultTextColor;
     private ProfileManager mProfileManager;
     private SharedPreferences mConnectionInfo;
@@ -73,21 +76,16 @@ public class HomeFragment extends Fragment {
     private DaoSession dbSession;
     private DAOHelper daoHelper;
 
+    private CustomLocationManager customLocationManager;
+    private List<String> protocols;
+    private boolean protocolActivated;
+
     private boolean mReceiverRegistered;
     private boolean mRestoredFromSaved = false;
     private boolean isActive = false;
     private boolean isConnected = false;
     private static boolean updatedImageView = false;
 
-    public Context getContext() {
-        return context;
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
-    }
-
-    public Context context;
     private Thread updateUIThread;
     private static ThreatIndicatorGLRenderer.ThreatLevel mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING;
 
@@ -124,7 +122,16 @@ public class HomeFragment extends Fragment {
         this.container = container;
         this.savedInstanceState = savedInstanceState;
         mRootView = inflater.inflate(R.layout.fragment_home, container, false);
-        assignViews();
+
+        mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
+        mHomeTextName = mRootView.findViewById(R.id.home_text_name);
+        mHomeTextSecurity = mRootView.findViewById(R.id.home_text_security);
+        mHomeTextAttacks = mRootView.findViewById(R.id.home_text_attacks);
+        mHomeTextProfile = mRootView.findViewById(R.id.home_text_profile);
+        mHomeTextProfileHeader = mRootView.findViewById(R.id.home_text_profile_header);
+        mHomeProfileImage = mRootView.findViewById(R.id.home_image_profile);
+        mHomeConnectionInfoButton = mRootView.findViewById(R.id.home_button_connection_info);
+//        assignViews();
 
         //addAndroidIcon();
         addThreatAnimation();
@@ -138,10 +145,52 @@ public class HomeFragment extends Fragment {
 
         addBroadcastReceiver();
 
-        mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
         mHomeSwitchConnection.setSaveEnabled(false);
-        setSwitchListener();
-        mHomeSwitchConnection.setOnCheckedChangeListener(mSwitchChangeListener);
+
+        mHomeSwitchConnection.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) { // switch activated
+                if (!HelperUtils.isNetworkAvailable(getActivity())) {
+                    noConnectionAlertDialog();
+                } else { // network available
+                    protocolActivated = false;
+
+                    if (ProfileManager.getInstance().getCurrentActivatedProfile() == null) {
+                        MainActivity.getInstance().startMonitorServices(Arrays.asList(
+                                getResources().getStringArray(R.array.protocols)));
+                    } else {
+                        ProfileManager profileManager = ProfileManager.getInstance();
+
+                        if (profileManager.isRandomActive()) {
+                            profileManager.randomizeProtocols(profileManager.getRandomProfile());
+                        }
+                        Profile currentProfile = profileManager.getCurrentActivatedProfile();
+                        protocols = currentProfile.getActiveProtocols();
+                        if (protocols.size() > 0) {
+                            if (arePermissionsReady()) {
+                                startMonitoring();
+                            }
+                            ;
+                        } else {
+                            noServicesAlertDialog();
+
+                        }
+                    }
+                }
+            } else { // switch deactivated
+                if (MainActivity.getInstance().getHostageService() != null) {
+                    MainActivity.getInstance().getHostageService().stopListeners();
+                    MainActivity.getInstance().stopAndUnbind();
+
+                    try {
+                        customLocationManager.keepLocationUpdated(false);
+                    } catch (LocationException le) {
+                        le.printStackTrace();
+                    }
+                }
+                setStateNotActive();
+            }
+        });
+
 
         mRootView.findViewById(R.id.home_profile_details).setOnClickListener(v -> {
             Fragment fragment = new ProfileManagerFragment();
@@ -156,17 +205,6 @@ public class HomeFragment extends Fragment {
         mHomeTextSecurity.setOnClickListener(attackClickListener);
 
         return mRootView;
-    }
-
-    private void assignViews() {
-        mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
-        mHomeTextName = mRootView.findViewById(R.id.home_text_name);
-        mHomeTextSecurity = mRootView.findViewById(R.id.home_text_security);
-        mHomeTextAttacks = mRootView.findViewById(R.id.home_text_attacks);
-        mHomeTextProfile = mRootView.findViewById(R.id.home_text_profile);
-        mHomeTextProfileHeader = mRootView.findViewById(R.id.home_text_profile_header);
-        mHomeProfileImage = mRootView.findViewById(R.id.home_image_profile);
-        mHomeConnectionInfoButton = mRootView.findViewById(R.id.home_button_connection_info);
     }
 
     private void registerBroadcastReceiver() {
@@ -215,7 +253,6 @@ public class HomeFragment extends Fragment {
         mHomeTextProfile.setTextColor(mDefaultTextColor);
         mHomeTextProfileHeader.setTextColor(mDefaultTextColor);
 
-        mHomeSwitchConnection.setChecked(true);
         isActive = true;
     }
 
@@ -366,50 +403,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void setSwitchListener() {
-        if (mSwitchChangeListener == null) {
-            mSwitchChangeListener = (buttonView, isChecked) -> {
-                if (isChecked) { // switch activated
-                    if (!HelperUtils.isNetworkAvailable(getActivity())) {
-                        noConnectionAlertDialog();
-                    } else { // network available
-                        boolean protocolActivated = false;
-
-                        if (ProfileManager.getInstance().getCurrentActivatedProfile() == null) {
-                            MainActivity.getInstance().startMonitorServices(Arrays.asList(
-                                    getResources().getStringArray(R.array.protocols)));
-                        } else {
-                            ProfileManager profileManager = ProfileManager.getInstance();
-
-                            if (profileManager.isRandomActive()) {
-                                profileManager.randomizeProtocols(profileManager.getRandomProfile());
-                            }
-                            Profile currentProfile = profileManager.getCurrentActivatedProfile();
-                            List<String> protocols = currentProfile.getActiveProtocols();
-                            if (protocols.size() > 0) {
-                                MainActivity.getInstance().startMonitorServices(protocols);
-                                protocolActivated = true;
-                            }
-                        }
-
-                        if (protocolActivated) {
-                            setStateActive();
-                        } else {
-                            noServicesAlertDialog();
-                        }
-                    }
-                } else { // switch deactivated
-                    if (MainActivity.getInstance().getHostageService() != null) {
-                        MainActivity.getInstance().getHostageService().stopListeners();
-                        MainActivity.getInstance().stopAndUnbind();
-                    }
-                    setStateNotActive();
-                }
-            };
-        }
-
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     private void addThreatAnimation() {
         mRootView.findViewById(R.id.surfaceview).setOnTouchListener((v, event) -> {
@@ -425,7 +418,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadAttackListener() {
-        String ssid = mConnectionInfo.getString(MainActivity.getContext().getString(R.string.connection_info_ssid), "");
+        String ssid = mConnectionInfo.getString(getContext().getString(R.string.connection_info_ssid), "");
         if (!ssid.isEmpty()) {
             ArrayList<String> ssids = new ArrayList<>();
             ssids.add(ssid);
@@ -530,6 +523,89 @@ public class HomeFragment extends Fragment {
     }
 
 
+    /**
+     * TODO write javadoc
+     */
+    private boolean arePermissionsReady() {
+        try {
+            customLocationManager = CustomLocationManager.getLocationManagerInstance(getContext());
+        } catch (LocationException le) {
+            le.printStackTrace();
+        }
+
+        if (!customLocationManager.isLocationPermissionGranted(getContext())) {
+            customLocationManager.getLocationPermission(this);
+            return false;
+
+        } else if (!customLocationManager.isBackgroundPermissionGranted(getContext())) {
+            customLocationManager.getBackgroundPermission(this);
+            return false;
+
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * TODO write javadoc
+     */
+    private void startMonitoring() {
+        try {
+            customLocationManager.keepLocationUpdated(true);
+        } catch (LocationException le) {
+            le.printStackTrace();
+        }
+
+        MainActivity.getInstance().startMonitorServices(protocols);
+        setStateActive();
+    }
+
+    /**
+     * TODO write javadoc
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    if (!customLocationManager.isBackgroundPermissionGranted(getContext())) {
+                        customLocationManager.getBackgroundPermission(this);
+                    }
+
+                }
+                startMonitoring();
+
+                break;
+            }
+            case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
+                // We currently do nothing more after we have requested background location permission
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+//                    TODO what to do with background location permission?
+
+                } else {
+                    showWhyBackgroundLocationNeeded();
+                }
+
+                break;
+            }
+        }
+    }
+
+    void showWhyBackgroundLocationNeeded() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        dialog.setTitle("Background Location needed");
+        dialog.setMessage("Without Background Location Access, the Attacks may not be recorded correctly, while the app is in the background.");
+        dialog.setNeutralButton("Ok", null);
+
+        dialog.create().show();
+//        TODO show dialog that if background location is not enabled then...
+    }
 }
 
 

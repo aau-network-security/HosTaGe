@@ -371,7 +371,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
      */
     public boolean startListener(String protocolName, int port) {
         try {
-            CustomLocationManager.getLocationManagerInstance(getContext()).registerCustomLocationListener(this);
+            CustomLocationManager.getLocationManagerInstance(getContext()).startReceiveingLocation(this);
         } catch (LocationException le) {
             // Location updating could not be started.
             le.printStackTrace();
@@ -440,7 +440,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
 
     public void stopListenerAllPorts(String protocolName) {
         try {
-            CustomLocationManager.getLocationManagerInstance(null).unregisterCustomLocationListener(this);
+            CustomLocationManager.getLocationManagerInstance(null).stopReceivingLocation(this);
         } catch (LocationException le) {
             le.printStackTrace();
         }
@@ -460,7 +460,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
      */
     public void stopListeners() {
         try {
-            CustomLocationManager.getLocationManagerInstance(null).unregisterCustomLocationListener(this);
+            CustomLocationManager.getLocationManagerInstance(null).stopReceivingLocation(this);
         } catch (LocationException le) {
             le.printStackTrace();
         }
