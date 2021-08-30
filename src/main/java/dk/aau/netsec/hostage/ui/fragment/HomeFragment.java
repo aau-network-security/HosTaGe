@@ -145,7 +145,8 @@ public class HomeFragment extends Fragment {
 
         addBroadcastReceiver();
 
-        mHomeSwitchConnection.setSaveEnabled(false);
+//        mHomeSwitchConnection.setSaveEnabled(false);
+        updateUI();
 
         mHomeSwitchConnection.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) { // switch activated
@@ -182,12 +183,13 @@ public class HomeFragment extends Fragment {
                     MainActivity.getInstance().stopAndUnbind();
 
                     try {
+                        customLocationManager = CustomLocationManager.getLocationManagerInstance(getContext());
                         customLocationManager.keepLocationUpdated(false);
                     } catch (LocationException le) {
                         le.printStackTrace();
                     }
                 }
-                setStateNotActive();
+                initAsNotActive();
             }
         });
 
@@ -221,9 +223,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public HomeFragment() {
-    }
-
     public void setStateNotActive(boolean initial) {
 //        TODO adapt colour theming
 //        mHomeTextName.setTextColor(getActivity().getColor(R.color.light_grey));
@@ -236,23 +235,21 @@ public class HomeFragment extends Fragment {
             ThreatIndicatorGLRenderer.setThreatLevel(ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING);
         }
 
-        mHomeSwitchConnection.setChecked(false);
         isActive = false;
     }
 
-    public void setStateNotActive() {
+    public void initAsNotActive() {
+        mHomeSwitchConnection.setChecked(false);
+
         setStateNotActive(false);
     }
 
     public void setStateActive() {
-        setStateActive(false);
-    }
-
-    public void setStateActive(boolean initial) {
         mHomeTextName.setTextColor(mDefaultTextColor);
         mHomeTextProfile.setTextColor(mDefaultTextColor);
         mHomeTextProfileHeader.setTextColor(mDefaultTextColor);
 
+        mHomeSwitchConnection.setChecked(true);
         isActive = true;
     }
 
@@ -278,19 +275,6 @@ public class HomeFragment extends Fragment {
         isConnected = true;
     }
 
-    private void startUpdateUiThread() {
-        updateUIThread = new Thread() {
-            @Override
-            public void run() {
-                MainActivity.getInstance().runOnUiThread(() -> {
-                    updateUI();
-                });
-
-            }
-        };
-        updateUIThread.start();
-    }
-
     public void updateUI() {
         loadCurrentProfile();
         loadConnectionInfo();
@@ -306,13 +290,13 @@ public class HomeFragment extends Fragment {
         }
         updateTextConnection(totalAttacks);
         if (hasActiveListeners) {
-            setStateActive(true);
+            setStateActive();
             // color text according to threat level
             changeTextColorThreat(totalAttacks);
             //updateAndroidIcon();
             setThreatLevel();
         } else {
-            setStateNotActive();
+            initAsNotActive();
         }
 
     }
@@ -331,7 +315,6 @@ public class HomeFragment extends Fragment {
 
     private void setThreatLevel() {
         ThreatIndicatorGLRenderer.setThreatLevel(mThreatLevel);
-
     }
 
     private void changeTextColorThreat(int totalAttacks) {
@@ -450,12 +433,12 @@ public class HomeFragment extends Fragment {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (getUserVisibleHint())
-                    startUpdateUiThread();
+                    updateUI();
             }
         };
         registerBroadcastReceiver();
 
-        startUpdateUiThread();
+        updateUI();
     }
 
     private void noServicesAlertDialog() {
@@ -467,7 +450,7 @@ public class HomeFragment extends Fragment {
                         }).setIcon(android.R.drawable.ic_dialog_info)
                 .show();
 
-        setStateNotActive();
+        initAsNotActive();
     }
 
     private void noConnectionAlertDialog() {
@@ -476,16 +459,14 @@ public class HomeFragment extends Fragment {
 
                 }).setIcon(android.R.drawable.ic_dialog_info).show();
 
-        setStateNotActive();
+        initAsNotActive();
         setStateNotConnected();
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
         registerBroadcastReceiver();
-        startUpdateUiThread();
     }
 
     @Override
