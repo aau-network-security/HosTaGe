@@ -344,9 +344,12 @@ public class MainActivity extends AppCompatActivity {
 
                 })
                 .setNegativeButton(getString(R.string.disagree), (dialog, id) -> {
-                    getHostageService().stopListeners();
+
+//                    getHostageService().stopListeners();
                     stopAndUnbind();
                     finish();
+
+                    System.exit(0);
                 });
         AlertDialog alert = builder.create();
         alert.show();
