@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/terms_link_open"
+        android:icon="@drawable/ic_menu_book"
+        android:title="@string/terms_link_open"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/privacy_link_open"
         android:icon="@drawable/ic_privacy_tip"
         android:title="@string/policy_link_open"

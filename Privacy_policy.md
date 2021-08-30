@@ -1,6 +1,6 @@
 Last updated: 24 August, 2021
 
-  **Privacy Policy**
+# Privacy Policy
 
 Aalborg University, Denmark built the HosTaGe app as an Open Source app. This SERVICE is provided by Aalborg University, Denmark at no cost and is intended for use as is.
 

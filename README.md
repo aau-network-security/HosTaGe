@@ -107,6 +107,10 @@ __License & Distribution__
 
 Distributed under the MIT license. See [LICENSE](./LICENSE.md) for license information. 
 
+__Terms and Conditions__
+
+Use of the application is subject to [Terms and Conditions](./terms.md). 
+
 __Privacy Policy__
 
 You can find the privacy policy under [Privacy Policy](./Privacy_policy.md)

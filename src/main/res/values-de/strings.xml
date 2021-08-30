@@ -295,6 +295,10 @@
     <string name="pcap_location_setting_description">Speicherort der Protokollausgabe ändern</string>
     <string name="pcap_log_rotation_name">Log-Rotationsfrequenz</string>
     <string name="policy_link_open">Im Browser öffnen</string>
+    <string name="policy_link_open">Datenschutzerklärung öffnen</string>
+    <string name="agree">Akzeptieren</string>
+    <string name="disagree">Nicht akzeptieren</string>
+    <string name="terms_link_open">"Geschäftsbedingungen öffnen "</string>
 
     <string name="uses_location">Diese App verwendet deinen Standort.</string>
     <string name="uses_location_reason">Der Standort ermöglicht eine genaue Erfassung von Angriffsdaten und die ThreatMap.</string>

@@ -2,16 +2,23 @@ package dk.aau.netsec.hostage.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import dk.aau.netsec.hostage.Hostage;
@@ -30,7 +37,15 @@ public class AboutFragment extends Fragment {
     private ViewGroup container;
     private Bundle savedInstanceState;
 
-	@SuppressLint("SetTextI18n")
+    private static final String PRIVACY_POLICY_URL = "https://aau-network-security.github.io/HosTaGe/Privacy_policy.html";
+    private static final String TERMS_CONDITIONS_URL  = "https://aau-network-security.github.io/HosTaGe/terms.html";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		super.onCreateView(inflater, container, savedInstanceState);
 
@@ -63,6 +78,28 @@ public class AboutFragment extends Fragment {
 
 		return rootView;
 	}
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.privacy_policy_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.terms_link_open){
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_CONDITIONS_URL));
+            startActivity(browserIntent);
+
+            return true;
+        } else if (item.getItemId() == R.id.privacy_link_open){
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY_URL));
+            startActivity(browserIntent);
+
+            return true;
+        }
+
+        return false;
+    }
 
 
     @Override
