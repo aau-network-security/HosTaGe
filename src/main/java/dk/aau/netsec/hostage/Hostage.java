@@ -8,10 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.alfresco.jlan.smb.nt.LoadException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -371,7 +369,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
      */
     public boolean startListener(String protocolName, int port) {
         try {
-            CustomLocationManager.getLocationManagerInstance(getContext()).startReceiveingLocation(this);
+            CustomLocationManager.getLocationManagerInstance(getContext()).startReceivingLocation(this);
         } catch (LocationException le) {
             // Location updating could not be started.
             le.printStackTrace();

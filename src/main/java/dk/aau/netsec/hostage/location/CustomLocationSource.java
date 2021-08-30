@@ -32,7 +32,7 @@ public class CustomLocationSource implements LocationSource {
         mListener = onLocationChangedListener;
 
         try {
-            mLocationManager.startReceiveingLocation(onLocationChangedListener);
+            mLocationManager.startReceivingLocation(onLocationChangedListener);
         } catch (LocationException le) {
             le.printStackTrace();
         }

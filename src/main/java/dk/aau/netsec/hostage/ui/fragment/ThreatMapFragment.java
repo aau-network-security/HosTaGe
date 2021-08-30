@@ -1,6 +1,8 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
 
+import static dk.aau.netsec.hostage.location.CustomLocationManager.LOCATION_PERMISSION_REQUEST_CODE;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -20,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -37,6 +40,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +67,6 @@ import dk.aau.netsec.hostage.ui.model.LogFilter;
 public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, LocationSource.OnLocationChangedListener {
 
     private GoogleMap sMap = null;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private MapView mapView = null;
     private View rootView = null;
     private Thread mLoader = null;
@@ -137,6 +140,26 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        try {
+            mLocationManager = CustomLocationManager.getLocationManagerInstance(getContext());
+
+            if (!mLocationManager.isLocationPermissionGranted(getContext())) {
+                mLocationManager.getLocationPermission(this);
+            } else {
+                startReceivingLocation();
+            }
+
+        } catch (LocationException le) {
+            le.printStackTrace();
+
+            Snackbar.make(rootView, "Location is turned off.", Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * {@inheritDoc}
      * <p>
@@ -152,26 +175,11 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
             populateMap();
         }
 
-        try {
-            mLocationManager = CustomLocationManager.getLocationManagerInstance(getContext());
-
-            if (!mLocationManager.isLocationPermissionGranted(getContext())) {
-                mLocationManager.getLocationPermission(this);
-            } else {
-                startReceivingLocation();
-            }
-
-//            mLocationManager.registerCustomLocationListener(getContext(), this);
-        } catch (LocationException le) {
-            le.printStackTrace();
-            // TODO handle if user did not grant location permission
-        }
-
 
     }
 
     private void startReceivingLocation() throws LocationException {
-        mLocationManager.startReceiveingLocation(this);
+        mLocationManager.startReceivingLocation(this);
     }
 
     /**
@@ -425,7 +433,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
     /**
      * Move map view smoothly to a new location.
      */
-//    TODO rework this to provide callback back to fragment
     private void animateMapToUserLocation() {
         Location userLocation;
 
@@ -466,7 +473,6 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
         }
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -482,7 +488,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
                         le.printStackTrace();
                     }
                 } else {
-                    showWhyWeNeedLocation();
+                    showReasonAfterDeny();
                 }
 
                 break;
@@ -490,8 +496,17 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
         }
     }
 
-    private void showWhyWeNeedLocation() {
-//        TODO show alertdialog why we need location
+    /**
+     * Show rationale why we need location after the user has deniedthe permission.
+     */
+    private void showReasonAfterDeny() {
+//        TODO extract strings
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        dialog.setTitle("Location Permission needed");
+        dialog.setMessage("Location permission is required to show map and accurately record attacks");
+        dialog.setNeutralButton("Ok", null);
+
+        dialog.create().show();
     }
 
     private void unbindDrawables(View view) {

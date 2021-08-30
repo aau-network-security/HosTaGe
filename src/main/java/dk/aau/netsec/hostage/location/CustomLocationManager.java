@@ -21,7 +21,6 @@ import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import dk.aau.netsec.hostage.R;
 
@@ -36,14 +35,12 @@ import dk.aau.netsec.hostage.R;
  * @author Filip Adamik
  * Created on 24/06/2021
  */
-//TODO analyze and optimize class
 public class CustomLocationManager {
 
     Location mLatestLocation;
-    private LocationListener mLocationListener;
-    private LocationManager mLocationManager;
-    private Consumer<Location> mLocationConsumer;
-    Set<LocationSource.OnLocationChangedListener> mListOfListeners;
+    private final LocationListener mLocationListener;
+    private final LocationManager mLocationManager;
+    final Set<LocationSource.OnLocationChangedListener> mListOfListeners;
     private boolean mReceivingUpdates = false;
     private boolean mKeepLocationUpdated = false;
 
@@ -62,23 +59,13 @@ public class CustomLocationManager {
         mLocationManagerInstance = new WeakReference<>(this);
         mListOfListeners = new HashSet<>();
 
-        mLocationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location location) {
-                mLatestLocation = location;
+        mLocationListener = location -> {
+            mLatestLocation = location;
 
-                for (LocationSource.OnLocationChangedListener listener : mListOfListeners) {
-                    listener.onLocationChanged(location);
-                }
-
+            for (LocationSource.OnLocationChangedListener listener : mListOfListeners) {
+                listener.onLocationChanged(location);
             }
-        };
 
-        mLocationConsumer = new Consumer<Location>() {
-            @Override
-            public void accept(Location location) {
-                mLatestLocation = location;
-            }
         };
 
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -108,25 +95,34 @@ public class CustomLocationManager {
         return mLocationManagerInstance.get();
     }
 
+    /**
+     * Returns true if the app currently has foreground location permission.
+     *
+     * @param context Context is required to check for permissions
+     * @return true if app has permission
+     */
     public boolean isLocationPermissionGranted(Context context) {
         return (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
     }
 
     /**
-     * TODO write javadoc
+     * Obtain location permission from the user. This will display a prominent disclosure, informing
+     * the user why the location is being requested.
      *
-     * @param fragment
+     * @param fragment The result of the permission request is delivered back to the fragment's
+     *                 onRequestPermissionResult
      */
     public void getLocationPermission(Fragment fragment) {
         requestForegroundLocationPermission(fragment);
     }
 
     /**
-     * TODO write javadoc
+     * Returns trie if app currently has background location permission. On older devices,
+     * always return true.
      *
-     * @param context
-     * @return
+     * @param context Context is required to check for permissions
+     * @return true if the app has background locatin permissions or if API is below 29
      */
     public boolean isBackgroundPermissionGranted(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -137,39 +133,44 @@ public class CustomLocationManager {
     }
 
     /**
-     * TODO write javadoc
+     * Obtain background location permission from the user. This will display a prominent disclosure
+     * informing the user why background location is being requested.
      *
-     * @param fragment
+     * @param fragment The result of the permission request is delivered back to the fragment's
+     *                 onRequestPermissionResult
      */
     public void getBackgroundPermission(Fragment fragment) {
         requestBackgroundLocationPermission(fragment);
     }
 
     /**
-     * TODO write javadoc
+     * Register a callback function where all location updates will be delivered. This will start
+     * polling the sensors for periodic location updates
      *
-     * @param callback
-     * @throws LocationException
-     * @throws SecurityException
+     * @param callback method to deliver the location updates
+     * @throws LocationException if no location providers are enabled on device
+     * @throws SecurityException if Location Permissions are missing
      */
-    public void startReceiveingLocation(LocationSource.OnLocationChangedListener callback) throws LocationException, SecurityException {
+    public void startReceivingLocation(LocationSource.OnLocationChangedListener callback) throws LocationException, SecurityException {
         registerLocationListener(callback);
     }
 
     /**
-     * TODO write javadoc
+     * Stop receiving location updates. If there are no more listeners, or location is no longer
+     * kept updated by keepLocationUpdated, this will stop polling device sensors.
      *
-     * @param callback
+     * @param callback Method that was previously registered to receive location updates
      */
     public void stopReceivingLocation(LocationSource.OnLocationChangedListener callback) {
         unregisterLocationListener(callback);
     }
 
     /**
-     * TODO write javadoc
+     * Keep location updated without explicitly registering a listener. This will start polling
+     * device sensors for location updates.
      *
-     * @param keepUpdated
-     * @throws LocationException
+     * @param keepUpdated set to true if location is to be kept updated
+     * @throws LocationException if no location providers are enabled
      */
     public void keepLocationUpdated(boolean keepUpdated) throws LocationException {
         mKeepLocationUpdated = keepUpdated;
@@ -182,21 +183,25 @@ public class CustomLocationManager {
     }
 
     /**
-     * TODO write javadoc
+     * Get single last location. This does not poll device location sensors.
      *
-     * @return
-     * @throws LocationException
+     * @return Last location update. Could be old.
+     * @throws LocationException If no previous location is available
      */
     public Location getLatestLocation() throws LocationException {
         return getLatestLocation(null);
     }
 
     /**
-     * TODO write javadoc
+     * Get single last location known to CustomLocationManager (more accurate), or obtain last known
+     * device location (less accurate).
+     * <p>
+     * Last known device location is requested only if context is provided and
+     * location permission has been granted.
      *
-     * @param context
-     * @return
-     * @throws LocationException
+     * @param context Context is required to check for location permission
+     * @return Last known location
+     * @throws LocationException if no previous location is known.
      */
     @SuppressLint("MissingPermission")
     public Location getLatestLocation(Context context) throws LocationException {
@@ -210,21 +215,6 @@ public class CustomLocationManager {
         throw new LocationException("Latest Location could not be obtained");
     }
 
-    /**
-     * TODO write javadoc
-     *
-     * @return
-     */
-    private String getBestProvider() {
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(false);
-        criteria.setSpeedRequired(false);
-        criteria.setCostAllowed(false);
-
-        return mLocationManager.getBestProvider(criteria, false);
-    }
 
     /**
      * Register a location listener. This listener will get called whenever a new location is provided.
@@ -233,9 +223,8 @@ public class CustomLocationManager {
      *
      * @param listener {@link com.google.android.gms.maps.LocationSource.OnLocationChangedListener}
      *                 to be registered
-     * @throws LocationException Thrown when the location permission has not been granted, or no
-     *                           location provider is currently enabled.
-     *                           TODO update javadoc
+     * @throws LocationException Thrown when no location provider is currently enabled.
+     * @throws SecurityException Thrown when the location permission has not been granted
      */
     private void registerLocationListener(@NonNull LocationSource.OnLocationChangedListener listener) throws LocationException, SecurityException {
         // Start updating location, if not already
@@ -264,7 +253,8 @@ public class CustomLocationManager {
     }
 
     /**
-     * TOdO write javadoc
+     * Stop updating location if there are no registered listeners or keepLocationUpdated has not
+     * been set.
      */
     private void stopIfNoListeners() {
         if (mListOfListeners.isEmpty() && !mKeepLocationUpdated) {
@@ -275,16 +265,16 @@ public class CustomLocationManager {
     /**
      * Internal use only.
      * <p>
-     * TODO update javadoc
      * Starts periodically updating location.
      *
-     * @throws LocationException Thrown when the location permission has not been granted, or if
-     *                           no location providers are available (e.g. GPS, WiFi and Cellular
-     *                           all turned off)
+     * @throws LocationException Thrown when no location providers are available (e.g. GPS, WiFi
+     *                           and Cellular all turned off)
+     * @throws SecurityException Thrown when location permission has not been granted
      */
     private void startUpdatingLocation() throws LocationException, SecurityException {
         String preferredProvider;
 
+//        TODO consider replacing with getBestProvider()
         // Check provider availability (starting with most accurate
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             preferredProvider = LocationManager.GPS_PROVIDER;
@@ -310,20 +300,20 @@ public class CustomLocationManager {
     }
 
     /**
-     * Launch a location permission request. Display the rationale for using location, if necessary.
-     * TODO update javadoc
+     * Launch a location permission request. Display the prominent disclosure for using location.
+     *
+     * @param fragment is required to obtain context for construction of the prominent disclosure,
+     *                 for requesting permission and for delivering request result.
      */
     private void requestForegroundLocationPermission(Fragment fragment) {
-        // If needed, show explanation
         Context context = fragment.getContext();
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
         dialog.setTitle(context.getResources().getString(R.string.uses_location));
         dialog.setMessage(context.getResources().getString(R.string.uses_location_reason));
         dialog.setCancelable(true);
-        dialog.setPositiveButton(context.getResources().getString(R.string.ok), ((dialog1, which) -> {
-            showLocationRequestDialog(fragment, Manifest.permission.ACCESS_FINE_LOCATION);
-        }));
+        dialog.setPositiveButton(context.getResources().getString(R.string.ok), ((dialog1, which)
+                -> showLocationRequestDialog(fragment, Manifest.permission.ACCESS_FINE_LOCATION)));
 
         AlertDialog alertDialog = dialog.create();
         alertDialog.show();
@@ -332,10 +322,14 @@ public class CustomLocationManager {
     /**
      * Launch a background location permission request. Show a rationale explaining this request if
      * needed.
-     * TODO update javadoc
+     *
+     * @param fragment is required to obtain context for construction of the prominent disclosure,
+     *                 for requesting permission and for delivering request result.
      */
     private void requestBackgroundLocationPermission(Fragment fragment) {
         Context context = fragment.getContext();
+
+//        Only relevant on API >= 29
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
             AlertDialog.Builder dialog = new AlertDialog.Builder(context);
@@ -343,31 +337,45 @@ public class CustomLocationManager {
             dialog.setMessage(context.getResources().getString(R.string.uses_background_location_reason));
             dialog.setCancelable(true);
 
-            dialog.setPositiveButton(context.getResources().getString(R.string.ok), ((dialog1, which) -> {
-                showLocationRequestDialog(fragment, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-            }));
+            dialog.setPositiveButton(context.getResources().getString(R.string.ok), ((dialog1, which)
+                    -> showLocationRequestDialog(fragment, Manifest.permission.ACCESS_BACKGROUND_LOCATION)));
 
             AlertDialog alertDialog = dialog.create();
             alertDialog.show();
-
         }
     }
 
     /**
      * Display the actual dialog asking the user for permissions.
-     * <p>
-     * TODO update javadoc
      *
+     * @param fragment               fragment is required to request permissions and to deliver
+     *                               permission request result
      * @param locationPermissionType Ask for either foreground or background location permission.
      */
-    void showLocationRequestDialog(Fragment fragmnent, String locationPermissionType) {
-        if (locationPermissionType == Manifest.permission.ACCESS_FINE_LOCATION || locationPermissionType == Manifest.permission.ACCESS_COARSE_LOCATION) {
-            fragmnent.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+    void showLocationRequestDialog(Fragment fragment, String locationPermissionType) {
+        if (locationPermissionType.equals(Manifest.permission.ACCESS_FINE_LOCATION) || locationPermissionType.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            fragment.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
 
             // Only relevant on newer APIs
-        } else if (locationPermissionType == Manifest.permission.ACCESS_BACKGROUND_LOCATION &&
+        } else if (locationPermissionType.equals(Manifest.permission.ACCESS_BACKGROUND_LOCATION) &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            fragmnent.requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
+            fragment.requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
         }
+    }
+
+    /**
+     * Find best provider for our use (we don't care about speed, altitude or bearing)
+     *
+     * @return LocationProvider
+     */
+    private String getBestProvider() {
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setSpeedRequired(false);
+        criteria.setCostAllowed(false);
+
+        return mLocationManager.getBestProvider(criteria, false);
     }
 }

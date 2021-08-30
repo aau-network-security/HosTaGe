@@ -524,7 +524,10 @@ public class HomeFragment extends Fragment {
 
 
     /**
-     * TODO write javadoc
+     * Checks if foreground and background location permissions are granted. If a permission is not
+     * granted, trigger a permission request and return false.
+     *
+     * @return true if all permissions are already granted.
      */
     private boolean arePermissionsReady() {
         try {
@@ -547,7 +550,7 @@ public class HomeFragment extends Fragment {
     }
 
     /**
-     * TODO write javadoc
+     * Start updating location and start monitoring the selected profile.
      */
     private void startMonitoring() {
         try {
@@ -561,11 +564,11 @@ public class HomeFragment extends Fragment {
     }
 
     /**
-     * TODO write javadoc
+     * Handle when user has given or rejected a location permission request
      *
-     * @param requestCode
+     * @param requestCode Request identification (foreground or background location request)
      * @param permissions
-     * @param grantResults
+     * @param grantResults Request result (given or rejected
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -573,23 +576,23 @@ public class HomeFragment extends Fragment {
             case LOCATION_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
+//                    Ask user about background location next
                     if (!customLocationManager.isBackgroundPermissionGranted(getContext())) {
                         customLocationManager.getBackgroundPermission(this);
                     }
-
+                } else {
+//                    Explain why wee need location
+                    showReasonAfterForegroundDeny();
                 }
                 startMonitoring();
 
                 break;
             }
             case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
-                // We currently do nothing more after we have requested background location permission
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-//                    TODO what to do with background location permission?
-
+                    // We currently do nothing more after we have received background location permission
                 } else {
-                    showWhyBackgroundLocationNeeded();
+                    showReasonAfterBackgroundDeny();
                 }
 
                 break;
@@ -597,14 +600,30 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    void showWhyBackgroundLocationNeeded() {
+    /**
+     * Show dialog informing the user why location permission is needed.
+     */
+    private void showReasonAfterForegroundDeny() {
+//        TODO extract strings
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        dialog.setTitle("Location Permissin needed");
+        dialog.setMessage("Without Location Access, the attack information cannot be captured correctly");
+        dialog.setNeutralButton("Ok", null);
+
+        dialog.create().show();
+    }
+
+    /**
+     * Show dialog informing the user why background location is needed
+     */
+    private void showReasonAfterBackgroundDeny() {
+//        TODO extract strings
         AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
         dialog.setTitle("Background Location needed");
         dialog.setMessage("Without Background Location Access, the Attacks may not be recorded correctly, while the app is in the background.");
         dialog.setNeutralButton("Ok", null);
 
         dialog.create().show();
-//        TODO show dialog that if background location is not enabled then...
     }
 }
 
