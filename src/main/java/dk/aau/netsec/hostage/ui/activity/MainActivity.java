@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -50,7 +52,6 @@ import dk.aau.netsec.hostage.system.iptablesUtils.Api;
 import dk.aau.netsec.hostage.ui.adapter.DrawerListAdapter;
 import dk.aau.netsec.hostage.ui.fragment.AboutFragment;
 import dk.aau.netsec.hostage.ui.fragment.HomeFragment;
-import dk.aau.netsec.hostage.ui.fragment.PrivacyFragment;
 import dk.aau.netsec.hostage.ui.fragment.ProfileManagerFragment;
 import dk.aau.netsec.hostage.ui.fragment.RecordOverviewFragment;
 import dk.aau.netsec.hostage.ui.fragment.ServicesFragment;
@@ -347,11 +348,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onFirstRun() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        TODO adjust disclaimer to mention T&C location as well
         builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.agree), (dialog, id) -> {
-                    // and, if the user accept, you can execute something like this:
-                    // We need an Editor object to make preference changes.
                     SharedPreferences.Editor editor = mSharedPreferences.edit();
                     editor.putBoolean("isFirstRun", false);
                     editor.apply();
@@ -373,6 +373,9 @@ public class MainActivity extends AppCompatActivity {
                 });
         AlertDialog alert = builder.create();
         alert.show();
+
+        // Make the textview clickable. Must be called after show()
+        ((TextView)alert.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private void addProfileManager() {
@@ -415,7 +418,6 @@ public class MainActivity extends AppCompatActivity {
         mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
         mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
         mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
-        mDrawerItems.add(new DrawerListItem(R.string.privacy_policy, R.drawable.ic_menu_privacy));
 
         DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
 
@@ -813,8 +815,7 @@ public class MainActivity extends AppCompatActivity {
         SERVICES(4, ServicesFragment.class),
         PROFILE_MANAGER(5, ProfileManagerFragment.class),
         SETTINGS(6, SettingsFragment.class),
-        APPLICATION_INFO(7, AboutFragment.class),
-        PRIVACY(8, PrivacyFragment.class);
+        APPLICATION_INFO(7, AboutFragment.class);
 
 
         private int value;
