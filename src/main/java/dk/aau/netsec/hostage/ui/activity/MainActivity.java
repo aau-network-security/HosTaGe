@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
@@ -17,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -24,8 +24,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -42,15 +42,12 @@ import java.util.List;
 
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
-import dk.aau.netsec.hostage.location.CustomLocationManager;
-import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.system.Device;
 import dk.aau.netsec.hostage.system.iptablesUtils.Api;
 import dk.aau.netsec.hostage.ui.adapter.DrawerListAdapter;
 import dk.aau.netsec.hostage.ui.fragment.AboutFragment;
 import dk.aau.netsec.hostage.ui.fragment.HomeFragment;
-import dk.aau.netsec.hostage.ui.fragment.PrivacyFragment;
 import dk.aau.netsec.hostage.ui.fragment.ProfileManagerFragment;
 import dk.aau.netsec.hostage.ui.fragment.RecordOverviewFragment;
 import dk.aau.netsec.hostage.ui.fragment.ServicesFragment;
@@ -72,8 +69,6 @@ import eu.chainfire.libsuperuser.Shell;
  */
 public class MainActivity extends AppCompatActivity {
     private static WeakReference<Context> context;
-
-    private CustomLocationManager customLocationManager;
 
     /**
      * singleton instance of the MainActivity with WeakReference to avoid Memory leaks
@@ -129,9 +124,6 @@ public class MainActivity extends AppCompatActivity {
      * Hold the state of the Hostage service
      */
     private boolean mServiceBound = false;
-    public static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-    public static final int LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE = 101;
-
 
     /**
      * Connection to bind the background service
@@ -220,8 +212,6 @@ public class MainActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         this.unbindService();
-//        if (locationManager != null)
-//            locationManager.stopUpdates();
     }
 
     /**
@@ -230,10 +220,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        if (locationManager != null) {
-//            locationManager.stopUpdates();
-//            locationManager = null;
-//        }
         // /Unbind running service
         if (!mHoneyService.hasRunningListeners()) {
             stopAndUnbind();
@@ -330,11 +316,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onFirstRun() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        TODO adjust disclaimer to mention T&C location as well
         builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.agree), (dialog, id) -> {
-                    // and, if the user accept, you can execute something like this:
-                    // We need an Editor object to make preference changes.
                     SharedPreferences.Editor editor = mSharedPreferences.edit();
                     editor.putBoolean("isFirstRun", false);
                     editor.apply();
@@ -344,18 +329,23 @@ public class MainActivity extends AppCompatActivity {
                     editor1.putBoolean("isFirstEmulation", true);
                     editor1.apply();
 
-                    getLocationData();
                     startAndBind();
                     addProfileManager();
 
                 })
                 .setNegativeButton(getString(R.string.disagree), (dialog, id) -> {
-                    getHostageService().stopListeners();
+
+//                    getHostageService().stopListeners();
                     stopAndUnbind();
                     finish();
+
+                    System.exit(0);
                 });
         AlertDialog alert = builder.create();
         alert.show();
+
+        // Make the textview clickable. Must be called after show()
+        ((TextView)alert.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private void addProfileManager() {
@@ -370,7 +360,6 @@ public class MainActivity extends AppCompatActivity {
         if (mSharedPreferences.getBoolean("isFirstRun", true)) {
             onFirstRun();
         } else {
-            getLocationData();
             startAndBind();
             addProfileManager();
         }
@@ -401,7 +390,6 @@ public class MainActivity extends AppCompatActivity {
         mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
         mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
         mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
-        mDrawerItems.add(new DrawerListItem(R.string.privacy_policy, R.drawable.ic_menu_privacy));
 
         DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
 
@@ -432,19 +420,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
-
-    /**
-     * Get latest location data. If needed, this will trigger a location permission request.
-     */
-    private void getLocationData() {
-        try {
-            customLocationManager = CustomLocationManager.getLocationManagerInstance(this);
-            customLocationManager.getLatestLocation();
-
-        } catch (LocationException le) {
-            le.printStackTrace();
-        }
     }
 
     /**
@@ -791,8 +766,7 @@ public class MainActivity extends AppCompatActivity {
         SERVICES(4, ServicesFragment.class),
         PROFILE_MANAGER(5, ProfileManagerFragment.class),
         SETTINGS(6, SettingsFragment.class),
-        APPLICATION_INFO(7, AboutFragment.class),
-        PRIVACY(8, PrivacyFragment.class);
+        APPLICATION_INFO(7, AboutFragment.class);
 
 
         private final int value;
@@ -834,39 +808,4 @@ public class MainActivity extends AppCompatActivity {
             displayView(position);
         }
     }
-
-    /**
-     * Callback after location permission has been requested. If foreground location permission has
-     * been requested, notify {@link CustomLocationManager} if it has been granted or not.
-     * <p>
-     * If on API 29 and above, request also background location permission.
-     *
-     * @param requestCode  Request code to identify the calling request
-     * @param permissions  Type of permission that was requested
-     * @param grantResults Request result (granted or not)
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    customLocationManager.permissionGrantedCallback();
-
-                    //Only needed on Android API >= 29
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        customLocationManager.requestBackgroundLocation();
-                    }
-                } else {
-                    customLocationManager.userHasDeniedLocation(true);
-                }
-                break;
-            }
-            case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
-                // We currently do nothing more after we have requested background location permission
-                break;
-            }
-        }
-    }
-
 }
