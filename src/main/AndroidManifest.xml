@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="dk.aau.netsec.hostage"
-    android:versionCode="13"
+    android:versionCode="16"
     android:versionName="2.4">
 
     <uses-permission android:name="android.permission.VIBRATE" />
