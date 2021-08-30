@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
@@ -27,7 +26,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -44,8 +42,6 @@ import java.util.List;
 
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
-import dk.aau.netsec.hostage.location.CustomLocationManager;
-import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.system.Device;
 import dk.aau.netsec.hostage.system.iptablesUtils.Api;
@@ -73,8 +69,6 @@ import eu.chainfire.libsuperuser.Shell;
  */
 public class MainActivity extends AppCompatActivity {
     private static WeakReference<Context> context;
-
-    private CustomLocationManager customLocationManager;
 
     /**
      * singleton instance of the MainActivity with WeakReference to avoid Memory leaks
@@ -130,9 +124,6 @@ public class MainActivity extends AppCompatActivity {
      * Hold the state of the Hostage service
      */
     private boolean mServiceBound = false;
-    public static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-    public static final int LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE = 101;
-
 
     /**
      * Connection to bind the background service
@@ -220,13 +211,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-//        if (locationManager != null)
-//            locationManager.stopUpdates();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
     }
@@ -238,8 +222,6 @@ public class MainActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         this.unbindService();
-//        if (locationManager != null)
-//            locationManager.stopUpdates();
     }
 
     /**
@@ -248,10 +230,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        if (locationManager != null) {
-//            locationManager.stopUpdates();
-//            locationManager = null;
-//        }
         // /Unbind running service
         if (!mHoneyService.hasRunningListeners()) {
             stopAndUnbind();
@@ -361,15 +339,17 @@ public class MainActivity extends AppCompatActivity {
                     editor1.putBoolean("isFirstEmulation", true);
                     editor1.apply();
 
-                    getLocationData();
                     startAndBind();
                     addProfileManager();
 
                 })
                 .setNegativeButton(getString(R.string.disagree), (dialog, id) -> {
-                    getHostageService().stopListeners();
+
+//                    getHostageService().stopListeners();
                     stopAndUnbind();
                     finish();
+
+                    System.exit(0);
                 });
         AlertDialog alert = builder.create();
         alert.show();
@@ -387,7 +367,6 @@ public class MainActivity extends AppCompatActivity {
         if (mSharedPreferences.getBoolean("isFirstRun", true)) {
             onFirstRun();
         } else {
-            getLocationData();
             startAndBind();
             addProfileManager();
         }
@@ -448,19 +427,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
-
-    /**
-     * Get latest location data. If needed, this will trigger a location permission request.
-     */
-    private void getLocationData() {
-        try {
-            customLocationManager = CustomLocationManager.getLocationManagerInstance(this);
-            customLocationManager.getLatestLocation();
-
-        } catch (LocationException le) {
-            le.printStackTrace();
-        }
     }
 
     /**
@@ -857,39 +823,4 @@ public class MainActivity extends AppCompatActivity {
             displayView(position);
         }
     }
-
-    /**
-     * Callback after location permission has been requested. If foreground location permission has
-     * been requested, notify {@link CustomLocationManager} if it has been granted or not.
-     * <p>
-     * If on API 29 and above, request also background location permission.
-     *
-     * @param requestCode  Request code to identify the calling request
-     * @param permissions  Type of permission that was requested
-     * @param grantResults Request result (granted or not)
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    customLocationManager.permissionGrantedCallback();
-
-                    //Only needed on Android API >= 29
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        customLocationManager.requestBackgroundLocation();
-                    }
-                } else {
-                    customLocationManager.userHasDeniedLocation(true);
-                }
-                break;
-            }
-            case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
-                // We currently do nothing more after we have requested background location permission
-                break;
-            }
-        }
-    }
-
 }

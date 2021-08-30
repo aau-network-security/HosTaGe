@@ -284,10 +284,6 @@
     <string name="warning">Warnung</string>
     <string name="data_disclaimer">Datenschutzhinweis</string>
     <string name="multistage_warning">Dieses Service kann viel Arbeitsspeicher verbrauchen und Ihren Batterie möglicherweise schneller entladen.</string>
-    <string name="uses_location">Diese App verwendet deinen Standort.</string>
-    <string name="uses_location_reason">Der Standort ermöglicht eine genaue Erfassung von Angriffsdaten.</string>
-    <string name="uses_background_location">Diese App verwendet deinen Standort im Hintergrund.</string>
-    <string name="uses_background_location_reason">Der Hintergrundstandort ermöglicht eine genaue Erfassung von Angriffsdaten während die App im Hintergrund läuft.</string>
     <string name="pcap_log_setting_name">Logging Aktivieren</string>
     <string name="pcap_location_setting_name">PCAP Log Speicherort</string>
     <string name="pcap_notification">PCAP logging läuft</string>
@@ -302,4 +298,13 @@
     <string name="agree">Akzeptieren</string>
     <string name="disagree">Nicht akzeptieren</string>
     <string name="terms_link_open">"Geschäftsbedingungen öffnen "</string>
+
+    <string name="uses_location">Diese App verwendet deinen Standort.</string>
+    <string name="uses_location_reason">Der Standort ermöglicht eine genaue Erfassung von Angriffsdaten und die ThreatMap.</string>
+    <string name="uses_background_location">Diese App verwendet deinen Standort im Hintergrund.</string>
+    <string name="uses_background_location_reason">Der Hintergrundstandort ermöglicht eine genaue Erfassung von Angriffsdaten während die App im Hintergrund läuft.</string>
+    <string name="location_permission_needed">Diese App verwendet deinen Standort.</string>
+    <string name="background_location_needed">Diese App verwendet deinen Standort im Hintergrund.</string>
+    <string name="background_permission_denied">Der Hintergrundstandort ermöglicht eine genaue Erfassung von Angriffsdaten während die App im Hintergrund läuft.</string>
+    <string name="location_permission_denied">Der Standort ermöglicht eine genaue Erfassung von Angriffsdaten und die ThreatMap.</string>
 </resources>
