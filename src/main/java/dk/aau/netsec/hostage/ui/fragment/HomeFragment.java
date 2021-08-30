@@ -51,7 +51,7 @@ import dk.aau.netsec.hostage.ui.model.LogFilter;
  * @created 13.01.14 19:06
  */
 
-//TODO refactor and streamline this fragment, it's VERY messy
+//TODO refactor and streamline this fragment, it's messy
 public class HomeFragment extends Fragment {
     private SwitchMaterial mHomeSwitchConnection;
     private TextView mHomeTextName;
@@ -513,16 +513,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public void AlertFile(String fname) {
-        AlertDialog alert = new AlertDialog.Builder(getActivity()).create();
-        alert.setTitle("Delete entry");
-        alert.setMessage("Are you sure you want to delete this entry?:\n" + fname);
-        alert.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                (dialog, which) -> dialog.dismiss());
-        alert.show();
-    }
-
-
     /**
      * Checks if foreground and background location permissions are granted. If a permission is not
      * granted, trigger a permission request and return false.
@@ -604,11 +594,10 @@ public class HomeFragment extends Fragment {
      * Show dialog informing the user why location permission is needed.
      */
     private void showReasonAfterForegroundDeny() {
-//        TODO extract strings
         AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
-        dialog.setTitle("Location Permissin needed");
-        dialog.setMessage("Without Location Access, the attack information cannot be captured correctly");
-        dialog.setNeutralButton("Ok", null);
+        dialog.setTitle(R.string.location_permission_needed);
+        dialog.setMessage(R.string.location_permission_denied);
+        dialog.setNeutralButton(R.string.ok, null);
 
         dialog.create().show();
     }
@@ -617,11 +606,10 @@ public class HomeFragment extends Fragment {
      * Show dialog informing the user why background location is needed
      */
     private void showReasonAfterBackgroundDeny() {
-//        TODO extract strings
         AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
-        dialog.setTitle("Background Location needed");
-        dialog.setMessage("Without Background Location Access, the Attacks may not be recorded correctly, while the app is in the background.");
-        dialog.setNeutralButton("Ok", null);
+        dialog.setTitle(R.string.background_location_needed);
+        dialog.setMessage(R.string.background_permission_denied);
+        dialog.setNeutralButton(R.string.ok, null);
 
         dialog.create().show();
     }

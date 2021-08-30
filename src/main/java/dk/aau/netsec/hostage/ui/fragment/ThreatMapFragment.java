@@ -500,11 +500,10 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
      * Show rationale why we need location after the user has deniedthe permission.
      */
     private void showReasonAfterDeny() {
-//        TODO extract strings
         AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
-        dialog.setTitle("Location Permission needed");
-        dialog.setMessage("Location permission is required to show map and accurately record attacks");
-        dialog.setNeutralButton("Ok", null);
+        dialog.setTitle(R.string.location_permission_needed);
+        dialog.setMessage(R.string.location_permission_denied);
+        dialog.setNeutralButton(R.string.ok, null);
 
         dialog.create().show();
     }

@@ -309,10 +309,10 @@ public class CustomLocationManager {
         Context context = fragment.getContext();
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-        dialog.setTitle(context.getResources().getString(R.string.uses_location));
-        dialog.setMessage(context.getResources().getString(R.string.uses_location_reason));
+        dialog.setTitle(R.string.uses_location);
+        dialog.setMessage(R.string.uses_location_reason);
         dialog.setCancelable(true);
-        dialog.setPositiveButton(context.getResources().getString(R.string.ok), ((dialog1, which)
+        dialog.setPositiveButton(R.string.ok, ((dialog1, which)
                 -> showLocationRequestDialog(fragment, Manifest.permission.ACCESS_FINE_LOCATION)));
 
         AlertDialog alertDialog = dialog.create();
@@ -333,11 +333,11 @@ public class CustomLocationManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
             AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-            dialog.setTitle(context.getResources().getString(R.string.uses_background_location));
-            dialog.setMessage(context.getResources().getString(R.string.uses_background_location_reason));
+            dialog.setTitle(R.string.uses_background_location);
+            dialog.setMessage(R.string.uses_background_location_reason);
             dialog.setCancelable(true);
 
-            dialog.setPositiveButton(context.getResources().getString(R.string.ok), ((dialog1, which)
+            dialog.setPositiveButton(R.string.ok, ((dialog1, which)
                     -> showLocationRequestDialog(fragment, Manifest.permission.ACCESS_BACKGROUND_LOCATION)));
 
             AlertDialog alertDialog = dialog.create();
