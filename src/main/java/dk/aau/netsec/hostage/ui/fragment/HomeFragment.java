@@ -223,12 +223,17 @@ public class HomeFragment extends Fragment {
         setStateNotActive(false);
     }
 
+    public void initStateActive(){
+        setStateActive();
+
+        mHomeSwitchConnection.setChecked(true);
+    }
+
     public void setStateActive() {
         mHomeTextName.setTextColor(mDefaultTextColor);
         mHomeTextProfile.setTextColor(mDefaultTextColor);
         mHomeTextProfileHeader.setTextColor(mDefaultTextColor);
 
-        mHomeSwitchConnection.setChecked(true);
         isActive = true;
     }
 
@@ -269,7 +274,7 @@ public class HomeFragment extends Fragment {
         }
         updateTextConnection(totalAttacks);
         if (hasActiveListeners) {
-            setStateActive();
+            initStateActive();
             // color text according to threat level
             changeTextColorThreat(totalAttacks);
             //updateAndroidIcon();

@@ -316,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onFirstRun() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        TODO adjust disclaimer to mention T&C location as well
         builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.agree), (dialog, id) -> {

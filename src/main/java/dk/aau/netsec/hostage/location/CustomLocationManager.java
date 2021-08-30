@@ -339,7 +339,6 @@ public class CustomLocationManager {
             dialog.setPositiveButton(R.string.ok, ((dialog1, which)
                     -> showLocationRequestDialog(fragment, Manifest.permission.ACCESS_BACKGROUND_LOCATION)));
 
-
             AlertDialog alertDialog = dialog.create();
             alertDialog.show();
         }
