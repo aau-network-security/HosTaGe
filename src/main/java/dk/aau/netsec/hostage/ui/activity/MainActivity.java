@@ -1,11 +1,5 @@
 package dk.aau.netsec.hostage.ui.activity;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -15,16 +9,14 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -32,27 +24,30 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
-import dk.aau.netsec.hostage.location.MyLocationManager;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 import dk.aau.netsec.hostage.system.Device;
 import dk.aau.netsec.hostage.system.iptablesUtils.Api;
 import dk.aau.netsec.hostage.ui.adapter.DrawerListAdapter;
 import dk.aau.netsec.hostage.ui.fragment.AboutFragment;
 import dk.aau.netsec.hostage.ui.fragment.HomeFragment;
-import dk.aau.netsec.hostage.ui.fragment.PrivacyFragment;
 import dk.aau.netsec.hostage.ui.fragment.ProfileManagerFragment;
 import dk.aau.netsec.hostage.ui.fragment.RecordOverviewFragment;
 import dk.aau.netsec.hostage.ui.fragment.ServicesFragment;
@@ -74,8 +69,6 @@ import eu.chainfire.libsuperuser.Shell;
  */
 public class MainActivity extends AppCompatActivity {
     private static WeakReference<Context> context;
-
-    private MyLocationManager locationManager;
 
     /**
      * singleton instance of the MainActivity with WeakReference to avoid Memory leaks
@@ -131,9 +124,6 @@ public class MainActivity extends AppCompatActivity {
      * Hold the state of the Hostage service
      */
     private boolean mServiceBound = false;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-    private static final int LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE = 101;
-
 
     /**
      * Connection to bind the background service
@@ -221,17 +211,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        if (locationManager != null)
-            locationManager.stopUpdates();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
-        locationManager.getUpdates(60 * 1000, 3, getContext());
-
     }
 
     /**
@@ -241,8 +222,6 @@ public class MainActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         this.unbindService();
-        if (locationManager != null)
-            locationManager.stopUpdates();
     }
 
     /**
@@ -251,11 +230,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (locationManager != null) {
-            locationManager.stopUpdates();
-            locationManager = null;
-        }
-        // Unbind running service
+        // /Unbind running service
         if (!mHoneyService.hasRunningListeners()) {
             stopAndUnbind();
         }
@@ -279,11 +254,8 @@ public class MainActivity extends AppCompatActivity {
         configureActionBar();
         loadDrawer();
         executeRoot();
-        getLocationData();
+
         loadFirstRun();
-        //Must start after the location!
-        startAndBind();
-        addProfileManager();
 
         if (savedInstanceState == null) {
             // on first time display view for first nav item
@@ -354,11 +326,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onFirstRun() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        TODO adjust disclaimer to mention T&C location as well
         builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.agree), (dialog, id) -> {
-                    // and, if the user accept, you can execute something like this:
-                    // We need an Editor object to make preference changes.
                     SharedPreferences.Editor editor = mSharedPreferences.edit();
                     editor.putBoolean("isFirstRun", false);
                     editor.apply();
@@ -367,33 +338,38 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor1 = mSharedPreferences.edit();
                     editor1.putBoolean("isFirstEmulation", true);
                     editor1.apply();
+
+                    startAndBind();
+                    addProfileManager();
+
                 })
                 .setNegativeButton(getString(R.string.disagree), (dialog, id) -> {
-                    getHostageService().stopListeners();
+
+//                    getHostageService().stopListeners();
                     stopAndUnbind();
                     finish();
+
+                    System.exit(0);
                 });
         AlertDialog alert = builder.create();
         alert.show();
+
+        // Make the textview clickable. Must be called after show()
+        ((TextView)alert.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private void addProfileManager() {
-        try {
-            mProfileManager = ProfileManager.getInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mProfileManager = ProfileManager.getInstance();
     }
 
     private void loadFirstRun() {
         mSharedPreferences = getSharedPreferences(getString(R.string.shared_preference_path), Hostage.MODE_PRIVATE);
         if (mSharedPreferences.getBoolean("isFirstRun", true)) {
-            // opens navigation drawer if first run
-            mDrawerLayout.postDelayed(() -> mDrawerLayout.openDrawer(Gravity.LEFT), 1000);
-
             onFirstRun();
+        } else {
+            startAndBind();
+            addProfileManager();
         }
-
     }
 
     private void configureActionBar() {
@@ -421,7 +397,6 @@ public class MainActivity extends AppCompatActivity {
         mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
         mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
         mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
-        mDrawerItems.add(new DrawerListItem(R.string.privacy_policy, R.drawable.ic_menu_privacy));
 
         DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
 
@@ -429,7 +404,6 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         setmDrawerToggle();
-
     }
 
     private void setmDrawerToggle() {
@@ -453,16 +427,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-    }
-
-    /**
-     * Starts an Instance of MyLocationManager to set the hostage.location within this
-     * class.
-     */
-    private void getLocationData() {
-        locationManager = new MyLocationManager(this);
-        locationManager.getUpdates(60 * 1000, 3, getContext());
     }
 
     /**
@@ -474,7 +438,6 @@ public class MainActivity extends AppCompatActivity {
                 getContext().startForegroundService(getServiceIntent());
             else
                 startService(getServiceIntent());
-
         }
 
         bindService();
@@ -598,6 +561,13 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = null;
 
         try {
+            if (menuItemPosition.getKlass() == ServicesFragment.class && !mHoneyService.isImplementedProtocolsReady()) {
+
+                mDrawerLayout.closeDrawer(mDrawerList);
+                Snackbar.make(mDrawerLayout, R.string.services_unavailable, Snackbar.LENGTH_LONG).show();
+                return;
+            }
+
             fragment = (Fragment) menuItemPosition.getKlass().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             Log.i(menuItemPosition.getKlass().toString(), "Could not create new instance of fragment");
@@ -693,7 +663,8 @@ public class MainActivity extends AppCompatActivity {
                 finish();
                 System.exit(0);
             } else {
-                Toast.makeText(this, "Press the back button again to close HosTaGe", Toast.LENGTH_SHORT).show();
+
+                Snackbar.make(mDisplayedFragment.getView(), R.string.close_app_warning, Snackbar.LENGTH_SHORT).show();
                 this.mCloseWarning = true;
             }
         } else {
@@ -787,10 +758,16 @@ public class MainActivity extends AppCompatActivity {
      * @param protocols the protocols to start
      */
     public void startMonitorServices(List<String> protocols) {
-        for (String protocol : protocols) {
-            if (!getHostageService().isRunning(protocol))
-                getHostageService().startListener(protocol);
+        if (mHoneyService.isImplementedProtocolsReady()) {
+            for (String protocol : protocols) {
+                if (!getHostageService().isRunning(protocol))
+
+                    getHostageService().startListener(protocol);
+            }
+        } else {
+            Snackbar.make(MainActivity.getInstance().getDisplayedFragment().getView(), R.string.services_unavailable, Snackbar.LENGTH_SHORT).show();
         }
+
     }
 
     /**
@@ -804,8 +781,7 @@ public class MainActivity extends AppCompatActivity {
         SERVICES(4, ServicesFragment.class),
         PROFILE_MANAGER(5, ProfileManagerFragment.class),
         SETTINGS(6, SettingsFragment.class),
-        APPLICATION_INFO(7, AboutFragment.class),
-        PRIVACY(8, PrivacyFragment.class);
+        APPLICATION_INFO(7, AboutFragment.class);
 
 
         private int value;
@@ -847,61 +823,4 @@ public class MainActivity extends AppCompatActivity {
             displayView(position);
         }
     }
-
-    private void denyPermissionDialog(String text) {
-        androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
-        dialog.setTitle("Permission Required");
-        dialog.setMessage(text);
-        dialog.setPositiveButton("Settings", (dialog1, which) -> {
-            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    Uri.fromParts("package", getApplicationContext().getPackageName(), null));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        });
-        dialog.setNegativeButton("No, thanks", (dialog1, which) -> {
-        });
-        androidx.appcompat.app.AlertDialog alertDialog = dialog.create();
-        alertDialog.show();
-    }
-
-    private void askBackgroundPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(MainActivity.getInstance(), new String[]{android.Manifest.permission.ACCESS_BACKGROUND_LOCATION}, LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE);
-            }
-        }
-    }
-
-    /**
-     * Callback for requestPermission method. Creates an AlertDialog for the user in order to allow the permissions or not.
-     *
-     * @param requestCode  LOCATION_PERMISSION_REQUEST_CODE
-     * @param permissions  Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
-     * @param grantResults if the user accepts or not our permission
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    locationManager.initializeNewestLocation();
-                    askBackgroundPermission();
-                } else {
-                    String message = "If you don't allow the Location permission you will not be able to access" +
-                            " certain features of the app which are ThreatMap,Wifi name appearance and precise attack detection.";
-                    denyPermissionDialog(message);
-
-                }
-            }
-            case LOCATION_BACKGROUND_PERMISSION_REQUEST_CODE: {
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    String message = "If you don't allow the Background Location permission the app won't have your " +
-                            "location when it is running on the background and the previous features won't work.";
-                    denyPermissionDialog(message);
-                }
-            }
-
-        }
-    }
-
 }

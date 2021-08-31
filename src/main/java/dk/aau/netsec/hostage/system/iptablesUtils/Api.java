@@ -40,14 +40,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
@@ -99,8 +105,8 @@ public final class Api {
 
         boolean iptablesBinariesExist = new File("/system/bin/iptables").exists()
                 && new File("/system/bin/ip6tables").exists();
-        if(iptablesBinariesExist) {
-           // toast(ctx, ctx.getString(R.string.toast_bin_already_installed));
+        if (iptablesBinariesExist) {
+            // toast(ctx, ctx.getString(R.string.toast_bin_already_installed));
             return true;
         }
 
@@ -132,15 +138,16 @@ public final class Api {
         return ret;
     }
 
-    private static void installPcap(Context ctx){
+    private static void installPcap(Context ctx) {
 
         installBinary(ctx, R.raw.tcpdump, "tcpdump");
     }
 
     /**
      * Installs the binary when it copies it to the default system/bin directory.
-     * @param ctx context of app
-     * @param resId where the raw binary is located
+     *
+     * @param ctx      context of app
+     * @param resId    where the raw binary is located
      * @param filename the given filename
      * @return asserts true when the installation is successful
      */
@@ -152,13 +159,13 @@ public final class Api {
             if (f.exists()) {
                 if (f.delete()) {
                     Log.e(TAG, "File deleted.");
-                }else {
+                } else {
                     Log.e(TAG, "Failed to delete file!");
                 }
             }
             copyRawFile(ctx, resId, f);
             return true;
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             Log.e(TAG, "installBinary failed: " + e.getLocalizedMessage());
             return false;
         }
@@ -188,10 +195,10 @@ public final class Api {
         // Change the permissions
 
         Runtime.getRuntime().exec("chmod " + "0755" + " " + abspath).waitFor();
-        if(abspath.contains("tcpdump")) //tcpdump should be in xbin
-            copySystemBin(file,"/system/xbin/");
+        if (abspath.contains("tcpdump")) //tcpdump should be in xbin
+            copySystemBin(file, "/system/xbin/");
         else
-            copySystemBin(file,"/system/bin/");
+            copySystemBin(file, "/system/bin/");
     }
 
     /**
@@ -199,47 +206,51 @@ public final class Api {
      *
      * @param file The copied raw file
      */
-    private static void copySystemBin(File file,String systemPath){
+    private static void copySystemBin(File file, String systemPath) {
         remountSystem();
-        String command = "su -c cp "+file.getAbsolutePath() +" "+systemPath+ file.getName();
+        String command = "su -c cp " + file.getAbsolutePath() + " " + systemPath + file.getName();
         runCommands(command);
     }
 
     /**
      * Remounts system to be writable.
      */
-    public static void remountSystem(){
+    public static void remountSystem() {
         String command = "su -c mount -o rw,remount /";
         runCommands(command);
     }
 
     /**
      * Executes iptables commands when the script fails
+     *
      * @throws IOException throws IO Exception
      */
     public static void executeCommands() throws IOException {
         InputStream is = MainActivity.getInstance().getAssets().open("payload/commands.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         String line;
+
+        remountSystem();
         while ((line = br.readLine()) != null) {
-            if(line.length() > 0) {
-                remountSystem();
-                runCommands("su -c "+line);
+            if (line.length() > 0) {
+
+                runCommands("su -c " + line);
             }
         }
     }
 
     /**
      * Runs a cmd command as a process.
+     *
      * @param command given command.
      */
     private static void runCommands(String command) {
         Process process;
         try {
             process = Runtime.getRuntime().exec(command);
-            if(process.waitFor() == 0){
-                Log.d(TAG,"Commands executed successfully");
-            }else {
+            if (process.waitFor() == 0) {
+                Log.d(TAG, "Commands executed successfully");
+            } else {
                 toast(MainActivity.getContext(), MainActivity.getContext().getString(R.string.iptables_not_supported));
                 addRedirectionPorts();
             }
@@ -249,39 +260,61 @@ public final class Api {
         }
     }
 
-    public static void runCommand(String command){
+    //    TODO write javadoc
+    @Deprecated
+    public static void runCommand(String command) {
         Process process;
         try {
             process = Runtime.getRuntime().exec(command);
-            if(process.waitFor() == 0){
-                Log.d(TAG,"Command executed successfully");
-            }else {
-                Log.d(TAG,"Command executed unsuccessfully");
+            if (process.waitFor() == 0) {
+                Log.d(TAG, "Command executed successfully");
+            } else {
+                Log.d(TAG, "Command executed unsuccessfully");
             }
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Error running commands: " + e.getMessage());
         }
+    }
 
+    /**
+     * TODO write javadoc
+     *
+     * @param command
+     * @return
+     */
+    public static Process runCommandWithHandle(String command) {
+        Process process;
+
+        try {
+            process = Runtime.getRuntime().exec(command);
+
+            return process;
+        } catch (IOException ioe) {
+            Log.e(TAG, "Error running commands: " + ioe.getMessage());
+
+            return null;
+        }
     }
 
     /**
      * If the redirection of ports doesn't work, this method updates the ui, with the original random ports.
      */
-    public static void addRedirectionPorts(){
-        Listener.addRealPorts("ECHO",28144);
-        Listener.addRealPorts("FTP",28158);
-        Listener.addRealPorts("HTTP",28217);
-        Listener.addRealPorts("HTTPS",28580);
-        Listener.addRealPorts("S7COMM",28239);
+    public static void addRedirectionPorts() {
+        Listener.addRealPorts("ECHO", 28144);
+        Listener.addRealPorts("FTP", 28158);
+        Listener.addRealPorts("HTTP", 28217);
+        Listener.addRealPorts("HTTPS", 28580);
+        Listener.addRealPorts("S7COMM", 28239);
 //        Listener.addRealPorts("SNMP",28298);
-        Listener.addRealPorts("SSH",28160);
-        Listener.addRealPorts("TELNET",28582);
-        Listener.addRealPorts("MODBUS",28162);
-        Listener.addRealPorts("SMTP",28639);
+        Listener.addRealPorts("SSH", 28160);
+        Listener.addRealPorts("TELNET", 28582);
+        Listener.addRealPorts("MODBUS", 28162);
+        Listener.addRealPorts("SMTP", 28639);
     }
 
     /**
      * Checks if the netfilter is supported for the device.
+     *
      * @return true if the device supports the netfilter.
      */
     public static boolean isNetfilterSupported() {
@@ -312,39 +345,36 @@ public final class Api {
     /**
      * Purge and re-add all rules (internal implementation).
      *
-     * @param ctx        application context (mandatory)
+     * @param ctx application context (mandatory)
      */
     private static boolean applyIptablesRulesImpl(final Context ctx,
                                                   List<String> out, boolean ipv6) {
-        if (ctx == null) { return false; }
+        if (ctx == null) {
+            return false;
+        }
         List<String> cmds = new ArrayList<>();
 
-        try {
-            // prevent data leaks due to incomplete rules
-            Log.i(TAG, "Setting OUTPUT to Drop");
-            cmds.add("-P OUTPUT DROP");
+        // prevent data leaks due to incomplete rules
+        Log.i(TAG, "Setting OUTPUT to Drop");
+        cmds.add("-P OUTPUT DROP");
 
-            for (String s : staticChains) {
-                cmds.add("#NOCHK# -N " + CHAIN_NAME + s);
-                cmds.add("-F " + CHAIN_NAME + s);
-            }
-            cmds.add("#NOCHK# -D OUTPUT -j " + CHAIN_NAME);
-            cmds.add("-I OUTPUT 1 -j " + CHAIN_NAME);
-
-            for (final String itf : ITFS_WIFI) {
-                cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-wifi");
-            }
-
-            for (final String itf : ITFS_3G) {
-                cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-3g");
-            }
-
-            Log.i(TAG, "Setting OUTPUT to Accept State");
-            cmds.add("-P OUTPUT ACCEPT");
-
-        } catch (Exception e) {
-            Log.e(e.getClass().getName(), e.getMessage(), e);
+        for (String s : staticChains) {
+            cmds.add("#NOCHK# -N " + CHAIN_NAME + s);
+            cmds.add("-F " + CHAIN_NAME + s);
         }
+        cmds.add("#NOCHK# -D OUTPUT -j " + CHAIN_NAME);
+        cmds.add("-I OUTPUT 1 -j " + CHAIN_NAME);
+
+        for (final String itf : ITFS_WIFI) {
+            cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-wifi");
+        }
+
+        for (final String itf : ITFS_3G) {
+            cmds.add("-A " + CHAIN_NAME + " -o " + itf + " -j " + CHAIN_NAME + "-3g");
+        }
+
+        Log.i(TAG, "Setting OUTPUT to Accept State");
+        cmds.add("-P OUTPUT ACCEPT");
 
         iptablesCommands(cmds, out, ipv6);
         return true;
@@ -392,7 +422,7 @@ public final class Api {
         }
         try {
             Log.i(TAG, "Using applySaved4IptablesRules");
-            callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, cmds,false);
+            callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, cmds, false);
             return true;
         } catch (Exception e) {
             Log.d(TAG, "Exception while applying rules: " + e.getMessage());
@@ -408,7 +438,7 @@ public final class Api {
         }
         try {
             Log.i(TAG, "Using applySavedIp6tablesRules");
-            callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, cmds,true);
+            callback.setRetryExitCode(IPTABLES_TRY_AGAIN).run(ctx, cmds, true);
             return true;
         } catch (Exception e) {
             Log.d(TAG, "Exception while applying rules: " + e.getMessage());
@@ -420,8 +450,8 @@ public final class Api {
     /**
      * Purge all iptables rules.
      *
-     * @param ctx        mandatory context
-     * @param callback   If non-null, use a callback instead of blocking the current thread
+     * @param ctx      mandatory context
+     * @param callback If non-null, use a callback instead of blocking the current thread
      * @return true if the rules were purged
      */
     public static boolean purgeIptables(Context ctx, RootCommand callback) {
@@ -447,7 +477,7 @@ public final class Api {
 
             return true;
         } catch (Exception e) {
-            Log.e(TAG,e.getMessage(),e);
+            Log.e(TAG, e.getMessage(), e);
             return false;
         }
     }
@@ -514,9 +544,9 @@ public final class Api {
     /**
      * Apply single rule
      *
-     * @param ctx context
-     * @param rule Rule
-     * @param isIpv6 Ipv6 protocol
+     * @param ctx      context
+     * @param rule     Rule
+     * @param isIpv6   Ipv6 protocol
      * @param callback callback
      */
     public static void applyRule(Context ctx, String rule, boolean isIpv6, RootCommand callback) {
@@ -606,7 +636,7 @@ public final class Api {
     /**
      * Encrypt the password
      *
-     * @param key the key
+     * @param key  the key
      * @param data the data
      * @return
      */
@@ -623,7 +653,7 @@ public final class Api {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             encodeStr = Base64.encodeToString(cipher.doFinal(dataBytes), base64Mode);
 
-        } catch (Exception e) {
+        } catch (IOException | InvalidKeySpecException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
         return encodeStr;
@@ -632,7 +662,7 @@ public final class Api {
     /**
      * Decrypt the password
      *
-     * @param key the key
+     * @param key  the key
      * @param data the data
      * @return decrypted string
      */
@@ -650,7 +680,7 @@ public final class Api {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] dataBytesDecrypted = (cipher.doFinal(dataBytes));
             decryptStr = new String(dataBytesDecrypted);
-        } catch (Exception e) {
+        } catch (InvalidKeyException | UnsupportedEncodingException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
         return decryptStr;
@@ -673,12 +703,12 @@ public final class Api {
     }
 
     public static void applyDefaultChainsv6(Context ctx, RootCommand callback) {
-            List<String> cmds = new ArrayList<>();
-            cmds.add("-P INPUT ACCEPT");
-            cmds.add("-P FORWARD ACCEPT");
-            cmds.add("-P OUTPUT ACCEPT");
+        List<String> cmds = new ArrayList<>();
+        cmds.add("-P INPUT ACCEPT");
+        cmds.add("-P FORWARD ACCEPT");
+        cmds.add("-P OUTPUT ACCEPT");
 
-            applyIPv6Quick(ctx, cmds, callback);
+        applyIPv6Quick(ctx, cmds, callback);
 
     }
 

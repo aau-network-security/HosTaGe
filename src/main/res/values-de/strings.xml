@@ -215,7 +215,7 @@
 	<string name="profile_linux_hard_desc">Dieses Profil immitiert ein Linux System, bei welchem nur SSH aktiv ist</string>
 	<string name="profile_voip_desc">Dieses Profil immitiert einen VOIP Server, welcher das SIP Protokoll &#252;berwacht</string>
     <string name="profile_random_desc">In diesem Profil werden zuf&#228;llige Protokolle aktiviert</string>
-    <string name="profile_paranoid_desc">Dieses Profil aktiviert alle Protokolle</string>
+    <string name="profile_vigilant_desc">Dieses Profil aktiviert alle Protokolle</string>
     <string name="profile_help_swipe">Swipe von der linken oder rechten Seite um alle Aktionen zu zeigen</string>
     <string name="profile_monitor_ghost">&#220;berwache GHOST</string>
     <string name="profile_activate_ghost">Aktiviere GHOST &#220;berwachung</string>
@@ -248,7 +248,6 @@
     <string name="portbinder_website">Website besuchen</string>
     <string name="pref_portscan_timeout_summary">Sollte der maximalen Dauer eines Portscans in Sekunden entsprechen</string>
     <string name="record_details_confirm_delete">Wollen sie diesen Angriff wirklich löschen?</string>
-    <string name="pref_location_retries_summary">Maximale Anzahl an Versuchen</string>
     <string name="pref_max_connections_summary">Maximale Anzahl an Gleichzeitigen Verbindungen pro Protokol</string>
     <string name="subnet_mask">Subnetzmaske</string>
     <string name="uninstall_porthack">Portbinder deinstallieren</string>
@@ -281,4 +280,31 @@
     <string name="nfc_enable_beam">Android Beam Aktivieren</string>
     <string name="nfc_hold_phones_together">Halten Sie Telefone zusammen, um Daten zu senden oder empfangen.</string>
     <string name="error_activating_services">Versuchen Sie es später nochmals.</string>
+    <string name="enable">Aktivieren</string>
+    <string name="warning">Warnung</string>
+    <string name="data_disclaimer">Datenschutzhinweis</string>
+    <string name="multistage_warning">Dieses Service kann viel Arbeitsspeicher verbrauchen und Ihren Batterie möglicherweise schneller entladen.</string>
+    <string name="pcap_log_setting_name">Logging Aktivieren</string>
+    <string name="pcap_location_setting_name">PCAP Log Speicherort</string>
+    <string name="pcap_notification">PCAP logging läuft</string>
+    <string name="pcap_notification_text">Dieses Service Ihren Batterie möglicherweise schneller entladen</string>
+    <string name="seconds">Sekunden</string>
+    <string name="pcap_log_rotation_dialog">Wählen Sie Protokollrotationsperiode</string>
+    <string name="pcap_not_available">PCAP-Protokollierung ist nur auf root Geräten verfügbar</string>
+    <string name="pcap_log_setting_description">PCAP-Protokolle an den unten angegebenen Speicherort schrieben</string>
+    <string name="pcap_location_setting_description">Speicherort der Protokollausgabe ändern</string>
+    <string name="pcap_log_rotation_name">Log-Rotationsfrequenz</string>
+    <string name="policy_link_open">Datenschutzerklärung öffnen</string>
+    <string name="agree">Akzeptieren</string>
+    <string name="disagree">Nicht akzeptieren</string>
+    <string name="terms_link_open">"Geschäftsbedingungen öffnen "</string>
+
+    <string name="uses_location">Diese App verwendet deinen Standort.</string>
+    <string name="uses_location_reason">Der Standort ermöglicht eine genaue Erfassung von Angriffsdaten und die ThreatMap.</string>
+    <string name="uses_background_location">Diese App verwendet deinen Standort im Hintergrund.</string>
+    <string name="uses_background_location_reason">Der Hintergrundstandort ermöglicht eine genaue Erfassung von Angriffsdaten während die App im Hintergrund läuft.</string>
+    <string name="location_permission_needed">Diese App verwendet deinen Standort.</string>
+    <string name="background_location_needed">Diese App verwendet deinen Standort im Hintergrund.</string>
+    <string name="background_permission_denied">Der Hintergrundstandort ermöglicht eine genaue Erfassung von Angriffsdaten während die App im Hintergrund läuft.</string>
+    <string name="location_permission_denied">Der Standort ermöglicht eine genaue Erfassung von Angriffsdaten und die ThreatMap.</string>
 </resources>

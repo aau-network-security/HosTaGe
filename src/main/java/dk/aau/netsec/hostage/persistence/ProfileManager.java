@@ -87,7 +87,7 @@ public class ProfileManager {
      *
      * @return the singleton instance
      */
-    public static ProfileManager getInstance() throws Exception {
+    public static ProfileManager getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ProfileManager();
         }
@@ -142,7 +142,7 @@ public class ProfileManager {
      * The profiles were serialized into JSON and persisted into the android private file.
      * See {@see ProfileManager#persistData}.
      */
-    public void loadData() throws Exception {
+    public void loadData() {
         try {
             if (loadDefaulData())
                 return;
@@ -186,11 +186,7 @@ public class ProfileManager {
 
     private void fillDefaultData() {
         if (mProfiles.size() == 0) {
-            try {
-                this.fillWithDefaultData();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            this.fillWithDefaultData();
         }
 
         if (this.mRandomProfile != null) {
@@ -199,7 +195,7 @@ public class ProfileManager {
     }
 
 
-    private void loadJson(JSONArray arr) throws Exception {
+    private void loadJson(JSONArray arr) throws JSONException {
         for (int i = 0; i < arr.length(); i++) {
             JSONObject obj = arr.getJSONObject(i);
 
@@ -253,7 +249,7 @@ public class ProfileManager {
      *
      * @return a list that holds all the profiles
      */
-    public List<Profile> getProfilesList() throws Exception {
+    public List<Profile> getProfilesList() {
         return new ArrayList<Profile>(getProfilesCollection());
     }
 
@@ -262,7 +258,7 @@ public class ProfileManager {
      *
      * @return a collection of all the profiles
      */
-    public Collection<Profile> getProfilesCollection() throws Exception {
+    public Collection<Profile> getProfilesCollection() {
         if (mProfiles.size() == 0 || mProfiles == null) {
             this.loadData();
         }
@@ -330,7 +326,7 @@ public class ProfileManager {
      * @param id the id of the profile
      * @return the profile
      */
-    public Profile getProfile(int id) throws Exception {
+    public Profile getProfile(int id) {
         if (mProfiles.size() == 0) {
             loadData();
         }
@@ -381,7 +377,7 @@ public class ProfileManager {
      *
      * @param profile the profile to delete
      */
-    public void deleteProfile(Profile profile) throws Exception {
+    public void deleteProfile(Profile profile) {
         if (this.mProfiles.containsKey(profile.mId)) {
             Profile p = getProfile(profile.mId);
             this.mProfiles.remove(profile.mId);
@@ -414,7 +410,7 @@ public class ProfileManager {
      *
      * @param profile the profile to active
      */
-    public void activateProfile(Profile profile) throws Exception {
+    public void activateProfile(Profile profile) {
         this.activateProfile(profile, true);
     }
 
@@ -424,8 +420,7 @@ public class ProfileManager {
      * @param profile the profile to activate
      * @param persist indicates if the profile should be persisted after activating
      */
-//	TODO specify what exception might get thrown?
-    public void activateProfile(Profile profile, boolean persist) throws Exception {
+    public void activateProfile(Profile profile, boolean persist) {
         if (profile.equals(this.mCurrentActivatedProfile) || (mCurrentActivatedProfile != null && profile.mId == mCurrentActivatedProfile.mId))
             return;
 
@@ -533,7 +528,7 @@ public class ProfileManager {
     /**
      * Fills the profiles manager with default profiles
      */
-    public void fillWithDefaultData() throws Exception {
+    public void fillWithDefaultData() {
         addWindowsSevenProfile();
         addWindowsXPProfile();
         addServerHTTPProfile();
@@ -545,18 +540,19 @@ public class ProfileManager {
         addNuclearPlantProfile();
         addModbusMasterProfile();
         //addSNMPProfile();
-        addParanoidProfile();
+        addVigilantProfile();
         addMQTTBrokerProfile();
         addMQTTSensorProfile();
         addSmokeSensorProfile();
         addArduinoProfile();
+        addWaterPlantProfile();
 
         persistData();
     }
 
     private void addWindowsSevenProfile() {
         Profile windowsSeven = new Profile(
-                0,
+                27,
                 "Windows 7",
                 MainActivity.getInstance().getString(R.string.profile_seven_desc),
                 R.drawable.ic_profile_vista,
@@ -571,7 +567,7 @@ public class ProfileManager {
 
     private void addWindowsXPProfile() {
         Profile windowsXP = new Profile(
-                1,
+                28,
                 "Windows XP",
                 MainActivity.getInstance().getString(R.string.profile_xp_desc),
                 R.drawable.ic_profile_xp,
@@ -587,7 +583,7 @@ public class ProfileManager {
 
     private void addServerHTTPProfile() {
         Profile serverHTTP = new Profile(
-                2,
+                19,
                 "Web Server Apache",
                 MainActivity.getInstance().getString(R.string.profile_webserv_apache_desc),
                 R.drawable.ic_profile_apache,
@@ -604,7 +600,7 @@ public class ProfileManager {
 
     private void addServerWebProfile() {
         Profile serverWeb = new Profile(
-                3,
+                20,
                 "Web Server IIS",
                 MainActivity.getInstance().getString(R.string.profile_webserv_iis_desc),
                 R.drawable.ic_profile_apache,
@@ -621,7 +617,7 @@ public class ProfileManager {
 
     private void addUnixMachineProfile() {
         Profile unixMachine = new Profile(
-                4,
+                21,
                 "\"Hardened\" Linux system ",
                 MainActivity.getInstance().getString(R.string.profile_linux_hard_desc),
                 R.drawable.ic_profile_unix,
@@ -636,7 +632,7 @@ public class ProfileManager {
 
     private void addLinuxMachineProfile() {
         Profile linuxMachine = new Profile(
-                5,
+                22,
                 "Linux system",
                 MainActivity.getInstance().getString(R.string.profile_linux_desc),
                 R.drawable.ic_profile_linux,
@@ -655,7 +651,7 @@ public class ProfileManager {
 
     private void addVoipServer() {
         Profile voipServer = new Profile(
-                6,
+                23,
                 "VOIP Server",
                 MainActivity.getInstance().getString(R.string.profile_voip_desc),
                 R.drawable.ic_profile_asterisks,
@@ -670,7 +666,7 @@ public class ProfileManager {
 
     private void addRandomProfile() {
         Profile randomProfile = new Profile(
-                7,
+                30,
                 "Random",
                 MainActivity.getInstance().getString(R.string.profile_random_desc),
                 R.drawable.ic_launcher,
@@ -698,6 +694,10 @@ public class ProfileManager {
         nuclearPlant.mActiveProtocols.put("TELNET", true);
         nuclearPlant.mActiveProtocols.put("S7COMM", true);
         nuclearPlant.mActiveProtocols.put("SMTP", true);
+
+        //Activate as default profile
+        nuclearPlant.mActivated = true;
+        this.activateProfile(nuclearPlant, false);
 
         this.addProfile(nuclearPlant, false);
     }
@@ -751,25 +751,20 @@ public class ProfileManager {
         this.addProfile(SNMPProfile, false);
     }
 
-    private void addParanoidProfile() throws Exception {
-        Profile paranoidProfile = new Profile(
-                12,
-                "Paranoid",
-                MainActivity.getInstance().getString(R.string.profile_paranoid_desc),
-                R.drawable.ic_profile_paranoid,
+    private void addVigilantProfile() {
+        Profile vigilantProfile = new Profile(
+                29,
+                "Vigilant",
+                MainActivity.getInstance().getString(R.string.profile_vigilant_desc),
+                R.drawable.ic_profile_vigilant,
                 false
         );
 
         for (String protocol : MainActivity.getContext().getResources().getStringArray(R.array.protocols)) {
-            paranoidProfile.mActiveProtocols.put(protocol, true);
+            vigilantProfile.mActiveProtocols.put(protocol, true);
         }
 
-        paranoidProfile.mActivated = true;
-        this.addProfile(paranoidProfile, false);
-
-        mIncrementValue = 8;
-
-        this.activateProfile(paranoidProfile, false);
+        this.addProfile(vigilantProfile, false);
     }
 
     private void addMQTTBrokerProfile() {

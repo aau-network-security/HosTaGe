@@ -35,10 +35,12 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
         super(0, ItemTouchHelper.LEFT);
 
         deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_edit);
+        deleteIcon.setTint(context.getColor(R.color.colorOnPrimary));
+
         intrinsicWidth = deleteIcon.getIntrinsicWidth();
         intrinsicHeight = deleteIcon.getIntrinsicHeight();
         background = new ColorDrawable();
-        backgroundColor = ContextCompat.getColor(context, R.color.colorSecondary);
+        backgroundColor = ContextCompat.getColor(context, R.color.colorPrimaryVariant);
         clearPaint = new Paint();
     }
 

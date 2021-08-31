@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +31,6 @@ import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.model.Profile;
 import dk.aau.netsec.hostage.persistence.ProfileManager;
 
-
 /**
  * Creates an preference screen to edit an profile
  *
@@ -40,105 +38,99 @@ import dk.aau.netsec.hostage.persistence.ProfileManager;
  * @created 08.02.14 23:39
  */
 public class ProfileEditFragment extends PreferenceFragmentCompat implements
-		SharedPreferences.OnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
-	/**
-	 * Holds the shared preference editor for out preference screen
-	 */
-	private SharedPreferences.Editor mPrefs;
+    /**
+     * Holds the shared preference editor for out preference screen
+     */
+    private SharedPreferences.Editor mPrefs;
 
-	/**
-	 * A map which mirrors the state protocols in the preferencescreen
-	 */
-	private HashMap<String, Boolean> mProfileProtocols;
+    /**
+     * A map which mirrors the state protocols in the preferencescreen
+     */
+    private HashMap<String, Boolean> mProfileProtocols;
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-	public void onCreate(Bundle savedInstanceState){
-		Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-		super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        super.onCreate(savedInstanceState);
 
-		LayoutInflater inflater = (LayoutInflater) requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		// remove default action bar and replace it with an "done"/"discard" action bar
-		View actionBarButtons = inflater.inflate(R.layout.actionbar_donebar, new LinearLayout(getActivity()), false);
-		Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setCustomView(actionBarButtons);
+        // remove default action bar and replace it with an "done"/"discard" action bar
+        View actionBarButtons = inflater.inflate(R.layout.actionbar_donebar, new LinearLayout(getActivity()), false);
+        Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setCustomView(actionBarButtons);
 
-		View doneButton = actionBarButtons.findViewById(R.id.action_done);
-		View cancelButton = actionBarButtons.findViewById(R.id.action_cancel);
+        View doneButton = actionBarButtons.findViewById(R.id.action_done);
+        View cancelButton = actionBarButtons.findViewById(R.id.action_cancel);
 
-		// add click listener for the save button
-		doneButton.setOnClickListener(v -> {
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity());
-			ProfileManager pmanager = null;
-			try {
-				pmanager = ProfileManager.getInstance();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+        // add click listener for the save button
+        doneButton.setOnClickListener(v -> {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity());
+            ProfileManager pmanager = null;
 
-			Profile profile = null;
-			try {
-				profile = getProfile();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+            pmanager = ProfileManager.getInstance();
 
-			boolean createNew = false;
+            Profile profile = null;
 
-			// no profile was given to the fragment, which means this is a new profile
-			if(profile == null){
-				profile = new Profile();
-				createNew = true;
-			} else {
-				// profile was given, if profile is not editable, clone the profile and make it editable
-				if(!profile.isEditable()){
-					profile = profile.cloneProfile();
-					profile.mEditable = true;
-					createNew = true;
-				}
-			}
+            profile = getProfile();
 
-			// update the profile object data with data from the preferences
-			profile.mLabel = prefs.getString("pref_profile_general_name", profile.mLabel);
-			profile.mIconPath = prefs.getString("pref_profile_general_image", profile.mIconPath);
-			profile.mText = prefs.getString("pref_profile_general_description", profile.mText);
-			profile.mGhostActive = prefs.getBoolean("pref_profile_protocols_ghost_active", profile.mGhostActive);
-			profile.mGhostPorts = prefs.getString("pref_profile_protocols_ghost_text", "");
+            boolean createNew = false;
 
-			if(profile.mLabel == null || profile.mLabel.isEmpty()){
-				new AlertDialog.Builder(getActivity()).setTitle(R.string.information).setMessage(R.string.profile_needs_name)
-						.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+            // no profile was given to the fragment, which means this is a new profile
+            if (profile == null) {
+                profile = new Profile();
+                createNew = true;
+            } else {
+                // profile was given, if profile is not editable, clone the profile and make it editable
+                if (!profile.isEditable()) {
+                    profile = profile.cloneProfile();
+                    profile.mEditable = true;
+                    createNew = true;
+                }
+            }
 
-						}).setIcon(android.R.drawable.ic_dialog_info).show();
-				return;
-			}
+            // update the profile object data with data from the preferences
+            profile.mLabel = prefs.getString("pref_profile_general_name", profile.mLabel);
+            profile.mIconPath = prefs.getString("pref_profile_general_image", profile.mIconPath);
+            profile.mText = prefs.getString("pref_profile_general_description", profile.mText);
+            profile.mGhostActive = prefs.getBoolean("pref_profile_protocols_ghost_active", profile.mGhostActive);
+            profile.mGhostPorts = prefs.getString("pref_profile_protocols_ghost_text", "");
 
-			if(profile.mGhostPorts.isEmpty()){
-				profile.mGhostActive = false;
-			}
+            if (profile.mLabel == null || profile.mLabel.isEmpty()) {
+                new AlertDialog.Builder(getActivity()).setTitle(R.string.information).setMessage(R.string.profile_needs_name)
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
 
-			profile.mActiveProtocols = new HashMap<String, Boolean>(mProfileProtocols);
+                        }).setIcon(android.R.drawable.ic_dialog_info).show();
+                return;
+            }
 
-			// persist the changes of the profile
-			if(createNew){
-				profile.mId = -1;
-				profile.mIconId = 0;
-				profile.mIconName = "";
-				profile.mIsRandom = false;
-				profile.mIcon = null;
-				pmanager.addProfile(profile);
-			} else {
-				pmanager.persistProfile(profile);
-			}
+            if (profile.mGhostPorts.isEmpty()) {
+                profile.mGhostActive = false;
+            }
 
-			getActivity().finish();
-		});
+            profile.mActiveProtocols = new HashMap<String, Boolean>(mProfileProtocols);
 
-		cancelButton.setOnClickListener(v -> getActivity().finish());
-	}
+            // persist the changes of the profile
+            if (createNew) {
+                profile.mId = -1;
+                profile.mIconId = 0;
+                profile.mIconName = "";
+                profile.mIsRandom = false;
+                profile.mIcon = null;
+                pmanager.addProfile(profile);
+            } else {
+                pmanager.persistProfile(profile);
+            }
+
+            getActivity().finish();
+        });
+
+        cancelButton.setOnClickListener(v -> getActivity().finish());
+    }
 
     /**
      * Called during {@link #onCreate(Bundle)} to supply the preferences for this fragment.
@@ -153,11 +145,7 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         Profile profile = null;
-        try {
-            profile = getProfile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        profile = getProfile();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(requireActivity()).edit();
 
         String pname = "",
@@ -167,7 +155,7 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
 
         boolean pbghost = false;
 
-        if(profile != null){
+        if (profile != null) {
             pname = profile.mLabel;
             pimage = profile.mIconPath;
             pdesc = profile.mText;
@@ -191,7 +179,7 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
 
         assert pref != null;
 
-        if(profile != null){
+        if (profile != null) {
             pref.setIcon(profile.getIconDrawable());
             mProfileProtocols = new HashMap<>(profile.mActiveProtocols);
         } else {
@@ -200,24 +188,25 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
 
         // show an image chooser dialog when pressing the image preference
         pref.setOnPreferenceClickListener(
-				preference -> {
-					Intent intent = new Intent();
-					intent.setType("image/*");
-					intent.setAction(Intent.ACTION_GET_CONTENT);
-					int PICK_IMAGE = 1;
-					startActivityForResult(Intent.createChooser(intent, getString(R.string.select_icon)), PICK_IMAGE);
-					return true;
-				}
-		);
+                preference -> {
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    int PICK_IMAGE = 1;
+                    startActivityForResult(Intent.createChooser(intent, getString(R.string.select_icon)), PICK_IMAGE);
+                    return true;
+                }
+        );
 
-        if(profile != null){
+        if (profile != null) {
             findPreference("pref_profile_general_name").setSummary(profile.mLabel);
             findPreference("pref_profile_general_description").setSummary(profile.mText);
 
-            if(!profile.mGhostPorts.isEmpty()) findPreference("pref_profile_protocols_ghost_text").setSummary(profile.mGhostPorts);
+            if (!profile.mGhostPorts.isEmpty())
+                findPreference("pref_profile_protocols_ghost_text").setSummary(profile.mGhostPorts);
         }
 
-        if(profile == null || profile.isEditable()){
+        if (profile == null || profile.isEditable()) {
             getPreferenceScreen().removePreference(findPreference("pref_profile_warning"));
         }
 
@@ -226,7 +215,7 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
         String[] protocols_summary = getResources().getStringArray(R.array.protocols_description);
 
         // add all available protocols to the preference screen with an checkbox
-        for(int i = 0; i<protocols.length; i++){
+        for (int i = 0; i < protocols.length; i++) {
             mPrefs.putBoolean("pref_profile_protocol_" + protocols[i], profile != null && profile.isProtocolActive(protocols[i]));
             mPrefs.commit();
 
@@ -241,111 +230,111 @@ public class ProfileEditFragment extends PreferenceFragmentCompat implements
     }
 
     /**
-	 * Retrieve the given profile from the intent
-	 * @return the profile
-	 */
-	public Profile getProfile() throws Exception {
-		ProfileManager pmanager = ProfileManager.getInstance();
+     * Retrieve the given profile from the intent
+     *
+     * @return the profile
+     */
+    public Profile getProfile() {
+        ProfileManager pmanager = ProfileManager.getInstance();
 
-		Intent intent = getActivity().getIntent();
-		int profile_id = intent.getIntExtra("profile_id", -1);
+        Intent intent = getActivity().getIntent();
+        int profile_id = intent.getIntExtra("profile_id", -1);
 
-		if(profile_id != -1){
-			return pmanager.getProfile(profile_id);
-		}
+        if (profile_id != -1) {
+            return pmanager.getProfile(profile_id);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onResume() {
-		super.onResume();
-		getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onPause() {
-		super.onPause();
-		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
 
-	@Override
-	public void onStop() {
-		super.onStop();
-		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	}
+    @Override
+    public void onStop() {
+        super.onStop();
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
 
-	/**
-	 * Called when a shared preference is changed, added, or removed. This
-	 * may be called even if a preference is set to its existing value.
-	 *
-	 * <p>This callback will be run on your main thread.
-	 *
-	 * @param sharedPreferences The {@link android.content.SharedPreferences} that received
-	 *                          the change.
-	 * @param key               The key of the preference that was changed, added, or
-	 */
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		Preference p = findPreference(key);
+    /**
+     * Called when a shared preference is changed, added, or removed. This
+     * may be called even if a preference is set to its existing value.
+     *
+     * <p>This callback will be run on your main thread.
+     *
+     * @param sharedPreferences The {@link android.content.SharedPreferences} that received
+     *                          the change.
+     * @param key               The key of the preference that was changed, added, or
+     */
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Preference p = findPreference(key);
 
-		if(p instanceof EditTextPreference){
-			p.setSummary(sharedPreferences.getString(key, ""));
-		} else if(p instanceof CheckBoxPreference && !p.getKey().equals("pref_profile_protocols_ghost_active")){
-			mProfileProtocols.put(p.getTitle().toString(), ((CheckBoxPreference) p).isChecked());
-		}
-	}
+        if (p instanceof EditTextPreference) {
+            p.setSummary(sharedPreferences.getString(key, ""));
+        } else if (p instanceof CheckBoxPreference && !p.getKey().equals("pref_profile_protocols_ghost_active")) {
+            mProfileProtocols.put(p.getTitle().toString(), ((CheckBoxPreference) p).isChecked());
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
-		super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
 
-		if(resultCode == AppCompatActivity.RESULT_OK){
-			Cursor cursor = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-					new String[]{
-							MediaStore.Images.Media.DATA,
-							MediaStore.Images.Media.DATE_ADDED,
-							MediaStore.Images.ImageColumns.ORIENTATION
-					},
-			MediaStore.Images.Media.DATE_ADDED, null, "date_added ASC");
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            Cursor cursor = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    new String[]{
+                            MediaStore.Images.Media.DATA,
+                            MediaStore.Images.Media.DATE_ADDED,
+                            MediaStore.Images.ImageColumns.ORIENTATION
+                    },
+                    MediaStore.Images.Media.DATE_ADDED, null, "date_added ASC");
 
-			String filePath = "";
-			if(cursor != null && cursor.moveToFirst())
-			{
-				do {
-					filePath = Uri.parse(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))).toString();
-				} while(cursor.moveToNext());
-				cursor.close();
-			}
+            String filePath = "";
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    filePath = Uri.parse(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))).toString();
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
 
-			Preference pref = findPreference("pref_profile_general_image");
+            Preference pref = findPreference("pref_profile_general_image");
 
-			BitmapFactory.Options options = new BitmapFactory.Options();
-			options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-			Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
 
-			pref.setIcon(new BitmapDrawable(getResources(), bitmap));
+            pref.setIcon(new BitmapDrawable(getResources(), bitmap));
 
-			mPrefs.putString("pref_profile_general_image", filePath);
-			mPrefs.commit();
-		}
-	}
+            mPrefs.putString("pref_profile_general_image", filePath);
+            mPrefs.commit();
+        }
+    }
 }

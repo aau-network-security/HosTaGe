@@ -62,13 +62,9 @@ public class ProfileManagerFragment extends TrackerFragment implements ProfileRe
 
         // Get ProfileManager instance
         profileManager = null;
-        try {
-            profileManager = ProfileManager.getInstance();
-            profileManager.loadData();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        profileManager = ProfileManager.getInstance();
+        profileManager.loadData();
 
         String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
         /**
@@ -80,12 +76,8 @@ public class ProfileManagerFragment extends TrackerFragment implements ProfileRe
          * Get list of profiles to be displayed in the recyclerview
          */
         List<Profile> strList = null;
-        try {
-            assert profileManager != null;
-            strList = new LinkedList<>(profileManager.getProfilesList());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        assert profileManager != null;
+        strList = new LinkedList<>(profileManager.getProfilesList());
 
 //        TODO re-add hint (was disabled during RecyclerView implementation
 //		// show an help item in the listview to indicate, that the items in the list are swipeable
@@ -166,14 +158,10 @@ public class ProfileManagerFragment extends TrackerFragment implements ProfileRe
      */
     @Override
     public void onClicked(int position) {
-        try {
-            profileManager.activateProfile(profileRecyclerAdapter.getItem(position));
+        profileManager.activateProfile(profileRecyclerAdapter.getItem(position));
 
-            //Refresh view to display checkmark next to profile
-            profileRecyclerAdapter.notifyDataSetChanged();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //Refresh view to display checkmark next to profile
+        profileRecyclerAdapter.notifyDataSetChanged();
     }
 
 }

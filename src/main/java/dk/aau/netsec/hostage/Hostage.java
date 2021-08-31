@@ -1,5 +1,6 @@
 package dk.aau.netsec.hostage;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Notification;
@@ -27,6 +29,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.Uri;
@@ -39,10 +42,15 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.gms.maps.LocationSource;
+
 import dk.aau.netsec.hostage.commons.HelperUtils;
+import dk.aau.netsec.hostage.location.CustomLocationManager;
+import dk.aau.netsec.hostage.location.LocationException;
 import dk.aau.netsec.hostage.logging.DaoSession;
 import dk.aau.netsec.hostage.persistence.DAO.AttackRecordDAO;
 import dk.aau.netsec.hostage.protocol.Protocol;
@@ -60,10 +68,13 @@ import static dk.aau.netsec.hostage.commons.HelperUtils.getBSSID;
  * @author Lars Pandikow
  * @author Wulf Pfeiffer
  */
-public class Hostage extends Service {
+public class Hostage extends Service implements LocationSource.OnLocationChangedListener {
 
     private HashMap<String, Boolean> mProtocolActiveAttacks;
     private DaoSession dbSession;
+
+    static boolean implementedProtocolsReady;
+
     public static int prefix;
     boolean activeHandlers = false;
     boolean bssidSeen = false;
@@ -92,7 +103,7 @@ public class Hostage extends Service {
                 String str = EntityUtils.toString(entity);
                 JSONObject json_data = new JSONObject(str);
                 ipAddress = json_data.getString("ip");
-            } catch (Exception e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return ipAddress;
@@ -134,6 +145,8 @@ public class Hostage extends Service {
         @Override
         protected void onPostExecute(LinkedList<Protocol> result) {
             implementedProtocols = result;
+
+            implementedProtocolsReady = true;
         }
     }
 
@@ -148,7 +161,7 @@ public class Hostage extends Service {
         return context.get();
     }
 
-    private static LinkedList<Protocol> implementedProtocols;
+    static LinkedList<Protocol> implementedProtocols;
     private CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<Listener>();
     private SharedPreferences connectionInfo;
     private Editor connectionInfoEditor;
@@ -229,8 +242,9 @@ public class Hostage extends Service {
      *
      * @param protocolName The protocol name
      * @return True if protocol is running, else false.
+     * @throws NullPointerException if default ports are not initialised yet
      */
-    public boolean isRunning(String protocolName) {
+    public boolean isRunning(String protocolName) throws NullPointerException {
         int port = getDefaultPort(protocolName);
         return isRunning(protocolName, port);
     }
@@ -339,8 +353,10 @@ public class Hostage extends Service {
      * HoneyService if no matching HoneyListener is found.
      *
      * @param protocolName Name of the protocol that should be started.
+     * @throws NullPointerException getDefaultPort takes a while to initialise on application start
+     *                              and may throw a NullPointerException
      */
-    public boolean startListener(String protocolName) {
+    public boolean startListener(String protocolName) throws NullPointerException {
         return startListener(protocolName, getDefaultPort(protocolName));
     }
 
@@ -352,6 +368,13 @@ public class Hostage extends Service {
      * @param port         The port number in which the listener should run.
      */
     public boolean startListener(String protocolName, int port) {
+        try {
+            CustomLocationManager.getLocationManagerInstance(getContext()).startReceivingLocation(this);
+        } catch (LocationException le) {
+            // Location updating could not be started.
+            le.printStackTrace();
+        }
+
         for (Listener listener : listeners) {
             if (listener.getProtocolName().equals(protocolName) && listener.getPort() == port) {
                 if (!listener.isRunning()) {
@@ -384,8 +407,6 @@ public class Hostage extends Service {
                 listener.start();
             }
         }
-        // Toast.makeText(getApplicationContext(), "SERVICES STARTED!",
-        // Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -412,12 +433,16 @@ public class Hostage extends Service {
                 }
             }
         }
-        // Toast.makeText(getApplicationContext(), protocolName +
-        // " SERVICE STOPPED!", Toast.LENGTH_SHORT).show();
     }
 
 
     public void stopListenerAllPorts(String protocolName) {
+        try {
+            CustomLocationManager.getLocationManagerInstance(null).stopReceivingLocation(this);
+        } catch (LocationException le) {
+            le.printStackTrace();
+        }
+
         for (Listener listener : listeners) {
             if (listener.getProtocolName().equals(protocolName)) {
                 if (listener.isRunning()) {
@@ -432,14 +457,18 @@ public class Hostage extends Service {
      * Stops all running listeners.
      */
     public void stopListeners() {
+        try {
+            CustomLocationManager.getLocationManagerInstance(null).stopReceivingLocation(this);
+        } catch (LocationException le) {
+            le.printStackTrace();
+        }
+
         for (Listener listener : listeners) {
             if (listener.isRunning()) {
                 listener.stop();
                 mProtocolActiveAttacks.remove(listener.getProtocolName());
             }
         }
-        // Toast.makeText(getApplicationContext(), "SERVICES STOPPED!",
-        // Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -642,11 +671,11 @@ public class Hostage extends Service {
      * @return Returns the default port number, if the protocol is implemented.
      * Else returns -1.
      * @throws NullPointerException gets thrown if {@link ImplementProtocols} has not yet been
-     * initialized.
+     *                              initialized.
      */
-    private int getDefaultPort(String protocolName) throws NullPointerException{
-        if (implementedProtocols == null){
-            throw new NullPointerException();
+    private int getDefaultPort(String protocolName) throws NullPointerException {
+        if (implementedProtocols == null) {
+            throw new NullPointerException("Implemented Protocols are null (probably not initialised yet).");
         }
         for (Protocol protocol : implementedProtocols) {
             if (protocolName.equals(protocol.toString())) {
@@ -654,6 +683,10 @@ public class Hostage extends Service {
             }
         }
         return -1;
+    }
+
+    public boolean isImplementedProtocolsReady() {
+        return implementedProtocolsReady;
     }
 
     /**
@@ -672,7 +705,7 @@ public class Hostage extends Service {
         for (String protocol : protocols) {
             try {
                 implementedProtocols.add((Protocol) Class.forName(String.format("%s.%s", packageName, protocol)).newInstance());
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
@@ -795,5 +828,15 @@ public class Hostage extends Service {
         editor.apply();
     }
 
-
+    /**
+     * Mandatory implementation of the {@link com.google.android.gms.maps.LocationSource.OnLocationChangedListener}
+     * <p>
+     * The listener must be implemented so that the location is periodically refreshed. The updated
+     * location is accessed individually by the respective Listener using the {@link CustomLocationManager#getLatestLocation()}
+     * method.
+     */
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        // Do nothing
+    }
 }

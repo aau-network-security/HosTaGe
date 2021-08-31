@@ -17,7 +17,7 @@ public class SensorProfile {
 
     }
 
-    public void startSensor() throws Exception {
+    public void startSensor() {
         MQTT mqtt = new MQTT();
         Mqtt3BlockingClient client = mqtt.client(clientId);
         mqtt.publish(client, "/Temperature", String.valueOf(temperature) + "°C");

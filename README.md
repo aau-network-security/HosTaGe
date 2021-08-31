@@ -1,6 +1,6 @@
-![alt text](https://github.com/aau-network-security/HosTaGe/blob/master/jekyll/ic_launcher.png  "Logo Title Text 1")
+![HosTaGe Logo](./jekyll/ic_launcher.png  "Logo")
 
-[<img src="https://github.com/aau-network-security/HosTaGe/blob/ver-2.3.4/jekyll/gsoc.png" width="250" height="200">](https://www.honeynet.org/2020/09/29/gsoc-2020-project-summary-hostage/) [<img src="https://github.com/aau-network-security/HosTaGe/blob/ver-2.3.4/jekyll/bh_eu_2020.jpg" width="400" height="200">](https://www.youtube.com/watch?v=uMR76HTm9M0)
+[<img src="./jekyll/gsoc.png" width="336" height="200">](https://www.honeynet.org/2020/09/29/gsoc-2020-project-summary-hostage/) [<img src="./jekyll/bh_eu_2020.jpg" width="400" height="200">](https://www.youtube.com/watch?v=uMR76HTm9M0)
 
 
 
@@ -37,11 +37,11 @@ The research behind HosTaGe has been published and presented in a number of scie
 
 __Download APK__
 
-[HosTaGe-v2.2.11.apk](https://github.com/aau-network-security/HosTaGe/releases/download/v2.2.11/HosTaGe-2.2.11.apk) [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.2.11)(latest) 
+[HosTaGe-v2.4.apk](https://github.com/aau-network-security/HosTaGe/releases/download/v2.4/HosTaGe-release.apk) (latest) [Release Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.4)
 
-HosTaGe-v2.1.1.apk [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.1.1)
+HosTaGe-v2.2.11.apk [Release Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.2.11)
 
-HosTaGe-v2.0.0.apk [Release-Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.0.0)
+HosTaGe-v2.1.1.apk [Release Notes](https://github.com/aau-network-security/HosTaGe/releases/tag/v2.1.1)
 
 
 __Wiki__
@@ -61,9 +61,11 @@ __Original Authors__
 
 __Contributors__
 
-[Shreyas Srinivasa](https://sastry17.github.io/), lead developer, Aalborg University and Technische Universität Darmstadt (Github - @sastry17)
+[Shreyas Srinivasa](https://sastry17.github.io/), lead developer, Aalborg University and Technische Universität Darmstadt ([@sastry17](https://github.com/sastry17))
 
-Eirini Lygerou, GSoC 2020 Developer (Github - @irinil)
+Eirini Lygerou, GSoC 2020 Developer ([@irinil](https://github.com/irinil))
+
+Filip Adamík, GSoC 2021 Developer ([@zafodB](https://github.com/zafodB))
 
 Mihai Plasoianu, student developer, Technische Universität Darmstadt
 
@@ -104,3 +106,11 @@ Please use the Github issues to report any issues or for questions.
 __License & Distribution__
 
 Distributed under the MIT license. See [LICENSE](./LICENSE.md) for license information. 
+
+__Terms and Conditions__
+
+Use of the application is subject to [Terms and Conditions](./terms.md). 
+
+__Privacy Policy__
+
+You can find the privacy policy under [Privacy Policy](./Privacy_policy.md)
