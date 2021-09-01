@@ -113,10 +113,6 @@ public class Profile implements JSONSerializable<Profile> {
         this.mIcon = bitmap;
     }
 
-    public void setIcon(int icon) {
-        this.mIcon = BitmapFactory.decodeResource(MainActivity.getContext().getResources(), icon);
-    }
-
     public Bitmap getIconBitmap() {
         if (this.mIcon != null) return mIcon;
 

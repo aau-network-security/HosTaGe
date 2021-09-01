@@ -25,6 +25,7 @@ allprojects {
         maven { url "https://jitpack.io" }
     }
 }
+
 dependencies {
     //firebase
     implementation 'com.google.firebase:firebase-crashlytics:18.2.1'
@@ -61,7 +62,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-amqp-0-8-protocol
     implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-amqp-0-8-protocol', version: '8.0.6'
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-amqp-1-0-protocol
-    implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-amqp-1-0-protocol', version: '8.0.4'
+    implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-amqp-1-0-protocol', version: '8.0.6'
     // https://mvnrepository.com/artifact/org.apache.qpid/qpid-broker-plugins-memory-store
     implementation group: 'org.apache.qpid', name: 'qpid-broker-plugins-memory-store', version: '8.0.6'
 
@@ -199,32 +200,12 @@ android {
         pickFirst "META-INF/INDEX.LIST"
         pickFirst "META-INF/io.netty.versions.properties"
     }
-    // signing for release only works in the console
-    boolean doSigningForRelease = System.console() != null
-    if (doSigningForRelease) {
-        signingConfigs {
-            release {
-                storeFile file(System.console().readLine("\n\$ Enter keystore path:  "))
-                storePassword System.console().readLine("\n\$ Enter keystore password:  ")
-                keyAlias System.console().readLine("\n\$ Enter key alias:  ")
-                keyPassword System.console().readLine("\n\$ Enter key password:")
-            }
-        }
-    }
+
     buildTypes {
         debug {
             debuggable true
             jniDebuggable true
 //            testCoverageEnabled true
-            //resValue "string", "google_maps_api_key", "AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4"
-        }
-        if (doSigningForRelease) {
-            release {
-                debuggable false
-                jniDebuggable false
-                signingConfig signingConfigs.release
-                //resValue "string", "google_maps_api_key", "AIzaSyDs3xp1-2KQojns5h7mWHHdQxAL-5AZ-q4"
-            }
         }
         release {
 //            signingConfig signingConfigs.config
