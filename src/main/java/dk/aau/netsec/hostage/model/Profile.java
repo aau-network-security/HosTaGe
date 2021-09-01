@@ -222,7 +222,7 @@ public class Profile implements JSONSerializable<Profile> {
             Iterator<String> keys = activeProtocols.keys();
 
             while (keys.hasNext()) {
-                String protocol = (String) keys.next();
+                String protocol = keys.next();
                 try {
                     mActiveProtocols.put(protocol, activeProtocols.getBoolean(protocol));
                 } catch (JSONException e) {

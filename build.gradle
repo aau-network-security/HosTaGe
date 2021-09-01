@@ -3,9 +3,6 @@ buildscript {
         mavenCentral()
         google()
 
-//        jcenter reached end-of-life, but is required for MQTT until migrated.
-        jcenter()
-
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.1'
@@ -24,7 +21,6 @@ allprojects {
     repositories {
         mavenCentral()
         google()
-        jcenter()
 
         maven { url "https://jitpack.io" }
     }
@@ -87,7 +83,7 @@ dependencies {
     implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: '1.2.2'
 
     //SU Library for root
-    implementation 'eu.chainfire:libsuperuser:1.0.0.201704021214'
+    implementation "com.github.topjohnwu.libsu:core:3.1.2"
 
     //RootTools Library
     implementation 'com.github.Stericson:RootShell:1.6'
@@ -169,8 +165,8 @@ configurations {
 android {
     compileSdkVersion 30
     defaultConfig {
-        versionCode 16
-        versionName "2.4"
+        versionCode 17
+        versionName "2.4.1"
         minSdkVersion 24
         targetSdkVersion 30
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

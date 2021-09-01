@@ -58,7 +58,7 @@ import dk.aau.netsec.hostage.ui.fragment.UpNavigableFragment;
 import dk.aau.netsec.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer;
 import dk.aau.netsec.hostage.ui.model.DrawerListItem;
 import dk.aau.netsec.hostage.ui.model.LogFilter;
-import eu.chainfire.libsuperuser.Shell;
+import com.topjohnwu.superuser.Shell;
 
 
 /**
@@ -271,7 +271,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static void checkForRoot() {
-        if (Shell.SU.available()) {
+        Shell shell = Shell.getShell();
+
+        if (shell.isRoot()) {
             Device.checkCapabilities();
             if (Api.assertBinaries(getContext(), true)) {
                 try {
