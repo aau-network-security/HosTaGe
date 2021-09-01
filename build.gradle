@@ -172,6 +172,7 @@ android {
         targetSdkVersion 30
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        signingConfig signingConfigs.debug
 
         //   signingConfig signingConfigs.config
 
@@ -207,7 +208,21 @@ android {
             jniDebuggable true
 //            testCoverageEnabled true
         }
+        debugminify {
+            debuggable true
+            jniDebuggable true
+
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules-debug.pro'
+        }
         release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // List additional ProGuard rules for the given build type here. By default,
+            // Android Studio creates and includes an empty rules file for you (located
+            // at the root directory of each module).
+
+
 //            signingConfig signingConfigs.config
         }
     }
