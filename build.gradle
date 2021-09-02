@@ -5,7 +5,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.1'
+        classpath 'com.android.tools.build:gradle:7.0.2'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
 
         classpath 'com.google.gms:google-services:4.3.10' //added gms support
