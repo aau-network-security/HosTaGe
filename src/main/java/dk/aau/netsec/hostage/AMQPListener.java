@@ -13,14 +13,13 @@ import dk.aau.netsec.hostage.protocol.Protocol;
 import dk.aau.netsec.hostage.protocol.utils.amqpUtils.AMQPHandler;
 
 public class AMQPListener extends Listener {
-    private ArrayList<Handler> handlers = new ArrayList<>();
+    private final ArrayList<Handler> handlers = new ArrayList<>();
     private Thread thread;
     private Thread serverThread;
     private ConnectionRegister conReg;
     private boolean running = false;
-    private int defaultPort =5672;
 
-    private static Semaphore mutex = new Semaphore(1);
+    private static final Semaphore mutex = new Semaphore(1);
     /**
      * Constructor for the class. Instantiate class variables.
      *
@@ -103,6 +102,7 @@ public class AMQPListener extends Listener {
     public void stop() { stopServer();}
 
     public void stopServer(){
+        int defaultPort = 5672;
         if(super.getPort() == defaultPort) {
             AMQP.stopBroker();
             if(serverThread!=null)

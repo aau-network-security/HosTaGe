@@ -38,25 +38,19 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 
 /**
- * Displays detailed informations about an record.
+ * Displays detailed informations about a record.
  *
  * @author Fabio Arnold
  * @author Alexander Brakowski
  * @author Julien Clauter
- */
-
-/**
+ * <p>
  * Created by Shreyas Srinivasa on 01.10.15.
  */
-public class RecordDetailFragment extends UpNavigatibleFragment {
+public class RecordDetailFragment extends UpNavigableFragment {
     /**
      * Hold the record of which the detail informations should be shown
      */
     private RecordAll mRecord;
-    /**
-     * The database helper to retrieve data from the database
-     */
-    private DaoSession dbSession;
     private DAOHelper daoHelper;
     /**
      * The layout inflater
@@ -74,9 +68,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
     private TextView mRecordDetailsTextProtocol;
     private Button textButton;
     private Button hexButton;
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private Bundle savedInstanceState;
     public SharedPreferences pref;
     public int port;
 
@@ -124,31 +115,21 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        this.inflater = inflater;
-        this.container = container;
-        this.savedInstanceState = savedInstanceState;
-
         mInflater = inflater;
         if (mRecord != null)
             getActivity().setTitle(mRecord.getSsid());
 
-        dbSession = HostageApplication.getInstances().getDaoSession();
+        /**
+         * The database helper to retrieve data from the database
+         */
+        DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
         daoHelper = new DAOHelper(dbSession, getActivity());
 
         this.mRootView = inflater.inflate(this.getLayoutId(), container, false);
         this.assignViews(mRootView);
-        this.configurateRootView(mRootView);
+        this.configureRootView(mRootView);
 
         return mRootView;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onStart() {
-        super.onStart();
-
     }
 
     /**
@@ -171,7 +152,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
      *
      * @param rootView the view to use to display the information
      */
-    private void configurateRootView(View rootView) {
+    private void configureRootView(View rootView) {
         mRecordDetailsTextAttackType.setText(mRecord.getWasInternalAttack() ? R.string.RecordInternalAttack : R.string.RecordExternalAttack);
         mRecordDetailsTextBssid.setText(mRecord.getBssid());
         mRecordDetailsTextSsid.setText(mRecord.getSsid());
@@ -229,6 +210,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
         changeTextToHex(hexButton, r, conversationContent);
 
         Date date = new Date(r.getTimestamp());
+//        TODO verify that String.format works as intended here
         conversationInfo.setText(String.format(getString(R.string.record_details_info), from, to, getDateAsString(date), getTimeAsString(date)));
         if (r.getPacket() != null)
             conversationContent.setText(r.getPacket());
@@ -244,9 +226,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
      * @param conversationContent the conversion content view
      */
     private void changeHexToText(Button button, RecordAll record, TextView conversationContent) {
-        button.setOnClickListener(view -> {
-            conversationContent.setText(record.convertPacketFromHex(record.getPacket()));
-        });
+        button.setOnClickListener(view -> conversationContent.setText(record.convertPacketFromHex(record.getPacket())));
     }
 
     /**
@@ -257,9 +237,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
      * @param conversationContent the conversion content view
      */
     private void changeTextToHex(Button button, RecordAll record, TextView conversationContent) {
-        button.setOnClickListener(view -> {
-            conversationContent.setText(record.convertPacketFromText(record.getPacket()));
-        });
+        button.setOnClickListener(view -> conversationContent.setText(record.convertPacketFromText(record.getPacket())));
     }
 
     private void deleteDialog() {
@@ -359,7 +337,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
         for (RecordAll r : conversation) {
 
             String mydata = r.getPacket();
-            ArrayList<String> myTokensList = new ArrayList<String>();
+            ArrayList<String> myTokensList = new ArrayList<>();
             String[] tokens = mydata.split("\n");
             for (String tok : tokens) {
                 if (tok.contains("Protocol:")) {
@@ -367,11 +345,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
                 }
             }
 
-            ArrayList<Integer> myPortList = new ArrayList<Integer>();
+            ArrayList<Integer> myPortList = new ArrayList<>();
             for (String tok : myTokensList) {
-                if (tok.contentEquals("PORTSCAN")) {
-
-                }
                 myPortList.add(protocol2Port(tok));
             }
             System.out.print(myPortList);
@@ -406,15 +381,13 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
         int port = protocol2Port(protocol);
         String sigPort = String.valueOf(port);
-        String sigmatch = packet;
-        String modbusSignature = "signature-" + protocol + "-sig {\n" +
+
+        return "signature-" + protocol + "-sig {\n" +
                 "    ip-proto == tcp\n" +
                 "    dst-port ==" + sigPort + "\n" +
-                "    payload /" + sigmatch + "/" + "\n" +
+                "    payload /" + packet + "/" + "\n" +
                 "    event \"" + protocol + " Attack!!\"\n" +
                 "}";
-
-        return modbusSignature;
     }
 
 
@@ -425,7 +398,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
         for (Object tok : portList) {
 
-            portArray.append(tok + "/tcp");
+            portArray.append(tok).append("/tcp");
             portListSize++;
             if (portListSize != portList.size()) {
                 portArray.append(",");
@@ -433,7 +406,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 
         }
 
-        String MultiStageSignature = "@load base/frameworks/notice\n" +
+        return "@load base/frameworks/notice\n" +
                 "\n" +
                 "\n" +
                 "\n" +
@@ -489,8 +462,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
                 "\n" +
                 "\n" +
                 "}\n";
-
-        return MultiStageSignature;
     }
 
     private void createPolicyFile(String signature, String protocol) throws IOException {
@@ -517,7 +488,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
         } else {
 //TODO extract string
             Snackbar.make(mRootView, "Could not write to SD Card", Snackbar.LENGTH_SHORT).show();
-            return;
         }
 
     }
@@ -525,8 +495,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
     //write to file and store in SD Card
     private void createSignatureFile(String signature, String protocol) throws IOException {
         FileOutputStream sig;
-        Long tsLong = System.currentTimeMillis() / 1000;
-        String ts = tsLong.toString();
+        long tsLong = System.currentTimeMillis() / 1000;
+        String ts = Long.toString(tsLong);
         String fileName = protocol + "Bro_Sig" + ts + ".sig";
 //		TODO adjust this, since storage setting has been removed
         String externalLocation = pref.getString("pref_external_location", "");
@@ -546,7 +516,6 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
         } else {
 //            TODO extract string
             Snackbar.make(mRootView, "Could not write to SD Card", Snackbar.LENGTH_SHORT).show();
-            return;
         }
 
     }

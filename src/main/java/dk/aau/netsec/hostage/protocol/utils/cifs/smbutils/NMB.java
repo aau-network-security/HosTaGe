@@ -14,7 +14,7 @@ import dk.aau.netsec.hostage.net.MyDatagramSocketFactory;
 
 /**
  * NetBIOS.
- * Used to registrate computers and workgroups in a windows network.
+ * Used to register computers and workgroups in a windows network.
  * @author Wulf Pfeiffer
  */
 public class NMB extends Thread {
@@ -23,7 +23,6 @@ public class NMB extends Thread {
 	private DatagramSocket nbdsSocket;
 	private DatagramPacket packet;
 	private String ip;
-	private String[] ipParts;
 	private InetAddress dst;
 	private final int nbnsOriginPort = 137;
 	private final int nbdsOriginPort = 138;
@@ -34,8 +33,7 @@ public class NMB extends Thread {
 	private NBNS nbns;
 	private NBDS nbds;
 	private boolean isMaster;
-	private byte[] addr = new byte[4]; 
-	private static byte[] transactID = HelperUtils.randomBytes(2);
+	private static final byte[] transactID = HelperUtils.randomBytes(2);
 	
 	public NMB(String ip, String username, String workgroup) {
 		try {
@@ -43,10 +41,10 @@ public class NMB extends Thread {
 			this.username = username;
 			this.workgroup = workgroup;
 			this.ip = ip;
-			ipParts = ip.split("\\.");
+			String[] ipParts = ip.split("\\.");
 			String newHostAddr = ipParts[0] + "." + ipParts[1] + "." + ipParts[2] + ".255";
 			dst = InetAddress.getByName(newHostAddr);
-			addr = addressToBytes(ip);
+			byte[] addr = addressToBytes(ip);
 			nbns = new NBNS(addr);
 			nbds = new NBDS(addr, username, workgroup);
 		} catch (UnknownHostException e) {
@@ -100,15 +98,15 @@ public class NMB extends Thread {
 	/**
 	 * Sends the required packets for user and workgroup registration.
 	 */
-	private void registrate() {
-		registrateUser();
-		registrateGroup();
+	private void register() {
+		registerUser();
+		registerGroup();
 	}
 	
 	/**
 	 * Sends the required packets for user registration.
 	 */
-	private void registrateUser() {
+	private void registerUser() {
 		nbns.setType(NBNSType.REGISTRATION_UNIQUE);
 		nbns.setService(NBNSService.SERVER);
 		nbns.setName(username);
@@ -124,7 +122,7 @@ public class NMB extends Thread {
 	/**
 	 * Sends the required packets for workgroup registration.
 	 */
-	private void registrateGroup() {
+	private void registerGroup() {
 		nbns.setName(workgroup);
 		nbns.setType(NBNSType.REGISTRATION_GROUP);
 		sendPacket(nbns);
@@ -154,7 +152,7 @@ public class NMB extends Thread {
 	/**
 	 * Sends the required packets for local master registration.
 	 */
-	private void registrateLocalMaster() {
+	private void registerLocalMaster() {
 		nbns.setName(workgroup);
 		nbns.setType(NBNSType.REGISTRATION_UNIQUE);
 		nbns.setService(NBNSService.LOCAL_MASTER_BROWSER);
@@ -237,19 +235,19 @@ public class NMB extends Thread {
 			e.printStackTrace();
 		}
 
-		registrate();
+		register();
 		announceHost();
 		queryName();
 		checkForAnswers();
 		
 		if (isMaster) {
-			registrate();
+			register();
 			queryName();
 			
-			registrate();
+			register();
 			queryName();
 			
-			registrate();
+			register();
 			queryName();	
 			
 			browserElection();
@@ -262,10 +260,10 @@ public class NMB extends Thread {
 			registrateMsBrowse();
 			registrateMsBrowse();
 			
-			registrateLocalMaster();
-			registrateLocalMaster();
-			registrateLocalMaster();
-			registrateLocalMaster();
+			registerLocalMaster();
+			registerLocalMaster();
+			registerLocalMaster();
+			registerLocalMaster();
 			
 			requestAnnouncement();
 			localMasterAnnouncementAll();
@@ -281,9 +279,9 @@ public class NMB extends Thread {
 		nbdsSocket.close();
 	}
 		
-	private byte[] buffer = new byte[2048];
+	private final byte[] buffer = new byte[2048];
 	private boolean masterAnswered = false;
-	private DatagramPacket receive = new DatagramPacket(buffer, buffer.length);
+	private final DatagramPacket receive = new DatagramPacket(buffer, buffer.length);
 
 	/**
 	 * Check if the specified workgroup is already existing.

@@ -26,7 +26,7 @@ public class SyncInfo implements Serializable {
     public ArrayList<String> bssids;
 
     public SyncInfo(){
-        this.deviceMap = new HashMap<String, Long>();
-        this.bssids = new ArrayList<String>();
+        this.deviceMap = new HashMap<>();
+        this.bssids = new ArrayList<>();
     }
 }

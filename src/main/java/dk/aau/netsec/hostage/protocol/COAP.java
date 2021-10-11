@@ -156,9 +156,8 @@ public class COAP implements Protocol {
      * @param server        the server instance.
      */
     public CoapClient getSimpleClient(InetSocketAddress serverAddress, CoapServer server) {
-        CoapClient client = CoapClientBuilder.clientFor(serverAddress, server);
 
-        return client;
+        return CoapClientBuilder.clientFor(serverAddress, server);
     }
 
     /**

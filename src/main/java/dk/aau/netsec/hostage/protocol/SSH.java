@@ -44,7 +44,7 @@ public class SSH implements Protocol {
     private boolean useEncryption = false;
 
     // version stuff
-    private String[][][] possibleSshTypes = {
+    private final String[][][] possibleSshTypes = {
             {{"3."}, {"4", "5", "6", "7", "8", "9"}},
             {{"4."}, {"0", "1", "2", "3", "4", "5", "6", "7", "9"}},
             {{"5."}, {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}},
@@ -61,26 +61,20 @@ public class SSH implements Protocol {
 
     // server infos
     private static final String serverVersion = "SSH-2.0-";
-    private String serverType = initSshType();
-    private String serverName = HelperUtils.getRandomString(16, false);
+    private final String serverType = initSshType();
+    private final String serverName = HelperUtils.getRandomString(16, false);
     private int packetNumber = 0;
     private int recipientChannel;
-    private String userName;
     private String terminalPrefix;
     private StringBuffer command = new StringBuffer();
-    private SecureRandom random = new SecureRandom();
+    private final SecureRandom random = new SecureRandom();
 
     // SSH Parameters for Kex etc.
-    private byte[] V_S = (serverVersion + serverType).getBytes();
+    private final byte[] V_S = (serverVersion + serverType).getBytes();
     private byte[] V_C;
     private byte[] I_S;
     private byte[] I_C;
     private byte[] e;
-    private BigInteger f;
-    private byte[] h;
-    private BigInteger k;
-    private byte[] K_S;
-    private byte[] signature;
 
     // allowed algorithms for kexinit
     private static final String KEX_ALG = "diffie-hellman-group1-sha1";
@@ -92,11 +86,6 @@ public class SSH implements Protocol {
     private static final String COMP_ALG_C = "none";
     private static final String COMP_ALG_S = "none";
 
-    private int cipherBlockSize = 16;
-
-    // for en- and decryption
-    private DESede desEncryption;
-    private DESede desDecryption;
     private CBCMode cbcEncryption;
     private CBCMode cbcDecryption;
     private MAC macEncryption;
@@ -135,7 +124,7 @@ public class SSH implements Protocol {
 
     @Override
     public List<Packet> processMessage(Packet requestPacket) {
-        List<Packet> responsePackets = new ArrayList<Packet>();
+        List<Packet> responsePackets = new ArrayList<>();
         byte[] request = null;
         if (requestPacket != null) {
             request = requestPacket.getBytes();
@@ -219,11 +208,11 @@ public class SSH implements Protocol {
     private Packet wrapPacket(byte[] response) {
         // 4 byte packet length, 1 byte padding length, payload length
         int packetLength = 5 + response.length;
+        int cipherBlockSize = 16;
         int paddingLengthCBS = cipherBlockSize
                 - (packetLength % cipherBlockSize);
         int paddingLength8 = 8 - (packetLength % 8);
-        int paddingLength = paddingLengthCBS > paddingLength8 ? paddingLengthCBS
-                : paddingLength8;
+        int paddingLength = Math.max(paddingLengthCBS, paddingLength8);
         if (paddingLength < 4)
             paddingLength += cipherBlockSize;
         // add padding string length to packet length
@@ -333,16 +322,16 @@ public class SSH implements Protocol {
             DhExchange dhx = new DhExchange();
             dhx.serverInit(1, random);
             dhx.setE(new BigInteger(e));
-            f = dhx.getF();
+            BigInteger f = dhx.getF();
             DSAPrivateKey dsa = (DSAPrivateKey) PEMDecoder.decode(dsaPem, null);
-            K_S = DSASHA1Verify.encodeSSHDSAPublicKey(dsa.getPublicKey());
-            h = dhx.calculateH(V_C, V_S, I_C, I_S, K_S);
-            k = dhx.getK();
+            byte[] k_S = DSASHA1Verify.encodeSSHDSAPublicKey(dsa.getPublicKey());
+            byte[] h = dhx.calculateH(V_C, V_S, I_C, I_S, k_S);
+            BigInteger k = dhx.getK();
             DSASignature ds = DSASHA1Verify.generateSignature(h, dsa, random);
-            signature = DSASHA1Verify.encodeSSHDSASignature(ds);
+            byte[] signature = DSASHA1Verify.encodeSSHDSASignature(ds);
             TypesWriter tw = new TypesWriter();
             tw.writeByte(31);
-            tw.writeString(K_S, 0, K_S.length);
+            tw.writeString(k_S, 0, k_S.length);
             tw.writeMPInt(f);
             tw.writeString(signature, 0, signature.length);
             response = tw.getBytes();
@@ -352,8 +341,9 @@ public class SSH implements Protocol {
             // keylength, blocklength, maclength
             KeyMaterial km = KeyMaterial.create("SHA1", h, k, h, 24, 8, 20, 24,
                     8, 20);
-            desEncryption = new DESede();
-            desDecryption = new DESede();
+            // for en- and decryption
+            DESede desEncryption = new DESede();
+            DESede desDecryption = new DESede();
             desEncryption.init(true, km.enc_key_server_to_client);
             desDecryption.init(false, km.enc_key_client_to_server);
             cbcEncryption = new CBCMode(desEncryption,
@@ -419,7 +409,7 @@ public class SSH implements Protocol {
         }
         try {
             TypesReader tr = new TypesReader(request, 6);
-            userName = tr.readString();
+            String userName = tr.readString();
             terminalPrefix = "[" + userName + "@" + serverName + " ~]$ ";
         } catch (IOException e) {
             e.printStackTrace();
@@ -596,9 +586,8 @@ public class SSH implements Protocol {
                 request[3 + position]});
         int paddingLength = byteToInt(new byte[]{request[4 + position]});
         byte[] payload = new byte[packetLength - paddingLength - 1];
-        for (int i = 5; i < packetLength - paddingLength - 1; i++) {
-            payload[i - 5] = request[i + position];
-        }
+        if (packetLength - paddingLength - 1 - 5 >= 0)
+            System.arraycopy(request, 5 + position, payload, 0, packetLength - paddingLength - 1 - 5);
         I_C = payload;
     }
 
@@ -610,9 +599,7 @@ public class SSH implements Protocol {
     private void extractPubKey(byte[] request) {
         e = new byte[byteToInt(new byte[]{request[6], request[7], request[8],
                 request[9]})];
-        for (int i = 0; i < e.length; i++) {
-            e[i] = request[i + 10];
-        }
+        if (e.length >= 0) System.arraycopy(request, 10, e, 0, e.length);
     }
 
     /**
@@ -623,9 +610,9 @@ public class SSH implements Protocol {
      */
     private static int byteToInt(byte[] bytes) {
         int convertedInteger = 0;
-        for (int i = 0; i < bytes.length; i++) {
+        for (byte aByte : bytes) {
             convertedInteger <<= 8;
-            convertedInteger |= bytes[i] & 0xFF;
+            convertedInteger |= aByte & 0xFF;
         }
         return convertedInteger;
     }

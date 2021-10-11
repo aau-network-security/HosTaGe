@@ -5,13 +5,5 @@
         <item>Plaintext</item>
         <item>JSON</item>
     </string-array>
-    
-    <string-array name="delete_criteria">
-        <item>BSSID</item>
-        <item>Date</item>
-        <item>All</item>
-    </string-array>
 
-    <string-array name="pref_sync_countries_default">
-    </string-array>
 </resources>

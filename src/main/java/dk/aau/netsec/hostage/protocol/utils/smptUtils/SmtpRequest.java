@@ -44,11 +44,11 @@ package dk.aau.netsec.hostage.protocol.utils.smptUtils;
  */
 public class SmtpRequest {
 	/** SMTP action received from client. */
-	private SmtpActionType action;
+	private final SmtpActionType action;
 	/** Current state of the SMTP state table. */
-	private SmtpState state;
+	private final SmtpState state;
 	/** Additional information passed from the client with the SMTP action. */
-	String params;
+    final String params;
 
 	/**
 	 * Create a new SMTP client request.

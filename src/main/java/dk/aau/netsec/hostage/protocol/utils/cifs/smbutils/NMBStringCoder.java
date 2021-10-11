@@ -36,11 +36,10 @@ public class NMBStringCoder {
 	 */
 	public static byte[] encodeNBNSName(byte[] name) {
 		byte a_ascii = (byte) 'A';
-		byte[] bytes = name;
-		byte[] converted = new byte[bytes.length * 2];
-		for (int i = 0, j = 0; i < bytes.length && j < converted.length; i++, j += 2) {
-			converted[j] = (byte) (bytes[i] >> 4);
-			converted[j + 1] = (byte) (bytes[i] & 0x0F);
+        byte[] converted = new byte[name.length * 2];
+		for (int i = 0, j = 0; i < name.length && j < converted.length; i++, j += 2) {
+			converted[j] = (byte) (name[i] >> 4);
+			converted[j + 1] = (byte) (name[i] & 0x0F);
 		}
 		byte[] addedA = new byte[converted.length];
 		for (int i = 0; i < converted.length; i++) {

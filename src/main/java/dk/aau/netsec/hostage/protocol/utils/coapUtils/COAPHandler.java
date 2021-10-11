@@ -7,7 +7,6 @@ import com.mbed.coap.server.CoapExchange;
 import com.mbed.coap.utils.CoapResource;
 
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,7 +20,7 @@ import dk.aau.netsec.hostage.logging.SyncDevice;
 import dk.aau.netsec.hostage.protocol.Protocol;
 
 public class COAPHandler extends CoapResource {
-    private static ArrayList<CoapPacket> requests = new ArrayList<>();
+    private static final ArrayList<CoapPacket> requests = new ArrayList<>();
     private static final ArrayList<CoapPacket> fullRequests = new ArrayList<>();
     private String value="Response";
 
@@ -95,9 +94,7 @@ public class COAPHandler extends CoapResource {
      * @param BSSID the BSSID
      * @param internalIPAddress the internal IpAddress
      * @return
-     * @throws UnknownHostException
      */
-
     public synchronized static AttackRecord createAttackRecord(Long attack_id, String externalIP, Protocol protocol, int subnetMask, String BSSID, int internalIPAddress){
         AttackRecord record = new AttackRecord();
         String internalIp = HelperUtils.intToStringIp(internalIPAddress);

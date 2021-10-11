@@ -18,7 +18,7 @@ import ch.qos.logback.core.spi.FilterReply;
  */
 public class LogBackWatcher {
     private CyclicBufferAppender<ILoggingEvent>  listAppender;
-    private static ArrayList<String> packets= new ArrayList<>();
+    private static final ArrayList<String> packets= new ArrayList<>();
 
     /**
      * Registers a watcher, when the pattern matches the filter is accepted.

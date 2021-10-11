@@ -1,9 +1,5 @@
 package dk.aau.netsec.hostage.logging;
 
-/**
- * Created by Julien on 08.12.2014.
- */
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -11,6 +7,10 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 
+
+/**
+ * Created by Julien on 08.12.2014.
+ */
 public class SyncRecord implements Parcelable, Serializable {
 
     private static final long serialVersionUID = 7106818788090434192L;

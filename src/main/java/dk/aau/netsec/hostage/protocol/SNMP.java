@@ -7,7 +7,6 @@ import org.snmp4j.agent.DuplicateRegistrationException;
 import org.snmp4j.agent.MOGroup;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.mo.MOAccessImpl;
-import org.snmp4j.agent.mo.MOTableRow;
 import org.snmp4j.agent.mo.snmp.RowStatus;
 import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB;
 import org.snmp4j.agent.mo.snmp.SnmpNotificationMIB;
@@ -89,7 +88,7 @@ public class SNMP extends BaseAgent implements Protocol {
 
     private String address;
 
-    public SNMP(String address) throws IOException {
+    public SNMP(String address) {
 
         super(new File("conf.agent"), new File("bootCounter.agent"),
                 new CommandProcessor(
@@ -109,9 +108,9 @@ public class SNMP extends BaseAgent implements Protocol {
                 new Integer32(RowStatus.active) // row status
         };
 
-        MOTableRow row = snmpCommunityMIB.getSnmpCommunityEntry().createRow(
+        SnmpCommunityMIB.SnmpCommunityEntryRow row = snmpCommunityMIB.getSnmpCommunityEntry().createRow(
                 new OctetString("public2public").toSubIndex(true), com2sec);
-        snmpCommunityMIB.getSnmpCommunityEntry().addRow((SnmpCommunityMIB.SnmpCommunityEntryRow) row);
+        snmpCommunityMIB.getSnmpCommunityEntry().addRow(row);
     }
 
     @Override

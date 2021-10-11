@@ -6,7 +6,7 @@ import dk.aau.netsec.hostage.logging.formatter.protocol.ProtocolFormatter;
 
 public class DefaultFormatter extends Formatter {
 
-	private static Formatter INSTANCE = new DefaultFormatter();
+	private static final Formatter INSTANCE = new DefaultFormatter();
 
 	public static Formatter getInstance() {
 		return INSTANCE;

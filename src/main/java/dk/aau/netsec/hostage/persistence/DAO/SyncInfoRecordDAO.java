@@ -8,7 +8,7 @@ import dk.aau.netsec.hostage.logging.SyncInfoRecordDao;
 
 
 public class SyncInfoRecordDAO extends DAO {
-    private DaoSession daoSession;
+    private final DaoSession daoSession;
 
     public SyncInfoRecordDAO(DaoSession daoSession){
         this.daoSession= daoSession;
@@ -32,9 +32,8 @@ public class SyncInfoRecordDAO extends DAO {
      */
     public synchronized ArrayList<SyncInfoRecord> getSyncInfoRecords(){
         SyncInfoRecordDao recordDao = this.daoSession.getSyncInfoRecordDao();
-        ArrayList<SyncInfoRecord> records = (ArrayList<SyncInfoRecord>) selectElements(recordDao);
 
-        return records;
+        return (ArrayList<SyncInfoRecord>) selectElements(recordDao);
 
     }
 
@@ -43,9 +42,8 @@ public class SyncInfoRecordDAO extends DAO {
      * @return ArrayList<SyncInfo>
      */
     public synchronized ArrayList<SyncInfoRecord> getSyncInfo(){
-        ArrayList<SyncInfoRecord> records = this.getSyncInfoRecords();
 
-        return records;
+        return this.getSyncInfoRecords();
 
     }
 

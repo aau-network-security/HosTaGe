@@ -6,12 +6,12 @@
         android:id="@+id/statistics_action_export"
         android:icon="@drawable/ic_sort_by_size"
         android:title="@string/stats_visualize"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/statistics_action_filter"
         android:icon="@drawable/ic_filter"
         android:title="@string/rec_filter_by"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
 </menu>

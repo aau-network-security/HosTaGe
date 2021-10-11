@@ -1,8 +1,6 @@
 package dk.aau.netsec.hostage.protocol.utils.cifs;
 
 
-import android.content.Context;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -24,7 +22,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
-
 import dk.aau.netsec.hostage.commons.HelperUtils;
 import dk.aau.netsec.hostage.logging.MessageRecord;
 import dk.aau.netsec.hostage.protocol.SMB;
@@ -36,10 +33,11 @@ import virustotalapi.VirusTotal;
 /**
  * HostageV3
  * ================
+ *
  * @author Alexander Brakowski
  * @author Daniel Lazar
  * @author Shreyas Srinivasa
- *
+ * <p>
  * This is a pseudo file disk driver, which overwrites the libs JavaFileDiskDriver,
  * so that we can get more information about the attack
  */
@@ -49,7 +47,7 @@ public class PseudoJavaFileDiskDriver extends JavaFileDiskDriver {
         protected final dk.aau.netsec.hostage.protocol.SMB SMB;
         private final SrvSession sess;
         boolean wasWrittenTo = false;
-        private  final FileInject fileInject;
+        private final FileInject fileInject;
 
         public PseudoJavaNetworkFile(File file, String netPath, SMB SMB, SrvSession sess, FileInject fileInject) {
             super(file, netPath);
@@ -61,11 +59,12 @@ public class PseudoJavaFileDiskDriver extends JavaFileDiskDriver {
         /**
          * method that checks if the file was just written, then gets the MD5 checksum of the
          * file and logs it. Afterwards the file gets deleted.
+         *
          * @throws java.io.IOException
          */
         public void closeFile() throws java.io.IOException {
             super.closeFile();
-            if(wasWrittenTo){
+            if (wasWrittenTo) {
                 HelperUtils.setIsFileInjected(true);
                 try {
                     MessageDigest digest = MessageDigest.getInstance("SHA256");
@@ -73,7 +72,7 @@ public class PseudoJavaFileDiskDriver extends JavaFileDiskDriver {
 
                     byte[] buffer = new byte[8192];
                     int numOfBytesRead;
-                    while( (numOfBytesRead = fis.read(buffer)) > 0){
+                    while ((numOfBytesRead = fis.read(buffer)) > 0) {
                         digest.update(buffer, 0, numOfBytesRead);
                     }
 
@@ -90,18 +89,16 @@ public class PseudoJavaFileDiskDriver extends JavaFileDiskDriver {
 
                     for (ReportScan report : Report) {
 
-                        if (report.getDetected().contentEquals("true")){
+                        if (report.getDetected().contentEquals("true")) {
 
-                            if (report.getVendor().contentEquals("McAfee")||report.getVendor().contentEquals("Microsoft")||report.getVendor().contentEquals("AVG")||report.getVendor().contentEquals("Symantec")||report.getVendor().contentEquals("CAT-QuickHeal")||report.getVendor().contentEquals("TrendMicro")||report.getVendor().contentEquals("Kaspersky"))
-
-                            {
-                                sb.append("\n\nVendor: " + report.getVendor() + " \nDetected: " + report.getDetected() + " \nMalware Name: " + report.getMalwarename());
+                            if (report.getVendor().contentEquals("McAfee") || report.getVendor().contentEquals("Microsoft") || report.getVendor().contentEquals("AVG") || report.getVendor().contentEquals("Symantec") || report.getVendor().contentEquals("CAT-QuickHeal") || report.getVendor().contentEquals("TrendMicro") || report.getVendor().contentEquals("Kaspersky")) {
+                                sb.append("\n\nVendor: ").append(report.getVendor()).append(" \nDetected: ").append(report.getDetected()).append(" \nMalware Name: ").append(report.getMalwarename());
                             }
                         }
 
                     }
                     //Setting the display component with the results obtained from Virustotal
-                    String message = "File received: " + m_file.getName() + "\n\nCHECKSUM:\n" + checksum+"\n Scroll Down for Malware Details"+sb.toString();
+                    String message = "File received: " + m_file.getName() + "\n\nCHECKSUM:\n" + checksum + "\n Scroll Down for Malware Details" + sb.toString();
                     fileInject.log(MessageRecord.TYPE.RECEIVE, message, 445, sess.getRemoteAddress(), 445);
 
                     HelperUtils.setFileName(m_file.getName());
@@ -173,10 +170,8 @@ public class PseudoJavaFileDiskDriver extends JavaFileDiskDriver {
         final AppCompatActivity activity = MainActivity.getInstance();
 
         final FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        if (fragmentManager != null) {
-            FileAlertDialogFragment fileAlertDialogFragment = new FileAlertDialogFragment();
-            fileAlertDialogFragment.show(fragmentManager.beginTransaction(), fileAlertDialogFragment.getTag());
-        }
+        FileAlertDialogFragment fileAlertDialogFragment = new FileAlertDialogFragment();
+        fileAlertDialogFragment.show(fragmentManager.beginTransaction(), fileAlertDialogFragment.getTag());
 
     }
 

@@ -12,14 +12,13 @@ import dk.aau.netsec.hostage.protocol.Protocol;
 import dk.aau.netsec.hostage.protocol.utils.coapUtils.COAPHandler;
 
 public class COAPListener extends Listener {
-    private ArrayList<Handler> handlers = new ArrayList<>();
+    private final ArrayList<Handler> handlers = new ArrayList<>();
     private Thread thread;
     private Thread serverThread;
     private ConnectionRegister conReg;
     private boolean running = false;
-    private int defaultPort =5683;
 
-    private static Semaphore mutex = new Semaphore(1);
+    private static final Semaphore mutex = new Semaphore(1);
     /**
      * Constructor for the class. Instantiate class variables.
      *
@@ -102,6 +101,7 @@ public class COAPListener extends Listener {
     public void stop() { stopServer();}
 
     public void stopServer(){
+        int defaultPort = 5683;
         if(super.getPort() == defaultPort) {
             COAP.serverStop();
             if(serverThread!=null)

@@ -11,7 +11,7 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 public class BeaconEvent implements Event {
     private static final String PERSIST_FILENAME = "beaconInfo.json";
-    File file = new File("/data/data/" + MainActivity.getContext().getPackageName() + "/" + PERSIST_FILENAME);
+    final File file = new File("/data/data/" + MainActivity.getContext().getPackageName() + "/" + PERSIST_FILENAME);
 
     @Override
     public JSONObject toJSON() {

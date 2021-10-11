@@ -14,11 +14,11 @@ public class Record implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	//
-	private MessageRecord message;
+	private final MessageRecord message;
 	// attack
-	private AttackRecord attack;
+	private final AttackRecord attack;
 	// network
-	private NetworkRecord network;
+	private final NetworkRecord network;
 	
 	public Record(){
 		message = new MessageRecord();

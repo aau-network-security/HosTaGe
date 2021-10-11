@@ -1,7 +1,6 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,17 +24,13 @@ import dk.aau.netsec.hostage.system.Device;
  * @created 24.02.14 23:37
  * @modified Shreyas Srinivasa, Filip Adamik
  */
-public class SettingsFragment extends UpNavigatibleFragment {
+public class SettingsFragment extends UpNavigableFragment {
     private View v;
-    private Bundle savedInstanceState;
     private PcapLoggingManager mPcapLoggingManager;
-    private FragmentManager manager;
-    private Uri mFolderUri;
     private SwitchMaterial pcapSwitch;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        this.savedInstanceState = savedInstanceState;
         getActivity().setTitle(getResources().getString(R.string.drawer_settings));
 
         v = inflater.inflate(R.layout.fragment_settings, container, false);
@@ -65,7 +60,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        manager = getFragmentManager();
+        FragmentManager manager = getFragmentManager();
         manager.beginTransaction().replace(R.id.settings_fragment_container, new PreferenceHostageFragment()).commit();
     }
 
@@ -89,6 +84,7 @@ public class SettingsFragment extends UpNavigatibleFragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Uri mFolderUri;
         if (requestCode == PcapLoggingManager.ACTION_PICK_FOLDER_AND_ENABLE) {
             mFolderUri = data.getData();
             mPcapLoggingManager.locationSelected(mFolderUri, true);
@@ -154,27 +150,23 @@ public class SettingsFragment extends UpNavigatibleFragment {
     }
 
     /**
-     * Initialise the location setting by assinging an on-click listener and updating UI with
+     * Initialise the location setting by assigning an on-click listener and updating UI with
      * the location value from {@link PcapLoggingManager}
      */
     private void initialiseLocationSelector() {
         LinearLayout locationSelector = v.findViewById(R.id.pcap_location_preference);
-        locationSelector.setOnClickListener((View v) -> {
-            mPcapLoggingManager.selectLocation(this);
-        });
+        locationSelector.setOnClickListener((View v) -> mPcapLoggingManager.selectLocation(this));
 
         setLocationSummaryText();
     }
 
     /**
-     * Initialise log rotation setting by assinging an on-click listener and updating UI with
+     * Initialise log rotation setting by assigning an on-click listener and updating UI with
      * the value from {@link PcapLoggingManager}
      */
     private void initialiseRotationPeriodSelector() {
         LinearLayout logRotationSelector = v.findViewById(R.id.pcap_log_rotation_preference);
-        logRotationSelector.setOnClickListener((View v) -> {
-            showLogRotationSelectionDialog();
-        });
+        logRotationSelector.setOnClickListener((View v) -> showLogRotationSelectionDialog());
 
         setLogRotationPeriod();
     }
@@ -197,13 +189,10 @@ public class SettingsFragment extends UpNavigatibleFragment {
         // Create and display the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(R.string.pcap_log_rotation_dialog);
-        builder.setItems(durationItems, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mPcapLoggingManager.logRotationPeriodSelected(durations[which]);
+        builder.setItems(durationItems, (dialog, which) -> {
+            mPcapLoggingManager.logRotationPeriodSelected(durations[which]);
 
-                setLogRotationPeriod();
-            }
+            setLogRotationPeriod();
         });
         builder.show();
     }

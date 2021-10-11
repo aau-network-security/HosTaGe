@@ -68,11 +68,11 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
 
     private GoogleMap sMap = null;
     private MapView mapView = null;
-    private View rootView = null;
     private Thread mLoader = null;
-    private HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
+    private final HashMap<String, String> sMarkerIDToSSID = new HashMap<>();
     private String mLocationProvider;
     private LayoutInflater inflater;
+    private View rootView;
 
     // needed for LIVE threat map
     private boolean mReceiverRegistered = false;
@@ -524,7 +524,7 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
      * helper class
      * easier to use than LatLng
      */
-    private class Point {
+    private static class Point {
 
         public double x, y;
 
@@ -539,9 +539,10 @@ public class ThreatMapFragment extends TrackerFragment implements GoogleMap.OnIn
      * contains heuristic to split SSIDs by hostage.location
      * see MAX_DISTANCE
      */
-    private class SSIDArea {
+    private static class SSIDArea {
 
-        private Point mMinimum, mMaximum;
+        private final Point mMinimum;
+        private final Point mMaximum;
 
         public int numPoints;
 

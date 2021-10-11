@@ -7,12 +7,12 @@ import java.util.ArrayList;
  */
 public class PlotComparisonItem{
 
-    private Double value1;
-    private Double value2;
+    private final Double value1;
+    private final Double value2;
 
-    private String title;
+    private final String title;
 
-    private Integer color = 0;
+    private Integer color;
 
     private ArrayList<PlotComparisonItem> childItems;
 

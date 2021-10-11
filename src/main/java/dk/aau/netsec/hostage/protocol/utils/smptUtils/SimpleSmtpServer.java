@@ -95,12 +95,7 @@ final class SimpleSmtpServer implements AutoCloseable {
         this.receivedMail = new ArrayList<>();
         this.serverSocket = serverSocket;
         this.workerThread = new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        performWork();
-                    }
-                });
+                this::performWork);
         this.workerThread.start();
     }
 
@@ -168,7 +163,6 @@ final class SimpleSmtpServer implements AutoCloseable {
             // Server: loop until stopped
             while (!stopped) {
                 // Start server socket and listen for client connections
-                //noinspection resource
                 try (Socket socket = serverSocket.accept();
                      Scanner input = new Scanner(new InputStreamReader(socket.getInputStream(), StandardCharsets.ISO_8859_1)).useDelimiter(CRLF);
                      PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.ISO_8859_1));) {
@@ -201,9 +195,8 @@ final class SimpleSmtpServer implements AutoCloseable {
      * @param out   output stream
      * @param input input stream
      * @return List of SmtpMessage
-     * @throws IOException
      */
-    private static List<SmtpMessage> handleTransaction(PrintWriter out, Iterator<String> input) throws IOException {
+    private static List<SmtpMessage> handleTransaction(PrintWriter out, Iterator<String> input) {
         // Initialize the state machine
         SmtpState smtpState = SmtpState.CONNECT;
         SmtpRequest smtpRequest = new SmtpRequest(SmtpActionType.CONNECT, "", smtpState);

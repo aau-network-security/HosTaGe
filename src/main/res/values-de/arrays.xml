@@ -6,11 +6,5 @@
         <item>JSON</item>
     </string-array>
 
-    <string-array name="delete_criteria">
-        <item>BSSID</item>
-        <item>Datum</item>
-        <item>Alle</item>
-    </string-array>
-
 
 </resources>

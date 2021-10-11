@@ -25,14 +25,12 @@ public class MQTT implements Protocol {
 
     private static final String TAG = "MQTT";
     private int port = 1883;
-    private String defaultPort = "1883";
-    private String defaultAddress = "0.0.0.0";
     private static final int brokerPort = 1883;
     private static boolean brokerStarted = false; //prevents the server from starting multiple times from the threads
     // private static final String MQTT_URI = "broker.mqttdashboard.com";
     private static final String MQTT_URI = "localhost";
     private static final io.moquette.broker.Server broker = new io.moquette.broker.Server();
-    private MQTTHandler handler = new MQTTHandler();
+    private final MQTTHandler handler = new MQTTHandler();
 
     public MQTT() {
         if (!brokerStarted)
@@ -75,13 +73,12 @@ public class MQTT implements Protocol {
      * @return a MQTT5 client
      */
     public Mqtt5BlockingClient clientMQtt5() {
-        Mqtt5BlockingClient client = Mqtt5Client.builder()
+
+        return Mqtt5Client.builder()
                 .identifier(UUID.randomUUID().toString())
                 .serverHost(MQTT_URI)
                 .serverPort(brokerPort)
                 .buildBlocking();
-
-        return client;
 
     }
 
@@ -91,13 +88,12 @@ public class MQTT implements Protocol {
      * @return a MQTT3 client
      */
     public Mqtt3BlockingClient client(String clientId) {
-        Mqtt3BlockingClient client = Mqtt3Client.builder()
+
+        return Mqtt3Client.builder()
                 .identifier(clientId)
                 .serverHost(MQTT_URI)
                 .serverPort(brokerPort)
                 .buildBlocking();
-
-        return client;
 
     }
 
@@ -126,6 +122,8 @@ public class MQTT implements Protocol {
      * @return
      */
     private MemoryConfig getConfig() {
+        String defaultAddress = "0.0.0.0";
+        String defaultPort = "1883";
         MQTTConfig config = new MQTTConfig(defaultPort, defaultAddress);
         return config.configBroker();
     }

@@ -38,38 +38,20 @@ import io.moquette.broker.config.MemoryConfig;
  */
 
 public class MQTTConfig {
-    private String port ="port";
     private String portValue="1883";
-    private String host="host";
     private String hostValue="0.0.0.0";
-    private String websocket_port="websocket_port";
-    private String websocket_port_value="8080";
-    private String password_file= "password_file";
-    private String password_file_value= "password_file.conf";
-    private String ssl_port="ssl_port";
-    private String ssl_port_value="8883";
-    private String jks_path="jks_path";
-    private String jks_path_value="serverkeystore.jks";
-    private String key_store_password="key_store_password";
-    private String key_store_passwordValue="passw0rdsrv";
-    private String key_manager_password="key_manager_password";
-    private String key_manager_passwordValue="passw0rdsrv";
-    private String allow_anonymous="allow_anonymous";
-    private String allow_anonymous_value="true";
-    private String reauthorize_subscriptions_on_connect="reauthorize_subscriptions_on_connect";
-    private String reauthorize_subscriptions_on_connectValue="false";
+    private final String websocket_port="websocket_port";
+    private final String password_file= "password_file";
+    private final String ssl_port="ssl_port";
+    private final String jks_path="jks_path";
+    private final String key_store_password="key_store_password";
+    private final String key_manager_password="key_manager_password";
+    private final String allow_anonymous="allow_anonymous";
+    private final String reauthorize_subscriptions_on_connect="reauthorize_subscriptions_on_connect";
 
     public MQTTConfig(String portValue, String hostValue, String websocket_port_value, String password_file_value, String ssl_port_value, String jks_path_value, String key_store_passwordValue, String key_manager_passwordValue, String allow_anonymous_value, String reauthorize_subscriptions_on_connectValue) {
         this.portValue = portValue;
         this.hostValue = hostValue;
-        this.websocket_port_value = websocket_port_value;
-        this.password_file_value = password_file_value;
-        this.ssl_port_value = ssl_port_value;
-        this.jks_path_value = jks_path_value;
-        this.key_store_passwordValue = key_store_passwordValue;
-        this.key_manager_passwordValue = key_manager_passwordValue;
-        this.allow_anonymous_value = allow_anonymous_value;
-        this.reauthorize_subscriptions_on_connectValue = reauthorize_subscriptions_on_connectValue;
     }
 
     public MQTTConfig(String portValue, String hostValue) {
@@ -79,8 +61,10 @@ public class MQTTConfig {
 
     public MemoryConfig configBroker(){
         MemoryConfig memoryConfig = new MemoryConfig(new Properties());
-        memoryConfig.setProperty(this.port,this.portValue);
-        memoryConfig.setProperty(this.host,this.hostValue);
+        String port = "port";
+        memoryConfig.setProperty(port,this.portValue);
+        String host = "host";
+        memoryConfig.setProperty(host,this.hostValue);
 
         return memoryConfig;
     }

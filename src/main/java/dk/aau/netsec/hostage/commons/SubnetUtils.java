@@ -275,7 +275,7 @@ public class SubnetUtils {
          * Convert a packed integer address into a 4-element array
          */
         private int[] toArray(int val) {
-            int ret[] = new int[4];
+            int[] ret = new int[4];
             for (int j = 3; j >= 0; --j) {
                 ret[j] |= ((val >>> 8*(3-j)) & (0xff));
             }
@@ -302,15 +302,13 @@ public class SubnetUtils {
          */
         @Override
         public String toString() {
-            final StringBuilder buf = new StringBuilder();
-            buf.append("CIDR Signature:\t[").append(getCidrSignature()).append("]")
-                    .append(" Netmask: [").append(getNetmask()).append("]\n")
-                    .append("Network:\t[").append(getNetworkAddress()).append("]\n")
-                    .append("Broadcast:\t[").append(getBroadcastAddress()).append("]\n")
-                    .append("First Address:\t[").append(getLowAddress()).append("]\n")
-                    .append("Last Address:\t[").append(getHighAddress()).append("]\n")
-                    .append("# Addresses:\t[").append(getAddressCount()).append("]\n");
-            return buf.toString();
+            return "CIDR Signature:\t[" + getCidrSignature() + "]" +
+                    " Netmask: [" + getNetmask() + "]\n" +
+                    "Network:\t[" + getNetworkAddress() + "]\n" +
+                    "Broadcast:\t[" + getBroadcastAddress() + "]\n" +
+                    "First Address:\t[" + getLowAddress() + "]\n" +
+                    "Last Address:\t[" + getHighAddress() + "]\n" +
+                    "# Addresses:\t[" + getAddressCount() + "]\n";
         }
     }
 

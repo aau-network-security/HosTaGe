@@ -3,7 +3,6 @@ package dk.aau.netsec.hostage.protocol.utils.mqttUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,20 +29,20 @@ import io.moquette.interception.messages.InterceptSubscribeMessage;
 import io.moquette.interception.messages.InterceptUnsubscribeMessage;
 
 public class MQTTHandler {
-    private static ArrayList<InterceptPublishMessage> publishMessages = new ArrayList<>();
-    private static ArrayList<InterceptPublishMessage> currentPublishMessages = new ArrayList<>();
+    private static final ArrayList<InterceptPublishMessage> publishMessages = new ArrayList<>();
+    private static final ArrayList<InterceptPublishMessage> currentPublishMessages = new ArrayList<>();
 
-    private static ArrayList<InterceptConnectMessage> interceptConnectMessages = new ArrayList<>();
-    private static ArrayList<InterceptConnectMessage> currentConnectedMessages = new ArrayList<>();
+    private static final ArrayList<InterceptConnectMessage> interceptConnectMessages = new ArrayList<>();
+    private static final ArrayList<InterceptConnectMessage> currentConnectedMessages = new ArrayList<>();
 
-    private static ArrayList<InterceptDisconnectMessage> interceptDisconnectMessages = new ArrayList<>();
-    private static ArrayList<InterceptConnectionLostMessage> interceptConnectionLostMessages = new ArrayList<>();
+    private static final ArrayList<InterceptDisconnectMessage> interceptDisconnectMessages = new ArrayList<>();
+    private static final ArrayList<InterceptConnectionLostMessage> interceptConnectionLostMessages = new ArrayList<>();
 
-    private static ArrayList<InterceptSubscribeMessage> interceptSubscribeMessages = new ArrayList<>();
-    private static ArrayList<InterceptSubscribeMessage> currentSubscribeMessages = new ArrayList<>();
+    private static final ArrayList<InterceptSubscribeMessage> interceptSubscribeMessages = new ArrayList<>();
+    private static final ArrayList<InterceptSubscribeMessage> currentSubscribeMessages = new ArrayList<>();
 
-    private static ArrayList<InterceptUnsubscribeMessage> interceptUnsubscribeMessages = new ArrayList<>();
-    private static ArrayList<InterceptAcknowledgedMessage> interceptAcknowledgedMessages = new ArrayList<>();
+    private static final ArrayList<InterceptUnsubscribeMessage> interceptUnsubscribeMessages = new ArrayList<>();
+    private static final ArrayList<InterceptAcknowledgedMessage> interceptAcknowledgedMessages = new ArrayList<>();
 
     private final static int brokerPort = 1883;
     private static String packet = "";
@@ -58,7 +57,7 @@ public class MQTTHandler {
                 InterceptConnectionLostMessage.class, InterceptPublishMessage.class, InterceptSubscribeMessage.class,
                 InterceptUnsubscribeMessage.class, InterceptAcknowledgedMessage.class};
 
-        InterceptHandler handler = new InterceptHandler() {
+        return new InterceptHandler() {
             @Override
             public String getID() {
                 return null;
@@ -106,7 +105,6 @@ public class MQTTHandler {
                 interceptAcknowledgedMessages.add(interceptAcknowledgedMessage);
             }
         };
-        return handler;
     }
 
     public static ArrayList<InterceptPublishMessage> getPublishMessages() {
@@ -190,8 +188,7 @@ public class MQTTHandler {
     private synchronized static boolean discoverOtherClients(){
         CopyOnWriteArrayList<InterceptConnectMessage> clients = new CopyOnWriteArrayList<> (getCurrentConnectedMessages());
         if(!clients.isEmpty()) {
-            for (Iterator<InterceptConnectMessage> iterator = clients.iterator(); iterator.hasNext();) {
-                InterceptConnectMessage item = iterator.next();
+            for (InterceptConnectMessage item : clients) {
                 if (item != null) {
                     if (!item.getClientID().equals(SensorProfile.getClientID())) {
                         return true;

@@ -7,9 +7,9 @@ import androidx.fragment.app.Fragment;
  * @author Alexander Brakowski
  * @created 12.03.14 16:20
  */
-public abstract class UpNavigatibleFragment extends Fragment {
+public abstract class UpNavigableFragment extends Fragment {
 	private Class<?> mUpFragment;
-	private boolean mIsUpNavigatible = false;
+	private boolean mIsUpNavigable = false;
 
 	private boolean mAllowBack = false;
 
@@ -21,12 +21,12 @@ public abstract class UpNavigatibleFragment extends Fragment {
 		this.mUpFragment = upFragment;
 	}
 
-	public boolean isUpNavigatible(){
-		return mIsUpNavigatible;
+	public boolean isUpNavigable(){
+		return mIsUpNavigable;
 	}
 
-	public void setUpNavigatible(boolean isUpNavigatible){
-		this.mIsUpNavigatible = isUpNavigatible;
+	public void setUpNavigable(boolean isUpNavigable){
+		this.mIsUpNavigable = isUpNavigable;
 	}
 
 	public boolean getAllowBack(){

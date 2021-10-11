@@ -65,7 +65,6 @@ public class CustomLocationManager {
             for (LocationSource.OnLocationChangedListener listener : mListOfListeners) {
                 listener.onLocationChanged(location);
             }
-
         };
 
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);

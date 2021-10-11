@@ -29,9 +29,8 @@ import dk.aau.netsec.hostage.ui.model.LogFilter;
 import static dk.aau.netsec.hostage.persistence.DAO.SyncDeviceDAO.thisDevice;
 
 public class AttackRecordDAO extends DAO {
-    private DaoSession daoSession;
+    private final DaoSession daoSession;
     private Context context;
-    private int limit = 20; //limit for the details Conversation
 
 
     public AttackRecordDAO(DaoSession daoSession) {
@@ -85,9 +84,7 @@ public class AttackRecordDAO extends DAO {
         qb.orderDesc(AttackRecordDao.Properties.Attack_id).build();
         qb.offset(offset).limit(limit).build();
 
-        ArrayList<AttackRecord> attackRecords = (ArrayList<AttackRecord>) qb.list();
-
-        return attackRecords;
+        return (ArrayList<AttackRecord>) qb.list();
     }
 
     public long getRecordsCount() {
@@ -102,7 +99,7 @@ public class AttackRecordDAO extends DAO {
      */
     synchronized public void addAttackRecord(AttackRecord record) {
         this.insert(record);
-        ArrayList<SyncDevice> devices = new ArrayList<SyncDevice>();
+        ArrayList<SyncDevice> devices = new ArrayList<>();
         devices.add(SyncDevice.currentDevice());
         SyncDeviceDAO deviceDAO = new SyncDeviceDAO(this.daoSession, context);
         if (thisDevice != null)
@@ -139,9 +136,8 @@ public class AttackRecordDAO extends DAO {
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
 
         QueryBuilder<AttackRecord> qb = recordDao.queryBuilder().where(AttackRecordDao.Properties.Protocol.eq(protocol));
-        ArrayList<AttackRecord> records = (ArrayList<AttackRecord>) qb.list();
 
-        return records;
+        return (ArrayList<AttackRecord>) qb.list();
 
     }
 
@@ -158,9 +154,8 @@ public class AttackRecordDAO extends DAO {
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
 
         QueryBuilder<AttackRecord> qb = recordDao.queryBuilder().where(AttackRecordDao.Properties.Protocol.eq(protocol));
-        int result = (int) qb.buildCount().count();
 
-        return result;
+        return (int) qb.buildCount().count();
 
     }
 
@@ -186,7 +181,7 @@ public class AttackRecordDAO extends DAO {
     }
 
     /**
-     * Determines the number of recorded attacks for a specific protocol and accesss point since the given attack_id.
+     * Determines the number of recorded attacks for a specific protocol and access point since the given attack_id.
      *
      * @param protocol  The String representation of the
      *                  {@link Protocol
@@ -202,9 +197,7 @@ public class AttackRecordDAO extends DAO {
         qb.where(AttackRecordDao.Properties.Protocol.eq(protocol),
                 qb.and(AttackRecordDao.Properties.Attack_id.eq(attack_id), AttackRecordDao.Properties.Bssid.eq(bssid)));
 
-        int result = (int) qb.buildCount().count();
-
-        return result;
+        return (int) qb.buildCount().count();
 
     }
 
@@ -274,7 +267,7 @@ public class AttackRecordDAO extends DAO {
 
     public synchronized int getNumAttacksSeenByBSSID(String BSSID) {
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
-        int result = 0;
+        int result;
         if (BSSID != null) {
             QueryBuilder<AttackRecord> qb = recordDao.queryBuilder().where(AttackRecordDao.Properties.Bssid.eq(BSSID));
 
@@ -291,8 +284,7 @@ public class AttackRecordDAO extends DAO {
         QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
         qb.where(AttackRecordDao.Properties.Bssid.eq(BSSID), AttackRecordDao.Properties.Protocol.eq(protocol));
 
-        int result = (int) qb.count();
-        return result;
+        return (int) qb.count();
     }
 
     private void setMaxIDinDevices() {
@@ -300,7 +292,7 @@ public class AttackRecordDAO extends DAO {
         ArrayList<SyncDevice> allDevices = deviceDAO.getSyncDevices();
         long highestID = 0;
         for (SyncDevice device : allDevices) {
-            Long sync_id = Long.valueOf(device.getDeviceID());
+            long sync_id = Long.parseLong(device.getDeviceID());
 
             highestID = device.getHighest_attack_id();
             if (sync_id != 0 && highestID < sync_id) highestID = sync_id;
@@ -331,7 +323,7 @@ public class AttackRecordDAO extends DAO {
     private void updateDevicesNoID(SyncDevice ownDevice, long highestID) {
         if (highestID != ownDevice.getHighest_attack_id()) {
             // THERE WERE ATTACKS WITHOUT A DEVICE ID
-            ArrayList<SyncDevice> devices = new ArrayList<SyncDevice>();
+            ArrayList<SyncDevice> devices = new ArrayList<>();
             devices.add(ownDevice);
             SyncDeviceDAO deviceDAO = new SyncDeviceDAO(this.daoSession, this.context);
             deviceDAO.updateSyncDevices(devices);
@@ -422,7 +414,7 @@ public class AttackRecordDAO extends DAO {
         MessageRecordDAO messageRecordDAO = new MessageRecordDAO(this.daoSession);
         ArrayList<AttackRecord> attackRecords = this.selectionQueryFromFilter(filter);
         ArrayList<MessageRecord> records = messageRecordDAO.selectionQueryFromFilter(filter);
-        ArrayList<MessageRecord> messageRecords = new ArrayList<>();
+        ArrayList<MessageRecord> messageRecords;
 
         ArrayList<NetworkRecord> distinctNetworkRecords = distinctNetworkRecords(filter);
         messageRecords = updatedMessageRecordsFields(attackRecords, distinctNetworkRecords, records);
@@ -432,17 +424,16 @@ public class AttackRecordDAO extends DAO {
 
     public synchronized ArrayList<RecordAll> getRecordsForFilterMutliStage(LogFilter filter) {
         MessageRecordDAO messageRecordDAO = new MessageRecordDAO(this.daoSession);
-        ArrayList<RecordAll> allRecords = new ArrayList<>(messageRecordDAO.selectionQueryFromFilterMultiStage(filter));
 
-        return allRecords;
+        return new ArrayList<>(messageRecordDAO.selectionQueryFromFilterMultiStage(filter));
     }
 
     public synchronized ArrayList<RecordAll> getRecordsForFilter(LogFilter filter, int offset, int limit, int attackRecordOffset, int attackRecordLimit) {
         MessageRecordDAO messageRecordDAO = new MessageRecordDAO(this.daoSession);
         ArrayList<AttackRecord> attackRecords = this.selectionQueryFromFilter(filter, attackRecordOffset, attackRecordLimit);
         ArrayList<MessageRecord> records = messageRecordDAO.selectionQueryFromFilter(filter, 0, limit);
-        ArrayList<MessageRecord> messageRecords = new ArrayList<>();
-        ArrayList<MessageRecord> filterProtocolRecords = new ArrayList<>();
+        ArrayList<MessageRecord> messageRecords;
+        ArrayList<MessageRecord> filterProtocolRecords;
 
         ArrayList<NetworkRecord> distinctNetworkRecords = distinctNetworkRecords(filter);
 
@@ -467,7 +458,7 @@ public class AttackRecordDAO extends DAO {
 
 
     private ArrayList<MessageRecord> updatedMessageRecordsFields(ArrayList<AttackRecord> attackRecords, ArrayList<NetworkRecord> distinctNetworkRecords, ArrayList<MessageRecord> records) {
-        ArrayList<AttackRecord> updatedAttackRecords = new ArrayList<>();
+        ArrayList<AttackRecord> updatedAttackRecords;
         updatedAttackRecords = addNetworkFields(attackRecords, distinctNetworkRecords);
 
         return addMessageRecordFields(updatedAttackRecords, records);
@@ -502,7 +493,7 @@ public class AttackRecordDAO extends DAO {
     }
 
     private ArrayList<RecordAll> sortLists(LogFilter filter, ArrayList<MessageRecord> messageRecords) {
-        ArrayList<MessageRecord> sorted = new ArrayList<>();
+        ArrayList<MessageRecord> sorted;
         ArrayList<RecordAll> allRecords = new ArrayList<>();
         if (filter == null) {
             allRecords.addAll(messageRecords);
@@ -627,6 +618,8 @@ public class AttackRecordDAO extends DAO {
         MessageRecordDao recordDao = this.daoSession.getMessageRecordDao();
 
         QueryBuilder<MessageRecord> qb = recordDao.queryBuilder();
+        //limit for the details Conversation
+        int limit = 20;
         qb.limit(limit);
         qb.where(MessageRecordDao.Properties.Attack_id.eq(attack_id));
         ArrayList<MessageRecord> attackRecords = (ArrayList<MessageRecord>) qb.list();
@@ -674,7 +667,7 @@ public class AttackRecordDAO extends DAO {
         AttackRecordDao recordDao = this.daoSession.getAttackRecordDao();
         NetworkRecordDAO networkRecordDAO = new NetworkRecordDAO(this.daoSession);
         ArrayList<NetworkRecord> networkRecords = networkRecordDAO.getNetworkInformation();
-        ArrayList<AttackRecord> updatedAttackRecords = new ArrayList<>();
+        ArrayList<AttackRecord> updatedAttackRecords;
 
         QueryBuilder<AttackRecord> qb = recordDao.queryBuilder();
         qb.orderDesc(AttackRecordDao.Properties.Attack_id);
@@ -687,9 +680,8 @@ public class AttackRecordDAO extends DAO {
             return null;
 
         updatedAttackRecords = this.addNetworkFields(attackRecords, networkRecords);
-        AttackRecord attackRecord = updatedAttackRecords.get(0);
 
-        return attackRecord;
+        return updatedAttackRecords.get(0);
     }
 
     /**
@@ -702,38 +694,37 @@ public class AttackRecordDAO extends DAO {
 
         ArrayList<String> ips = new ArrayList<>();
         attackRecords.stream().filter(o -> ips.add(o.getRemoteIP())).collect(Collectors.toList());
-        ArrayList<String> distinctIps = (ArrayList<String>) ips.stream().distinct().collect(Collectors.toList());
 
-        return distinctIps;
+        return (ArrayList<String>) ips.stream().distinct().collect(Collectors.toList());
 
     }
 
     public ArrayList<MessageRecord> sortFilter(LogFilter filter, ArrayList<MessageRecord> list) {
         switch (filter.getSorttype().getValue()) {
             case 0:
-                Collections.sort(list, new DateRecordComparator());
+                list.sort(new DateRecordComparator());
                 return list;
             case 1:
-                Collections.sort(list, (o1, o2) -> o1.getProtocol().compareTo(o2.getProtocol()));
+                list.sort(Comparator.comparing(RecordAll::getProtocol));
                 return list;
             case 2:
-                Collections.sort(list, (o1, o2) -> o1.getSsid().compareTo(o2.getSsid()));
+                list.sort(Comparator.comparing(RecordAll::getSsid));
                 return list;
             case 3:
-                Collections.sort(list, (o1, o2) -> o1.getBssid().compareTo(o2.getBssid()));
+                list.sort(Comparator.comparing(RecordAll::getBssid));
                 return list;
             case 7:
-                Collections.sort(list, (o1, o2) -> Long.compare(o1.getAttack_id(), o2.getAttack_id()));
+                list.sort(Comparator.comparingLong(MessageRecord::getAttack_id));
                 return list;
             case 8:
-                Collections.sort(list, (o1, o2) -> Long.compare(o1.getId(), o2.getId()));
+                list.sort(Comparator.comparingLong(MessageRecord::getId));
                 return list;
             default:
                 return list;
         }
     }
 
-    class DateRecordComparator implements Comparator<RecordAll> {
+    static class DateRecordComparator implements Comparator<RecordAll> {
 
         @Override
         public int compare(RecordAll recordAll, RecordAll t1) {

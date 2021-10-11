@@ -20,7 +20,7 @@ public class MOCreator {
         if(value instanceof String) {
             return new OctetString((String) value);
         }
-        throw new IllegalArgumentException("Ummanaged Type:"+value.getClass());
+        throw new IllegalArgumentException("Unmanaged Type:"+value.getClass());
     }
 
 }

@@ -3,7 +3,6 @@ package dk.aau.netsec.hostage.ui.dialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
@@ -34,7 +33,7 @@ public class DateTimePickerDialog {
      *
      * @param context    Application context
      * @param filterFrom A flag that is passed back in the callback, indicating whether this was
-     *                   triggerred from the <i>before</i> or <i>after</i> filter.
+     *                   triggered from the <i>before</i> or <i>after</i> filter.
      * @param callback   The interface implementation where the date and time value is passed.
      */
     public static void showDateTimePicker(@NonNull Context context, boolean filterFrom, @NonNull DateTimeSelected callback) {
@@ -42,20 +41,14 @@ public class DateTimePickerDialog {
 
         final Calendar currentDate = Calendar.getInstance();
         date = Calendar.getInstance();
-        new DatePickerDialog(context, R.style.CustomDateTimePicker, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                date.set(year, monthOfYear, dayOfMonth);
-                new TimePickerDialog(context, R.style.CustomDateTimePicker, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        date.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        date.set(Calendar.MINUTE, minute);
+        new DatePickerDialog(context, R.style.CustomDateTimePicker, (view, year, monthOfYear, dayOfMonth) -> {
+            date.set(year, monthOfYear, dayOfMonth);
+            new TimePickerDialog(context, R.style.CustomDateTimePicker, (view1, hourOfDay, minute) -> {
+                date.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                date.set(Calendar.MINUTE, minute);
 
-                        callback.dateTimeSelected(date, filterFrom);
-                    }
-                }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show();
-            }
+                callback.dateTimeSelected(date, filterFrom);
+            }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show();
         }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
 
     }

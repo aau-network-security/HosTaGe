@@ -11,11 +11,11 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
  * @created 14.01.14 18:04
  */
 public class ProfileListItem {
-    public String label;
-    public String text;
+    public final String label;
+    public final String text;
 
-    public boolean activated;
-    public Bitmap icon;
+    public final boolean activated;
+    public final Bitmap icon;
 
 	public boolean isBackVisible = false;
 

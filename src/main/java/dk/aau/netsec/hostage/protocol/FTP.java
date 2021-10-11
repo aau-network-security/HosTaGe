@@ -60,7 +60,7 @@ public class FTP implements Protocol {
 		if (requestPacket != null) {
 			request = requestPacket.toString();
 		}
-		List<Packet> responsePackets = new ArrayList<Packet>();
+		List<Packet> responsePackets = new ArrayList<>();
 		switch (state) {
 		case NONE:
 			if (request == null) {

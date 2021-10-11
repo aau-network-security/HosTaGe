@@ -48,7 +48,7 @@ public class FileInject {
         return fListener;
     }
 
-    public void startListner(Listener fListener) {
+    public void startListener(Listener fListener) {
         this.fListener = fListener;
         Hostage service = fListener.getService();
         fpref = PreferenceManager.getDefaultSharedPreferences(service);

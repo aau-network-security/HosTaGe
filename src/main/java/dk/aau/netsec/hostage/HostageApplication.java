@@ -16,10 +16,8 @@ import dk.aau.netsec.hostage.logging.DaoSession;
  */
 public class HostageApplication extends Application {
 	private Tracker mAppTracker = null;
-	private DaoMaster.DevOpenHelper mHelper;
-	private SQLiteDatabase db;
-	private DaoMaster mDaoMaster;
-	private DaoSession mDaoSession;
+    private SQLiteDatabase db;
+    private DaoSession mDaoSession;
 	public static HostageApplication instances;
 
 
@@ -50,10 +48,10 @@ public class HostageApplication extends Application {
 	 */
 	private void setDatabase() {
 		// Note: The default DaoMaster.DevOpenHelper deletes all tables when the database is upgraded, meaning that this will result in data loss.
-		mHelper = new DaoMaster.DevOpenHelper(this, "hostage-db", null);
+        DaoMaster.DevOpenHelper mHelper = new DaoMaster.DevOpenHelper(this, "hostage-db", null);
 		db = mHelper.getWritableDatabase();
 		// Note: This database connection belongs to DaoMaster, so multiple sessions refer to the same database connection.
-		mDaoMaster = new DaoMaster(db);
+        DaoMaster mDaoMaster = new DaoMaster(db);
 		mDaoSession = mDaoMaster.newSession();
 
 	}

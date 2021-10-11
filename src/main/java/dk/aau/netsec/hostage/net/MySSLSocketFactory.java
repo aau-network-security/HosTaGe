@@ -20,7 +20,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
  * SocketFactory to create a SSL socket that accepts every certificate.
  */
 public class MySSLSocketFactory extends SSLSocketFactory {
-	private SSLContext sslContext = SSLContext.getInstance("TLS");
+	private final SSLContext sslContext = SSLContext.getInstance("TLS");
 
 	public MySSLSocketFactory(KeyStore truststore)
 			throws NoSuchAlgorithmException, KeyManagementException,
@@ -31,12 +31,12 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 
 			@Override
 			public void checkClientTrusted(X509Certificate[] chain,
-					String authType) throws CertificateException {
+					String authType) {
 			}
 
 			@Override
 			public void checkServerTrusted(X509Certificate[] chain,
-					String authType) throws CertificateException {
+					String authType) {
 			}
 
 			@Override

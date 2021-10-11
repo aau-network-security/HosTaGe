@@ -111,7 +111,7 @@ public final class HelperUtils {
     public static String bytesToHexString(byte[] bytes) {
         char[] hexArray = "0123456789ABCDEF".toCharArray();
         int v;
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int j = 0; j < bytes.length; j++) {
             v = bytes[j] & 0xFF;
             buffer.append(hexArray[v >>> 4]);
@@ -196,7 +196,7 @@ public final class HelperUtils {
      */
     public static byte[] fillWithZeroExtended(byte[] bytes) {
         byte[] zeroBytes = fillWithZero(bytes);
-        byte[] newBytes = new byte[zeroBytes.length + 2];
+        byte[] newBytes;
         newBytes = HelperUtils.concat(zeroBytes, new byte[]{0x00, 0x00});
         return newBytes;
     }
@@ -352,7 +352,7 @@ public final class HelperUtils {
      * @return MAC address of the device.
      */
     public static String getMacAdress(Context context) {
-        String mac = null;
+        String mac;
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         WifiInfo connectionInfo = wifiManager.getConnectionInfo();
         mac = connectionInfo.getMacAddress();
@@ -480,10 +480,10 @@ public final class HelperUtils {
 
 
             if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
-                return isMobileConn |= networkInfo.isConnected();
+                return isMobileConn = networkInfo.isConnected();
             }
         }
-        return isMobileConn;
+        return false;
     }
 
     public static boolean isCellurarConnected(Context context) {
@@ -491,10 +491,8 @@ public final class HelperUtils {
         if (context == null) return false;
         ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        boolean connected = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
+        return connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
                 .isConnectedOrConnecting();
-
-        return connected;
 
     }
 
@@ -620,13 +618,12 @@ public final class HelperUtils {
 
 
     public static String intToStringIp(int internalIPAddress) {
-        String internalIp = String.format("%d.%d.%d.%d",
+
+        return String.format("%d.%d.%d.%d",
                 (internalIPAddress & 0xff),
                 (internalIPAddress >> 8 & 0xff),
                 (internalIPAddress >> 16 & 0xff),
                 (internalIPAddress >> 24 & 0xff));
-
-        return internalIp;
     }
 
 

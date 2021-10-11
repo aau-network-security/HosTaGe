@@ -1,93 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  android:orientation="vertical"
-			  android:layout_width="fill_parent"
-			  android:layout_height="fill_parent"
-			  android:gravity="center_horizontal">
-	<TableLayout
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="16dp" android:layout_marginBottom="16dp">
-		<TableRow
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent">
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:text="@string/ssid"
-					android:id="@+id/textView1" android:layout_column="0"
-					android:layout_margin="4dp"
-					android:textColor="?attr/colorOnBackground"
-					android:textStyle="bold"/>
-			<TextView
-					android:layout_width="fill_parent"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:id="@+id/connectioninfo_ssid_value" android:layout_column="1"
-					android:textColor="?attr/colorOnBackground"
-					android:layout_margin="4dp" android:gravity="right"/>
-		</TableRow>
-		<TableRow
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent">
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:text="@string/bssid"
-					android:id="@+id/txtP2PSubheader" android:layout_column="0"
-					android:layout_margin="4dp"
-					android:textColor="?attr/colorOnBackground"
-					android:textStyle="bold"/>
-			<TextView
-					android:layout_width="fill_parent"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:id="@+id/connectioninfo_bssid_value" android:layout_column="1"
-					android:textColor="?attr/colorOnBackground"
-					android:layout_margin="4dp" android:gravity="right"/>
-		</TableRow>
-		<TableRow
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent">
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:text="@string/internal_ip"
-					android:id="@+id/textView3" android:layout_column="0"
-					android:layout_margin="4dp"
-					android:textColor="?attr/colorOnBackground"
-					android:textStyle="bold"/>
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:id="@+id/connectioninfo_internalip_value" android:layout_column="1"
-					android:textColor="?attr/colorOnBackground"
-					android:layout_margin="4dp" android:gravity="right"/>
-		</TableRow>
-		<TableRow
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent">
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:text="@string/external_ip"
-					android:id="@+id/record_details_text_bssid" android:layout_column="0"
-					android:layout_margin="4dp"
-					android:textColor="?attr/colorOnBackground"
-					android:textStyle="bold"/>
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceMedium"
-					android:id="@+id/connectioninfo_externalip_value" android:layout_column="1"
-					android:textColor="?attr/colorOnBackground"
-					android:layout_margin="4dp" android:gravity="right"/>
-		</TableRow>
-	</TableLayout>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:id="@+id/ssid_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_margin="4dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?attr/colorOnBackground"
+                android:textStyle="bold"
+                tools:text="SSID:" />
+
+            <TextView
+                android:id="@+id/connectioninfo_ssid_value"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_margin="4dp"
+                android:gravity="right"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?attr/colorOnBackground" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:id="@+id/bssid_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_margin="4dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?attr/colorOnBackground"
+                android:textStyle="bold"
+                tools:text="BSSID: " />
+
+            <TextView
+                android:id="@+id/connectioninfo_bssid_value"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_margin="4dp"
+                android:gravity="right"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?attr/colorOnBackground" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:id="@+id/internal_ip_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_margin="4dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?attr/colorOnBackground"
+                android:textStyle="bold"
+                tools:text="Internal IP:" />
+
+            <TextView
+                android:id="@+id/connectioninfo_internalip_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_margin="4dp"
+                android:gravity="right"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?attr/colorOnBackground" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:id="@+id/external_ip_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_margin="4dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?attr/colorOnBackground"
+                android:textStyle="bold"
+                tools:text="External IP:" />
+
+            <TextView
+                android:id="@+id/connectioninfo_externalip_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_margin="4dp"
+                android:gravity="right"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?attr/colorOnBackground" />
+        </TableRow>
+    </TableLayout>
 </LinearLayout>

@@ -15,7 +15,7 @@ import android.os.IBinder;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import dk.aau.netsec.hostage.Hostage;
@@ -47,12 +47,11 @@ public class MultiStage extends Service {
     int stackLport;
     String stackssid;
     String stackbssid;
-    private DaoSession dbSession;
     private DAOHelper daoHelper;
     Notification notification;
     NotificationManager manager;
-    private static int offset = 0;
-    private int limit = 50;
+    private static final int offset = 0;
+    private final int limit = 50;
     private int size;
     List<RecordAll> recordArray = new ArrayList<>();
 
@@ -68,17 +67,17 @@ public class MultiStage extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        DaoSession dbSession;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             dbSession = HostageApplication.getInstances().getDaoSession();
             daoHelper = new DAOHelper(dbSession, this);
             startCustomForeground();
-            fetchData();
         } else {
             dbSession = HostageApplication.getInstances().getDaoSession();
             daoHelper = new DAOHelper(dbSession, this);
             startForeground(1, new Notification());
-            fetchData();
         }
+        fetchData();
     }
 
     @Override
@@ -166,9 +165,7 @@ public class MultiStage extends Service {
 
     private void sortListIPs() {
         if (!recordArray.isEmpty())
-            Collections.sort(recordArray, (one, other) -> {
-                return one.getRemoteIP().compareTo(other.getRemoteIP());
-            });
+            recordArray.sort(Comparator.comparing(RecordAll::getRemoteIP));
 
     }
 
@@ -241,7 +238,8 @@ public class MultiStage extends Service {
         manager.createNotificationChannel(chan);
 
         Notification.Builder notificationBuilder = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID);
-        notificationBuilder.setContentTitle("MultiStage").setContentText("MultiStage running...").setSmallIcon(R.drawable.ic_launcher);
+        //                    TODO replace notification icons with a white variation
+        notificationBuilder.setContentTitle("MultiStage").setContentText(getString(R.string.multistage_notification)).setSmallIcon(R.drawable.ic_launcher);
 
         notification = notificationBuilder.setOngoing(true)
                 .setPriority(Notification.PRIORITY_LOW)

@@ -42,7 +42,7 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
      * Contains preferences for which to display a preview of the value in the summary
      */
     private HashSet<String> mPrefValuePreviewSet;
-    MultiStageAlarm alarm = new MultiStageAlarm();
+    final MultiStageAlarm alarm = new MultiStageAlarm();
     private static Boolean enabledHpfeeds = false;
     private static Boolean enabledMultistage = false;
 
@@ -239,7 +239,7 @@ public class PreferenceHostageFragment extends PreferenceFragmentCompat implemen
         return this;
     }
 
-    //TODO Replace with seperate Fragments as suggested in https://developer.android.com/guide/topics/ui/settings/organize-your-settings#split_your_hierarchy_into_multiple_screens
+    //TODO Replace with separate Fragments as suggested in https://developer.android.com/guide/topics/ui/settings/organize-your-settings#split_your_hierarchy_into_multiple_screens
 
     /**
      * SubsScreens in Android X are no longer Supported.

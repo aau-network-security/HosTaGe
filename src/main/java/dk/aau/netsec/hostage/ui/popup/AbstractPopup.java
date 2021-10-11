@@ -34,11 +34,11 @@ public abstract class AbstractPopup {
         void onItemClick(Object data);
     }
 
-    private PopupWindow popupWindow;
-    private Activity context;
-    private OnPopupItemClickListener onPopupItemClickListener;
+    private final PopupWindow popupWindow;
+    private final Activity context;
+    private final OnPopupItemClickListener onPopupItemClickListener;
     private LinearLayout rootView;
-    private LayoutInflater lInf;
+    private final LayoutInflater lInf;
     private View lastItemView;
 
     /**
@@ -64,11 +64,11 @@ public abstract class AbstractPopup {
     public AbstractPopup(Context context, OnPopupItemClickListener listener) {
         super();
         this.context = (Activity) context;
-        this.onPopupItemClickListener = listener;
-        this.popupWindow = new PopupWindow(context);
-        this.popupWindow.setOutsideTouchable(true);
-        this.popupWindow.setFocusable(true);
-        this.lInf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        onPopupItemClickListener = listener;
+        popupWindow = new PopupWindow(context);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        lInf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
     }
 
@@ -96,29 +96,26 @@ public abstract class AbstractPopup {
     public void addItem(final AbstractPopupItem item) {
         View view = item.getRootView();
 
-        if (this.rootView == null) {
-            this.rootView = (LinearLayout) this.lInf.inflate(this.getLayoutId(), null);
-            this.configureView(this.rootView);
+        if (rootView == null) {
+            rootView = (LinearLayout) lInf.inflate(this.getLayoutId(), null);
+            configureView(rootView);
         }
-        if (this.rootView != null) {
-            this.getScrollableItemLayout().addView(view);
+        if (rootView != null) {
+            getScrollableItemLayout().addView(view);
             lastItemView = view;
 
             //this.rootView.addView(view);
-            view.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        item.onItemSelect(event);
-                    } else if (event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_MOVE) {
-                        item.onItemDeselect(event);
-                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        item.onItemDeselect(event);
-                        AbstractPopup.this.onPopupItemClickListener.onItemClick(item.onClickedResult(event));
-                        AbstractPopup.this.popupWindow.dismiss();
-                    }
-                    return true;
+            view.setOnTouchListener((view1, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    item.onItemSelect(event);
+                } else if (event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_MOVE) {
+                    item.onItemDeselect(event);
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    item.onItemDeselect(event);
+                    AbstractPopup.this.onPopupItemClickListener.onItemClick(item.onClickedResult(event));
+                    AbstractPopup.this.popupWindow.dismiss();
                 }
+                return true;
             });
         }
 
@@ -131,10 +128,10 @@ public abstract class AbstractPopup {
      * @return View the root view
      */
     public View getPopupView() {
-        if (this.rootView == null) {
-            this.rootView = (LinearLayout) this.lInf.inflate(this.getLayoutId(), null);
+        if (rootView == null) {
+            rootView = (LinearLayout) lInf.inflate(getLayoutId(), null);
         }
-        return this.rootView;
+        return rootView;
     }
 
     /**
@@ -143,17 +140,17 @@ public abstract class AbstractPopup {
      * @param anchorView View
      */
     public void showOnView(final View anchorView) {
-        if (this.rootView == null) {
-            this.rootView = (LinearLayout) this.lInf.inflate(this.getLayoutId(), null);
+        if (rootView == null) {
+            rootView = (LinearLayout) lInf.inflate(getLayoutId(), null);
         }
-        if (this.rootView != null) {
-            AbstractPopup.this.popupWindow.dismiss();
+        if (rootView != null) {
+            popupWindow.dismiss();
 
-            this.popupWindow.setContentView(this.rootView);
+            popupWindow.setContentView(rootView);
 
             final Rect windowFrame = new Rect();
 
-            Window window = this.context.getWindow();
+            Window window = context.getWindow();
             window.getDecorView().getWindowVisibleDisplayFrame(windowFrame);
             //int orientation = this.context.getResources().getConfiguration().orientation;
             int windowWidth = windowFrame.width();
@@ -163,9 +160,9 @@ public abstract class AbstractPopup {
             anchorView.getLocationOnScreen(position);
             final int anchorWidth = anchorView.getWidth();
 
-            this.rootView.measure(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
-            int width = this.rootView.getMeasuredWidth();
-            int height = this.rootView.getMeasuredHeight();
+            rootView.measure(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            int width = rootView.getMeasuredWidth();
+            int height = rootView.getMeasuredHeight();
 
             //int alh = (position[0] + width) - windowFrame.width();
             //if (alh < 0) alh = 0;
@@ -176,31 +173,31 @@ public abstract class AbstractPopup {
 
             height += (offset / 2);
 
-            width = windowWidth < width ? windowWidth : width;
+            width = Math.min(windowWidth, width);
 
             x = Math.max(0, x);
             x = Math.min(windowWidth - width, x);
 
-            height = (windowHeight < height ? windowHeight : height) - 10;
+            height = (Math.min(windowHeight, height)) - 10;
 
             y = Math.max(0, y);
             y = Math.min(windowHeight - height, y);
 
-            AbstractPopup.this.configureView(this.rootView);
+            configureView(rootView);
 
             int smallBottomOffset = 45;
-            this.popupWindow.setWidth(width);
-            this.popupWindow.setHeight(height);
+            popupWindow.setWidth(width);
+            popupWindow.setHeight(height);
 
             if (lastItemView != null) {
-                View v = lastItemView.findViewById(R.id.bottom_seperator);
+                View v = lastItemView.findViewById(R.id.bottom_separator);
 
                 if (v != null) {
                     v.setVisibility(View.GONE);
                 }
             }
 
-            this.popupWindow.showAtLocation(anchorView, Gravity.NO_GRAVITY, x, y - smallBottomOffset);
+            popupWindow.showAtLocation(anchorView, Gravity.NO_GRAVITY, x, y - smallBottomOffset);
 
         }
     }

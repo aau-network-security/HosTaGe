@@ -5,7 +5,6 @@
     <string name="broadcast" translatable="false">dk.aau.netsec.hostage.BROADCAST</string>
     <string name="broadcast_connectivity" translatable="false">dk.aau.netsec.hostage.BROADCAST.CONNECTIVITY_CHANGE</string>
     <string name="broadcast_started" translatable="false">dk.aau.netsec.hostage.BROADCAST.STARTED</string>
-    <string name="broadcast_stopped" translatable="false">dk.aau.netsec.hostage.BROADCAST.STOPPED</string>
 
-    
+
 </resources>

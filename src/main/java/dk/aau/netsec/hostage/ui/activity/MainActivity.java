@@ -54,11 +54,11 @@ import dk.aau.netsec.hostage.ui.fragment.ServicesFragment;
 import dk.aau.netsec.hostage.ui.fragment.SettingsFragment;
 import dk.aau.netsec.hostage.ui.fragment.StatisticsFragment;
 import dk.aau.netsec.hostage.ui.fragment.ThreatMapFragment;
-import dk.aau.netsec.hostage.ui.fragment.UpNavigatibleFragment;
+import dk.aau.netsec.hostage.ui.fragment.UpNavigableFragment;
 import dk.aau.netsec.hostage.ui.fragment.opengl.ThreatIndicatorGLRenderer;
 import dk.aau.netsec.hostage.ui.model.DrawerListItem;
 import dk.aau.netsec.hostage.ui.model.LogFilter;
-import eu.chainfire.libsuperuser.Shell;
+import com.topjohnwu.superuser.Shell;
 
 
 /**
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @see Hostage
      */
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
         /**
          * After the service is bound, check which has been clicked and start
          * it.
@@ -156,11 +156,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
-
-    /**
-     * Holds an profile manager instance
-     */
-    private ProfileManager mProfileManager;
 
     /**
      * Holds the root fragment for our hierarchical fragment navigation
@@ -208,11 +203,6 @@ public class MainActivity extends AppCompatActivity {
         if (isServiceRunning()) {
             this.bindService();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     /**
@@ -281,7 +271,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static void checkForRoot() {
-        if (Shell.SU.available()) {
+        Shell shell = Shell.getShell();
+
+        if (shell.isRoot()) {
             Device.checkCapabilities();
             if (Api.assertBinaries(getContext(), true)) {
                 try {
@@ -326,7 +318,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onFirstRun() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        TODO adjust disclaimer to mention T&C location as well
         builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.agree), (dialog, id) -> {
@@ -359,7 +350,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addProfileManager() {
-        mProfileManager = ProfileManager.getInstance();
+        /**
+         * Holds an profile manager instance
+         */
+        ProfileManager mProfileManager = ProfileManager.getInstance();
     }
 
     private void loadFirstRun() {
@@ -496,22 +490,18 @@ public class MainActivity extends AppCompatActivity {
      * Navigates up to the parent fragment of the current fragment
      */
     public void navigateBack() {
-        if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment)) {
+        if (!(this.mDisplayedFragment instanceof UpNavigableFragment)) {
             mDrawerToggle.setDrawerIndicatorEnabled(true);
             return;
         }
 
-        UpNavigatibleFragment upNav = (UpNavigatibleFragment) this.mDisplayedFragment;
+        UpNavigableFragment upNav = (UpNavigableFragment) this.mDisplayedFragment;
 
         getSupportFragmentManager().popBackStackImmediate(upNav.getUpFragment().getName(), 0);
         this.mDisplayedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
         configureFragment();
 
-        if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigatible()) {
-            mDrawerToggle.setDrawerIndicatorEnabled(true);
-        } else {
-            mDrawerToggle.setDrawerIndicatorEnabled(false);
-        }
+        mDrawerToggle.setDrawerIndicatorEnabled(!(this.mDisplayedFragment instanceof UpNavigableFragment) || !((UpNavigableFragment) this.mDisplayedFragment).isUpNavigable());
     }
 
     /**
@@ -598,12 +588,12 @@ public class MainActivity extends AppCompatActivity {
         this.mCloseWarning = false;
 
         // set the action bar up navigation according to the nature of the given fragment
-        if (fragment instanceof UpNavigatibleFragment) {
-            UpNavigatibleFragment upFrag = (UpNavigatibleFragment) fragment;
+        if (fragment instanceof UpNavigableFragment) {
+            UpNavigableFragment upFrag = (UpNavigableFragment) fragment;
             if (upFrag.getUpFragment() == null) {
                 upFrag.setUpFragment(this.mDisplayedFragment.getClass());
             }
-            if (upFrag.isUpNavigatible()) {
+            if (upFrag.isUpNavigable()) {
                 mDrawerToggle.setDrawerIndicatorEnabled(false);
             }
         }
@@ -672,11 +662,7 @@ public class MainActivity extends AppCompatActivity {
             this.mDisplayedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
             configureFragment();
 
-            if (!(this.mDisplayedFragment instanceof UpNavigatibleFragment) || !((UpNavigatibleFragment) this.mDisplayedFragment).isUpNavigatible()) {
-                mDrawerToggle.setDrawerIndicatorEnabled(true);
-            } else {
-                mDrawerToggle.setDrawerIndicatorEnabled(false);
-            }
+            mDrawerToggle.setDrawerIndicatorEnabled(!(this.mDisplayedFragment instanceof UpNavigableFragment) || !((UpNavigableFragment) this.mDisplayedFragment).isUpNavigable());
         }
     }
 
@@ -784,8 +770,8 @@ public class MainActivity extends AppCompatActivity {
         APPLICATION_INFO(7, AboutFragment.class);
 
 
-        private int value;
-        private Class<?> klass;
+        private final int value;
+        private final Class<?> klass;
 
         MainMenuItem(int value, Class<?> klass) {
             this.value = value;

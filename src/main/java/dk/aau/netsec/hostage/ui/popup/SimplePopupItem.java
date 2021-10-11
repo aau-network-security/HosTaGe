@@ -15,7 +15,7 @@ import dk.aau.netsec.hostage.R;
 public class SimplePopupItem extends AbstractPopupItem {
 
     public boolean selected;
-	private Context context;
+	private final Context context;
 	private View container;
 
     /**

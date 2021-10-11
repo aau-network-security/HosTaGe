@@ -6,11 +6,11 @@ import java.util.ArrayList;
 public class SyncData implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public ArrayList<NetworkRecord> networkRecords;
-    public ArrayList<SyncRecord> syncRecords;
+    public final ArrayList<NetworkRecord> networkRecords;
+    public final ArrayList<SyncRecord> syncRecords;
 
     public SyncData(){
-        this.networkRecords = new ArrayList<NetworkRecord>();
-        this.syncRecords = new ArrayList<SyncRecord>();
+        this.networkRecords = new ArrayList<>();
+        this.syncRecords = new ArrayList<>();
     }
 }

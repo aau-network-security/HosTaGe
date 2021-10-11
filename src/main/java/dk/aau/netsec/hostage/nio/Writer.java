@@ -10,7 +10,7 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 
 public class Writer {
 
-	BufferedOutputStream out;
+	final BufferedOutputStream out;
 
 	public Writer(OutputStream out) {
 		this.out = new BufferedOutputStream(out);

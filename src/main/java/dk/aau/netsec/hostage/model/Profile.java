@@ -45,7 +45,7 @@ public class Profile implements JSONSerializable<Profile> {
     public String mIconName;
     public String mIconPath;
 
-    public boolean mEditable = false;
+    public boolean mEditable;
     @Transient
     public boolean mIsRandom = false;
     @Transient
@@ -113,10 +113,6 @@ public class Profile implements JSONSerializable<Profile> {
         this.mIcon = bitmap;
     }
 
-    public void setIcon(int icon) {
-        this.mIcon = BitmapFactory.decodeResource(MainActivity.getContext().getResources(), icon);
-    }
-
     public Bitmap getIconBitmap() {
         if (this.mIcon != null) return mIcon;
 
@@ -136,9 +132,8 @@ public class Profile implements JSONSerializable<Profile> {
         if (this.mIconPath != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(this.mIconPath, options);
 
-            return bitmap;
+            return BitmapFactory.decodeFile(this.mIconPath, options);
         }
 
         return null;
@@ -223,7 +218,7 @@ public class Profile implements JSONSerializable<Profile> {
             Iterator<String> keys = activeProtocols.keys();
 
             while (keys.hasNext()) {
-                String protocol = (String) keys.next();
+                String protocol = keys.next();
                 try {
                     mActiveProtocols.put(protocol, activeProtocols.getBoolean(protocol));
                 } catch (JSONException e) {

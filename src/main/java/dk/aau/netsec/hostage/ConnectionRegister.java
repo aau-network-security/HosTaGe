@@ -15,7 +15,7 @@ public class ConnectionRegister {
 	/** Active connections . **/
 	private static int openConnections = 0;
 	/** Context in which ConnectionRegister is created. **/
-	private Context context;
+	private final Context context;
 
 	/**
 	 * Constructor sets context.

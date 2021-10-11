@@ -76,10 +76,9 @@ public class ProfileManager {
     /**
      * Holds all the available profiles. The key in the map is the ID of the profile.
      */
-    public HashMap<Integer, Profile> mProfiles;
+    public final HashMap<Integer, Profile> mProfiles;
 
-    private SharedPreferences mSharedPreferences;
-    private SharedPreferences.Editor mSharedEditor;
+    private final SharedPreferences.Editor mSharedEditor;
 
     /**
      * Since the profile manager should only have one instance in the whole app, we are using the singleton pattern.
@@ -103,10 +102,10 @@ public class ProfileManager {
      * A private constructor, that can/should only be called by getInstance, since we want to enforce the usage of the singleton.
      */
     private ProfileManager() {
-        mProfiles = new HashMap<Integer, Profile>();
+        mProfiles = new HashMap<>();
 
         String sharedPreferencePath = MainActivity.getContext().getString(R.string.shared_preference_path);
-        mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
+        SharedPreferences mSharedPreferences = MainActivity.getContext().getSharedPreferences(sharedPreferencePath, Hostage.MODE_PRIVATE);
         mSharedEditor = mSharedPreferences.edit();
         mSharedEditor.apply();
     }
@@ -144,7 +143,7 @@ public class ProfileManager {
      */
     public void loadData() {
         try {
-            if (loadDefaulData())
+            if (loadDefaultData())
                 return;
             String UTF8 = "utf8";
             int BUFFER_SIZE = 8192;
@@ -173,7 +172,7 @@ public class ProfileManager {
         }
     }
 
-    private boolean loadDefaulData() {
+    private boolean loadDefaultData() {
         boolean profileExist = new File(PERSIST_FILENAME).exists();
         if (!profileExist) {
             fillDefaultData();
@@ -250,7 +249,7 @@ public class ProfileManager {
      * @return a list that holds all the profiles
      */
     public List<Profile> getProfilesList() {
-        return new ArrayList<Profile>(getProfilesCollection());
+        return new ArrayList<>(getProfilesCollection());
     }
 
     /**
@@ -259,7 +258,7 @@ public class ProfileManager {
      * @return a collection of all the profiles
      */
     public Collection<Profile> getProfilesCollection() {
-        if (mProfiles.size() == 0 || mProfiles == null) {
+        if (mProfiles == null || mProfiles.size() == 0) {
             this.loadData();
         }
 
@@ -281,7 +280,7 @@ public class ProfileManager {
      * @param profile the profile to randomize the protocols for
      */
     public void randomizeProtocols(Profile profile) {
-        LinkedList<String> protocols = new LinkedList<String>(Arrays.asList(MainActivity.getContext().getResources().getStringArray(R.array.protocols)));
+        LinkedList<String> protocols = new LinkedList<>(Arrays.asList(MainActivity.getContext().getResources().getStringArray(R.array.protocols)));
         profile.mActiveProtocols.clear();
 
         Random rand = new Random();
@@ -351,7 +350,7 @@ public class ProfileManager {
      * Adds a given profile to the profile manager.
      *
      * @param profile the profile to add
-     * @param persist true,  if the profile should also be persisted immediatly,
+     * @param persist true,  if the profile should also be persisted immediately,
      *                false, if the profile should just be added internally without being persisted
      *                (Note: you can still call persistData later to persist all the profiles)
      */
@@ -373,7 +372,7 @@ public class ProfileManager {
     }
 
     /**
-     * Deletes a given profile. These changes will be persisted immediatly.
+     * Deletes a given profile. These changes will be persisted immediately.
      *
      * @param profile the profile to delete
      */
@@ -518,7 +517,7 @@ public class ProfileManager {
      */
     public Set<Integer> pickRandom(int n, int s, int k) {
         Random random = new Random(); // if this method is used often, perhaps define random at class level
-        Set<Integer> picked = new HashSet<Integer>();
+        Set<Integer> picked = new HashSet<>();
         while (picked.size() < n) {
             picked.add(random.nextInt(k - s) + s);
         }

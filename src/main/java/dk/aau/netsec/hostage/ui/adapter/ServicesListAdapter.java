@@ -49,7 +49,6 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
     /**
      * method to save important information from parent fragment
      *
-     * @param activity       activicty from parent fragment
      * @param servicesSwitch the switch from parent fragment
      * @param mainListener   Listener from parent fragment
      */
@@ -260,7 +259,7 @@ public class ServicesListAdapter extends ArrayAdapter<ServicesListItem> {
     /**
      * ViewHolder stands for a row in the view
      */
-    private class ViewHolder {
+    private static class ViewHolder {
 
         public TextView protocolName;
 

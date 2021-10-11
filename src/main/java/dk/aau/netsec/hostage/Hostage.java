@@ -1,21 +1,6 @@
 package dk.aau.netsec.hostage;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
+import static dk.aau.netsec.hostage.commons.HelperUtils.getBSSID;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -48,6 +33,23 @@ import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.maps.LocationSource;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import dk.aau.netsec.hostage.commons.HelperUtils;
 import dk.aau.netsec.hostage.location.CustomLocationManager;
 import dk.aau.netsec.hostage.location.LocationException;
@@ -55,8 +57,6 @@ import dk.aau.netsec.hostage.logging.DaoSession;
 import dk.aau.netsec.hostage.persistence.DAO.AttackRecordDAO;
 import dk.aau.netsec.hostage.protocol.Protocol;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
-
-import static dk.aau.netsec.hostage.commons.HelperUtils.getBSSID;
 
 /**
  * Background service running as long as at least one protocol is active.
@@ -71,7 +71,6 @@ import static dk.aau.netsec.hostage.commons.HelperUtils.getBSSID;
 public class Hostage extends Service implements LocationSource.OnLocationChangedListener {
 
     private HashMap<String, Boolean> mProtocolActiveAttacks;
-    private DaoSession dbSession;
 
     static boolean implementedProtocolsReady;
 
@@ -162,7 +161,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
     }
 
     static LinkedList<Protocol> implementedProtocols;
-    private CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<Listener>();
+    private final CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<>();
     private SharedPreferences connectionInfo;
     private Editor connectionInfoEditor;
     private final IBinder mBinder = new LocalBinder();
@@ -172,7 +171,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
      *
      * @see MainActivity #BROADCAST
      */
-    private BroadcastReceiver netReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver netReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String bssid_old = connectionInfo.getString(getString(R.string.connection_info_bssid), "");
@@ -488,6 +487,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
             mNotificationManager.createNotificationChannel(channel);
             Notification.Builder notificationBuilder = new Notification.Builder(this, "32");
             notificationBuilder.setContentTitle(getString(R.string.app_name)).setTicker(getString(R.string.honeypot_live_threat))
+//                    TODO replace notification icons with a white variation
                     .setContentText(getString(R.string.honeypot_live_threat)).setSmallIcon(R.drawable.ic_service_red).setAutoCancel(true).setWhen(System.currentTimeMillis())
                     .setSound(Uri.parse(strRingtonePreference));
 
@@ -594,7 +594,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
     }
 
     private void checkNetworkPreviousInfection() {
-        dbSession = HostageApplication.getInstances().getDaoSession();
+        DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
         AttackRecordDAO attackRecordDAO = new AttackRecordDAO(dbSession);
 
         for (Listener listener : listeners) {
@@ -650,9 +650,7 @@ public class Hostage extends Service implements LocationSource.OnLocationChanged
         intent.setAction("SHOW_HOME");
         stackBuilder.addNextIntent(intent);
 
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(MainActivity.getContext(), 0, intent, 0); //stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        return resultPendingIntent;
+        return PendingIntent.getActivity(MainActivity.getContext(), 0, intent, 0);
 
     }
 

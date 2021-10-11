@@ -63,7 +63,7 @@ public class SMB implements Protocol {
     public void initialize(Listener mListener) {
         this.mListener = mListener;
         FileInject fileInject = new FileInject();
-        fileInject.startListner(mListener);
+        fileInject.startListener(mListener);
         Hostage service = mListener.getService();
         pref = PreferenceManager.getDefaultSharedPreferences(service);
 

@@ -18,14 +18,9 @@ import dk.aau.netsec.hostage.ui.model.LogFilter;
 
 public class PublishHelper {
 
-    private DaoSession dbSession;
-    private DAOHelper daoHelper;
-    private int offset=0;
-    private int limit=20;
-    private int attackRecordOffset=0;
-    private int attackRecordLimit=999;
-    LogFilter filter = null;
-    JSONHelper jsonHelper = new JSONHelper();
+    private final DAOHelper daoHelper;
+    final LogFilter filter = null;
+    final JSONHelper jsonHelper = new JSONHelper();
     private String host = "130.225.57.113";
     private int port = 20000;
     private String ident = "hostage";
@@ -33,10 +28,10 @@ public class PublishHelper {
     private String channel = "hostage";
 
     private static final String PERSIST_FILENAME = "publish.json";
-    File hpfeedsFile = new File("/data/data/" + MainActivity.getContext().getPackageName() + "/" + PERSIST_FILENAME);
+    final File hpfeedsFile = new File("/data/data/" + MainActivity.getContext().getPackageName() + "/" + PERSIST_FILENAME);
 
     public PublishHelper(){
-        this.dbSession = HostageApplication.getInstances().getDaoSession();
+        DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
         this.daoHelper = new DAOHelper(dbSession);
        //initializeHpFeedsCredentials(); //hpfeeds disabled
     }
@@ -89,7 +84,11 @@ public class PublishHelper {
      * @return a list of the last inserted records from a current attack
      */
     private ArrayList<RecordAll> getLastInsertedRecords(){
-        return  daoHelper.getAttackRecordDAO().getRecordsForFilter(filter,offset,limit,attackRecordOffset,attackRecordLimit);
+        int attackRecordLimit = 999;
+        int attackRecordOffset = 0;
+        int limit = 20;
+        int offset = 0;
+        return  daoHelper.getAttackRecordDAO().getRecordsForFilter(filter, offset, limit, attackRecordOffset, attackRecordLimit);
     }
 
 }

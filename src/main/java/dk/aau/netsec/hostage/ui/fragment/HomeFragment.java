@@ -63,9 +63,6 @@ public class HomeFragment extends Fragment {
     private ImageView mHomeConnectionInfoButton;
     private ImageView mHomeAndroidImage;
     private View mRootView;
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private Bundle savedInstanceState;
 
     private BroadcastReceiver mReceiver;
 
@@ -73,7 +70,6 @@ public class HomeFragment extends Fragment {
     private ProfileManager mProfileManager;
     private SharedPreferences mConnectionInfo;
 
-    private DaoSession dbSession;
     private DAOHelper daoHelper;
 
     private CustomLocationManager customLocationManager;
@@ -81,25 +77,13 @@ public class HomeFragment extends Fragment {
     private boolean protocolActivated;
 
     private boolean mReceiverRegistered;
-    private boolean mRestoredFromSaved = false;
+    private final boolean mRestoredFromSaved = false;
     private boolean isActive = false;
     private boolean isConnected = false;
     private static boolean updatedImageView = false;
 
     private Thread updateUIThread;
     private static ThreatIndicatorGLRenderer.ThreatLevel mThreatLevel = ThreatIndicatorGLRenderer.ThreatLevel.NOT_MONITORING;
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        AppCompatActivity a;
-
-        if (context instanceof AppCompatActivity) {
-            a = (AppCompatActivity) context;
-        }
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -110,7 +94,7 @@ public class HomeFragment extends Fragment {
             activity.setTitle(getActivity().getString(R.string.drawer_overview));
         }
 
-        dbSession = HostageApplication.getInstances().getDaoSession();
+        DaoSession dbSession = HostageApplication.getInstances().getDaoSession();
         daoHelper = new DAOHelper(dbSession, getActivity());
 
 
@@ -118,9 +102,6 @@ public class HomeFragment extends Fragment {
 
         mProfileManager = ProfileManager.getInstance();
 
-        this.inflater = inflater;
-        this.container = container;
-        this.savedInstanceState = savedInstanceState;
         mRootView = inflater.inflate(R.layout.fragment_home, container, false);
 
         mHomeSwitchConnection = mRootView.findViewById(R.id.home_switch_connection);
@@ -199,9 +180,7 @@ public class HomeFragment extends Fragment {
             MainActivity.getInstance().injectFragment(fragment);
         });
 
-        View.OnClickListener attackClickListener = v -> {
-            loadAttackListener();
-        };
+        View.OnClickListener attackClickListener = v -> loadAttackListener();
 
         mHomeTextAttacks.setOnClickListener(attackClickListener);
         mHomeTextSecurity.setOnClickListener(attackClickListener);
@@ -244,12 +223,17 @@ public class HomeFragment extends Fragment {
         setStateNotActive(false);
     }
 
+    public void initStateActive(){
+        setStateActive();
+
+        mHomeSwitchConnection.setChecked(true);
+    }
+
     public void setStateActive() {
         mHomeTextName.setTextColor(mDefaultTextColor);
         mHomeTextProfile.setTextColor(mDefaultTextColor);
         mHomeTextProfileHeader.setTextColor(mDefaultTextColor);
 
-        mHomeSwitchConnection.setChecked(true);
         isActive = true;
     }
 
@@ -290,7 +274,7 @@ public class HomeFragment extends Fragment {
         }
         updateTextConnection(totalAttacks);
         if (hasActiveListeners) {
-            setStateActive();
+            initStateActive();
             // color text according to threat level
             changeTextColorThreat(totalAttacks);
             //updateAndroidIcon();

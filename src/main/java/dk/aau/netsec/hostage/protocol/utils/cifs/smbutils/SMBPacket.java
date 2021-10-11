@@ -15,7 +15,7 @@ import dk.aau.netsec.hostage.commons.HelperUtils;
  */
 public class SMBPacket {
 	
-	private String[] serverVersion;
+	private final String[] serverVersion;
 	private static byte[] serverName;
 	private byte[] message = null;
 	private static final byte[] serverGUID = HelperUtils.randomBytes(16);
@@ -159,12 +159,12 @@ public class SMBPacket {
 	public byte[] getDceRpc(byte[] transSub, int length) {
 		byte[] majorVersion = { 0x05 };
 		byte[] minorVersion = { 0x00 };
-		byte[] packetType = null;
+		byte[] packetType;
 		byte[] packetFlags = { 0x03 };
 		byte[] dataRepres = { 0x10, 0x00, 0x00, 0x00 };
-		byte[] fragLength = null;
+		byte[] fragLength;
 		byte[] authLength = { 0x00, 0x00 };
-		byte[] callID = null;
+		byte[] callID;
 		byte[] response = null;
 
 		if (transSub[0] == 0x00 && transSub[1] == 0x0b) {
@@ -241,7 +241,6 @@ public class SMBPacket {
 		byte[] timeZone = getTimeZoneInBytes();
 		byte[] keyLength = { 0x00 };
 		byte[] byteCount = { 0x3a, 0x00 };
-		byte[] guid = serverGUID;
 		byte[] secBlob = { 0x60, 0x28, 0x06, 0x06 };
 		byte[] oid = { 0x2b, 0x06, 0x01, 0x05, 0x05, 0x02 };
 		byte[] protectNeg = { (byte) 0xa0, 0x1e };
@@ -253,7 +252,7 @@ public class SMBPacket {
 
 		byte[] response = HelperUtils.concat(wordCount, dialect, secMode,
 				maxMpxC, maxVcs, maxBufSize, maxRawBuf, sessionKey,
-				capabilities, sysTime, timeZone, keyLength, byteCount, guid,
+				capabilities, sysTime, timeZone, keyLength, byteCount, serverGUID,
 				secBlob, oid, protectNeg, negToken, mechType, mechType2);
 		return wrapNetbios(wrapHeader(response));
 	}
@@ -294,7 +293,7 @@ public class SMBPacket {
 	/**
 	 * Builds the session setup packet
 	 * 
-	 * @ret urn session setup packet
+	 * @return urn session setup packet
 	 */
 	public byte[] getSessSetup() {
 		if (authenticateNext) {
@@ -339,9 +338,9 @@ public class SMBPacket {
 	}
 
 	/**
-	 * Builds the session setup challange packet
+	 * Builds the session setup challenge packet
 	 * 
-	 * @return session setup challange packet
+	 * @return session setup challenge packet
 	 */
 	private byte[] getSetupChal() {
 		byte[] wordCount = { 0x04 };
@@ -457,7 +456,7 @@ public class SMBPacket {
 			byte[] reserved2 = { 0x00, 0x00 };
 			byte[] paramCount = { 0x00, 0x00 };
 			byte[] paramOffset = { 0x00, 0x00 };
-			byte[] dataCount = new byte[2];
+			byte[] dataCount;
 			byte[] dataOffset = { 0x56, 0x00 };
 			byte[] setupCount = { 0x03 };
 			byte[] reserved3 = { 0x00 };
@@ -469,7 +468,7 @@ public class SMBPacket {
 			byte[] size = new byte[2];
 			byte[] name = HelperUtils.concat("\\MAILSLOT\\BROWSE".getBytes(), new byte[]{0x00}); 
 			
-			byte[] windowsBrowser = null;
+			byte[] windowsBrowser;
 			if (type == NBDSType.BROWSER) {
 				windowsBrowser = getBrowser();
 			} else if (type == NBDSType.REQUEST_ANNOUNCEMENT) {
@@ -532,7 +531,7 @@ public class SMBPacket {
 			byte[] dataDisplace = { 0x00, 0x00 };
 			byte[] setupCount = { 0x00 };
 			byte[] reserved2 = { 0x00 };
-			byte[] byteCount = new byte[2]/* = {0x21, 0x01} */;
+			byte[] byteCount  /* = {0x21, 0x01} */;
 			byte[] padding = { 0x00 };
 
 			byte[] dcerpc = new byte[24];
@@ -600,7 +599,7 @@ public class SMBPacket {
 	 * @return trans2 packet
 	 */
 	public byte[] getTrans2() {
-		byte[] response = null;
+		byte[] response;
 		byte[] wordCount = { 0x00 };
 		byte[] andXCommand = { 0x00, 0x00 };
 		ntStat = new byte[] { 0x22, 0x00, 0x00, (byte) 0xc0 };
@@ -614,7 +613,7 @@ public class SMBPacket {
 	 * @return trans sub packet
 	 */
 	private byte[] getTransSub() {
-		byte[] transSub = new byte[2];
+		byte[] transSub;
 		if (smbCommand[0] == 0x32)
 			transSub = new byte[] { message[66], message[65] };
 		else if (smbCommand[0] == 0x25 && message != null)
@@ -632,7 +631,7 @@ public class SMBPacket {
 	 */
 	private byte[] getAnnouncement() {
 		//Microsoft Windows Browser
-		byte[] command = null;
+		byte[] command;
 		if(type == NBDSType.LOCAL_MASTER_ANNOUNCEMENT_ALL || type == NBDSType.LOCAL_MASTER_ANNOUNCEMENT) {
 			command = new byte[]{0x0f};
 		} else if (type == NBDSType.DOMAIN_ANNOUNCEMENT) {
@@ -651,7 +650,7 @@ public class SMBPacket {
 		} else if (type == NBDSType.LOCAL_MASTER_ANNOUNCEMENT) {
 			updatePeriodicity = new byte[]{0x00, 0x00, 0x00, 0x00};
 		}
-		byte[] hostName = null;
+		byte[] hostName;
 		if (type == NBDSType.DOMAIN_ANNOUNCEMENT) {
 			hostName = workgroup;
 		} else {
@@ -673,7 +672,7 @@ public class SMBPacket {
 		byte[] browserProtocolMajorVer = new byte[]{0x0f};
 		byte[] browserProtocolMinorVer = new byte[]{0x01};
 		byte[] signature = new byte[]{0x55, (byte) 0xaa};
-		byte[] hostComment = null;
+		byte[] hostComment;
 		if (type == NBDSType.DOMAIN_ANNOUNCEMENT) {
 			hostComment = HelperUtils.concat(serverName, new byte[]{0x00});
 		} else {
@@ -706,7 +705,7 @@ public class SMBPacket {
 		String str = HelperUtils.byteToStr(message);
 		byte[] wordCount = { 0x00 };
 		byte[] andXCommand = { 0x00, 0x00 };
-		byte[] response = null;
+		byte[] response;
 		if (str.contains("IPC$") || str.contains("C$")) {
 			wordCount = new byte[] { 0x07 };
 			andXCommand = new byte[] { (byte) 0xff };
@@ -782,7 +781,7 @@ public class SMBPacket {
 	 */
 	private static byte[] getTimeZoneInBytes() {
 		// get current timezone offset in minutes
-		Integer offset = new GregorianCalendar().getTimeZone().getRawOffset() / 1000 / 60; 
+		int offset = new GregorianCalendar().getTimeZone().getRawOffset() / 1000 / 60;
 		char[] offsetChars = Integer.toBinaryString(offset).toCharArray();
 		boolean invert = false;
 		for (int i = offsetChars.length - 1; i > -1; i--) {
@@ -796,9 +795,7 @@ public class SMBPacket {
 		for (int i = 0; i < extendedChars.length - offsetChars.length; i++) {
 			extendedChars[i] = '1';
 		}
-		for (int i = 0; i < offsetChars.length; i++) {
-			extendedChars[i + extendedChars.length - offsetChars.length] = offsetChars[i];
-		}
+		System.arraycopy(offsetChars, 0, extendedChars, 0 + extendedChars.length - offsetChars.length, offsetChars.length);
 		int timezone = Integer.parseInt(new String(extendedChars), 2);
 		byte[] timezoneBytes = new byte[2];
 		timezoneBytes[1] = (byte) (timezone >> 8);

@@ -2,7 +2,6 @@ package dk.aau.netsec.hostage.ui.helper;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -52,11 +51,11 @@ public abstract class SwipeToEditCallback extends ItemTouchHelper.SimpleCallback
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         //TODO once swipe hint is implemented, this should be enabled or removed
-        /**
-         * To disable "swipe" for specific item return 0 here.
-         * For example:
-         * if (viewHolder?.itemViewType == YourAdapter.SOME_TYPE) return 0
-         * if (viewHolder?.adapterPosition == 0) return 0
+        /*
+          To disable "swipe" for specific item return 0 here.
+          For example:
+          if (viewHolder?.itemViewType == YourAdapter.SOME_TYPE) return 0
+          if (viewHolder?.adapterPosition == 0) return 0
          */
 //        if (viewHolder?.adapterPosition == 10) return 0
 

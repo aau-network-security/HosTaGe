@@ -9,6 +9,6 @@ import java.util.UUID;
 public interface Event {
     String deviceId = UUID.randomUUID().toString();
 
-    JSONObject toJSON() throws JSONException;
+    JSONObject toJSON();
     void writeData();
 }

@@ -13,13 +13,12 @@ import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 
 public class Device {
-	private static boolean initialized = false;
-	private static boolean root = false; // device is rooted
+    private static boolean root = false; // device is rooted
 	private static boolean iptables = false; // iptables redirection confirmed working
 
     public static void checkCapabilities() {
 		// assume worst case
-		initialized = false;
+        boolean initialized = false;
 		root = false;
 		iptables = false;
 
@@ -92,7 +91,7 @@ public class Device {
 
 		if (deployAsset("payload/redirect-ports.sh", "redirect-ports.sh")) {
 			String scriptFilePath = new File(MainActivity.getInstance().getFilesDir(), "redirect-ports.sh").getAbsolutePath();
-			Process p = null;
+			Process p;
 			try {
 				Runtime.getRuntime().exec("chmod " + mode + " " + scriptFilePath).waitFor();
 
