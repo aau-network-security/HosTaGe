@@ -329,6 +329,8 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
             port = 1883;
         } else if (protocol.contains("HTTPS")) {
             port = 443;
+        } else if (protocol.contains("LDAP")) {
+            port = 389;
         } else if (protocol.contains("ECHO")) {
             port = 7;
         } else if (protocol.contains("FTP")) {

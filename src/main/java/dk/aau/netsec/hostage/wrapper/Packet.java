@@ -67,6 +67,7 @@ public class Packet {
 		if (protocol.equals("FTP") 
 				|| protocol.equals("HTTP") 
 				|| protocol.equals("HTTPS")
+				|| protocol.equals("LDAP")
 				|| protocol.equals("SIP")
 				|| protocol.equals("MODBUS")
 				|| protocol.equals("SMTP")) {
