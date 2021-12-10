@@ -91,3 +91,6 @@ iptables -t nat -A OUTPUT -p tcp --dport 28162 -j REDIRECT --to-ports 25
 
 iptables -t nat -A PREROUTING -p tcp --dport 502 -j REDIRECT --to-ports 28639
 iptables -t nat -A OUTPUT -p tcp --dport 28639 -j REDIRECT --to-ports 502
+
+iptables -t nat -A PREROUTING -p tcp --dport 389 -j REDIRECT --to-ports 10389
+iptables -t nat -A OUTPUT -p tcp --dport 10389 -j REDIRECT --to-ports 389

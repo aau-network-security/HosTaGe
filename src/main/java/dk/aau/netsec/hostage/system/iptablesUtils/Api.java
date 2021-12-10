@@ -304,6 +304,7 @@ public final class Api {
         Listener.addRealPorts("FTP", 28158);
         Listener.addRealPorts("HTTP", 28217);
         Listener.addRealPorts("HTTPS", 28580);
+        Listener.addRealPorts("LDAP", 10389);
         Listener.addRealPorts("S7COMM", 28239);
 //        Listener.addRealPorts("SNMP",28298);
         Listener.addRealPorts("SSH", 28160);

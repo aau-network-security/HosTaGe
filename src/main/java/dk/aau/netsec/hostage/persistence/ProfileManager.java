@@ -535,6 +535,7 @@ public class ProfileManager {
         addServerWebProfile();
         addUnixMachineProfile();
         addLinuxMachineProfile();
+        addApacheDirectoryProfile();
         addVoipServer();
         addRandomProfile();
         addNuclearPlantProfile();
@@ -548,6 +549,23 @@ public class ProfileManager {
         addWaterPlantProfile();
 
         persistData();
+    }
+
+    private void addApacheDirectoryProfile() {
+        Profile apacheDirectory = new Profile(
+                31,
+                "Apache Directory Service",
+                MainActivity.getInstance().getString(R.string.profile_apache_directory),
+                R.drawable.ic_profile_apacheds,
+                false
+
+
+        );
+
+        apacheDirectory.mActiveProtocols.put("LDAP", true);
+        apacheDirectory.mActiveProtocols.put("SMB",true);
+
+        this.addProfile(apacheDirectory, false);
     }
 
     private void addWindowsSevenProfile() {

@@ -26,6 +26,7 @@ public class BroSignatureGenerator extends IntentService{
         else if(protocol.contains("TELNET")){port=23;}
         else if(protocol.contains("SMB")){port=80;}
         else if(protocol.contains("HTTPS")){port=443;}
+        else if(protocol.contains("LDAP")){port=389;}
         else if(protocol.contains("ECHO")){port=7;}
         else if(protocol.contains("FTP")){port=21;}
         else if(protocol.contains("MySQL")){port=3306;}

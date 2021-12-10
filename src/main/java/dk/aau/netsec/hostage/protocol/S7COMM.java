@@ -7,7 +7,7 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 
 
 /**
- * Created by root on 06.07.15.
+ * Created by Shreyas Srinivasa on 06.07.15.
  */
 public class S7COMM implements Protocol {
     private int port = 102;

@@ -204,6 +204,8 @@ public class Listener implements Runnable {
                 return 2222;
             case "HTTPS":
                 return 8443;
+            case "LDAP":
+                return 10389;
         }
         return 0;
     }

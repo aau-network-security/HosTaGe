@@ -7,6 +7,7 @@
         <item>FTP</item>
         <item>HTTP</item>
         <item>HTTPS</item>
+        <item>LDAP</item>>
         <item>MySQL</item>
         <item>MQTT</item>
         <item>MODBUS</item>
@@ -26,6 +27,7 @@
         <item>A protocol used to transfer files from one host to another host</item>
         <item>A protocol to exchange or transfer hypertext. It is the foundation of data communication for the World Wide Web</item>
         <item>The same as HTTP, but using a secure connections based on SSL/TLS</item>
+        <item>Lightweight Directory Access Protocol for Identity and Access Management</item>>
         <item>The world\'s second most widely used relational database management system</item>
         <item>MQTT(MQ Telemetry Transportor Message Queuing Telemetry Transport) is an open OASIS and ISO standard (ISO/IEC 20922) lightweight, publish-subscribe network protocol that transports messages between devices</item>
         <item>ICS SCADA MODBUS</item>
