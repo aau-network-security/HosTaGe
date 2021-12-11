@@ -33,8 +33,7 @@ public class LDAP implements Protocol{
     private int port = 10389;
     private static boolean ldapStatus = false; //prevents the server from starting multiple times from the threads
 
-
-    public void ldap(){
+    public LDAP() {
         if (!ldapStatus)
             ldapService();
     }

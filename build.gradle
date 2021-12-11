@@ -118,6 +118,7 @@ dependencies {
     implementation group: 'org.snmp4j', name: 'snmp4j-agent', version: '3.3.6'
     implementation files('libs/VirusTotalAPI.jar')
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
+    implementation 'org.apache.directory:build:1.0.6'
 
     // https://mvnrepository.com/artifact/com.hierynomus/smbj
     testImplementation group: 'com.hierynomus', name: 'smbj', version: '0.11.1'
