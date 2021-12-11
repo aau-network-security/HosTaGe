@@ -30,7 +30,7 @@ import dk.aau.netsec.hostage.wrapper.Packet;
 
 public class LDAP implements Protocol{
 
-    private int port = 389;
+    private int port = 10389;
     private static boolean ldapStatus = false; //prevents the server from starting multiple times from the threads
 
 
@@ -71,7 +71,7 @@ public class LDAP implements Protocol{
 
     @Override
     public TALK_FIRST whoTalksFirst() {
-        return TALK_FIRST.SERVER;
+        return TALK_FIRST.CLIENT;
     }
 
     /** The directory service */

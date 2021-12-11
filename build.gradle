@@ -53,6 +53,9 @@ dependencies {
     implementation files('libs/coap-core-5.1.0-SNAPSHOT.jar')
     //forked repo https://github.com/irinil/java-coap
 
+    //LDAP
+    implementation files('libs/apacheds-all-1.5.7.jar')
+
     //AMQP
     // https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
     implementation group: 'com.rabbitmq', name: 'amqp-client', version: '5.12.0'
@@ -110,11 +113,6 @@ dependencies {
     implementation files('libs/alfresco-jlan.jar')
     implementation files('libs/nineoldandroids-2.4.0.jar')
     implementation files('libs/cryptix-jce-provider.jar')
-    implementation files('libs/apacheds-all-1.5.7.jar')
-    implementation files('log4j-1.2.14.jar')
-    implementation files('slf4j-api-1.5.6.jar')
-    implementation files('slf4j-log4j12-1.5.6.jar')
-
     implementation group: 'org.snmp4j', name: 'snmp4j', version: '3.4.5'
     // https://mvnrepository.com/artifact/org.snmp4j/snmp4j-agent
     implementation group: 'org.snmp4j', name: 'snmp4j-agent', version: '3.3.6'
@@ -174,8 +172,8 @@ configurations {
 android {
     compileSdkVersion 30
     defaultConfig {
-        versionCode 17
-        versionName "2.4.1"
+        versionCode 16
+        versionName "2.4"
         minSdkVersion 24
         targetSdkVersion 30
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
