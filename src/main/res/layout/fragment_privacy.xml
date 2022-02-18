@@ -8,8 +8,9 @@
 
     <TextView
         android:id="@+id/textView6"
-        android:layout_width="158dp"
-        android:layout_height="39dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
         android:text="@string/Privacy_Policy"
         android:textColor="@color/black"
         android:textSize="18sp"
@@ -18,8 +19,11 @@
         tools:layout_editor_absoluteY="28dp" />
 
     <ScrollView
-        android:layout_width="409dp"
-        android:layout_height="662dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="2dp"
+        android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6">
 
