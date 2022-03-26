@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +19,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileOutputStream;

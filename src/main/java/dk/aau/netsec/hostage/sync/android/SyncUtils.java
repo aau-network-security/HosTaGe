@@ -9,9 +9,10 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import androidx.preference.PreferenceManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;

@@ -18,8 +18,6 @@ import dk.aau.netsec.hostage.ui.model.ExpandableListItem;
  */
 public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
 
-    private Context _context;
-
     // header titles
     public List<String> _sectionHeader;
     // data in format of header title, childs list
@@ -27,13 +25,11 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     /**
      * Constructor
-     * @param context the context
      * @param listSectionHeaders the section title
      * @param dataMapping {@link ExpandableListItem ExpandableListItem} the data to visualise
      */
-    public ExpandableListAdapter(Context context, List<String> listSectionHeaders,
+    public ExpandableListAdapter(List<String> listSectionHeaders,
                                  HashMap<String, ArrayList<ExpandableListItem>> dataMapping) {
-        this._context = context;
         this._sectionHeader = listSectionHeaders;
         this._sectionTitleToChildData = dataMapping;
     }
@@ -71,7 +67,7 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int section, final int row,
                              boolean isLastChild, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) this._context
+            LayoutInflater infalInflater = (LayoutInflater) parent.getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(this.getCellLayoutID(), null);
         }
@@ -111,7 +107,7 @@ public abstract class ExpandableListAdapter extends BaseExpandableListAdapter {
                              View convertView, ViewGroup parent) {
 
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) this._context
+            LayoutInflater infalInflater = (LayoutInflater) parent.getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(this.getSectionLayoutID(), null);
         }

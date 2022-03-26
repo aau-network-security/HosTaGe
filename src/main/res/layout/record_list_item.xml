@@ -14,7 +14,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000" />
+        android:textColor="?attr/colorOnSurface" />
 
     <TextView
         android:id="@+id/RecordTextFieldIP"
@@ -43,6 +43,6 @@
         android:layout_alignBottom="@+id/RecordTextFieldBSSID"
         android:layout_alignRight="@+id/RecordTextFieldTimestamp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#000000" />
+        android:textColor="?attr/colorOnSurface" />
 
 </RelativeLayout>

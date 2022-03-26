@@ -7,7 +7,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 

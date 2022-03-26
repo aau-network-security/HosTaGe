@@ -145,7 +145,7 @@
     <string name="hostage_with_url"><a href="https://aau-network-security.github.io/HosTaGe/">HosTaGe</a></string>
     <string name="hostage_email"><a href="mailto:hostage@es.aau.dk?Subject=Inquiry">Tell us what do you think about HosTaGe</a></string>
     <string name="hostage_email_only" translatable="false">hostage@es.aau.dk</string>
-    <string name="ui_dev_by">Developers team:</string>
+    <string name="ui_dev_by">Current Funding:</string>
     <string name="core_dev_by">Core developed by</string>
     <string name="advanced_settings">Advanced Settings</string>
     <string name="notification_settings" translatable="false">Notifications &amp; Sound</string>
@@ -198,10 +198,13 @@
     <string name="stats_per_cent_all">% of all</string>
     <string name="project_link" translatable="false">https://github.com/aau-network-security/HosTaGe</string>
     <string name="pie_all">All</string>
+    <string name="privacy_policy" translatable="false">Privacy Policy</string>
 
 
     <string name="CONNECTION_LOST_MESSAGE">Connection lost permanently, please enable wifi direct.</string>
     <string name="COULD_NOT_CONNECT_MESSAGE">Could not connect to device. Retry.</string>
+    <string name="Privacy_Policy" translatable="false">Privacy Policy</string>
+
 
     <string name="SYNCHRONIZATION_COMPLETE_MESSAGE">Synchronization complete.</string>
     <string name="SYNCHRONIZATION_FAILED_MESSAGE">Could not synchronize devices. Retry</string>
@@ -216,8 +219,8 @@
     <string name="PERFORMING_TASK_AS_CLIENT">Acting as Client.</string>
 
     <string name="ACTIONBAR_TITLE">WifiDirect Synchronization</string>
-    <string name="PROGRESS_TITLE_LOADING">Loading...</string>
-    <string name="PROGRESS_TITLE_CONNECTING">Connecting...</string>
+    <string name="PROGRESS_TITLE_LOADING">Loading…</string>
+    <string name="PROGRESS_TITLE_CONNECTING">Connecting…</string>
     <string name="PROGRESS_TITLE_SYNC">Synchronize</string>
 
 
@@ -287,14 +290,20 @@
     <string name="pref_sync_countries_desc">Only download attack data of these countries</string>
     <string name="pref_sync_countries">Countries</string>
     <string name="pref_download_server">Download server</string>
-	<string name="google_play_services_unavailable">Error: Google Play Services are unavailable.</string>
+    <string name="pcap_writer" translatable="false">Pcap Capturing</string>
+    <string name="pcap_enable" translatable="false">start</string>
+    <string name="pcap_stop" translatable="false">stop</string>
+    <string name="google_play_services_unavailable">Error: Google Play Services are unavailable.</string>
     <string name="pref_sync_frequency_summary">The interval in minutes synchronization with TraCINg should be performed</string>
     <string name="pref_sync_frequency_title">Synchronization interval</string>
     <string name="service">Services</string>
     <string name="multistage_summary">Enable Multistage Attack Detection Service</string>
     <string name="multistage_service">Multistage Service</string>
     <string name="iptables_not_supported" translatable="false">Iptables rules are not supported for your device!</string>
-
+    <string name="nfc_not_available">NFC is not available on this device</string>
+    <string name="nfc_enable_beam">Enable Android Beam before synchronizing.</string>
+    <string name="nfc_hold_phones_together">Hold phones together to send or receive data.</string>
+    <string name="error_activating_services">Could not activate. Please try again later.</string>
 
 
 <!-- TODO: Remove or change this placeholder text -->
