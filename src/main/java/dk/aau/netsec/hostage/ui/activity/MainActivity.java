@@ -356,6 +356,8 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(Html.fromHtml(getString(R.string.hostage_disclaimer)))
                 .setCancelable(false)
+                .setIcon(R.drawable.ic_disclaimer)
+                .setTitle("Disclaimer")
                 .setPositiveButton(getString(R.string.agree), (dialog, id) -> {
                     // and, if the user accept, you can execute something like this:
                     // We need an Editor object to make preference changes.
