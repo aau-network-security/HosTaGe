@@ -2,15 +2,20 @@ package dk.aau.netsec.hostage.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -45,6 +50,44 @@ public class AboutFragment extends Fragment {
 		rootView = inflater.inflate(R.layout.fragment_about, container, false);
         PackageManager manager = Hostage.getContext().getPackageManager();
         PackageInfo info = null;
+
+        ImageView img_1 = (ImageView) rootView.findViewById(R.id.img_1);
+        ImageView img_2 = (ImageView) rootView.findViewById(R.id.img_2);
+        ImageView img_3 = (ImageView) rootView.findViewById(R.id.img_3);
+        ImageView img_4 = (ImageView) rootView.findViewById(R.id.img_4);
+
+        img_1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.tu-darmstadt.de/"));
+                startActivity(browserIntent);
+            }
+        });
+
+        img_2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.en.aau.dk/"));
+                startActivity(browserIntent);
+            }
+        });
+
+        img_3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://northsearegion.eu/"));
+                startActivity(browserIntent);
+            }
+        });
+
+        img_4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://keep.eu/projects/22182/Building-COMpetencies-for-C-EN/"));
+                startActivity(browserIntent);
+            }
+        });
+
         try {
             info = manager.getPackageInfo(Hostage.getContext().getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
