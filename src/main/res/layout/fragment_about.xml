@@ -65,6 +65,7 @@
 
 
 				<ImageView
+					android:id="@+id/img_1"
 					android:layout_width="162dp"
 					android:layout_height="89dp"
 					android:layout_marginLeft="5dp"
@@ -74,6 +75,7 @@
 
 
 				<ImageView
+					android:id="@+id/img_2"
 					android:layout_width="161dp"
 					android:layout_height="89dp"
 					android:layout_marginLeft="5dp"
@@ -118,6 +120,7 @@
 					android:textColor="@android:color/holo_blue_dark"/>
 
 				<ImageView
+					android:id="@+id/img_3"
 					android:layout_width="240dp"
 					android:layout_height="92dp"
 					android:layout_marginLeft="5dp"
@@ -139,6 +142,7 @@
 				android:paddingTop="33dp">
 
 				<ImageView
+					android:id="@+id/img_4"
 					android:layout_width="100dp"
 					android:layout_height="92dp"
 					android:layout_marginLeft="5dp"
