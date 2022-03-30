@@ -14,6 +14,7 @@
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:drawableLeft="@drawable/ic_menu_privacy"
         tools:layout_editor_absoluteX="23dp"
         tools:layout_editor_absoluteY="28dp" />
 
