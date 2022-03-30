@@ -105,6 +105,7 @@ dependencies {
     implementation files('libs/nineoldandroids-2.4.0.jar')
     implementation files('libs/cryptix-jce-provider.jar')
     implementation group: 'org.snmp4j', name: 'snmp4j', version: '3.4.5'
+    implementation 'io.github.muddz:styleabletoast:2.4.0'
     // https://mvnrepository.com/artifact/org.snmp4j/snmp4j-agent
     implementation group: 'org.snmp4j', name: 'snmp4j-agent', version: '3.3.6'
     implementation files('libs/VirusTotalAPI.jar')

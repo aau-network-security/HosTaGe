@@ -1,6 +1,7 @@
 package dk.aau.netsec.hostage.ui.fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -11,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -62,6 +64,7 @@ import dk.aau.netsec.hostage.ui.popup.AbstractPopupItem;
 import dk.aau.netsec.hostage.ui.popup.SimplePopupItem;
 import dk.aau.netsec.hostage.ui.popup.SimplePopupTable;
 import dk.aau.netsec.hostage.ui.popup.SplitPopupItem;
+import io.github.muddz.styleabletoast.StyleableToast;
 
 
 public class RecordOverviewFragment extends UpNavigatibleFragment implements ChecklistDialog.ChecklistDialogListener, DateTimeDialogFragment.DateTimeDialogFragmentListener {
@@ -822,6 +825,7 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
     /**
      * Shows a small toast if the data to show is empty (no records).
      */
+    @SuppressLint("ResourceAsColor")
     private void showEmptyDataNotification(){
         if (RecordOverviewFragment.this.noDataNotificationToast == null){
             RecordOverviewFragment.this.noDataNotificationToast =  Toast.makeText(getApplicationContext(), R.string.no_data_notification, Toast.LENGTH_SHORT);
@@ -831,7 +835,12 @@ public class RecordOverviewFragment extends UpNavigatibleFragment implements Che
         if (this.getFilterButton().getVisibility() == View.VISIBLE && this.filter.isSet()){
             this.noDataNotificationToast.setText(R.string.no_data_notification);
         } else {
-            this.noDataNotificationToast.setText(R.string.no_data_notification_no_filter);
+            new StyleableToast
+                    .Builder(getActivity())
+                    .text("No Attacks have been recorded.")
+                    .textColor(Color.WHITE)
+                    .backgroundColor(Color.parseColor("#FF7688"))
+                    .show();
         }
         if (adapter == null || adapter.getData().isEmpty())
             RecordOverviewFragment.this.noDataNotificationToast.show();
