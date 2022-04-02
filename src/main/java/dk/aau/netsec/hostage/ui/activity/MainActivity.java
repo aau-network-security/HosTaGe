@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
                 .setRemindInterval((byte) 7)
                 .setRemindLaunchesNumber((byte) 5)
                 .setShowLaterButton(true)
-                .setDebug(true)
+                .setDebug(false)
                 .monitor();
 
         AppRate.showRateDialogIfMeetsConditions(this);
