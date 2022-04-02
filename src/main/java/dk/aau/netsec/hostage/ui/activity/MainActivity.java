@@ -43,6 +43,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.vorlonsoft.android.rate.AppRate;
+
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.location.MyLocationManager;
@@ -274,6 +276,8 @@ public class MainActivity extends AppCompatActivity {
         context = new WeakReference<>(getApplicationContext());
         setContentView(R.layout.activity_drawer_main);
 
+        setUpRateApp();
+
         addAnimation();
         // configures the action bar
         configureActionBar();
@@ -301,6 +305,19 @@ public class MainActivity extends AppCompatActivity {
 
             injectFragment(mDisplayedFragment);
         }
+    }
+
+    public void setUpRateApp() {
+        AppRate.with(this)
+                .setInstallDays((byte) 7)
+                .setLaunchTimes((byte) 5)
+                .setRemindInterval((byte) 7)
+                .setRemindLaunchesNumber((byte) 5)
+                .setShowLaterButton(true)
+                .setDebug(false)
+                .monitor();
+
+        AppRate.showRateDialogIfMeetsConditions(this);
     }
 
     private void executeRoot() {
