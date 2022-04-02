@@ -43,6 +43,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.github.javiersantos.appupdater.AppUpdater;
+import com.github.javiersantos.appupdater.enums.Display;
+import com.github.javiersantos.appupdater.enums.UpdateFrom;
+
 import dk.aau.netsec.hostage.Hostage;
 import dk.aau.netsec.hostage.R;
 import dk.aau.netsec.hostage.location.MyLocationManager;
@@ -274,6 +278,8 @@ public class MainActivity extends AppCompatActivity {
         context = new WeakReference<>(getApplicationContext());
         setContentView(R.layout.activity_drawer_main);
 
+        setUpUpdatePrompt();
+
         addAnimation();
         // configures the action bar
         configureActionBar();
@@ -302,6 +308,21 @@ public class MainActivity extends AppCompatActivity {
             injectFragment(mDisplayedFragment);
         }
     }
+
+    public void setUpUpdatePrompt() {
+        AppUpdater appUpdater = new AppUpdater(this);
+
+        new AppUpdater(this)
+                .setUpdateFrom(UpdateFrom.GOOGLE_PLAY)
+                .setDisplay(Display.DIALOG)
+                .setTitleOnUpdateAvailable("Update available")//Title of the Dialog Prompt
+                .setContentOnUpdateAvailable("Check out the latest version available of Amahi Android App!")//Description of the Dialog Prompt
+                .setButtonUpdate("Update")//Updates the App
+                .setButtonDoNotShowAgain("Don't show again");//Never shows the prompt again until next release
+
+        appUpdater.start();
+    }
+
 
     private void executeRoot() {
         CheckRoot checkRoot = new CheckRoot();
