@@ -421,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawerItems.add(new DrawerListItem(R.string.drawer_profile_manager, R.drawable.ic_menu_allfriends));
         mDrawerItems.add(new DrawerListItem(R.string.drawer_settings, R.drawable.ic_menu_preferences));
         mDrawerItems.add(new DrawerListItem(R.string.drawer_app_info, R.drawable.ic_menu_info_details));
-        mDrawerItems.add(new DrawerListItem(R.string.privacy_policy, R.drawable.ic_menu_privacy));
+        mDrawerItems.add(new DrawerListItem(R.string.privacy_policy, R.drawable.ic_menu_privacy_policy));
 
         DrawerListAdapter listAdapter = new DrawerListAdapter(this, mDrawerItems);
 
