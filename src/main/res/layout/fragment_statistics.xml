@@ -136,15 +136,15 @@
             android:layout_toLeftOf="@+id/plot_data_button" />
 
         <ImageButton
+            android:id="@+id/plot_data_button"
             style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/plot_data_button"
-            android:src="@drawable/ic_sort_by_size"
-            android:layout_gravity="right"
             android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"/>
+            android:layout_gravity="right"
+            android:src="@drawable/ic_sort" />
 
     </RelativeLayout>
 
