@@ -166,26 +166,28 @@
 	</LinearLayout>
 
 </ScrollView>
-<RelativeLayout
-    style="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse"
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:alpha="0.8"
-    android:id="@+id/linearLayout"
-    android:layout_alignParentBottom="true" android:layout_alignParentLeft="true"
-    android:layout_alignParentStart="true">
 
-    <ImageButton
-        style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/DeleteButton"
-        android:src="@drawable/ic_action_discard"
-        android:layout_gravity="right"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/FilterButton"/>
+	<RelativeLayout
+		android:id="@+id/linearLayout"
+		style="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentStart="true"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentBottom="true"
+		android:alpha="0.8"
+		android:orientation="horizontal">
 
-</RelativeLayout>
+		<ImageButton
+			android:id="@+id/DeleteButton"
+			style="@android:style/Widget.DeviceDefault.ActionButton.Overflow"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_alignParentRight="true"
+			android:layout_gravity="right"
+			android:layout_toLeftOf="@+id/FilterButton"
+			android:src="@drawable/ic_action_discard" />
+
+	</RelativeLayout>
 </RelativeLayout>
