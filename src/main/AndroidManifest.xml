@@ -50,7 +50,8 @@
         android:theme="@style/Theme.App"
         android:requestLegacyExternalStorage="true"
         android:vmSafeMode="true"
-        android:largeHeap="true">
+        android:largeHeap="true"
+        tools:replace="android:icon">
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

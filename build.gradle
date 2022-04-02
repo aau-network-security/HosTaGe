@@ -27,6 +27,7 @@ allprojects {
         jcenter()
 
         maven { url "https://jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 }
 dependencies {
@@ -109,6 +110,9 @@ dependencies {
     implementation group: 'org.snmp4j', name: 'snmp4j-agent', version: '3.3.6'
     implementation files('libs/VirusTotalAPI.jar')
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
+
+
+    implementation "com.vorlonsoft:androidrate:1.2.1"
 
     // https://mvnrepository.com/artifact/com.hierynomus/smbj
     testImplementation group: 'com.hierynomus', name: 'smbj', version: '0.11.1'
