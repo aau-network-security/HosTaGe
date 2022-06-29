@@ -49,6 +49,7 @@ import dk.aau.netsec.hostage.protocol.Protocol;
 import dk.aau.netsec.hostage.ui.activity.MainActivity;
 
 import static dk.aau.netsec.hostage.commons.HelperUtils.getBSSID;
+import android.os.Vibrator;
 
 /**
  * Background service running as long as at least one protocol is active.
@@ -454,6 +455,7 @@ public class Hostage extends Service {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel("32", name, importance);
             channel.setDescription("this");
+
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             mNotificationManager.createNotificationChannel(channel);
@@ -462,12 +464,15 @@ public class Hostage extends Service {
                     .setContentText(getString(R.string.honeypot_live_threat)).setSmallIcon(R.drawable.ic_service_red).setAutoCancel(true).setWhen(System.currentTimeMillis())
                     .setSound(Uri.parse(strRingtonePreference));
 
-            if (defaultPref.getBoolean("pref_vibration", false)) {
-                channel.setVibrationPattern(new long[]{100, 200, 100, 200});
+            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            if (defaultPref.getBoolean("pref_vibration", true)) {
+                long[] pattern = {0, 200, 1000, 200, 1000};
+                vibrator.vibrate(pattern, -1);
             } else {
-                channel.setVibrationPattern(new long[]{0});
+                long[] pattern = {0, 0, 0, 0, 0};
+                vibrator.vibrate(pattern, -1);
             }
-            channel.enableVibration(true);
+
             Notification notification = notificationBuilder.setOngoing(true)
                     .build();
             startForeground(2, notification);
