@@ -8,11 +8,14 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
 
-        classpath 'com.google.gms:google-services:4.3.8' //added gms support
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.6.1'
+        classpath 'com.google.gms:google-services:4.3.13' //added gms support
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
+
+        classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1"
+
     }
 }
 apply plugin: 'com.android.application'
@@ -31,18 +34,18 @@ allprojects {
 }
 dependencies {
     //firebase
-    implementation 'com.google.firebase:firebase-crashlytics:18.0.0'
-    implementation 'com.google.firebase:firebase-analytics:19.0.0'
-    implementation 'com.google.firebase:firebase-core:19.0.0'
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.13'
+    implementation 'com.google.firebase:firebase-analytics:21.1.1'
+    implementation 'com.google.firebase:firebase-core:21.1.1'
     //google api
-    implementation 'com.google.android.gms:play-services-base:17.6.0'
-    implementation 'com.google.android.gms:play-services-basement:17.6.0'
-    implementation 'com.google.android.gms:play-services-tasks:17.2.1'
-    implementation 'com.google.android.gms:play-services-location:18.0.0'
+    implementation 'com.google.android.gms:play-services-base:18.1.0'
+    implementation 'com.google.android.gms:play-services-basement:18.1.0'
+    implementation 'com.google.android.gms:play-services-tasks:18.0.2'
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
 
-    implementation 'com.google.android.gms:play-services-analytics:17.0.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.1'
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.google.android.gms:play-services-analytics:18.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.2.0'
     //greenDao
 //    implementation 'org.roboguice:roboguice:4.0.0'
     implementation 'org.greenrobot:greendao:3.3.0'
@@ -108,7 +111,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.snmp4j/snmp4j-agent
     implementation group: 'org.snmp4j', name: 'snmp4j-agent', version: '3.3.6'
     implementation files('libs/VirusTotalAPI.jar')
-    implementation 'com.google.firebase:firebase-analytics:19.0.0'
+    implementation 'org.jsoup:jsoup:1.13.1'
+    implementation "androidx.multidex:multidex:2.0.1"
 
     // https://mvnrepository.com/artifact/com.hierynomus/smbj
     testImplementation group: 'com.hierynomus', name: 'smbj', version: '0.11.1'
@@ -143,7 +147,7 @@ dependencies {
     testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
     testImplementation 'org.powermock:powermock-core:2.0.9'
     testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.9'
-    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
     // Optional -- Robolectric environment
     testImplementation 'org.robolectric:robolectric:4.4.1'
 }
@@ -155,18 +159,21 @@ greendao{
 }
 //The first is for the conflict of common apache libraries between moquette and VirusTotalApi
 //The second one is for the conflict with an older version of deprecated slf4j
+//The third one is for the conflict in (VirusTotalAPI.jar) and (com.google.code.gson:gson:2.8.9)
 configurations {
     all*.exclude group: 'commons-codec', module: 'commons-codec'
     all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    all*.exclude group:  'com.google.code.gson', module: 'gson'
 }
 
+
 android {
-    compileSdkVersion 29
+    compileSdkVersion 32
     defaultConfig {
         versionCode 11
         versionName "2.3.4"
         minSdkVersion 24
-        targetSdkVersion 29
+        targetSdkVersion 32
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         javaCompileOptions {
