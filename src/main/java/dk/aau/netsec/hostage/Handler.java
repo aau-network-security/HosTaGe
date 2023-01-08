@@ -29,6 +29,7 @@ import dk.aau.netsec.hostage.protocol.Protocol;
 import dk.aau.netsec.hostage.protocol.utils.amqpUtils.AMQPHandler;
 import dk.aau.netsec.hostage.protocol.utils.coapUtils.COAPHandler;
 import dk.aau.netsec.hostage.protocol.utils.mqttUtils.MQTTHandler;
+import dk.aau.netsec.hostage.protocol.utils.bacnetUtils.BACnetHandler;
 import dk.aau.netsec.hostage.sync.tracing.TracingSyncService;
 import dk.aau.netsec.hostage.wrapper.Packet;
 
@@ -199,6 +200,13 @@ public class Handler implements Runnable {
 			return;
 		}
 
+		if(protocol.toString().equals("BACnet")){
+			handleBACnetPackets();
+			kill();
+			uploadHpfeeds();
+			return;
+		}
+
 		regularProtocolsIOStream();
 	}
 
@@ -227,6 +235,8 @@ public class Handler implements Runnable {
 	}
 
 	private void handleAMQPPackets(){ logAMQPPackets(); }
+
+	private void handleBACnetPackets(){ logBACnetPackets(); }
 
 	/**
 	 * Gets attack ID for the attack. Also increases the attack ID counter by
@@ -387,6 +397,15 @@ public class Handler implements Runnable {
 			logged = true;
 		}
 	}
+	public void logBACnet(MessageRecord.TYPE type){
+    	if(!logged){
+			Logger.log(Hostage.getContext(),createNetworkRecord());
+			Logger.log(Hostage.getContext(), BACnetHandler.createAttackRecord(attack_id,externalIP,protocol,subnetMask,BSSID,internalIPAddress));
+			Logger.log(Hostage.getContext(),BACnetHandler.createMessageRecord(type,attack_id));
+			BACnetHandler.removeCurrentConnected();
+			logged = true;
+    	}
+    }
 
 	/**
 	 * Communicates with a client using the corresponding protocol
@@ -436,6 +455,10 @@ public class Handler implements Runnable {
 
 	protected void logAMQPPackets() {
 		logAMQP(MessageRecord.TYPE.RECEIVE);
+	}
+
+	protected void logBACnetPackets() {
+		logBACnet(MessageRecord.TYPE.RECEIVE);
 	}
 
 	private void uploadHpfeeds(){

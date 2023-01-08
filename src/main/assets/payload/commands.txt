@@ -34,6 +34,9 @@ iptables -t nat -D OUTPUT -p tcp --dport 28162 -j REDIRECT --to-ports 25
 iptables -t nat -D PREROUTING -p tcp --dport 502 -j REDIRECT --to-ports 28639
 iptables -t nat -D OUTPUT -p tcp --dport 28639 -j REDIRECT --to-ports 502
 
+iptables -t nat -D PREROUTING -p udp --dport 503 -j REDIRECT --to-ports 28640
+iptables -t nat -D OUTPUT -p udp --dport 28640 -j REDIRECT --to-ports 503
+
 
 
 iptables -t nat -A PREROUTING -p tcp --dport 7 -j REDIRECT --to-ports 28144
@@ -71,3 +74,6 @@ iptables -t nat -A OUTPUT -p tcp --dport 28162 -j REDIRECT --to-ports 25
 
 iptables -t nat -A PREROUTING -p tcp --dport 502 -j REDIRECT --to-ports 28639
 iptables -t nat -A OUTPUT -p tcp --dport 28639 -j REDIRECT --to-ports 502
+
+iptables -t nat -A PREROUTING -p udp --dport 503 -j REDIRECT --to-ports 28640
+iptables -t nat -A OUTPUT -p udp --dport 28640 -j REDIRECT --to-ports 503

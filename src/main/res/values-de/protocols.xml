@@ -2,6 +2,7 @@
 <resources>
     <string-array name="protocols">
         <item>AMQP</item>
+        <item>BACnet</item>
         <item>COAP</item>
         <item>ECHO</item>
         <item>FTP</item>
@@ -21,6 +22,7 @@
 
     <string-array name="protocols_description" >
         <item>The Advanced Message Queuing Protocol (AMQP) is an open standard application layer protocol for message-oriented middleware. The defining features of AMQP are message orientation, queuing, routing, reliability and security</item>
+        <item>BACnet, short for “Building Automation Control Network”, is a data communication protocol for building automation and control networks.</item>
         <item>Constrained Application Protocol (CoAP) is a specialized Internet Application Protocol for constrained devices, as defined in RFC 7252</item>
         <item>A service for testing and measurement of round-trip times in IP networks</item>
         <item>A protocol used to transfer files from one host to another host</item>
@@ -40,6 +42,7 @@
 
     <integer-array name="ports">
         <item>5672</item>
+        <item>47808</item>
         <item>5683</item>
         <item>7</item>
         <item>21</item>

@@ -349,6 +349,7 @@ public class RecordDetailFragment extends UpNavigatibleFragment {
 		else if(protocol.contains("SSH")){port=22;}
 		else if(protocol.contains("PORTSCAN")){port=0;}
 		else if(protocol.contains("FILE INJECTION")){port=1025;}
+		else if(protocol.contains("BACnet")){port=47808;}
 		return port;
 	}
 
