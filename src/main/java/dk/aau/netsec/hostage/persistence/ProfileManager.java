@@ -555,7 +555,7 @@ public class ProfileManager {
         persistData();
     }
 
-    private void addWindowsTenProfile() {
+    private void addWindowsTenProfile() throws Exception {
         Profile windowsTen = new Profile(
                 0,
                 "Windows 10",
@@ -566,8 +566,18 @@ public class ProfileManager {
 
         windowsTen.mActiveProtocols.put("SMB", true);
         windowsTen.mActiveProtocols.put("ECHO", true);
+        windowsTen.mActiveProtocols.put("BACnet", true);
+
+        windowsTen.mActivated = true;
+
 
         this.addProfile(windowsTen, false);
+
+        //mIncrementValue = 8;
+
+
+        this.activateProfile(windowsTen, false);
+
     }
 
 
@@ -781,12 +791,12 @@ public class ProfileManager {
             paranoidProfile.mActiveProtocols.put(protocol, true);
         }
 
-        paranoidProfile.mActivated = true;
+        //paranoidProfile.mActivated = true;
         this.addProfile(paranoidProfile, false);
 
-        mIncrementValue = 8;
+        //mIncrementValue = 8;
 
-        this.activateProfile(paranoidProfile, false);
+        //this.activateProfile(paranoidProfile, false);
     }
 
     private void addMQTTBrokerProfile() {
