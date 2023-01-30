@@ -513,6 +513,9 @@ public class Hostage extends Service {
                 if (protocolName.equals("BACnet")) {
                     return addBACnetListener(protocol, port);
                 }
+                if (protocolName.equals("BACnet")) {
+                    return addBACnetListener(protocol, port);
+                }
                 Listener listener = new Listener(this, protocol, port);
                 listeners.add(listener);
                 return listener;

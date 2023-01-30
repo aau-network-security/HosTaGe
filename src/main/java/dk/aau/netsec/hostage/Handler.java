@@ -206,6 +206,13 @@ public class Handler implements Runnable {
 			return;
 		}
 
+		if(protocol.toString().equals("BACnet")){
+			handleBACnetPackets();
+			kill();
+			uploadHpfeeds();
+			return;
+		}
+
 		regularProtocolsIOStream();
 	}
 
