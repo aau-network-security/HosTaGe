@@ -18,20 +18,37 @@ public class BACnetListener extends Listener {
     private Thread serverThread;
     private ConnectionRegister conReg;
     private boolean running = false;
-    private int defaultPort =47808;
+    private int defaultPort =0xBAC0;
 
     private static Semaphore mutex = new Semaphore(1);
+    /**
+     * Constructor for the class. Instantiate class variables.
+     *
+     * @param service  The Background service that started the listener.
+     * @param protocol The Protocol on which the listener is running.
+     */
+    public BACnetListener(Hostage service, Protocol protocol) {
+        super(service, protocol);
+    }
 
     public BACnetListener(Hostage service, Protocol protocol, int port) {
         super(service, protocol, port);
+        conReg = new ConnectionRegister(service);
+
     }
-
-
+    /**
+     * Determines if the service is running.
+     *
+     * @return True if the service is running, else false.
+     */
     @Override
     public boolean isRunning() {
         return running;
     }
 
+    /**
+     * Remove all terminated handlers from its internal ArrayList.
+     */
     @Override
     public void refreshHandlers() {
         for (Iterator<Handler> iterator = handlers.iterator(); iterator.hasNext(); ) {
@@ -87,7 +104,7 @@ public class BACnetListener extends Listener {
 
     public void stopServer(){
         if(super.getPort() == defaultPort) {
-            BACnet.serverStop();
+            BACnet.localDeviceStop();
             if(serverThread!=null)
                 serverThread.interrupt();
             if(thread!=null)
