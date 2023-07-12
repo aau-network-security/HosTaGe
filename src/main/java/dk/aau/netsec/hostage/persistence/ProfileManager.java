@@ -564,8 +564,8 @@ public class ProfileManager {
                 false
         );
 
-        windowsTen.mActiveProtocols.put("SMB", true);
-        windowsTen.mActiveProtocols.put("ECHO", true);
+      //  windowsTen.mActiveProtocols.put("SMB", true);
+      //  windowsTen.mActiveProtocols.put("ECHO", true);
         windowsTen.mActiveProtocols.put("BACnet", true);
 
         windowsTen.mActivated = true;

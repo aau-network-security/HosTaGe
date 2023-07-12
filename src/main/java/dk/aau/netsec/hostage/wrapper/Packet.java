@@ -69,6 +69,7 @@ public class Packet {
 				|| protocol.equals("HTTPS")
 				|| protocol.equals("SIP")
 				|| protocol.equals("MODBUS")
+				|| protocol.equals("BACnet")
 				|| protocol.equals("SMTP")) {
 			return new String(payload);
 		} else {
