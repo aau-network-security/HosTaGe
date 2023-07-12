@@ -113,6 +113,7 @@ dependencies {
     implementation files('libs/VirusTotalAPI.jar')
     implementation 'org.jsoup:jsoup:1.13.1'
     implementation "androidx.multidex:multidex:2.0.1"
+    implementation files('libs\\bacnet4j-3.2.2.jar')
 
     // https://mvnrepository.com/artifact/com.hierynomus/smbj
     testImplementation group: 'com.hierynomus', name: 'smbj', version: '0.11.1'

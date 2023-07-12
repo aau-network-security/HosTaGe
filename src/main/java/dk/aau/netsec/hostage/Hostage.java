@@ -500,7 +500,6 @@ public class Hostage extends Service {
     private Listener createListener(String protocolName, int port) {
         for (Protocol protocol : implementedProtocols) {
             if (protocolName.equals(protocol.toString())) {
-                /*
                 if (protocolName.equals("MQTT")) {
                     return addMQTTListener(protocol, port);
                 }
@@ -509,13 +508,13 @@ public class Hostage extends Service {
                 }
                 if (protocolName.equals("AMQP")) {
                     return addAMQPListener(protocol, port);
+                }
+                if (protocolName.equals("BACnet")) {
+                    return addBACnetListener(protocol, port);
+                }
+                /*if (protocolName.equals("BACnet")) {
+                    return addBACnetListener(protocol, port);
                 }*/
-                if (protocolName.equals("BACnet")) {
-                    return addBACnetListener(protocol, port);
-                }
-                if (protocolName.equals("BACnet")) {
-                    return addBACnetListener(protocol, port);
-                }
                 Listener listener = new Listener(this, protocol, port);
                 listeners.add(listener);
                 return listener;

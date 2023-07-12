@@ -87,7 +87,7 @@ public class BACnetListener extends Listener {
 
     public void stopServer(){
         if(super.getPort() == defaultPort) {
-            BACnet.serverStop();
+          //  BACnet.serverStop();
             if(serverThread!=null)
                 serverThread.interrupt();
             if(thread!=null)
@@ -152,7 +152,7 @@ public class BACnetListener extends Listener {
 
     private void startHandler() throws Exception {
         if(handlers.isEmpty())
-            handlers.add(newInstance(getService(), this, super.getProtocol().toString().equals("CIFS") ? super.getProtocol() : super.getProtocol().getClass().newInstance()));
+            handlers.add(newInstance(getService(), this, super.getProtocol().toString().equals("BACNet") ? super.getProtocol() : super.getProtocol().getClass().newInstance()));
     }
 
 
