@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -142,47 +143,47 @@ public class RootShellService extends Service implements Cloneable {
                 state.lastCommand = command;
                 state.lastCommandResult = new StringBuilder();
                 try {
-                    rootSession.addCommand(command, 0, (commandCode, exitCode, output) -> {
-                        if (output != null) {
-                            ListIterator<String> iter = output.listIterator();
-                            while (iter.hasNext()) {
-                                String line = iter.next();
-                                if (line != null && !line.equals("")) {
-                                    if (state.res != null) {
-                                        state.res.append(line + "\n");
+                    rootSession.addCommand(command, 0, new Shell.OnCommandResultListener2() {
+                        @Override
+                        public void onCommandResult(int commandCode, int exitCode, @NonNull List<String> output, @NonNull List<String> STDERR) {
+                            if (output != null) {
+                                ListIterator<String> iter = output.listIterator();
+                                while (iter.hasNext()) {
+                                    String line = iter.next();
+                                    if (line != null && !line.isEmpty()) {
+                                        if (state.res != null) {
+                                            state.res.append(line).append("\n");
+                                        }
+                                        state.lastCommandResult.append(line).append("\n");
                                     }
-                                    state.lastCommandResult.append(line + "\n");
                                 }
                             }
-                        }
-                        if (exitCode >= 0 && exitCode == state.retryExitCode && state.retryCount < MAX_RETRIES) {
-                            //lets wait for few ms before trying ?
-                            state.retryCount++;
-                            Log.d(TAG, "command '" + state.lastCommand + "' exited with status " + exitCode +
-                                    ", retrying (attempt " + state.retryCount + "/" + MAX_RETRIES + ")");
-                            processCommands(state);
-                            return;
-                        }
+                            if (exitCode >= 0 && exitCode == state.retryExitCode && state.retryCount < MAX_RETRIES) {
+                                state.retryCount++;
+                                Log.d(TAG, "retry attempt " + state.retryCount);
+                                processCommands(state);
+                                return;
+                            }
 
-                        state.commandIndex++;
-                        state.retryCount = 0;
+                            state.commandIndex++;
+                            state.retryCount = 0;
 
-                        boolean errorExit = exitCode != 0 && !state.ignoreExitCode;
-                        if (state.commandIndex >= state.getCommmands().size() || errorExit) {
-                            complete(state, exitCode);
-                            if (exitCode < 0) {
-                                rootState = ShellState.FAIL;
-                                Log.e(TAG, "libsuperuser error " + exitCode + " on command '" + state.lastCommand + "'");
+                            boolean errorExit = exitCode != 0 && !state.ignoreExitCode;
+                            if (state.commandIndex >= state.getCommmands().size() || errorExit) {
+                                complete(state, exitCode);
+                                if (exitCode < 0) {
+                                    rootState = ShellState.FAIL;
+                                    Log.e(TAG, "libsuperuser error " + exitCode);
+                                } else {
+                                    if (errorExit) {
+                                        Log.i(TAG, "error exit, output:\n" + state.lastCommandResult);
+                                    }
+                                    rootState = ShellState.READY;
+                                }
+                                runNextSubmission();
                             } else {
-                                if (errorExit) {
-                                    Log.i(TAG, "command '" + state.lastCommand + "' exited with status " + exitCode +
-                                            "\nOutput:\n" + state.lastCommandResult);
-                                }
-                                rootState = ShellState.READY;
+                                processCommands(state);
                             }
-                            runNextSubmission();
-                        } else {
-                            processCommands(state);
                         }
                     });
                 } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
@@ -228,25 +229,27 @@ public class RootShellService extends Service implements Cloneable {
     private void startShellInBackground() {
         Log.d(TAG, "Starting root shell...");
         setupLogging();
-        //start only rootSession is null
         if (rootSession == null) {
-            rootSession = new Shell.Builder().
-                    useSU().
-                    setWantSTDERR(true).
-                    setWatchdogTimeout(5).
-                    open((commandCode, exitCode, output) -> {
-                        if (exitCode < 0) {
-                            Log.e(TAG, "Can't open root shell: exitCode " + exitCode);
-                            rootState = ShellState.FAIL;
-                        } else {
-                            Log.d(TAG, "Root shell is open");
-                            rootState = ShellState.READY;
+            rootSession = new Shell.Builder()
+                    .useSU()
+                    .setWantSTDERR(true)
+                    .setWatchdogTimeout(5)
+                    .open(new Shell.OnShellOpenResultListener() {
+                        @Override
+                        public void onOpenResult(boolean success, int exitCode) {
+                            if (!success || exitCode < 0) {
+                                Log.e(TAG, "Can't open root shell: exitCode " + exitCode);
+                                rootState = ShellState.FAIL;
+                            } else {
+                                Log.d(TAG, "Root shell is open");
+                                rootState = ShellState.READY;
+                            }
+                            runNextSubmission();
                         }
-                        runNextSubmission();
                     });
         }
-
     }
+
 
     private void reOpenShell(Context context) {
         if (rootState == null || rootState != ShellState.READY || rootState == ShellState.FAIL) {

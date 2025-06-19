@@ -105,6 +105,12 @@ public class MQTTHandler {
             public void onMessageAcknowledged(InterceptAcknowledgedMessage interceptAcknowledgedMessage) {
                 interceptAcknowledgedMessages.add(interceptAcknowledgedMessage);
             }
+
+            @Override
+            public void onSessionLoopError(Throwable error) {
+                error.printStackTrace();
+            }
+
         };
         return handler;
     }

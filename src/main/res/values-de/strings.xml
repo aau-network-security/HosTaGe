@@ -205,6 +205,7 @@
 	<string name="record_details_conversation">Unterhaltung</string>
     <string name="profile_vista_desc">Dieses Profil immitiert Windows Vista</string>
 	<string name="profile_seven_desc">Dieses Profil immitiert Windows 7</string>
+    <string name="profile_ten_desc">Dieses Profil immitiert Windows 10</string>
     <string name="profile_xp_desc">Dieses Profil aktiviert Dienste die Typisch f&#252;r Windows XP sind</string>
     <string name="profile_webserv_http_desc">Dieses Profil immitiert einen simplen Webserver, welcher nur den Port für das HTTP Protokoll &#252;berwacht</string>
 	<string name="profile_webserv_apache_desc">Dieses Profil immitiert einen Apache Webserver</string>

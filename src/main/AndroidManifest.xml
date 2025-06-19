@@ -53,8 +53,12 @@
         android:largeHeap="true">
 
         <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD5vUfuTVKbAmw2jMX9KTTbKGJ9LOhrPdU" />
+            android:value="AIzaSyCwT9RYxCUk32WGI8TZcvXkzhRvxkLbGb4" />
 
         <activity
             android:excludeFromRecents="true"
@@ -62,7 +66,8 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleInstance"
             android:label="@string/app_name"
-            android:screenOrientation="fullSensor" >
+            android:screenOrientation="fullSensor"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -86,7 +91,8 @@
         <activity
             android:name="dk.aau.netsec.hostage.sync.nfc.NFCSyncActivity"
             android:label="@string/gui_nfc"
-            android:theme="@android:style/Theme.Dialog" >
+            android:theme="@android:style/Theme.Dialog"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
 
@@ -159,7 +165,8 @@
                 android:resource="@xml/syncadapter" />
         </service>
 
-        <service android:name="dk.aau.netsec.hostage.sync.android.HostageAccountService">
+        <service android:name="dk.aau.netsec.hostage.sync.android.HostageAccountService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>

@@ -8,11 +8,14 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0' // add plugin
 
-        classpath 'com.google.gms:google-services:4.3.8' //added gms support
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.6.1'
+        classpath 'com.google.gms:google-services:4.3.13' //added gms support
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
+
+        classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1"
+
     }
 }
 apply plugin: 'com.android.application'
@@ -31,18 +34,18 @@ allprojects {
 }
 dependencies {
     //firebase
-    implementation 'com.google.firebase:firebase-crashlytics:18.0.0'
-    implementation 'com.google.firebase:firebase-analytics:19.0.0'
-    implementation 'com.google.firebase:firebase-core:19.0.0'
+    implementation 'com.google.firebase:firebase-crashlytics:18.2.13'
+    implementation 'com.google.firebase:firebase-analytics:21.1.1'
+    implementation 'com.google.firebase:firebase-core:21.1.1'
     //google api
-    implementation 'com.google.android.gms:play-services-base:17.6.0'
-    implementation 'com.google.android.gms:play-services-basement:17.6.0'
-    implementation 'com.google.android.gms:play-services-tasks:17.2.1'
-    implementation 'com.google.android.gms:play-services-location:18.0.0'
+    implementation 'com.google.android.gms:play-services-base:18.1.0'
+    implementation 'com.google.android.gms:play-services-basement:18.1.0'
+    implementation 'com.google.android.gms:play-services-tasks:18.0.2'
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
 
-    implementation 'com.google.android.gms:play-services-analytics:17.0.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.1'
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.google.android.gms:play-services-analytics:18.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.2.0'
     //greenDao
 //    implementation 'org.roboguice:roboguice:4.0.0'
     implementation 'org.greenrobot:greendao:3.3.0'
@@ -51,6 +54,10 @@ dependencies {
     //COAP
     //implementation 'com.mbed.java-coap:coap-core:5.0.0' //original package
     implementation files('libs/coap-core-5.1.0-SNAPSHOT.jar') //forked repo https://github.com/irinil/java-coap
+
+    //BACnet
+    implementation files('libs/bacnet4j-3.2.2.jar')
+    implementation files('libs/bacnet4j-3.2.2-doc.jar')
 
     //AMQP
     // https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
@@ -71,7 +78,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.guava/guava
     implementation group: 'com.google.guava', name: 'guava', version: '30.1.1-android'
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+    //implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
     // https://mvnrepository.com/artifact/joda-time/joda-time
     implementation group: 'joda-time', name: 'joda-time', version: '2.10.10' //for min <26 sdk
     //logback
@@ -80,13 +87,13 @@ dependencies {
 
     //MQTT
     //moquette
-    implementation 'io.moquette:moquette-broker:0.12.1'
+    implementation "io.moquette:moquette-broker:0.17"
     //hive-Mq
     implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: '1.2.2'
 
     //SU Library for root
-    implementation 'eu.chainfire:libsuperuser:1.0.0.201704021214'
-
+    //implementation 'eu.chainfire:libsuperuser:1.0.0.201704021214'
+    implementation 'eu.chainfire:libsuperuser:1.1.1'
     //RootTools Library
     implementation 'com.github.Stericson:RootShell:1.6' //RootTolls depends on RootShell and it's not correctly setUped for the jitpack
     implementation ('com.github.Stericson:RootTools:5.0') {//Refer to https://github.com/Stericson/RootTools/issues/65
@@ -108,7 +115,10 @@ dependencies {
     // https://mvnrepository.com/artifact/org.snmp4j/snmp4j-agent
     implementation group: 'org.snmp4j', name: 'snmp4j-agent', version: '3.3.6'
     implementation files('libs/VirusTotalAPI.jar')
-    implementation 'com.google.firebase:firebase-analytics:19.0.0'
+    implementation 'org.jsoup:jsoup:1.13.1'
+    implementation "androidx.multidex:multidex:2.0.1"
+    implementation files('libs/bacnet4j-3.2.2.jar')
+
 
     // https://mvnrepository.com/artifact/com.hierynomus/smbj
     testImplementation group: 'com.hierynomus', name: 'smbj', version: '0.11.1'
@@ -143,9 +153,10 @@ dependencies {
     testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
     testImplementation 'org.powermock:powermock-core:2.0.9'
     testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.9'
-    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
     // Optional -- Robolectric environment
     testImplementation 'org.robolectric:robolectric:4.4.1'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 }
 
 greendao{
@@ -155,18 +166,22 @@ greendao{
 }
 //The first is for the conflict of common apache libraries between moquette and VirusTotalApi
 //The second one is for the conflict with an older version of deprecated slf4j
+//The third one is for the conflict in (VirusTotalAPI.jar) and (com.google.code.gson:gson:2.8.9)
 configurations {
     all*.exclude group: 'commons-codec', module: 'commons-codec'
     all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    all*.exclude group:  'com.google.code.gson', module: 'gson'
+    all*.exclude group: 'org.slf4j', module: 'slf4j-reload4j'
 }
 
+
 android {
-    compileSdkVersion 29
+    compileSdkVersion 33
     defaultConfig {
         versionCode 11
         versionName "2.3.4"
         minSdkVersion 24
-        targetSdkVersion 29
+        targetSdkVersion 33
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         javaCompileOptions {
@@ -244,7 +259,7 @@ android {
     productFlavors {
     }
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
