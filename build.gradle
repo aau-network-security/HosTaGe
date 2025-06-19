@@ -55,6 +55,10 @@ dependencies {
     //implementation 'com.mbed.java-coap:coap-core:5.0.0' //original package
     implementation files('libs/coap-core-5.1.0-SNAPSHOT.jar') //forked repo https://github.com/irinil/java-coap
 
+    //BACnet
+    implementation files('libs/bacnet4j-3.2.2.jar')
+    implementation files('libs/bacnet4j-3.2.2-doc.jar')
+
     //AMQP
     // https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
     implementation group: 'com.rabbitmq', name: 'amqp-client', version: '5.12.0'
@@ -74,7 +78,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.guava/guava
     implementation group: 'com.google.guava', name: 'guava', version: '30.1.1-android'
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+    //implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
     // https://mvnrepository.com/artifact/joda-time/joda-time
     implementation group: 'joda-time', name: 'joda-time', version: '2.10.10' //for min <26 sdk
     //logback
@@ -83,13 +87,13 @@ dependencies {
 
     //MQTT
     //moquette
-    implementation 'io.moquette:moquette-broker:0.12.1'
+    implementation "io.moquette:moquette-broker:0.17"
     //hive-Mq
     implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: '1.2.2'
 
     //SU Library for root
-    implementation 'eu.chainfire:libsuperuser:1.0.0.201704021214'
-
+    //implementation 'eu.chainfire:libsuperuser:1.0.0.201704021214'
+    implementation 'eu.chainfire:libsuperuser:1.1.1'
     //RootTools Library
     implementation 'com.github.Stericson:RootShell:1.6' //RootTolls depends on RootShell and it's not correctly setUped for the jitpack
     implementation ('com.github.Stericson:RootTools:5.0') {//Refer to https://github.com/Stericson/RootTools/issues/65
@@ -113,6 +117,8 @@ dependencies {
     implementation files('libs/VirusTotalAPI.jar')
     implementation 'org.jsoup:jsoup:1.13.1'
     implementation "androidx.multidex:multidex:2.0.1"
+    implementation files('libs/bacnet4j-3.2.2.jar')
+
 
     // https://mvnrepository.com/artifact/com.hierynomus/smbj
     testImplementation group: 'com.hierynomus', name: 'smbj', version: '0.11.1'
@@ -150,6 +156,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     // Optional -- Robolectric environment
     testImplementation 'org.robolectric:robolectric:4.4.1'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 }
 
 greendao{
@@ -164,16 +171,17 @@ configurations {
     all*.exclude group: 'commons-codec', module: 'commons-codec'
     all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     all*.exclude group:  'com.google.code.gson', module: 'gson'
+    all*.exclude group: 'org.slf4j', module: 'slf4j-reload4j'
 }
 
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     defaultConfig {
         versionCode 11
         versionName "2.3.4"
         minSdkVersion 24
-        targetSdkVersion 32
+        targetSdkVersion 33
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         javaCompileOptions {
@@ -251,7 +259,7 @@ android {
     productFlavors {
     }
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
